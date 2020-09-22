@@ -64,24 +64,68 @@ export const asyncRouterMap = [
 
       // list
       {
-        path: '/list',
-        name: 'list',
+        path: '/budget',
+        name: 'budget',
         component: RouteView,
-        redirect: '/list/table-list',
-        meta: { title: '列表页', icon: 'table', permission: ['table'] },
+        redirect: '/budget/custom',
+        meta: { title: '成本预算管理', icon: 'table', permission: ['budget'] },
         children: [
           {
-            path: '/list/table-list/:pageNo([1-9]\\d*)?',
-            name: 'TableListWrapper',
-            hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
-            component: () => import('@/views/list/TableList'),
-            meta: { title: '查询表格', keepAlive: true, permission: ['table'] }
+            path: '/budget/custom',
+            name: 'BudgetCustom',
+            component: RouteView,
+            redirect: '/budget/custom/detailed/list',
+            meta: { title: '详细项目成本分类预算', keepAlive: true, permission: ['budget'] },
+            children: [
+              {
+                path: '/budget/custom/detailed/list',
+                name: 'BudgetCustomDetailedList',
+                component: () => import('@/views/list/BasicList'),
+                redirect: '/budget/custom',
+                meta: { title: '标准列表', keepAlive: true, permission: ['budget'] }
+              },
+              {
+                path: '/budget/custom/detailed/item/:id',
+                name: 'BudgetCustomDetailedItem',
+                component: () => import('@/views/list/BasicList'),
+                redirect: '/budget/custom',
+                meta: { title: '标准列表', keepAlive: true, permission: ['budget'] }
+              }
+            ]
           },
           {
-            path: '/list/basic-list',
-            name: 'BasicList',
-            component: () => import('@/views/list/BasicList'),
-            meta: { title: '标准列表', keepAlive: true, permission: ['table'] }
+            path: '/budget/decompose',
+            name: 'BudgetDecompose',
+            component: RouteView,
+            redirect: '/budget/custom/detailed/list',
+            meta: { title: '成本预算分解', keepAlive: true, permission: ['budget'] },
+            children: [
+              {
+                path: '/budget/decompose/budget/list',
+                name: 'BudgetCustomDetailedList',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '行业预算表', keepAlive: true, permission: ['budget'] }
+              },
+              {
+                path: '/budget/decompose/budget/item/:id',
+                name: 'BudgetCustomDetailedItem',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '行业预算表', keepAlive: true, permission: ['budget'] }
+              },
+              {
+                path: '/budget/decompose/budget/item/:id',
+                name: 'BudgetCustomDetailedItem',
+                component: RouteView,
+                redirect: '/budget/custom/detailed/list',
+                meta: { title: '行业分判包', keepAlive: true, permission: ['budget'] }
+              },
+              {
+                path: '/budget/custom/detailed/item/:id',
+                name: 'BudgetCustomDetailedItem',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '招投标分判包及招标计划', keepAlive: true, permission: ['budget'] }
+              }
+            ]
           },
           {
             path: '/list/card',
