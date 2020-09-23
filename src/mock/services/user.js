@@ -195,8 +195,8 @@ const info = (options) => {
       'dataAccess': null
     }, {
       'roleId': 'admin',
-      'permissionId': 'order',
-      'permissionName': '订单管理',
+      'permissionId': 'budget',
+      'permissionName': '预算管理',
       'actions': '[{"action":"add","defaultCheck":false,"describe":"新增"},{"action":"query","defaultCheck":false,"describe":"查询"},{"action":"get","defaultCheck":false,"describe":"详情"},{"action":"update","defaultCheck":false,"describe":"修改"},{"action":"delete","defaultCheck":false,"describe":"删除"}]',
       'actionEntitySet': [{
         'action': 'add',
