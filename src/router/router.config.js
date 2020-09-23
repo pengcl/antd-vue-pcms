@@ -1,6 +1,5 @@
 // eslint-disable-next-line
-import {UserLayout, BasicLayout, BlankLayout} from '@/layouts'
-import { bxAnaalyse } from '@/core/icons'
+import {UserLayout, BasicLayout, BlankLayout} from '@/layouts';
 
 const RouteView = {
   name: 'RouteView',
@@ -22,7 +21,7 @@ export const asyncRouterMap = [
         name: 'dashboard',
         redirect: '/dashboard/tasks',
         component: RouteView,
-        meta: { title: 'menu.dashboard', keepAlive: true, icon: bxAnaalyse, permission: ['dashboard'] },
+        meta: { title: 'menu.dashboard', keepAlive: true, icon: 'menu', permission: ['dashboard'] },
         children: [
           {
             path: '/dashboard/tasks',
@@ -57,31 +56,73 @@ export const asyncRouterMap = [
             path: '/project/item/:id',
             name: 'ProjectItem',
             component: () => import('@/views/project/Item'),
-            meta: { title: '项目详情', keepAlive: true, permission: ['project'] }
-          }
-        ]
-      },
-
-      // list
-      {
-        path: '/list',
-        name: 'list',
-        component: RouteView,
-        redirect: '/list/table-list',
-        meta: { title: '列表页', icon: 'table', permission: ['table'] },
-        children: [
-          {
-            path: '/list/table-list/:pageNo([1-9]\\d*)?',
-            name: 'TableListWrapper',
-            hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
-            component: () => import('@/views/list/TableList'),
-            meta: { title: '查询表格', keepAlive: true, permission: ['table'] }
+            hidden: true,
+            meta: { title: '项目详情', keepAlive: false, permission: ['project'] }
           },
           {
-            path: '/list/basic-list',
-            name: 'BasicList',
-            component: () => import('@/views/list/BasicList'),
-            meta: { title: '标准列表', keepAlive: true, permission: ['table'] }
+            path: '/project/cost',
+            name: 'ProjectCost',
+            component: () => import('@/views/project/Cost'),
+            meta: { title: '业态成本中心', keepAlive: true, permission: ['project'] }
+          }
+        ]
+      }
+
+      // budget
+      /* {
+        path: '/budget',
+        name: 'budget',
+        component: RouteView,
+        redirect: '/budget/custom',
+        meta: { title: '成本预算管理', icon: 'table', permission: ['budget'] },
+        children: [
+          {
+            path: '/budget/custom',
+            name: 'BudgetCustom',
+            component: RouteView,
+            redirect: '/budget/custom/detailed/list',
+            meta: { title: '成本预算制定', keepAlive: true, permission: ['budget'] },
+            children: [
+              {
+                path: '/budget/custom/detailed/list',
+                name: 'BudgetCustomDetailedList',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '详细项目成本分类预算', keepAlive: true, permission: ['budget'] }
+              },
+              {
+                path: '/budget/custom/detailed/item/:id',
+                name: 'BudgetCustomDetailedItem',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '详细项目成本分类预算详情', keepAlive: true, permission: ['budget'] }
+              }
+            ]
+          },
+          {
+            path: '/budget/decompose',
+            name: 'BudgetDecompose',
+            component: RouteView,
+            redirect: '/budget/custom/detailed/list',
+            meta: { title: '成本预算分解', keepAlive: true, permission: ['budget'] },
+            children: [
+              {
+                path: '/budget/decompose/budget/list',
+                name: 'BudgetCustomDetailedList',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '行业预算表', keepAlive: true, permission: ['budget'] }
+              },
+              {
+                path: '/budget/decompose/budget/item/:id',
+                name: 'BudgetCustomDetailedItem',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '行业分判包', keepAlive: true, permission: ['budget'] }
+              },
+              {
+                path: '/budget/decompose/budget/item/:id',
+                name: 'BudgetCustomDetailedItem',
+                component: () => import('@/views/list/BasicList'),
+                meta: { title: '招投标分判包及招标计划', keepAlive: true, permission: ['budget'] }
+              }
+            ]
           },
           {
             path: '/list/card',
@@ -117,10 +158,10 @@ export const asyncRouterMap = [
             ]
           }
         ]
-      },
+      }, */
 
       // profile
-      {
+      /* {
         path: '/profile',
         name: 'profile',
         component: RouteView,
@@ -140,33 +181,33 @@ export const asyncRouterMap = [
             meta: { title: '高级详情页', permission: ['profile'] }
           }
         ]
-      },
+      }, */
 
       // result
-      {
+      /* {
         path: '/result',
         name: 'result',
         component: RouteView,
         redirect: '/result/success',
-        meta: { title: '结果页', icon: 'check-circle-o', permission: ['result'] },
+        meta: {title: '结果页', icon: 'check-circle-o', permission: ['result']},
         children: [
           {
             path: '/result/success',
             name: 'ResultSuccess',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
-            meta: { title: '成功', keepAlive: false, hiddenHeaderContent: true, permission: ['result'] }
+            component: () => import(/!* webpackChunkName: "result" *!/ '@/views/result/Success'),
+            meta: {title: '成功', keepAlive: false, hiddenHeaderContent: true, permission: ['result']}
           },
           {
             path: '/result/fail',
             name: 'ResultFail',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),
-            meta: { title: '失败', keepAlive: false, hiddenHeaderContent: true, permission: ['result'] }
+            component: () => import(/!* webpackChunkName: "result" *!/ '@/views/result/Error'),
+            meta: {title: '失败', keepAlive: false, hiddenHeaderContent: true, permission: ['result']}
           }
         ]
-      },
+      }, */
 
       // Exception
-      {
+      /* {
         path: '/exception',
         name: 'exception',
         component: RouteView,
@@ -176,80 +217,32 @@ export const asyncRouterMap = [
           {
             path: '/exception/403',
             name: 'Exception403',
-            component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/403'),
+            component: () => import(/!* webpackChunkName: "fail" *!/ '@/views/exception/403'),
             meta: { title: '403', permission: ['exception'] }
           },
           {
             path: '/exception/404',
             name: 'Exception404',
-            component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
+            component: () => import(/!* webpackChunkName: "fail" *!/ '@/views/exception/404'),
             meta: { title: '404', permission: ['exception'] }
           },
           {
             path: '/exception/500',
             name: 'Exception500',
-            component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/500'),
+            component: () => import(/!* webpackChunkName: "fail" *!/ '@/views/exception/500'),
             meta: { title: '500', permission: ['exception'] }
           }
         ]
-      },
+      }, */
 
       // account
-      {
+      /* {
         path: '/account',
         component: RouteView,
         redirect: '/account/center',
         name: 'account',
-        meta: { title: '个人页', icon: 'user', keepAlive: true, permission: ['user'] },
-        children: [
-          {
-            path: '/account/center',
-            name: 'center',
-            component: () => import('@/views/account/center/index'),
-            meta: { title: '个人中心', keepAlive: true, permission: ['user'] }
-          },
-          {
-            path: '/account/settings',
-            name: 'settings',
-            component: () => import('@/views/account/settings/Index'),
-            meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
-            redirect: '/account/settings/base',
-            hideChildrenInMenu: true,
-            children: [
-              {
-                path: '/account/settings/base',
-                name: 'BaseSettings',
-                component: () => import('@/views/account/settings/BaseSetting'),
-                meta: { title: '基本设置', hidden: true, permission: ['user'] }
-              },
-              {
-                path: '/account/settings/security',
-                name: 'SecuritySettings',
-                component: () => import('@/views/account/settings/Security'),
-                meta: { title: '安全设置', hidden: true, keepAlive: true, permission: ['user'] }
-              },
-              {
-                path: '/account/settings/custom',
-                name: 'CustomSettings',
-                component: () => import('@/views/account/settings/Custom'),
-                meta: { title: '个性化设置', hidden: true, keepAlive: true, permission: ['user'] }
-              },
-              {
-                path: '/account/settings/binding',
-                name: 'BindingSettings',
-                component: () => import('@/views/account/settings/Binding'),
-                meta: { title: '账户绑定', hidden: true, keepAlive: true, permission: ['user'] }
-              },
-              {
-                path: '/account/settings/notification',
-                name: 'NotificationSettings',
-                component: () => import('@/views/account/settings/Notification'),
-                meta: { title: '新消息通知', hidden: true, keepAlive: true, permission: ['user'] }
-              }
-            ]
-          }
-        ]
-      }
+        meta: { title: '个人页', icon: 'user', keepAlive: true, permission: ['user'] }
+      } */
 
       // other
       /*
