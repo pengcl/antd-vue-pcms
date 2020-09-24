@@ -13,7 +13,8 @@ function resolve (dir) {
 function getGitHash () {
   try {
     return GitRevision.version()
-  } catch (e) {}
+  } catch (e) {
+  }
   return 'unknown'
 }
 
@@ -91,8 +92,11 @@ const vueConfig = {
           // less vars，customize ant design theme
 
           // 'primary-color': '#F5222D',
-          // 'link-color': '#F5222D',
-          'border-radius-base': '2px'
+          'link-color': 'blue',
+          'border-radius-base': '2px',
+          'border-color-split': '#ccc',
+          'table-selected-row-bg': '#F5F5F5',
+          'table-footer-bg': '#F5F5F5'
         },
         // DO NOT REMOVE THIS LINE
         javascriptEnabled: true
