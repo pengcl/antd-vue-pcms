@@ -23,15 +23,23 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="primary" @click="handleAdd">搜索</a-button>
+        <a-button type="success" @click="handleAdd">搜索</a-button>
+        <a-button type="success" @click="handleAdd">批量同意</a-button>
         <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
-            <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+            <a-menu-item key="1">
+              <a-icon type="delete"/>
+              删除
+            </a-menu-item>
             <!-- lock | unlock -->
-            <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
+            <a-menu-item key="2">
+              <a-icon type="lock"/>
+              锁定
+            </a-menu-item>
           </a-menu>
           <a-button style="margin-left: 8px">
-            批量操作 <a-icon type="down" />
+            批量操作
+            <a-icon type="down"/>
           </a-button>
         </a-dropdown>
       </div>
@@ -42,25 +50,18 @@
         rowKey="key"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="false"
         :rowSelection="rowSelection"
+        :class="'no-border'"
         showPagination="auto"
       >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+        <span slot="description" slot-scope="text" v-html="text">
+          {{ text }}
         </span>
 
-        <span slot="action" slot-scope="text, record">
+        <span slot="action" slot-scope="record">
           <template>
-            <a @click="handleEdit(record)">配置</a>
-            <a-divider type="vertical" />
-            <a @click="handleSub(record)">订阅报警</a>
+            <a-button icon="form" @click="handleEdit(record)" type="primary"></a-button>
           </template>
         </span>
       </s-table>
@@ -88,34 +89,9 @@
 
   const columns = [
     {
-      title: '#',
-      scopedSlots: { customRender: 'serial' }
-    },
-    {
-      title: '规则编号',
-      dataIndex: 'no'
-    },
-    {
-      title: '描述',
+      title: '项目',
       dataIndex: 'description',
       scopedSlots: { customRender: 'description' }
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      needTotal: true,
-      customRender: (text) => text + ' 次'
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      scopedSlots: { customRender: 'status' }
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updatedAt',
-      sorter: true
     },
     {
       title: '操作',
@@ -125,27 +101,8 @@
     }
   ]
 
-  const statusMap = {
-    0: {
-      status: 'default',
-      text: '关闭'
-    },
-    1: {
-      status: 'processing',
-      text: '运行中'
-    },
-    2: {
-      status: 'success',
-      text: '已上线'
-    },
-    3: {
-      status: 'error',
-      text: '异常'
-    }
-  }
-
   export default {
-    name: 'TableList',
+    name: 'TaskList',
     components: {
       STable,
       Ellipsis,
@@ -176,14 +133,7 @@
         selectedRows: []
       }
     },
-    filters: {
-      statusFilter (type) {
-        return statusMap[type].text
-      },
-      statusTypeFilter (type) {
-        return statusMap[type].status
-      }
-    },
+    filters: {},
     created () {
       getRoleList({ t: new Date() })
     },
@@ -276,3 +226,39 @@
     }
   }
 </script>
+<style lang="less" scoped>
+  /deep/ .row {
+    display: flex;
+    font-weight: 400;
+    color: #333;
+    font-family: Microsoft Sans Serif,'微軟正黑體','微软正黑体'!important;
+    .col-lg-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    .col-lg-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    .btn-sm, .btn-group-sm > .btn {
+      padding: 7px 10px;
+      line-height: 1;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+    .btn-primary {
+      border-color: #3A44E1!important;
+      color: #FFF;
+      background-color: #666EE8!important;
+      box-sizing: content-box;
+    }
+    .btn-warning, .color-info.warning {
+      background-color: #FF9149!important;
+      border-color: #FF7216!important;
+      color: #FFF;
+    }
+  }
+  /deep/ .text-height {
+    margin-top: 15px;
+  }
+</style>
