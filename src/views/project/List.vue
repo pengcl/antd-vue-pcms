@@ -4,32 +4,24 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="12" :sm="24">
+            <a-col :md="8" :sm="24">
               <a-button class="btn-success" type="primary">新增项目</a-button>
-              <a-button type="primary" class="btn-info" style="margin-left: 4px">
-                <a-icon type="search"></a-icon>
-              </a-button>
             </a-col>
-            <a-col :md="12" :sm="24">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="城市">
+                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
+                  <a-select-option value="0">深圳</a-select-option>
+                  <a-select-option value="1">广州</a-select-option>
+                  <a-select-option value="2">珠海</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
               <a-button class="btn-info" type="primary" style="float: right">汇出</a-button>
             </a-col>
           </a-row>
         </a-form>
       </div>
-
-      <!--<div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
-        <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-            &lt;!&ndash; lock | unlock &ndash;&gt;
-            <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px">
-            批量操作 <a-icon type="down" />
-          </a-button>
-        </a-dropdown>
-      </div>-->
 
       <s-table
         style="margin-top: 5px"
@@ -52,11 +44,14 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action" slot-scope="text, record">
+        <span slot="action">
           <template>
-            <a @click="handleEdit(record)">配置</a>
-            <a-divider type="vertical"/>
-            <a @click="handleSub(record)">订阅报警</a>
+            <a-button class="btn-success" type="primary" icon="file-text" title="查看">
+            </a-button>
+            <a-button type="primary" class="btn-info" icon="form" style="margin-left: 4px" title="编辑">
+            </a-button>
+            <a-button type="primary" class="btn-info" icon="plus-square" style="margin-left: 4px" title="新增分期">
+            </a-button>
           </template>
         </span>
       </s-table>
