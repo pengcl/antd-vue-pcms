@@ -13,6 +13,10 @@ const locale = {
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.tasks': 'Tasks',
   'menu.dashboard.participate': 'Participate',
+  'menu.project': 'Project',
+  'menu.project.list': 'Projects',
+  'menu.project.item': 'Project detail',
+  'menu.project.cost': 'Project cost',
 
   'layouts.usermenu.dialog.title': 'Message',
   'layouts.usermenu.dialog.content': 'Do you really log-out.',

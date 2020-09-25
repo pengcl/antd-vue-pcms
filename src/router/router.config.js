@@ -44,26 +44,56 @@ export const asyncRouterMap = [
         name: 'project',
         redirect: '/project/list',
         component: RouteView,
-        meta: { title: '项目信息', icon: 'form', permission: ['project'] },
+        meta: { title: 'menu.project', icon: 'form', permission: ['project'] },
         children: [
           {
             path: '/project/list',
             name: 'ProjectList',
             component: () => import('@/views/project/List'),
-            meta: { title: '项目列表', keepAlive: true, permission: ['project'] }
+            meta: { title: 'menu.project.list', keepAlive: true, permission: ['project'] }
           },
           {
             path: '/project/item/:id',
             name: 'ProjectItem',
             component: () => import('@/views/project/Item'),
             hidden: true,
-            meta: { title: '项目详情', keepAlive: false, permission: ['project'] }
+            meta: { title: 'menu.project.item', keepAlive: false, permission: ['project'] }
           },
           {
             path: '/project/cost',
             name: 'ProjectCost',
             component: () => import('@/views/project/Cost'),
-            meta: { title: '业态成本中心', keepAlive: true, permission: ['project'] }
+            meta: { title: 'menu.project.cost', keepAlive: true, permission: ['project'] }
+          }
+        ]
+      },
+      // project
+      {
+        path: '/contract',
+        name: 'contract',
+        redirect: '/contract/list',
+        component: RouteView,
+        meta: { title: '合同管理', icon: 'form', permission: ['contract'] },
+        children: [
+          {
+            path: '/contract/list',
+            name: 'ContractList',
+            component: () => import('@/views/contract/List'),
+            meta: { title: '合同列表', keepAlive: true, permission: ['contract'] }
+          },
+          {
+            path: '/contract/item/:id',
+            name: 'ContractItem',
+            component: () => import('@/views/contract/Item'),
+            hidden: true,
+            meta: { title: '合同详情', keepAlive: false, permission: ['contract'] }
+          },
+          {
+            path: '/contract/edit/:id',
+            name: 'ContractEdit',
+            hidden: true,
+            component: () => import('@/views/contract/Edit'),
+            meta: { title: '合同编辑', keepAlive: true, permission: ['contract'] }
           }
         ]
       }
