@@ -102,7 +102,7 @@
   ]
 
   export default {
-    name: 'TaskList',
+    name: 'Tasks',
     components: {
       STable,
       Ellipsis,

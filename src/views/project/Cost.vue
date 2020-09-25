@@ -117,7 +117,7 @@
         },
         {
             title: '创建日期',
-            dataIndex: 'updatedAt'
+            dataIndex: 'createAt'
         },
         {
             title: '最后更新者',

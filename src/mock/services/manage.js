@@ -56,6 +56,7 @@ const serverList = (options) => {
 </td>`,
       callNo: Mock.mock('@integer(1, 999)'),
       status: Mock.mock('@integer(0, 3)'),
+      createAt: Mock.mock('@datetime'),
       updatedAt: Mock.mock('@datetime'),
       editable: false
     })

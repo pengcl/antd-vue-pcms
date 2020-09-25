@@ -1,389 +1,302 @@
 <template>
-  <page-header-wrapper>
-    <!--<template v-slot:content>
-      <div class="page-header-content">
-        <div class="avatar">
-          <a-avatar size="large" :src="currentUser.avatar"/>
-        </div>
-        <div class="content">
-          <div class="content-title">
-            {{ timeFix }}，{{ user.name }}<span class="welcome-text">，{{ welcome }}</span>
-          </div>
-          <div>前端工程师 | 蚂蚁金服 - 某某某事业群 - VUE平台</div>
-        </div>
+  <page-header-wrapper :property="{}">
+    <a-card :bordered="false">
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="12" :sm="24">
+              <a-form-item label="使用状态">
+                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
+                  <a-select-option value="0">全部</a-select-option>
+                  <a-select-option value="1">关闭</a-select-option>
+                  <a-select-option value="2">运行中</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="24" :sm="24">
+              <a-form-item label="关键词">
+                <a-input v-model="queryParam.id" placeholder=""/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
       </div>
-    </template>-->
-    <!--<template v-slot:extraContent>
-      <div class="extra-content">
-        <div class="stat-item">
-          <a-statistic title="项目数" :value="56" />
-        </div>
-        <div class="stat-item">
-          <a-statistic title="团队内排名" :value="8" suffix="/ 24" />
-        </div>
-        <div class="stat-item">
-          <a-statistic title="项目访问" :value="2223" />
-        </div>
+
+      <div class="table-operator">
+        <a-button type="success" @click="handleAdd">搜索</a-button>
+        <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
+          <a-menu slot="overlay">
+            <a-menu-item key="1">
+              <a-icon type="delete"/>
+              删除
+            </a-menu-item>
+            <!-- lock | unlock -->
+            <a-menu-item key="2">
+              <a-icon type="lock"/>
+              锁定
+            </a-menu-item>
+          </a-menu>
+          <a-button style="margin-left: 8px">
+            批量操作
+            <a-icon type="down"/>
+          </a-button>
+        </a-dropdown>
       </div>
-    </template>-->
 
-    <div>
-      <a-row :gutter="24">
-        <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
-          <a-card
-            class="project-list"
-            :loading="loading"
-            style="margin-bottom: 24px;"
-            :bordered="false"
-            title="进行中的项目"
-            :body-style="{ padding: 0 }">
-            <a slot="extra">全部项目</a>
-            <div>
-              <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in projects">
-                <a-card :bordered="false" :body-style="{ padding: 0 }">
-                  <a-card-meta>
-                    <div slot="title" class="card-title">
-                      <a-avatar size="small" :src="item.cover"/>
-                      <a>{{ item.title }}</a>
-                    </div>
-                    <div slot="description" class="card-description">
-                      {{ item.description }}
-                    </div>
-                  </a-card-meta>
-                  <div class="project-item">
-                    <a href="/#/">科学搬砖组</a>
-                    <span class="datetime">9小时前</span>
-                  </div>
-                </a-card>
-              </a-card-grid>
-            </div>
-          </a-card>
+      <s-table
+        style="margin-top: 5px"
+        ref="table"
+        size="default"
+        rowKey="key"
+        bordered
+        :columns="columns"
+        :data="loadData"
+        :alert="false"
+        showPagination="auto"
+      >
+        <span slot="status" slot-scope="text">
+          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
+        </span>
+        <span slot="description" slot-scope="text">
+          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+        </span>
 
-          <a-card :loading="loading" title="动态" :bordered="false">
-            <a-list>
-              <a-list-item :key="index" v-for="(item, index) in activities">
-                <a-list-item-meta>
-                  <a-avatar slot="avatar" :src="item.user.avatar"/>
-                  <div slot="title">
-                    <span>{{ item.user.nickname }}</span>&nbsp;
-                    在&nbsp;<a href="#">{{ item.project.name }}</a>&nbsp;
-                    <span>{{ item.project.action }}</span>&nbsp;
-                    <a href="#">{{ item.project.event }}</a>
-                  </div>
-                  <div slot="description">{{ item.time }}</div>
-                </a-list-item-meta>
-              </a-list-item>
-            </a-list>
-          </a-card>
-        </a-col>
-        <a-col
-          style="padding: 0 12px"
-          :xl="8"
-          :lg="24"
-          :md="24"
-          :sm="24"
-          :xs="24">
-          <a-card title="快速开始 / 便捷导航" style="margin-bottom: 24px" :bordered="false" :body-style="{padding: 0}">
-            <div class="item-group">
-              <a>操作一</a>
-              <a>操作二</a>
-              <a>操作三</a>
-              <a>操作四</a>
-              <a>操作五</a>
-              <a>操作六</a>
-              <a-button size="small" type="primary" ghost icon="plus">添加</a-button>
-            </div>
-          </a-card>
-          <a-card
-            title="XX 指数"
-            style="margin-bottom: 24px"
-            :loading="radarLoading"
-            :bordered="false"
-            :body-style="{ padding: 0 }">
-            <div style="min-height: 400px;">
-              <!-- :scale="scale" :axis1Opts="axis1Opts" :axis2Opts="axis2Opts"  -->
-              <radar :data="radarData"/>
-            </div>
-          </a-card>
-          <a-card :loading="loading" title="团队" :bordered="false">
-            <div class="members">
-              <a-row>
-                <a-col :span="12" v-for="(item, index) in teams" :key="index">
-                  <a>
-                    <a-avatar size="small" :src="item.avatar"/>
-                    <span class="member">{{ item.name }}</span>
-                  </a>
-                </a-col>
-              </a-row>
-            </div>
-          </a-card>
-        </a-col>
-      </a-row>
-    </div>
+        <span slot="action">
+          <template>
+            <a-button class="btn-success" type="primary" icon="file-text" title="查看">
+            </a-button>
+          </template>
+        </span>
+      </s-table>
+
+      <create-form
+        ref="createModal"
+        :visible="visible"
+        :loading="confirmLoading"
+        :model="mdl"
+        @cancel="handleCancel"
+        @ok="handleOk"
+      />
+      <step-by-step-modal ref="modal" @ok="handleOk"/>
+    </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-import { timeFix } from '@/utils/util'
-import { mapState } from 'vuex'
-import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
-import { Radar } from '@/components'
+  import moment from 'moment'
+  import { STable, Ellipsis } from '@/components'
+  import { getRoleList, getServiceList } from '@/api/manage'
 
-import { getRoleList, getServiceList } from '@/api/manage'
+  import StepByStepModal from '@/views/list/modules/StepByStepModal'
+  import CreateForm from '@/views/list/modules/CreateForm'
 
-const DataSet = require('@antv/data-set')
-
-export default {
-  name: 'Participate',
-  components: {
-    PageHeaderWrapper,
-    Radar
-  },
-  data () {
-    return {
-      timeFix: timeFix(),
-      avatar: '',
-      user: {},
-
-      projects: [],
-      loading: true,
-      radarLoading: true,
-      activities: [],
-      teams: [],
-
-      // data
-      axis1Opts: {
-        dataKey: 'item',
-        line: null,
-        tickLine: null,
-        grid: {
-          lineStyle: {
-            lineDash: null
-          },
-          hideFirstLine: false
-        }
-      },
-      axis2Opts: {
-        dataKey: 'score',
-        line: null,
-        tickLine: null,
-        grid: {
-          type: 'polygon',
-          lineStyle: {
-            lineDash: null
-          }
-        }
-      },
-      scale: [{
-        dataKey: 'score',
-        min: 0,
-        max: 80
-      }],
-      axisData: [
-        { item: '引用', a: 70, b: 30, c: 40 },
-        { item: '口碑', a: 60, b: 70, c: 40 },
-        { item: '产量', a: 50, b: 60, c: 40 },
-        { item: '贡献', a: 40, b: 50, c: 40 },
-        { item: '热度', a: 60, b: 70, c: 40 },
-        { item: '引用', a: 70, b: 50, c: 40 }
-      ],
-      radarData: []
+  const columns = [
+    {
+      title: '操作',
+      dataIndex: 'action',
+      width: '32px',
+      scopedSlots: { customRender: 'action' }
+    },
+    {
+      title: '项目编号',
+      dataIndex: 'no'
+    },
+    {
+      title: '房产项目名称',
+      dataIndex: 'description',
+      scopedSlots: { customRender: 'description' }
+    },
+    {
+      title: '地区',
+      dataIndex: 'callNo',
+      scopedSlots: { customRender: 'callNo' }
+    },
+    {
+      title: '城市',
+      dataIndex: 'city',
+      scopedSlots: { customRender: 'city' }
+    },
+    {
+      title: '项目状态',
+      dataIndex: 'status',
+      scopedSlots: { customRender: 'status' }
+    },
+    {
+      title: '审批状态',
+      dataIndex: 'approvalStatus',
+      scopedSlots: { customRender: 'approvalStatus' }
+    },
+    {
+      title: '创建者',
+      dataIndex: 'creator',
+      scopedSlots: { customRender: 'creator' }
+    },
+    {
+      title: '创建日期',
+      dataIndex: 'createAt'
+    },
+    {
+      title: '最后更新者',
+      dataIndex: 'updater',
+      scopedSlots: { customRender: 'updater' }
+    },
+    {
+      title: '最后更新日期',
+      dataIndex: 'updatedAt'
     }
-  },
-  computed: {
-    ...mapState({
-      nickname: (state) => state.user.nickname,
-      welcome: (state) => state.user.welcome
-    }),
-    currentUser () {
+  ]
+
+  const statusMap = {
+    0: {
+      status: 'default',
+      text: '关闭'
+    },
+    1: {
+      status: 'processing',
+      text: '运行中'
+    },
+    2: {
+      status: 'success',
+      text: '已上线'
+    },
+    3: {
+      status: 'error',
+      text: '异常'
+    }
+  }
+
+  export default {
+    name: 'Participate',
+    components: {
+      STable,
+      Ellipsis,
+      CreateForm,
+      StepByStepModal
+    },
+    data () {
+      this.columns = columns
       return {
-        name: 'Serati Ma',
-        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
+        // create model
+        visible: false,
+        confirmLoading: false,
+        mdl: null,
+        // 高级搜索 展开/关闭
+        advanced: false,
+        // 查询参数
+        queryParam: {},
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          console.log('loadData request parameters:', requestParameters)
+          return getServiceList(requestParameters)
+            .then(res => {
+              return res.result
+            })
+        },
+        selectedRowKeys: [],
+        selectedRows: []
       }
     },
-    userInfo () {
-      return this.$store.getters.userInfo
-    }
-  },
-  created () {
-    this.user = this.userInfo
-    this.avatar = this.userInfo.avatar
-
-    getRoleList().then(res => {
-      // console.log('workplace -> call getRoleList()', res)
-    })
-
-    getServiceList().then(res => {
-      // console.log('workplace -> call getServiceList()', res)
-    })
-  },
-  mounted () {
-    this.getProjects()
-    this.getActivity()
-    this.getTeams()
-    this.initRadar()
-  },
-  methods: {
-    getProjects () {
-      this.$http.get('/list/search/projects')
-        .then(res => {
-          this.projects = res.result && res.result.data
-          this.loading = false
-        })
+    filters: {
+      statusFilter (type) {
+        return statusMap[type].text
+      },
+      statusTypeFilter (type) {
+        return statusMap[type].status
+      }
     },
-    getActivity () {
-      this.$http.get('/workplace/activity')
-        .then(res => {
-          this.activities = res.result
-        })
+    created () {
+      getRoleList({ t: new Date() })
     },
-    getTeams () {
-      this.$http.get('/workplace/teams')
-        .then(res => {
-          this.teams = res.result
-        })
+    computed: {
+      rowSelection () {
+        return {
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange
+        }
+      }
     },
-    initRadar () {
-      this.radarLoading = true
+    methods: {
+      handleAdd () {
+        this.mdl = null
+        this.visible = true
+      },
+      handleEdit (record) {
+        this.visible = true
+        this.mdl = { ...record }
+      },
+      handleOk () {
+        const form = this.$refs.createModal.form
+        this.confirmLoading = true
+        form.validateFields((errors, values) => {
+          if (!errors) {
+            console.log('values', values)
+            if (values.id > 0) {
+              // 修改 e.g.
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  resolve()
+                }, 1000)
+              }).then(res => {
+                this.visible = false
+                this.confirmLoading = false
+                // 重置表单数据
+                form.resetFields()
+                // 刷新表格
+                this.$refs.table.refresh()
 
-      this.$http.get('/workplace/radar')
-        .then(res => {
-          const dv = new DataSet.View().source(res.result)
-          dv.transform({
-            type: 'fold',
-            fields: ['个人', '团队', '部门'],
-            key: 'user',
-            value: 'score'
-          })
+                this.$message.info('修改成功')
+              })
+            } else {
+              // 新增
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  resolve()
+                }, 1000)
+              }).then(res => {
+                this.visible = false
+                this.confirmLoading = false
+                // 重置表单数据
+                form.resetFields()
+                // 刷新表格
+                this.$refs.table.refresh()
 
-          this.radarData = dv.rows
-          this.radarLoading = false
+                this.$message.info('新增成功')
+              })
+            }
+          } else {
+            this.confirmLoading = false
+          }
         })
+      },
+      handleCancel () {
+        this.visible = false
+
+        const form = this.$refs.createModal.form
+        form.resetFields() // 清理表单数据（可不做）
+      },
+      handleSub (record) {
+        if (record.status !== 0) {
+          this.$message.info(`${record.no} 订阅成功`)
+        } else {
+          this.$message.error(`${record.no} 订阅失败，规则已关闭`)
+        }
+      },
+      onSelectChange (selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys
+        this.selectedRows = selectedRows
+      },
+      toggleAdvanced () {
+        this.advanced = !this.advanced
+      },
+      resetSearchForm () {
+        this.queryParam = {
+          date: moment(new Date())
+        }
+      }
     }
   }
-}
 </script>
-
 <style lang="less" scoped>
-  @import "./Participate.less";
-
-  .project-list {
-
-    .card-title {
-      font-size: 0;
-
-      a {
-        color: rgba(0, 0, 0, 0.85);
-        margin-left: 12px;
-        line-height: 24px;
-        height: 24px;
-        display: inline-block;
-        vertical-align: top;
-        font-size: 14px;
-
-        &:hover {
-          color: #1890ff;
-        }
-      }
-    }
-
-    .card-description {
-      color: rgba(0, 0, 0, 0.45);
-      height: 44px;
-      line-height: 22px;
-      overflow: hidden;
-    }
-
-    .project-item {
-      display: flex;
-      margin-top: 8px;
-      overflow: hidden;
-      font-size: 12px;
-      height: 20px;
-      line-height: 20px;
-
-      a {
-        color: rgba(0, 0, 0, 0.45);
-        display: inline-block;
-        flex: 1 1 0;
-
-        &:hover {
-          color: #1890ff;
-        }
-      }
-
-      .datetime {
-        color: rgba(0, 0, 0, 0.25);
-        flex: 0 0 auto;
-        float: right;
-      }
-    }
-
-    .ant-card-meta-description {
-      color: rgba(0, 0, 0, 0.45);
-      height: 44px;
-      line-height: 22px;
-      overflow: hidden;
-    }
-  }
-
-  .item-group {
-    padding: 20px 0 8px 24px;
-    font-size: 0;
-
-    a {
-      color: rgba(0, 0, 0, 0.65);
-      display: inline-block;
-      font-size: 14px;
-      margin-bottom: 13px;
-      width: 25%;
-    }
-  }
-
-  .members {
-    a {
-      display: block;
-      margin: 12px 0;
-      line-height: 24px;
-      height: 24px;
-
-      .member {
-        font-size: 14px;
-        color: rgba(0, 0, 0, .65);
-        line-height: 24px;
-        max-width: 100px;
-        vertical-align: top;
-        margin-left: 12px;
-        transition: all 0.3s;
-        display: inline-block;
-      }
-
-      &:hover {
-        span {
-          color: #1890ff;
-        }
-      }
-    }
-  }
-
-  .mobile {
-
-    .project-list {
-
-      .project-card-grid {
-        width: 100%;
-      }
-    }
-
-    .more-info {
-      border: 0;
-      padding-top: 16px;
-      margin: 16px 0 16px;
-    }
-
-    .headerContent .title .welcome-text {
-      display: none;
-    }
-  }
-
+  /*/deep/*/
 </style>
