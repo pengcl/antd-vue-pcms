@@ -73,7 +73,7 @@ export const asyncRouterMap = [
         name: 'contract',
         redirect: '/contract/list',
         component: RouteView,
-        meta: { title: '合同管理', icon: 'form', permission: ['contract'] },
+        meta: { title: '合同管理', icon: 'transaction', permission: ['contract'] },
         children: [
           {
             path: '/contract/list',

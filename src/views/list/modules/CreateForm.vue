@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="新建规则"
+    title="搜索"
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
@@ -13,8 +13,21 @@
         <a-form-item v-show="model && model.id > 0" label="主键ID">
           <a-input v-decorator="['id', { initialValue: 0 }]" disabled />
         </a-form-item>
-        <a-form-item label="描述">
+        <a-form-item label="合同编号">
           <a-input v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]" />
+        </a-form-item>
+        <a-form-item label="合同名称">
+          <a-input></a-input>
+        </a-form-item>
+        <a-form-item label="供应商名称">
+          <a-input></a-input>
+        </a-form-item>
+        <a-form-item label="提交状态">
+          <a-select placeholder="请选择" default-value="0">
+            <a-select-option value="0">草拟中</a-select-option>
+            <a-select-option value="1">审批中</a-select-option>
+            <a-select-option value="2">已取消</a-select-option>
+          </a-select>
         </a-form-item>
       </a-form>
     </a-spin>
