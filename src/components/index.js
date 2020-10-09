@@ -24,6 +24,8 @@ import IconSelector from '@/components/IconSelector'
 import TagSelect from '@/components/TagSelect'
 import StandardFormRow from '@/components/StandardFormRow'
 import ArticleListContent from '@/components/ArticleListContent'
+import FooterToolBar from '@/components/FooterToolbar/FooterToolBar'
+import AutoComplete from 'ant-design-vue/lib/auto-complete'
 
 import Dialog from '@/components/Dialog'
 
@@ -51,6 +53,8 @@ export {
   TagSelect,
   StandardFormRow,
   ArticleListContent,
+  FooterToolBar,
+  AutoComplete,
 
   Dialog
 }

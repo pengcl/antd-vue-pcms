@@ -60,14 +60,21 @@ export const asyncRouterMap = [
             meta: { title: 'menu.project.item', keepAlive: false, permission: ['project'] }
           },
           {
-            path: '/project/cost',
-            name: 'ProjectCost',
-            component: () => import('@/views/project/Cost'),
-            meta: { title: 'menu.project.cost', keepAlive: true, permission: ['project'] }
+            path: '/project/cost/list',
+            name: 'ProjectCostList',
+            component: () => import('@/views/project/cost/List'),
+            meta: { title: 'menu.project.cost.list', keepAlive: true, permission: ['project'] }
+          },
+          {
+            path: '/project/cost/item/:id',
+            name: 'ProjectCostItem',
+            component: () => import('@/views/project/cost/Item'),
+            hidden: true,
+            meta: { title: 'menu.project.cost.item', keepAlive: true, permission: ['project'] }
           }
         ]
       },
-      // project
+      // contract
       {
         path: '/contract',
         name: 'contract',
@@ -103,7 +110,7 @@ export const asyncRouterMap = [
         redirect: '/change/pmi',
         component: RouteView,
         meta: { title: '变更及成本管控', icon: 'transaction', permission: ['change'] },
-        children:[
+        children: [
           {
             path: '/change/pmi',
             name: 'ChangePmi',
