@@ -100,7 +100,7 @@ export const asyncRouterMap = [
             name: 'ContractEdit',
             hidden: true,
             component: () => import('@/views/contract/Edit'),
-            meta: { title: '合同编辑', keepAlive: true, permission: ['contract'] }
+            meta: { title: 'menu.contract.edit', keepAlive: true, permission: ['contract'] }
           }
         ]
       },
@@ -109,25 +109,53 @@ export const asyncRouterMap = [
         name: 'change',
         redirect: '/change/pmi',
         component: RouteView,
-        meta: { title: '变更及成本管控', icon: 'transaction', permission: ['change'] },
+        meta: { title: 'menu.change', icon: 'transaction', permission: ['change'] },
         children: [
           {
             path: '/change/pmi',
             name: 'ChangePmi',
             component: () => import('@/views/change/Pmi'),
-            meta: { title: 'PMI', keepAlive: true, permission: ['change'] }
+            meta: { title: 'menu.change.pmi', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/cip',
-            name: 'ChangeCip',
-            component: () => import('@/views/change/Cip'),
-            meta: { title: 'CIP', keepAlive: true, permission: ['change'] }
+            path: '/change/cip/list',
+            name: 'ChangeCipList',
+            component: () => import('@/views/change/cip/List'),
+            meta: { title: 'menu.change.cip.list', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/vo',
-            name: 'ChangeVo',
-            component: () => import('@/views/change/Vo'),
-            meta: { title: 'Vo', keepAlive: true, permission: ['change'] }
+            path: '/change/cip/item/:id',
+            name: 'ChangeCipItem',
+            hidden: true,
+            component: () => import('@/views/change/cip/Item'),
+            meta: { title: 'menu.change.cip.item', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/cip/edit/:id',
+            name: 'ChangeCipEdit',
+            hidden: true,
+            component: () => import('@/views/change/cip/Edit'),
+            meta: { title: 'menu.change.cip.edit', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/vo/list',
+            name: 'ChangeVoList',
+            component: () => import('@/views/change/vo/List'),
+            meta: { title: 'menu.change.vo.list', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/vo/item/:id',
+            name: 'ChangeVoItem',
+            hidden: true,
+            component: () => import('@/views/change/vo/Item'),
+            meta: { title: 'menu.change.vo.item', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/vo/edit/:id',
+            name: 'ChangeVoEdit',
+            hidden: true,
+            component: () => import('@/views/change/vo/Edit'),
+            meta: { title: 'menu.change.vo.edit', keepAlive: true, permission: ['change'] }
           }
         ]
       }
