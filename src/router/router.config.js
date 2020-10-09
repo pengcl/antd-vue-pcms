@@ -96,6 +96,33 @@ export const asyncRouterMap = [
             meta: { title: '合同编辑', keepAlive: true, permission: ['contract'] }
           }
         ]
+      },
+      {
+        path: '/change',
+        name: 'change',
+        redirect: '/change/pmi',
+        component: RouteView,
+        meta: { title: '变更及成本管控', icon: 'transaction', permission: ['change'] },
+        children:[
+          {
+            path: '/change/pmi',
+            name: 'ChangePmi',
+            component: () => import('@/views/change/Pmi'),
+            meta: { title: 'PMI', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/cip',
+            name: 'ChangeCip',
+            component: () => import('@/views/change/Cip'),
+            meta: { title: 'CIP', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/vo',
+            name: 'ChangeVo',
+            component: () => import('@/views/change/Vo'),
+            meta: { title: 'Vo', keepAlive: true, permission: ['change'] }
+          }
+        ]
       }
 
       // budget
