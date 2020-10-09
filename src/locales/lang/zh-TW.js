@@ -16,7 +16,10 @@ const locale = {
   'menu.project': '项目管理',
   'menu.project.list': '项目列表',
   'menu.project.item': '项目详情',
-  'menu.project.cost': '业态成本中心'
+  'menu.project.cost': '业态成本中心',
+  'menu.contract': '合同管理',
+  'menu.contract.list': '合同列表',
+  'menu.contract.item': '合同详情'
 }
 
 export default {

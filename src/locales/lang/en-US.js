@@ -17,6 +17,9 @@ const locale = {
   'menu.project.list': 'Projects',
   'menu.project.item': 'Project detail',
   'menu.project.cost': 'Project cost',
+  'menu.contract': 'Contract',
+  'menu.contract.list': 'Contracts',
+  'menu.contract.item': 'Contract detail',
 
   'layouts.usermenu.dialog.title': 'Message',
   'layouts.usermenu.dialog.content': 'Do you really log-out.',

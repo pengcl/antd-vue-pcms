@@ -73,20 +73,20 @@ export const asyncRouterMap = [
         name: 'contract',
         redirect: '/contract/list',
         component: RouteView,
-        meta: { title: '合同管理', icon: 'transaction', permission: ['contract'] },
+        meta: { title: 'menu.contract', icon: 'transaction', permission: ['contract'] },
         children: [
           {
             path: '/contract/list',
             name: 'ContractList',
             component: () => import('@/views/contract/List'),
-            meta: { title: '合同列表', keepAlive: true, permission: ['contract'] }
+            meta: { title: 'menu.contract.list', keepAlive: true, permission: ['contract'] }
           },
           {
             path: '/contract/item/:id',
             name: 'ContractItem',
             component: () => import('@/views/contract/Item'),
             hidden: true,
-            meta: { title: '合同详情', keepAlive: false, permission: ['contract'] }
+            meta: { title: 'menu.contract.item', keepAlive: false, permission: ['contract'] }
           },
           {
             path: '/contract/edit/:id',
