@@ -37,6 +37,12 @@ const constantRouterComponents = {
   'ChangeVoEdit': () => import('@/views/change/vo/Edit'),
   'ChangeVoItem': () => import('@/views/change/vo/Item'),
 
+  // cost
+  'CostEnactList': () => import('@/views/cost/enact/List'),
+  'CostResolveList': () => import('@/views/cost/resolve/List'),
+  'CostIndustryList': () => import('@/views/cost/industry/List'),
+  'CostBidList': () => import('@/views/cost/bid/List'),
+
   // list
   'TableList': () => import('@/views/list/TableList'),
   'StandardList': () => import('@/views/list/BasicList'),

@@ -30,6 +30,11 @@ const locale = {
   'menu.change.vo.list': 'VO',
   'menu.change.vo.item': 'VO detail',
   'menu.change.vo.edit': 'VO edit',
+  'menu.cost': 'Costs',
+  'menu.cost.enact.list': 'Enact',
+  'menu.cost.resolve.list': 'Resolve',
+  'menu.cost.industry.list': 'Industry',
+  'menu.cost.bid.list': 'Bid',
 
   'layouts.usermenu.dialog.title': 'Message',
   'layouts.usermenu.dialog.content': 'Do you really log-out.',
