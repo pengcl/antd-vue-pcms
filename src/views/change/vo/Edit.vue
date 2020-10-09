@@ -1,0 +1,90 @@
+<template>
+  <page-header-wrapper>
+    <a-card :bordered="false">
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="24" :sm="24">
+              <a-form-item label="项目编码">
+                HZO-HZ4
+              </a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="房产项目名称(中文)">
+                珠海中心 L1
+              </a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="房产项目名称(英文)">
+                Zhuhai shopping mall L1
+              </a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="中央合同编号">
+                C-HZO-HZ4-ORG-14
+              </a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="本地合同编号">
+                CON0001
+              </a-form-item>
+            </a-col>
+            <a-col :md="24" :sm="24">
+              <a-form-item label="合同名称">
+                20200909
+              </a-form-item>
+            </a-col>
+            <a-col :md="24" :sm="24">
+              <a-form-item label="编号">
+              </a-form-item>
+            </a-col>
+            <a-col :md="24" :sm="24">
+              <a-form-item label="状态">
+                草拟中 (1.6)
+              </a-form-item>
+            </a-col>
+          </a-row>
+
+          <a-tabs default-active-key="1">
+            <a-tab-pane key="1" tab="基本资料">
+              Content of Tab Pane 1
+            </a-tab-pane>
+            <a-tab-pane key="2" tab="造价估算">
+              Content of Tab Pane 2
+            </a-tab-pane>
+            <a-tab-pane key="3" tab="预算调整">
+              Content of Tab Pane 3
+            </a-tab-pane>
+            <a-tab-pane key="4" tab="附加资料">
+              Content of Tab Pane 1
+            </a-tab-pane>
+            <a-tab-pane key="5" tab="附件">
+              Content of Tab Pane 2
+            </a-tab-pane>
+            <a-tab-pane key="6" tab="汇入/汇出">
+              Content of Tab Pane 3
+            </a-tab-pane>
+            <a-tab-pane key="7" tab="流程">
+              Content of Tab Pane 2
+            </a-tab-pane>
+          </a-tabs>
+
+        </a-form>
+      </div>
+
+      <div class="table-operator">
+        <a-row :gutter="48">
+          <a-col :md="24" :sm="24">
+            <a-button type="success">启动审批流程</a-button>
+          </a-col>
+        </a-row>
+        <a-row :gutter="48">
+          <a-col :md="24" :sm="24" style="margin-top: 10px">
+            <a-button type="success">储存</a-button>
+            <a-button type="danger">关闭</a-button>
+          </a-col>
+        </a-row>
+      </div>
+    </a-card>
+  </page-header-wrapper>
+</template>

@@ -19,7 +19,16 @@ const locale = {
   'menu.project.cost': '业态成本中心',
   'menu.contract': '合同管理',
   'menu.contract.list': '合同列表',
-  'menu.contract.item': '合同详情'
+  'menu.contract.item': '合同详情',
+  'menu.contract.edit': '合同编辑',
+  'menu.change': '变更及成本管控',
+  'menu.change.pmi': '项目管理指令表',
+  'menu.change.cip.list': '合同指令预先批核表',
+  'menu.change.cip.item': '合同指令预先批核详细',
+  'menu.change.cip.edit': '合同指令预先批核编辑',
+  'menu.change.vo.list': '变更指令',
+  'menu.change.vo.item': '变更指令详细',
+  'menu.change.vo.edit': '变更指令编辑',
 }
 
 export default {

@@ -30,8 +30,12 @@ const constantRouterComponents = {
 
   // change
   'ChangePmi': () => import('@/views/change/Pmi'),
-  'ChangeCip': () => import('@/views/change/Cip'),
-  'ChangeVo': () => import('@/views/change/Vo'),
+  'ChangeCipList': () => import('@/views/change/cip/List'),
+  'ChangeCipEdit': () => import('@/views/change/cip/Edit'),
+  'ChangeCipItem': () => import('@/views/change/cip/Item'),
+  'ChangeVoList': () => import('@/views/change/vo/List'),
+  'ChangeVoEdit': () => import('@/views/change/vo/Edit'),
+  'ChangeVoItem': () => import('@/views/change/vo/Item'),
 
   // list
   'TableList': () => import('@/views/list/TableList'),
