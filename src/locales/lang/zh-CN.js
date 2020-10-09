@@ -30,6 +30,11 @@ const locale = {
   'menu.change.vo.list': '变更指令',
   'menu.change.vo.item': '变更指令详细',
   'menu.change.vo.edit': '变更指令编辑',
+  'menu.cost': '成本预算管理',
+  'menu.cost.enact.list': '成本预算制定',
+  'menu.cost.resolve.list': '行业预算分解',
+  'menu.cost.industry.list': '行业分判包',
+  'menu.cost.bid.list': '招投标分判包'
 }
 
 export default {

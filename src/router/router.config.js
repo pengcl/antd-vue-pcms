@@ -73,6 +73,40 @@ export const asyncRouterMap = [
           }
         ]
       },
+      // cost
+      {
+        path: '/cost',
+        name: 'cost',
+        redirect: '/cost/enact/list',
+        component: RouteView,
+        meta: { title: 'menu.cost', icon: 'transaction', permission: ['cost'] },
+        children:[
+          {
+            path: '/cost/enact/list',
+            name: 'CostEnactList',
+            component: () => import('@/views/cost/enact/List'),
+            meta: { title: 'menu.cost.enact.list', keepAlive: true, permission: ['cost'] }
+          },
+          {
+            path: '/cost/resolve/list',
+            name: 'CostResolveList',
+            component: () => import('@/views/cost/resolve/List'),
+            meta: { title: 'menu.cost.resolve.list', keepAlive: true, permission: ['cost'] }
+          },
+          {
+            path: '/cost/industry/list',
+            name: 'CostIndustryList',
+            component: () => import('@/views/cost/industry/List'),
+            meta: { title: 'menu.cost.industry.list', keepAlive: true, permission: ['cost'] }
+          },
+          {
+            path: '/cost/bid/list',
+            name: 'CostBidList',
+            component: () => import('@/views/cost/bid/List'),
+            meta: { title: 'menu.cost.bid.list', keepAlive: true, permission: ['cost'] }
+          }
+        ]
+      },
       // contract
       {
         path: '/contract',
