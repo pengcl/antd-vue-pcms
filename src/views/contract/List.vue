@@ -35,30 +35,24 @@
         :alert="false"
         showPagination="auto"
       >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
-        </span>
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text, record">
           <template>
-            <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem"></a-button>
+            <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
             <a-button
               class="btn-info"
               type="primary"
               icon="form"
               style="margin-left: 4px"
               title="编辑"
-              @click="handleToEdit"></a-button>
+              @click="handleToEdit(record)"></a-button>
             <a-button
               type="primary"
               class="btn-info"
-              icon="plus-square"
+              icon="file-done"
               style="margin-left: 4px"
               title="审批记录"></a-button>
           </template>
@@ -208,11 +202,11 @@
       }
     },
     methods: {
-      handleToItem () {
-        this.$router.push({ path: '/contract/item/1' })
+      handleToItem (record) {
+        this.$router.push({ path: `/contract/item/${record.id}?type=view` })
       },
-      handleToEdit () {
-        this.$router.push({ path: '/contract/edit/1' })
+      handleToEdit (record) {
+        this.$router.push({ path: `/contract/item/${record.id}?type=edit` })
       },
       handleAdd () {
         this.mdl = null

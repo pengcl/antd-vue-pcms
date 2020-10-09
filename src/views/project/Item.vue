@@ -486,7 +486,8 @@
     }
   }
 </script>
-<style>.ant-btn-group {
-  margin-right: 8px;
-}
+<style>
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 </style>
