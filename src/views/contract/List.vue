@@ -151,7 +151,7 @@
   }
 
   export default {
-    name: 'TableList',
+    name: 'ContractList',
     components: {
       STable,
       Ellipsis,

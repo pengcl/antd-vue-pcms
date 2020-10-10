@@ -27,10 +27,13 @@ const locale = {
   'menu.supplier.other.list': '供应商列表',
   'menu.supplier.other.item': '供应商详情',
 
-  'menu.contract': '合同管理',
-  'menu.contract.list': '合同列表',
+  'menu.contract': '合同及成本控制',
+  'menu.contract.list': '合同信息及成本控制',
   'menu.contract.item': '合同详情',
   'menu.contract.edit': '合同编辑',
+  'menu.contract.account': '合同台账',
+  'menu.contract.account.list': '合同台账',
+  'menu.contract.account.item': '合同详情',
   'menu.change': '变更及成本管控',
   'menu.change.pmi': '项目管理指令表',
   'menu.change.cip.list': '合同指令预先批核表',
@@ -43,7 +46,21 @@ const locale = {
   'menu.cost.enact.list': '成本预算制定',
   'menu.cost.resolve.list': '行业预算分解',
   'menu.cost.industry.list': '行业分判包',
-  'menu.cost.bid.list': '招投标分判包'
+  'menu.cost.bid.list': '招投标分判包',
+
+  'menu.pay': '付款管理',
+  'menu.pay.signed': '合同付款申请',
+  'menu.pay.signed.ongoing.list': '进度款申报列表',
+  'menu.pay.signed.ongoing.item': '进度款申报列详情',
+  'menu.pay.signed.ongoing.approval': '进度款申报审定',
+  'menu.pay.signed.upcoming.list': '资金计划列表',
+  'menu.pay.signed.upcoming.item': '资金计划列详情',
+  'menu.pay.unsigned.list': '非合同付款申请',
+  'menu.pay.unsigned.item': '非合同付款详情',
+  'menu.pay.unsigned.approval': '非合同付款审批',
+  'menu.pay.signed.apply': '付款申请',
+  'menu.pay.account.list': '付款台账',
+  'menu.pay.account.item': '付款详情页'
 }
 
 export default {

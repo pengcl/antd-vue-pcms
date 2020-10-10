@@ -51,22 +51,22 @@
 
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="基本资料">
-          <base-info :type="type" :id="id" />
+          <base-info :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="2" tab="合同信息">
-          <contract-info title="合同信息" value="8个任务" :bordered="true" />
+          <contract-info title="合同信息" value="8个任务" :bordered="true"/>
         </a-tab-pane>
         <a-tab-pane key="3" tab="预算调整">
-          <budget-list title="预算调整" value="8个任务" :bordered="true" />
+          <budget-list title="预算调整" value="8个任务" :bordered="true"/>
         </a-tab-pane>
         <a-tab-pane key="4" tab="合同量清单">
-          <contract-list title="合同量清单" value="8个任务" :bordered="true" />
+          <contract-list title="合同量清单" value="8个任务" :bordered="true"/>
         </a-tab-pane>
         <a-tab-pane key="5" tab="付款条款">
-          <pay-info title="付款条款" value="8个任务" :bordered="true" />
+          <pay-info title="付款条款" value="8个任务" :bordered="true"/>
         </a-tab-pane>
         <a-tab-pane key="6" tab="附件">
-          <attachment-list title="付款条款" value="8个任务" :bordered="true" />
+          <attachment-list title="付款条款" value="8个任务" :bordered="true"/>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -103,6 +103,7 @@
 
   const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
   export default {
+    name: 'ContractItem',
     components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
     data () {
       return {

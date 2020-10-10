@@ -83,46 +83,30 @@ export const asyncRouterMap = [
         meta: { title: 'menu.supplier', icon: 'team', permission: ['supplier'] },
         children: [
           {
-            path: '/supplier/purchase',
-            name: 'SupplierPurchase',
-            redirect: '/supplier/purchase/list',
-            component: RouteView,
-            meta: { title: 'menu.supplier.purchase', keepAlive: true, permission: ['supplier'] },
-            children: [
-              {
-                path: '/supplier/purchase/list',
-                name: 'SupplierPurchaseList',
-                component: () => import('@/views/supplier/purchase/List'),
-                meta: { title: 'menu.supplier.purchase.list', keepAlive: true, permission: ['supplier'] }
-              },
-              {
-                path: '/supplier/purchase/item/:id',
-                name: 'SupplierPurchaseItem',
-                component: () => import('@/views/supplier/purchase/Item'),
-                meta: { title: 'menu.supplier.purchase.item', keepAlive: true, permission: ['supplier'] }
-              }
-            ]
+            path: '/supplier/purchase/list',
+            name: 'SupplierPurchaseList',
+            component: () => import('@/views/supplier/purchase/List'),
+            meta: { title: 'menu.supplier.purchase.list', keepAlive: true, permission: ['supplier'] }
           },
           {
-            path: '/supplier/other',
-            name: 'SupplierOther',
-            redirect: '/supplier/other/list',
-            component: RouteView,
-            meta: { title: 'menu.supplier.other', keepAlive: true, permission: ['supplier'] },
-            children: [
-              {
-                path: '/supplier/other/list',
-                name: 'SupplierOtherList',
-                component: () => import('@/views/supplier/other/List'),
-                meta: { title: 'menu.supplier.other.list', keepAlive: true, permission: ['supplier'] }
-              },
-              {
-                path: '/supplier/other/item/:id',
-                name: 'SupplierOtherItem',
-                component: () => import('@/views/supplier/other/Item'),
-                meta: { title: 'menu.supplier.other.item', keepAlive: true, permission: ['supplier'] }
-              }
-            ]
+            path: '/supplier/purchase/item/:id',
+            name: 'SupplierPurchaseItem',
+            hidden: true,
+            component: () => import('@/views/supplier/purchase/Item'),
+            meta: { title: 'menu.supplier.purchase.item', keepAlive: true, permission: ['supplier'] }
+          },
+          {
+            path: '/supplier/other/list',
+            name: 'SupplierOtherList',
+            component: () => import('@/views/supplier/other/List'),
+            meta: { title: 'menu.supplier.other.list', keepAlive: true, permission: ['supplier'] }
+          },
+          {
+            path: '/supplier/other/item/:id',
+            name: 'SupplierOtherItem',
+            hidden: true,
+            component: () => import('@/views/supplier/other/Item'),
+            meta: { title: 'menu.supplier.other.item', keepAlive: true, permission: ['supplier'] }
           }
         ]
       },
@@ -133,7 +117,7 @@ export const asyncRouterMap = [
         name: 'cost',
         redirect: '/cost/enact/list',
         component: RouteView,
-        meta: { title: 'menu.cost', icon: 'transaction', permission: ['cost'] },
+        meta: { title: 'menu.cost', icon: 'property-safety', permission: ['cost'] },
         children: [
           {
             path: '/cost/enact/list',
@@ -167,7 +151,7 @@ export const asyncRouterMap = [
         name: 'contract',
         redirect: '/contract/list',
         component: RouteView,
-        meta: { title: 'menu.contract', icon: 'transaction', permission: ['contract'] },
+        meta: { title: 'menu.contract', icon: 'audit', permission: ['contract'] },
         children: [
           {
             path: '/contract/list',
@@ -188,7 +172,20 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/contract/Edit'),
             meta: { title: 'menu.contract.edit', keepAlive: true, permission: ['contract'] }
-          }
+          },
+          {
+            path: '/contract/account/list',
+            name: 'ContractAccountList',
+            component: () => import('@/views/contract/account/List'),
+            meta: { title: 'menu.contract.account.list', keepAlive: false, permission: ['contract'] }
+          },
+          {
+            path: '/contract/account/item/:id',
+            name: 'ContractAccountItem',
+            component: () => import('@/views/contract/account/Item'),
+            hidden: true,
+            meta: { title: 'menu.contract.account.item', keepAlive: false, permission: ['contract'] }
+          } // Account
         ]
       },
       {
@@ -196,7 +193,7 @@ export const asyncRouterMap = [
         name: 'change',
         redirect: '/change/pmi',
         component: RouteView,
-        meta: { title: 'menu.change', icon: 'transaction', permission: ['change'] },
+        meta: { title: 'menu.change', icon: 'switcher', permission: ['change'] },
         children: [
           {
             path: '/change/pmi',
@@ -243,6 +240,98 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/change/vo/Edit'),
             meta: { title: 'menu.change.vo.edit', keepAlive: true, permission: ['change'] }
+          }
+        ]
+      },
+      // pay
+      {
+        path: '/pay',
+        name: 'pay',
+        redirect: '/pay/list',
+        component: RouteView,
+        meta: { title: 'menu.pay', icon: 'audit', permission: ['pay'] },
+        children: [
+          {
+            path: '/pay/signed',
+            name: 'PaySigned',
+            redirect: '/pay/signed/ongoing/list',
+            component: RouteView,
+            meta: { title: 'menu.pay.signed', keepAlive: true, permission: ['pay'] },
+            children: [
+              {
+                path: '/pay/signed/ongoing/list',
+                name: 'PaySignedOngoingList',
+                component: () => import('@/views/contract/List'),
+                meta: { title: 'menu.pay.signed.ongoing.list', keepAlive: true, permission: ['pay'] }
+              },
+              {
+                path: '/pay/signed/ongoing/item/:id',
+                name: 'PaySignedOngoingItem',
+                component: () => import('@/views/contract/List'),
+                hidden: true,
+                meta: { title: 'menu.pay.signed.ongoing.item', keepAlive: true, permission: ['pay'] }
+              },
+              {
+                path: '/pay/signed/ongoing/approval/:id',
+                name: 'PaySignedOngoingApproval',
+                component: () => import('@/views/contract/List'),
+                hidden: true,
+                meta: { title: 'menu.pay.signed.ongoing.approval', keepAlive: true, permission: ['pay'] }
+              },
+              {
+                path: '/pay/signed/upcoming/list',
+                name: 'PaySignedUpcomingList',
+                component: () => import('@/views/contract/Item'),
+                meta: { title: 'menu.pay.signed.upcoming.list', keepAlive: false, permission: ['pay'] }
+              },
+              {
+                path: '/pay/signed/upcoming/item/:id',
+                name: 'PaySignedUpcomingItem',
+                component: () => import('@/views/contract/Item'),
+                hidden: true,
+                meta: { title: 'menu.pay.signed.upcoming.item', keepAlive: false, permission: ['pay'] }
+              },
+              {
+                path: '/pay/signed/apply',
+                name: 'PaySignedApply',
+                hidden: true,
+                component: () => import('@/views/contract/Edit'),
+                meta: { title: 'menu.pay.signed.apply', keepAlive: true, permission: ['pay'] }
+              }
+            ]
+          },
+          {
+            path: '/pay/unsigned/list',
+            name: 'PayUnsignedList',
+            component: () => import('@/views/contract/Edit'),
+            meta: { title: 'menu.pay.unsigned.list', keepAlive: true, permission: ['pay'] }
+          },
+          {
+            path: '/pay/unsigned/item/:id',
+            name: 'PayUnsignedList',
+            hidden: true,
+            component: () => import('@/views/contract/Edit'),
+            meta: { title: 'menu.pay.unsigned.item', keepAlive: true, permission: ['pay'] }
+          },
+          {
+            path: '/pay/unsigned/approval/:id',
+            name: 'PayUnsignedList',
+            hidden: true,
+            component: () => import('@/views/contract/Edit'),
+            meta: { title: 'menu.pay.unsigned.approval', keepAlive: true, permission: ['pay'] }
+          },
+          {
+            path: '/pay/account/list',
+            name: 'PayUnsignedList',
+            component: () => import('@/views/contract/Edit'),
+            meta: { title: 'menu.pay.account.list', keepAlive: true, permission: ['pay'] }
+          },
+          {
+            path: '/pay/account/item/:id',
+            name: 'PayUnsignedList',
+            hidden: true,
+            component: () => import('@/views/contract/Edit'),
+            meta: { title: 'menu.pay.account.item', keepAlive: true, permission: ['pay'] }
           }
         ]
       }
