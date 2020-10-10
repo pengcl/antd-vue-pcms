@@ -20,7 +20,7 @@ export const asyncRouterMap = [
         name: 'dashboard',
         redirect: '/dashboard/tasks',
         component: RouteView,
-        meta: { title: 'menu.dashboard', keepAlive: true, icon: 'menu', permission: ['dashboard'] },
+        meta: { title: 'menu.dashboard', keepAlive: true, icon: 'home', permission: ['dashboard'] },
         children: [
           {
             path: '/dashboard/tasks',
@@ -43,7 +43,7 @@ export const asyncRouterMap = [
         name: 'project',
         redirect: '/project/list',
         component: RouteView,
-        meta: { title: 'menu.project', icon: 'form', permission: ['project'] },
+        meta: { title: 'menu.project', icon: 'project', permission: ['project'] },
         children: [
           {
             path: '/project/list',
@@ -73,6 +73,60 @@ export const asyncRouterMap = [
           }
         ]
       },
+
+      // supplier
+      {
+        path: '/supplier',
+        name: 'supplier',
+        redirect: '/supplier/purchase/list',
+        component: RouteView,
+        meta: { title: 'menu.supplier', icon: 'team', permission: ['supplier'] },
+        children: [
+          {
+            path: '/supplier/purchase',
+            name: 'SupplierPurchase',
+            redirect: '/supplier/purchase/list',
+            component: RouteView,
+            meta: { title: 'menu.supplier.purchase', keepAlive: true, permission: ['supplier'] },
+            children: [
+              {
+                path: '/supplier/purchase/list',
+                name: 'SupplierPurchaseList',
+                component: () => import('@/views/supplier/purchase/List'),
+                meta: { title: 'menu.supplier.purchase.list', keepAlive: true, permission: ['supplier'] }
+              },
+              {
+                path: '/supplier/purchase/item/:id',
+                name: 'SupplierPurchaseItem',
+                component: () => import('@/views/supplier/purchase/Item'),
+                meta: { title: 'menu.supplier.purchase.item', keepAlive: true, permission: ['supplier'] }
+              }
+            ]
+          },
+          {
+            path: '/supplier/other',
+            name: 'SupplierOther',
+            redirect: '/supplier/other/list',
+            component: RouteView,
+            meta: { title: 'menu.supplier.other', keepAlive: true, permission: ['supplier'] },
+            children: [
+              {
+                path: '/supplier/other/list',
+                name: 'SupplierOtherList',
+                component: () => import('@/views/supplier/other/List'),
+                meta: { title: 'menu.supplier.other.list', keepAlive: true, permission: ['supplier'] }
+              },
+              {
+                path: '/supplier/other/item/:id',
+                name: 'SupplierOtherItem',
+                component: () => import('@/views/supplier/other/Item'),
+                meta: { title: 'menu.supplier.other.item', keepAlive: true, permission: ['supplier'] }
+              }
+            ]
+          }
+        ]
+      },
+
       // cost
       {
         path: '/cost',
@@ -80,7 +134,7 @@ export const asyncRouterMap = [
         redirect: '/cost/enact/list',
         component: RouteView,
         meta: { title: 'menu.cost', icon: 'transaction', permission: ['cost'] },
-        children:[
+        children: [
           {
             path: '/cost/enact/list',
             name: 'CostEnactList',

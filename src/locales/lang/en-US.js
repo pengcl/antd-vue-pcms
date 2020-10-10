@@ -18,6 +18,15 @@ const locale = {
   'menu.project.item': 'Project detail',
   'menu.project.cost.list': 'Project costs',
   'menu.project.cost.item': 'Project cost detail',
+
+  'menu.supplier': 'Supplier',
+  'menu.supplier.purchase': 'Purchase supplier',
+  'menu.supplier.purchase.list': 'Supplier list',
+  'menu.supplier.purchase.item': 'Supplier detail',
+  'menu.supplier.other': 'Other supplier',
+  'menu.supplier.other.list': 'Supplier list',
+  'menu.supplier.other.item': 'Supplier detail',
+
   'menu.contract': 'Contract',
   'menu.contract.list': 'Contracts',
   'menu.contract.item': 'Contract detail',
