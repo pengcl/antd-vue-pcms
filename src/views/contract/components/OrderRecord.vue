@@ -5,25 +5,21 @@
         <table>
           <thead>
           <tr>
-            <th colspan="4">
-              <a-upload
-              >
-                <a-button>请选择</a-button>
-              </a-upload>
-            </th>
-          </tr>
-          <tr>
-            <th style="width: 25%">操作</th>
-            <th style="width: 25%">附件</th>
-            <th style="width: 25%">备注</th>
-            <th style="width: 25%">最后修改日期</th>
+            <th style="width: 10%">Stage</th>
+            <th style="width: 10%">编码</th>
+            <th style="width: 10%">CIP编码</th>
+            <th style="width: 10%">CIP金额</th>
+            <th style="width: 10%">CIP状态</th>
+            <th style="width: 10%">PMI编码</th>
+            <th style="width: 10%">PMI状态</th>
+            <th style="width: 10%">VO编码</th>
+            <th style="width: 10%">VO金额</th>
+            <th style="width: 10%">VO状态</th>
+            <th style="width: 10%">VO编码</th>
           </tr>
           </thead>
           <tbody>
           <tr>
-            <td>
-              <a-button type="danger" icon="delete"></a-button>
-            </td>
             <td></td>
             <td></td>
             <td></td>
@@ -36,18 +32,16 @@
 </template>
 
 <script>
-export default {
-  name: 'AttachmentList',
-    data () {
-        return {
-            form: this.$form.createForm(this),
-            loading: false
-        }
-    },
-  props: {
 
-  }
-}
+    export default {
+        name: 'OrderRecord',
+        data () {
+            return {
+                form: this.$form.createForm(this),
+                loading: false
+            }
+        },
+    }
 </script>
 
 <style lang="less" scoped>
