@@ -1,5 +1,5 @@
 <template>
-  <a-form :form="form">
+  <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
         <a-button type="success">按编码排序</a-button>
