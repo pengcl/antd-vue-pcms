@@ -215,7 +215,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.change.cip.item', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/cip/edit/:id',
+            path: '/change/cip/edit',
             name: 'ChangeCipEdit',
             hidden: true,
             component: () => import('@/views/change/cip/Edit'),
@@ -235,7 +235,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.change.vo.item', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/vo/edit/:id',
+            path: '/change/vo/edit',
             name: 'ChangeVoEdit',
             hidden: true,
             component: () => import('@/views/change/vo/Edit'),

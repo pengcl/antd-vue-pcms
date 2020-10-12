@@ -5,7 +5,7 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
-              <a-button type="success" @click="handleToItem">新增项目</a-button>
+              <a-button type="success" @click="handleToAdd">新增项目</a-button>
               <a-button type="primary" style="margin-left: 5px" @click="handleAdd">
                 <a-icon type="search"></a-icon>
               </a-button>
@@ -38,11 +38,11 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text, record">
           <template>
-            <a-button type="primary" icon="file-text" title="查看" @click="handleToItem">
+            <a-button type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
             </a-button>
-            <a-button type="success" icon="form" style="margin-left: 4px" title="编辑" @click="handleToEdit">
+            <a-button type="success" icon="form" style="margin-left: 4px" title="编辑" @click="handleToEdit(record)">
             </a-button>
           </template>
         </span>
@@ -86,8 +86,8 @@
             scopedSlots: { customRender: 'description' }
         },
         {
-            title:'项目编码',
-            dataIndex:'projectNo'
+            title: '项目编码',
+            dataIndex: 'projectNo'
         },
         {
             title: '项目名称',
@@ -192,11 +192,14 @@
             }
         },
         methods: {
-            handleToItem () {
-                this.$router.push({ path: '/change/vo/item/1' })
+            handleToItem (record) {
+                this.$router.push({ path: `/change/vo/item/${record.id}?type=view` })
             },
-            handleToEdit () {
-                this.$router.push({ path: '/change/vo/edit/1' })
+            handleToEdit (record) {
+                this.$router.push({ path: `/change/vo/item/${record.id}?type=edit` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: '/change/vo/edit' })
             },
             handleAdd () {
                 this.mdl = null

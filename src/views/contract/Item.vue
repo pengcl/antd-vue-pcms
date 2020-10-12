@@ -2,7 +2,7 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form layout="inline">
+        <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="24" :sm="24">
               <a-form-item label="项目编码">
@@ -56,26 +56,17 @@
         <a-tab-pane key="2" tab="合同信息">
           <contract-info title="合同信息" value="8个任务" :bordered="true"/>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="付款信息">
-          <pay-list title="付款信息" value="8个任务" :bordered="true"/>
+        <a-tab-pane key="3" tab="预算调整">
+          <budget-list title="预算调整" value="8个任务" :bordered="true"/>
         </a-tab-pane>
         <a-tab-pane key="4" tab="合同量清单">
           <contract-list title="合同量清单" value="8个任务" :bordered="true"/>
         </a-tab-pane>
-        <a-tab-pane key="5" tab="预算调整">
-          <budget-list title="预算调整" value="8个任务" :bordered="true"/>
-        </a-tab-pane>
-        <a-tab-pane key="6" tab="付款条款">
+        <a-tab-pane key="5" tab="付款条款">
           <pay-info title="付款条款" value="8个任务" :bordered="true"/>
         </a-tab-pane>
-        <a-tab-pane key="7" tab="指令记录">
-          <order-record title="指令记录" value="8个任务" :bordered="true"/>
-        </a-tab-pane>
-        <a-tab-pane key="8" tab="附件">
-          <attachment-list title="付款条款" value="8个任务" :bordered="true"/>
-        </a-tab-pane>
-        <a-tab-pane key="9" tab="流程">
-          <process title="流程" value="8个任务" :bordered="true"/>
+        <a-tab-pane key="6" tab="附件">
+          <attachment-list title="附件" value="8个任务" :bordered="true"/>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -109,14 +100,11 @@
   import BudgetList from '@/views/contract/components/BudgetList'
   import AttachmentList from '@/views/contract/components/AttachmentList'
   import { FooterToolBar } from '@/components'
-  import PayList from '@/views/contract/components/PayList'
-  import OrderRecord from './components/OrderRecord'
-  import Process from './components/Process'
 
   const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
   export default {
     name: 'ContractItem',
-    components: { Process, OrderRecord, PayList, AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
+    components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
     data () {
       return {
         baseForm: this.$form.createForm(this),

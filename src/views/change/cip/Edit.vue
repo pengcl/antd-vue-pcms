@@ -2,7 +2,7 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form layout="inline">
+        <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="24" :sm="24">
               <a-form-item label="项目编码">
@@ -47,25 +47,21 @@
 
           <a-tabs default-active-key="1">
             <a-tab-pane key="1" tab="基本资料">
-              Content of Tab Pane 1
+              <base-info title="基本资料"></base-info>
             </a-tab-pane>
             <a-tab-pane key="2" tab="造价估算">
-              Content of Tab Pane 2
+              <cost-estimates title="造价估算"></cost-estimates>
             </a-tab-pane>
             <a-tab-pane key="3" tab="预算调整">
-              Content of Tab Pane 3
+              <budget-list title="预算调整"></budget-list>
             </a-tab-pane>
             <a-tab-pane key="4" tab="附加资料">
-              Content of Tab Pane 1
+              <attachment-data title="附加资料"></attachment-data>
             </a-tab-pane>
             <a-tab-pane key="5" tab="附件">
-              Content of Tab Pane 2
+              <attachment-list></attachment-list>
             </a-tab-pane>
-            <a-tab-pane key="6" tab="汇入/汇出">
-              Content of Tab Pane 3
-            </a-tab-pane>
-            <a-tab-pane key="7" tab="流程">
-              Content of Tab Pane 2
+            <a-tab-pane key="6" tab="流程">
             </a-tab-pane>
           </a-tabs>
 
@@ -88,3 +84,14 @@
     </a-card>
   </page-header-wrapper>
 </template>
+
+<script>
+    import BaseInfo from '@/views/change/cip/components/BaseInfo'
+    import CostEstimates from '@/views/change/cip/components/CostEstimates'
+    import BudgetList from '@/views/change/cip/components/BudgetList'
+    import AttachmentData from '@/views/change/cip/components/AttachmentData'
+    import AttachmentList from '@/views/change/cip/components/AttachmentList'
+    export default {
+        components: { AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo }
+    }
+</script>
