@@ -14,7 +14,7 @@
           </a-row>
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
-              <a-button type="success" @click="handleToEdit">新增CIP</a-button>
+              <a-button type="success" @click="handleToAdd">新增CIP</a-button>
               <a-button type="success" style="margin-left: 20px">新增VO</a-button>
               <a-button type="success" style="margin-left: 20px">变更转补充协议</a-button>
             </a-col>
@@ -46,12 +46,12 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text, record">
           <template>
-            <a-button type="primary" icon="file-text" title="查看" @click="handleToItem">
+            <a-button type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
             </a-button>
             <a-button type="success" icon="form" style="margin-left: 4px" title="编辑"
-                      @click="handleToEdit">
+                      @click="handleToEdit(record)">
             </a-button>
           </template>
         </span>
@@ -186,11 +186,14 @@
             }
         },
         methods: {
-            handleToItem () {
-                this.$router.push({ path: '/change/cip/item/1' })
+            handleToItem (record) {
+                this.$router.push({ path: `/change/cip/item/${record.id}?type=view` })
             },
-            handleToEdit () {
-                this.$router.push({ path: '/change/cip/edit/1' })
+            handleToEdit (record) {
+                this.$router.push({ path: `/change/cip/item/${record.id}?type=edit` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: '/change/cip/edit' })
             },
             handleAdd () {
                 this.mdl = null
