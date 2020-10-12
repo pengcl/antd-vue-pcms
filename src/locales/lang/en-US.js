@@ -63,6 +63,26 @@ const locale = {
   'menu.pay.account.list': 'Pay account list',
   'menu.pay.account.item': 'Pay account item',
 
+  'menu.checkout': 'Checkout',
+  'menu.checkout.contract.list': 'Checkout contract list',
+  'menu.checkout.contract.item': 'Checkout contract detail',
+  'menu.checkout.completed.list': 'Checkout completed list',
+  'menu.checkout.completed.item': 'Checkout completed detail',
+  'menu.checkout.project.list': 'Checkout project list',
+  'menu.checkout.project.item': 'Checkout project item',
+  'menu.checkout.finance.list': 'Checkout finance list',
+  'menu.checkout.finance.item': 'Checkout finance detail',
+
+  'menu.report': 'Report',
+  'menu.data': 'Data',
+
+  'menu.settings': 'Settings',
+  'menu.settings.base': 'Settings base',
+  'menu.settings.security': 'Settings security',
+  'menu.settings.custom': 'Settings custom',
+  'menu.settings.binding': 'Settings binding',
+  'menu.settings.notification': 'Settings notification',
+
   'layouts.usermenu.dialog.title': 'Message',
   'layouts.usermenu.dialog.content': 'Do you really log-out.',
 

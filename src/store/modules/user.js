@@ -1,5 +1,6 @@
 import storage from 'store'
-import { login, getInfo, logout } from '@/api/login'
+import { login, getInfo, logout } from '@/views/user/user.service'
+import { Regional as regionalSvc } from '@/api/regional'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
@@ -40,6 +41,17 @@ const user = {
           const result = response.result
           storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
           commit('SET_TOKEN', result.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    // 测试
+    Test ({ commit }) {
+      return new Promise((resolve, reject) => {
+        regionalSvc.list().then(response => {
           resolve()
         }).catch(error => {
           reject(error)
