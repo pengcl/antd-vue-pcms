@@ -1,7 +1,8 @@
 import request from '@/utils/request'
+import { API_PREFIX } from '@/api/prefix'
 
 const userApi = {
-  Login: '/auth/login',
+  Login: API_PREFIX + '/api/TokenAuth/Authenticate',
   Logout: '/auth/logout',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',

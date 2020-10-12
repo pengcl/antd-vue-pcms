@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { getSmsCaptcha } from '@/api/login'
+import { getSmsCaptcha } from '@/views/user/user.service'
 import { deviceMixin } from '@/store/device-mixin'
 
 const levelNames = {
