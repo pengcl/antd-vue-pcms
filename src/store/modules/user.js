@@ -63,7 +63,7 @@ const user = {
     // 获取用户信息
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-         const result = info
+         /* const result = info
 
         if (result.role && result.role.permissions.length > 0) {
           const role = result.role
@@ -88,9 +88,9 @@ const user = {
           code: 200,
           message: '',
           result
-        })
+        }) */
 
-         /* getInfo().then(response => {
+          getInfo().then(response => {
           console.log(response)
           const result = response.result
 
@@ -116,7 +116,7 @@ const user = {
           resolve(response)
         }).catch(error => {
           reject(error)
-        }) */
+        })
       })
     },
 
