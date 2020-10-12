@@ -334,6 +334,124 @@ export const asyncRouterMap = [
             meta: { title: 'menu.pay.account.item', keepAlive: true, permission: ['pay'] }
           }
         ]
+      },
+
+      // checkout
+      {
+        path: '/checkout',
+        name: 'checkout',
+        redirect: '/checkout/contract/list',
+        component: RouteView,
+        meta: { title: 'menu.checkout', icon: 'block', permission: ['checkout'] },
+        children: [
+          {
+            path: '/checkout/contract/list',
+            name: 'CheckoutContractList',
+            component: () => import('@/views/checkout/contract/List'),
+            meta: { title: 'menu.checkout.contract.list', keepAlive: true, permission: ['checkout'] }
+          },
+          {
+            path: '/checkout/contract/item/:id',
+            name: 'CheckoutContractItem',
+            hidden: true,
+            component: () => import('@/views/checkout/contract/Item'),
+            meta: { title: 'menu.checkout.contract.item', keepAlive: true, permission: ['checkout'] }
+          },
+          {
+            path: '/checkout/completed/list',
+            name: 'CheckoutCompletedList',
+            component: () => import('@/views/checkout/completed/List'),
+            meta: { title: 'menu.checkout.completed.list', keepAlive: true, permission: ['checkout'] }
+          },
+          {
+            path: '/checkout/completed/item/:id',
+            name: 'CheckoutCompletedItem',
+            hidden: true,
+            component: () => import('@/views/checkout/completed/Item'),
+            meta: { title: 'menu.checkout.completed.item', keepAlive: true, permission: ['checkout'] }
+          },
+          {
+            path: '/checkout/project/list',
+            name: 'CheckoutProjectList',
+            component: () => import('@/views/checkout/project/List'),
+            meta: { title: 'menu.checkout.project.list', keepAlive: true, permission: ['checkout'] }
+          },
+          {
+            path: '/checkout/project/item/:id',
+            name: 'CheckoutProjectItem',
+            hidden: true,
+            component: () => import('@/views/checkout/project/Item'),
+            meta: { title: 'menu.checkout.project.item', keepAlive: true, permission: ['checkout'] }
+          },
+          {
+            path: '/checkout/finance/list',
+            name: 'CheckoutFinanceList',
+            component: () => import('@/views/checkout/finance/List'),
+            meta: { title: 'menu.checkout.finance.list', keepAlive: true, permission: ['checkout'] }
+          },
+          {
+            path: '/checkout/finance/item/:id',
+            name: 'CheckoutFinanceItem',
+            hidden: true,
+            component: () => import('@/views/checkout/finance/Item'),
+            meta: { title: 'menu.checkout.finance.item', keepAlive: true, permission: ['checkout'] }
+          }
+        ]
+      },
+      // report
+      {
+        path: '/report',
+        name: 'report',
+        component: () => import('@/views/report/Item'),
+        meta: { title: 'menu.report', icon: 'fund', permission: ['report'] }
+      },
+      // data
+      {
+        path: '/data',
+        name: 'data',
+        component: () => import('@/views/data/Item'),
+        meta: { title: 'menu.data', icon: 'database', permission: ['data'] }
+      },
+      // settings
+      {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('@/views/settings/Index'),
+        meta: { title: 'menu.settings', icon: 'appstore', permission: [ 'settings' ] },
+        redirect: '/settings/base',
+        hideChildrenInMenu: true,
+        children: [
+          {
+            path: '/settings/base',
+            name: 'BaseSettings',
+            component: () => import('@/views/settings/BaseSetting'),
+            meta: { title: 'menu.settings.base', hidden: true, permission: [ 'settings' ] }
+          },
+          {
+            path: '/settings/security',
+            name: 'SecuritySettings',
+            component: () => import('@/views/settings/Security'),
+            meta: { title: 'menu.settings.security', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+          },
+          {
+            path: '/settings/custom',
+            name: 'CustomSettings',
+            component: () => import('@/views/settings/Custom'),
+            meta: { title: 'menu.settings.custom', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+          },
+          {
+            path: '/settings/binding',
+            name: 'BindingSettings',
+            component: () => import('@/views/settings/Binding'),
+            meta: { title: 'menu.settings.binding', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+          },
+          {
+            path: '/settings/notification',
+            name: 'NotificationSettings',
+            component: () => import('@/views/settings/Notification'),
+            meta: { title: 'menu.settings.notification', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+          }
+        ]
       }
 
       // budget

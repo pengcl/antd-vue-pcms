@@ -114,157 +114,158 @@ export default {
       const {
         form: { validateFields },
         state,
-        customActiveKey,
         Login
       } = this
 
-      state.loginBtn = true
+        state.loginBtn = true
 
-      const validateFieldsKey = ['username', 'password']
+        const validateFieldsKey = ['username', 'password']
 
-      validateFields(validateFieldsKey, { force: true }, (err, values) => {
-        if (!err) {
-          console.log('login form', values)
-          const loginParams = { ...values }
-          delete loginParams.username
-          loginParams.username = values.username
-          loginParams.password = md5(values.password)
-          Login(loginParams)
-          .then((res) => this.loginSuccess(res))
-          .catch(err => this.requestFailed(err))
-          .finally(() => {
-            state.loginBtn = false
+        validateFields(validateFieldsKey, { force: true }, (err, values) => {
+          if (!err) {
+            console.log('login form', values)
+            const loginParams = { ...values }
+            delete loginParams.username
+            loginParams.username = values.username
+            loginParams.password = md5(values.password)
+            Login(loginParams)
+              .then((res) => this.loginSuccess(res))
+              .catch(err => this.requestFailed(err))
+              .finally(() => {
+                state.loginBtn = false
+              })
+          } else {
+            setTimeout(() => {
+              state.loginBtn = false
+            }, 600)
+          }
+        })
+      },
+      loginSuccess (res) {
+        console.log(res)
+        // check res.homePage define, set $router.push name res.homePage
+        // Why not enter onComplete
+        /*
+        this.$router.push({ name: 'analysis' }, () => {
+          console.log('onComplete')
+          this.$notification.success({
+            message: '欢迎',
+            description: `${timeFix()}，欢迎回来`
           })
-        } else {
-          setTimeout(() => {
-            state.loginBtn = false
-          }, 600)
-        }
-      })
-    },
-    loginSuccess (res) {
-      console.log(res)
-      // check res.homePage define, set $router.push name res.homePage
-      // Why not enter onComplete
-      /*
-      this.$router.push({ name: 'analysis' }, () => {
-        console.log('onComplete')
-        this.$notification.success({
-          message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
         })
-      })
-      */
-      this.$router.push({ path: '/' })
-      // 延迟 1 秒显示欢迎信息
-      setTimeout(() => {
-        this.$notification.success({
-          message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
+        */
+        this.$router.push({ path: '/' })
+        // 延迟 1 秒显示欢迎信息
+        setTimeout(() => {
+          this.$notification.success({
+            message: '欢迎',
+            description: `${timeFix()}，欢迎回来`
+          })
+        }, 1000)
+        this.isLoginError = false
+      },
+      requestFailed (err) {
+        this.isLoginError = true
+        this.$notification['error']({
+          message: '错误',
+          description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
+          duration: 4
         })
-      }, 1000)
-      this.isLoginError = false
-    },
-    requestFailed (err) {
-      this.isLoginError = true
-      this.$notification['error']({
-        message: '错误',
-        description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
-        duration: 4
-      })
+      }
     }
   }
-}
 </script>
 
 <style lang="less" scoped>
-.header {
-  height: 44px;
-  line-height: 44px;
-  text-align: center;
-
-  .badge {
-    position: absolute;
-    display: inline-block;
-    line-height: 1;
-    vertical-align: middle;
-    margin-left: -12px;
-    margin-top: -10px;
-    opacity: 0.8;
-  }
-
-  .logo {
+  .header {
     height: 44px;
-    width: 44px;
-    vertical-align: top;
-    border-style: none;
-    display: block;margin: 0 auto;
-    img {
-      display: block;
-      width: 100%;
-    }
-  }
+    line-height: 44px;
+    text-align: center;
 
-  .title {
-    font-size: 33px;
-    color: rgba(0, 0, 0, .85);
-    font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    font-weight: 600;
-    position: relative;
-    top: 2px;
-  }
-}
-
-.desc {
-  font-size: 18px;
-  margin-top: 12px;
-  margin-bottom: 40px;
-  text-align: center;
-}
-
-.user-layout-login {
-  label {
-    font-size: 14px;
-  }
-
-  .getCaptcha {
-    display: block;
-    width: 100%;
-    height: 40px;
-  }
-
-  .forge-password {
-    font-size: 14px;
-  }
-
-  button.login-button {
-    padding: 0 15px;
-    font-size: 16px;
-    height: 40px;
-    width: 100%;
-  }
-
-  .user-login-other {
-    text-align: left;
-    margin-top: 24px;
-    line-height: 22px;
-
-    .item-icon {
-      font-size: 24px;
-      color: rgba(0, 0, 0, 0.2);
-      margin-left: 16px;
+    .badge {
+      position: absolute;
+      display: inline-block;
+      line-height: 1;
       vertical-align: middle;
-      cursor: pointer;
-      transition: color 0.3s;
+      margin-left: -12px;
+      margin-top: -10px;
+      opacity: 0.8;
+    }
 
-      &:hover {
-        color: #1890ff;
+    .logo {
+      height: 44px;
+      width: 44px;
+      vertical-align: top;
+      border-style: none;
+      display: block;
+      margin: 0 auto;
+
+      img {
+        display: block;
+        width: 100%;
       }
     }
 
-    .register {
-      float: right;
+    .title {
+      font-size: 33px;
+      color: rgba(0, 0, 0, .85);
+      font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      font-weight: 600;
+      position: relative;
+      top: 2px;
     }
   }
-}
+
+  .desc {
+    font-size: 18px;
+    margin-top: 12px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .user-layout-login {
+    label {
+      font-size: 14px;
+    }
+
+    .getCaptcha {
+      display: block;
+      width: 100%;
+      height: 40px;
+    }
+
+    .forge-password {
+      font-size: 14px;
+    }
+
+    button.login-button {
+      padding: 0 15px;
+      font-size: 16px;
+      height: 40px;
+      width: 100%;
+    }
+
+    .user-login-other {
+      text-align: left;
+      margin-top: 24px;
+      line-height: 22px;
+
+      .item-icon {
+        font-size: 24px;
+        color: rgba(0, 0, 0, 0.2);
+        margin-left: 16px;
+        vertical-align: middle;
+        cursor: pointer;
+        transition: color 0.3s;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+
+      .register {
+        float: right;
+      }
+    }
+  }
 </style>

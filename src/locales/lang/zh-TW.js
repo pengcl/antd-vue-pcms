@@ -61,7 +61,21 @@ const locale = {
   'menu.pay.unsigned.approval': '非合同付款审批',
   'menu.pay.signed.apply': '付款申请',
   'menu.pay.account.list': '付款台账',
-  'menu.pay.account.item': '付款详情页'
+  'menu.pay.account.item': '付款详情页',
+
+  'menu.checkout': '结算管理',
+  'menu.checkout.contract.list': '合同结算',
+  'menu.checkout.contract.item': '合同结算详情',
+  'menu.checkout.completed.list': '竣工证书',
+  'menu.checkout.completed.item': '竣工证书详情',
+  'menu.checkout.project.list': '工程结算书',
+  'menu.checkout.project.item': '工程结算书详情',
+  'menu.checkout.finance.list': '财务结算书',
+  'menu.checkout.finance.item': '财务结算书详情',
+
+  'menu.report': '报表管理',
+  'menu.data': '基础数据设置',
+  'menu.system': '系统管理'
 }
 
 export default {
