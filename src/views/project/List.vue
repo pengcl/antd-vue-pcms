@@ -4,10 +4,7 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
-              <a-button @click="handleToAdd()" class="btn-success" type="primary">新增项目</a-button>
-            </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col :md="12" :sm="24">
               <a-form-item label="城市">
                 <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
                   <a-select-option value="0">深圳</a-select-option>
@@ -16,11 +13,13 @@
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
-              <a-button class="btn-info" type="primary" style="float: right">汇出</a-button>
-            </a-col>
           </a-row>
         </a-form>
+      </div>
+
+      <div class="table-operator">
+        <a-button type="success" @click="handleToAdd">新增项目</a-button>
+        <a-button type="primary" style="margin-left: 5px">汇出</a-button>
       </div>
 
       <s-table

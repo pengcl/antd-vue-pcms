@@ -34,7 +34,7 @@
       </div>
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="业态指标">
-          <a-form :form="baseForm">
+          <a-form :form="baseForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
                 <a-form-item
@@ -320,7 +320,7 @@
           </a-form>
         </a-tab-pane>
         <a-tab-pane key="2" tab="CDRD信息">
-          <a-form :form="memberForm">
+          <a-form :form="memberForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
                 <a-form-item label="类别/品牌">

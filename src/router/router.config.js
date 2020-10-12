@@ -167,7 +167,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.contract.item', keepAlive: false, permission: ['contract'] }
           },
           {
-            path: '/contract/edit/:id',
+            path: '/contract/edit',
             name: 'ContractEdit',
             hidden: true,
             component: () => import('@/views/contract/Edit'),

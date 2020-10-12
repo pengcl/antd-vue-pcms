@@ -1,5 +1,5 @@
 <template>
-  <a-form :form="form">
+  <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
         <a-form-item
@@ -79,6 +79,18 @@
             v-decorator="['name', { initialValue: '', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
         </a-form-item>
       </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-item
+          label="成本预算分类"
+        >
+          <a-select
+            :disabled="type === 'view'"
+            placeholder="请选择成本预算分类"
+            v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+            <a-select-option value="1">工程</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
       <a-col :md="24" :sm="24">
         合同甲方：
       </a-col>
@@ -108,8 +120,17 @@
                   删除
                 </a-button>
               </td>
-              <td>广州永沛房地产开发有限公司</td>
-              <td>100</td>
+              <td>
+                <a-select
+                  :disabled="type === 'view'"
+                  placeholder="请选择"
+                  v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                  <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
+                </a-select>
+              </td>
+              <td>
+                <a-input-number></a-input-number>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -121,7 +142,7 @@
         <table>
           <thead>
             <tr>
-              <th colspan="3">
+              <th colspan="2">
                 <a-button :disabled="type === 'view'" icon="plus">
                   新增
                 </a-button>
@@ -131,9 +152,8 @@
               </th>
             </tr>
             <tr>
-              <th style="width: 30%">操作</th>
-              <th style="width: 40%">公司名</th>
-              <th style="width: 40%">百分比</th>
+              <th style="width: 40%">操作</th>
+              <th style="width: 60%">公司名</th>
             </tr>
           </thead>
           <tbody>
@@ -143,8 +163,14 @@
                   删除
                 </a-button>
               </td>
-              <td>广州永沛房地产开发有限公司</td>
-              <td>100</td>
+              <td>
+                <a-select
+                  :disabled="type === 'view'"
+                  placeholder="请选择"
+                  v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                  <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
+                </a-select>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -156,7 +182,7 @@
         <table>
           <thead>
             <tr>
-              <th colspan="3">
+              <th colspan="2">
                 <a-button :disabled="type === 'view'" icon="plus">
                   新增
                 </a-button>
@@ -166,9 +192,8 @@
               </th>
             </tr>
             <tr>
-              <th style="width: 30%">操作</th>
-              <th style="width: 40%">公司名</th>
-              <th style="width: 40%">百分比</th>
+              <th style="width: 40%">操作</th>
+              <th style="width: 60%">公司名</th>
             </tr>
           </thead>
           <tbody>
@@ -178,8 +203,14 @@
                   删除
                 </a-button>
               </td>
-              <td>广州永沛房地产开发有限公司</td>
-              <td>100</td>
+              <td>
+                <a-select
+                  :disabled="type === 'view'"
+                  placeholder="请选择"
+                  v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                  <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
+                </a-select>
+              </td>
             </tr>
           </tbody>
         </table>
