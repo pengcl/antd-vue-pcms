@@ -1,23 +1,6 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <div class="table-page-search-wrapper">
-        <a-form layout="inline">
-          <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
-              <a-form-item label="项目">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">广佛新世界第一期</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24"></a-col>
-            <a-col :md="8" :sm="24">
-              <a-button type="success" style="float: right">审批记录</a-button>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
 
       <s-table
         style="margin-top: 10px"
@@ -40,9 +23,9 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text,record">
           <template>
-            <a-button type="success" icon="file-text" title="检视" @click="handleToItem">
+            <a-button type="success" icon="file-text" title="检视" @click="handleToItem(record)">
             </a-button>
             <a-button type="primary" icon="form" style="margin-left: 4px" title="编辑" @click="handleToEdit">
             </a-button>
@@ -79,8 +62,8 @@
             scopedSlots: { customRender: 'action' }
         },
         {
-            title:'项目代码',
-            dataIndex:'projectNo'
+            title: '项目代码',
+            dataIndex: 'projectNo'
         },
         {
             title: '项目名称',
@@ -182,8 +165,8 @@
             }
         },
         methods: {
-            handleToItem () {
-                this.$router.push({ path: '/change/vo/item/1' })
+            handleToItem (record) {
+                this.$router.push({ path: `/cost/resolve/item/${record.id}` })
             },
             handleToEdit () {
                 this.$router.push({ path: '/change/vo/edit/1' })

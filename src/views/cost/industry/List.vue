@@ -2,7 +2,7 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form layout="inline">
+        <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
@@ -18,7 +18,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success">新增</a-button>
+        <a-button type="success" @click="handleToAdd">新增</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="handleAdd">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -45,15 +45,15 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text, record">
           <template>
-            <a-button type="success" icon="file-text" title="查看" @click="handleToItem"></a-button>
+            <a-button type="success" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
             <a-button
               type="primary"
               icon="form"
               style="margin-left: 4px"
               title="编辑"
-              @click="handleToEdit"></a-button>
+              @click="handleToEdit(record)"></a-button>
             <a-button
               type="danger"
               icon="delete"
@@ -72,6 +72,40 @@
         @ok="handleOk"
       />
       <step-by-step-modal ref="modal" @ok="handleOk"/>
+
+      <a-row>
+        <a-col :md="12" :sm="24">
+          <a-button type="success">新增预算</a-button>
+          <a-button type="danger" style="margin-left: 10px">删除预算</a-button>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form :form="form" :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
+            <a-row>
+              <a-col :md="12" :sm="24">
+                <a-form-item label="招标盈余">
+                  300.00
+                </a-form-item>
+              </a-col>
+              <a-col :md="12" :sm="24">
+                <a-form-item label="预计变更">
+                  300.00
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form>
+        </a-col>
+      </a-row>
+      <s-table
+        style="margin-top: 5px"
+        ref="table"
+        size="default"
+        rowKey="key"
+        bordered
+        :columns="_columns"
+        :data="loadData"
+        :alert="false"
+        showPagination="auto"
+      ></s-table>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -116,6 +150,34 @@
         }
     ]
 
+    const _columns = [
+        {
+            title: '业态成本中心',
+            dataIndex: 'action',
+        },
+        {
+            title: '科目名称',
+            dataIndex: 'no'
+        },
+        {
+            title: '行业',
+            dataIndex: 'industry',
+        },
+        {
+            title: '金额',
+            dataIndex: 'callNo',
+            scopedSlots: { customRender: 'callNo' }
+        },
+        {
+            title: '招投标包',
+            dataIndex: 'createAt',
+        },
+        {
+            title: '合同',
+            dataIndex: 'approvalStatus',
+        }
+    ]
+
     const statusMap = {
         0: {
             status: 'default',
@@ -145,6 +207,7 @@
         },
         data () {
             this.columns = columns
+            this._columns = _columns
             return {
                 // create model
                 visible: false,
@@ -187,11 +250,14 @@
             }
         },
         methods: {
-            handleToItem () {
-                this.$router.push({ path: '/contract/item/1' })
+            handleToItem (record) {
+                this.$router.push({ path: `/cost/industry/item/${record.id}?type=view` })
             },
-            handleToEdit () {
-                this.$router.push({ path: '/contract/edit/1' })
+            handleToEdit (record) {
+                this.$router.push({ path: `/cost/industry/item/${record.id}?type=edit` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: '/cost/industry/edit' })
             },
             handleAdd () {
                 this.mdl = null

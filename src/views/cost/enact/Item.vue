@@ -1,29 +1,6 @@
 <template>
   <page-header-wrapper :property="{}">
     <a-card :bordered="false">
-      <div class="table-page-search-wrapper">
-        <a-form layout="inline">
-          <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
-              <a-form-item label="项目">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">广佛新世界第一期</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="状态">
-                编制中
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-button type="success">预算汇总</a-button>
-              <a-button type="success" style="margin-left: 20px">审批记录</a-button>
-              <a-button type="success" style="margin-left: 20px">导入导出</a-button>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
 
       <s-table
         style="margin-top: 5px"
@@ -44,7 +21,7 @@
           <template>
             <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
             </a-button>
-            <!--<a-button
+            <a-button
               @click="handleToEdit(record)"
               type="primary"
               icon="form"
@@ -57,10 +34,24 @@
               icon="plus-square"
               style="margin-left: 4px"
               title="审批记录">
-            </a-button>-->
+            </a-button>
           </template>
         </span>
       </s-table>
+
+      <a-row>
+        <a-col :md="12" :sm="24">
+          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
+          <a-button type="success">储存</a-button>
+          <a-button type="danger" style="margin-left: 5px">关闭</a-button>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-button-group style="float: right">
+            <a-button type="success" style="margin-right: 10px">导入导出</a-button>
+            <a-button type="success">审批记录</a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -77,7 +68,6 @@
             title: '科目代码',
             dataIndex: 'action',
             width: '150px',
-            scopedSlots: { customRender: 'action' }
         },
         {
             title: '科目名称',
@@ -120,7 +110,7 @@
     }
 
     export default {
-        name: 'ProjectList',
+        name: 'Item',
         components: {
             STable,
             Ellipsis,
@@ -172,13 +162,13 @@
         },
         methods: {
             handleToItem (record) {
-                this.$router.push({ path: `/cost/enact/item/${record.id}?type=view` })
+                this.$router.push({ path: `/project/item/${record.id}?type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit` })
+                this.$router.push({ path: `/project/item/${record.id}?type=edit` })
             },
             handleToAdd () {
-                this.$router.push({ path: `/cost/enact/item/0?type=add` })
+                this.$router.push({ path: `/project/item/0?type=add` })
             }
         }
     }
