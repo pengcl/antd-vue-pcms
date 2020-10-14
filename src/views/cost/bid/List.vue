@@ -18,7 +18,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success">新增工程招标包</a-button>
+        <a-button type="success" @click="handleToAdd">新增工程招标包</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="handleAdd">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -45,15 +45,15 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text,record">
           <template>
-            <a-button type="success" icon="file-text" title="查看" @click="handleToItem"></a-button>
+            <a-button type="success" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
             <a-button
               type="primary"
               icon="form"
               style="margin-left: 4px"
               title="编辑"
-              @click="handleToEdit"></a-button>
+              @click="handleToEdit(record)"></a-button>
             <a-button
               type="danger"
               icon="delete"
@@ -187,11 +187,14 @@
             }
         },
         methods: {
-            handleToItem () {
-                this.$router.push({ path: '/contract/item/1' })
+            handleToItem (record) {
+                this.$router.push({ path: `/cost/bid/item/${record.id}?type=view` })
             },
-            handleToEdit () {
-                this.$router.push({ path: '/contract/edit/1' })
+            handleToEdit (record) {
+                this.$router.push({ path: `/cost/bid/item/${record.id}?type=edit` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: '/cost/bid/edit' })
             },
             handleAdd () {
                 this.mdl = null

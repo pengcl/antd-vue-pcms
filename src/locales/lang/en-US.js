@@ -43,11 +43,18 @@ const locale = {
   'menu.change.vo.list': 'VO',
   'menu.change.vo.item': 'VO detail',
   'menu.change.vo.edit': 'VO edit',
+
   'menu.cost': 'Costs',
   'menu.cost.enact.list': 'Enact',
+  'menu.cost.enact.item': 'Enact Detail',
   'menu.cost.resolve.list': 'Resolve',
+  'menu.cost.resolve.item':'Resolve Detail',
   'menu.cost.industry.list': 'Industry',
+  'menu.cost.industry.edit': 'Industry Edit',
+  'menu.cost.industry.item': 'Industry Detail',
   'menu.cost.bid.list': 'Bid',
+  'menu.cost.bid.edit': 'Bid Edit',
+  'menu.cost.bid.item': 'Bid Detail',
 
   'menu.pay': 'Pay',
   'menu.pay.signed': 'Pay signed',

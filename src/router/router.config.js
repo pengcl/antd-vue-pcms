@@ -126,10 +126,24 @@ export const asyncRouterMap = [
             meta: { title: 'menu.cost.enact.list', keepAlive: true, permission: ['cost'] }
           },
           {
+            path: '/cost/enact/item/:id',
+            hidden: true,
+            name: 'CostEnactItem',
+            component: () => import('@/views/cost/enact/Item'),
+            meta: { title: 'menu.cost.enact.item', keepAlive: true, permission: ['cost'] }
+          },
+          {
             path: '/cost/resolve/list',
             name: 'CostResolveList',
             component: () => import('@/views/cost/resolve/List'),
             meta: { title: 'menu.cost.resolve.list', keepAlive: true, permission: ['cost'] }
+          },
+          {
+            path: '/cost/resolve/item/:id',
+            name: 'CostResolveItem',
+            hidden: true,
+            component: () => import('@/views/cost/resolve/Item'),
+            meta: { title: 'menu.cost.resolve.item', keepAlive: true, permission: ['cost'] }
           },
           {
             path: '/cost/industry/list',
@@ -138,10 +152,38 @@ export const asyncRouterMap = [
             meta: { title: 'menu.cost.industry.list', keepAlive: true, permission: ['cost'] }
           },
           {
+            path: '/cost/industry/edit',
+            name: 'CostIndustryEdit',
+            hidden: true,
+            component: () => import('@/views/cost/industry/Edit'),
+            meta: { title: 'menu.cost.industry.edit', keepAlive: true, permission: ['cost'] }
+          },
+          {
+            path: '/cost/industry/item/:id',
+            name: 'CostIndustryItem',
+            hidden: true,
+            component: () => import('@/views/cost/industry/Item'),
+            meta: { title: 'menu.cost.industry.item', keepAlive: true, permission: ['cost'] }
+          },
+          {
             path: '/cost/bid/list',
             name: 'CostBidList',
             component: () => import('@/views/cost/bid/List'),
             meta: { title: 'menu.cost.bid.list', keepAlive: true, permission: ['cost'] }
+          },
+          {
+            path: '/cost/bid/edit',
+            name: 'CostBidEdit',
+            hidden: true,
+            component: () => import('@/views/cost/bid/Edit'),
+            meta: { title: 'menu.cost.bid.edit', keepAlive: true, permission: ['cost'] }
+          },
+          {
+            path: '/cost/bid/item/:id',
+            name: 'CostBidItem',
+            hidden: true,
+            component: () => import('@/views/cost/bid/Item'),
+            meta: { title: 'menu.cost.bid.edit', keepAlive: true, permission: ['cost'] }
           }
         ]
       },
@@ -417,7 +459,7 @@ export const asyncRouterMap = [
         path: '/settings',
         name: 'settings',
         component: () => import('@/views/settings/Index'),
-        meta: { title: 'menu.settings', icon: 'appstore', permission: [ 'settings' ] },
+        meta: { title: 'menu.settings', icon: 'appstore', permission: ['settings'] },
         redirect: '/settings/base',
         hideChildrenInMenu: true,
         children: [
@@ -425,31 +467,31 @@ export const asyncRouterMap = [
             path: '/settings/base',
             name: 'BaseSettings',
             component: () => import('@/views/settings/BaseSetting'),
-            meta: { title: 'menu.settings.base', hidden: true, permission: [ 'settings' ] }
+            meta: { title: 'menu.settings.base', hidden: true, permission: ['settings'] }
           },
           {
             path: '/settings/security',
             name: 'SecuritySettings',
             component: () => import('@/views/settings/Security'),
-            meta: { title: 'menu.settings.security', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+            meta: { title: 'menu.settings.security', hidden: true, keepAlive: true, permission: ['settings'] }
           },
           {
             path: '/settings/custom',
             name: 'CustomSettings',
             component: () => import('@/views/settings/Custom'),
-            meta: { title: 'menu.settings.custom', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+            meta: { title: 'menu.settings.custom', hidden: true, keepAlive: true, permission: ['settings'] }
           },
           {
             path: '/settings/binding',
             name: 'BindingSettings',
             component: () => import('@/views/settings/Binding'),
-            meta: { title: 'menu.settings.binding', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+            meta: { title: 'menu.settings.binding', hidden: true, keepAlive: true, permission: ['settings'] }
           },
           {
             path: '/settings/notification',
             name: 'NotificationSettings',
             component: () => import('@/views/settings/Notification'),
-            meta: { title: 'menu.settings.notification', hidden: true, keepAlive: true, permission: [ 'settings' ] }
+            meta: { title: 'menu.settings.notification', hidden: true, keepAlive: true, permission: ['settings'] }
           }
         ]
       }
