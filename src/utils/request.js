@@ -30,9 +30,9 @@ const errorHandler = (error) => {
         description: 'Authorization verification failed'
       })
       if (token) {
-        store.dispatch('Logout').then(() => {
+         store.dispatch('Logout').then(() => {
           setTimeout(() => {
-            window.location.reload()
+             window.location.reload()
           }, 1500)
         })
       }
@@ -47,7 +47,7 @@ request.interceptors.request.use(config => {
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
   if (token) {
-    config.headers['Access-Token'] = token
+    config.headers['AccessToken'] = token
   }
   return config
 }, errorHandler)

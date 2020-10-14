@@ -39,7 +39,7 @@ Overview
 > Note:  [Yarn](https://yarnpkg.com/) package management is recommended, the exact same version loaded with the demo site of this project (yarn.lock) . but you can also use npm
 
 
-### Project setup
+### ProjectService setup
 
 - Clone repo
 ```bash

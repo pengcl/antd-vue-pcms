@@ -65,3 +65,13 @@ export function removeLoadingAnimate (id = '', timeout = 1500) {
     document.body.removeChild(document.getElementById(id))
   }, timeout)
 }
+
+export function fixedList (res, params) {
+  const result = {}
+  result.pageSize = params.pageSize
+  result.pageNo = params.pageNo
+  result.totalPage = Math.ceil(res.result.data.totalCount / params.pageSize)
+  result.totalCount = res.result.data.totalCount
+  result.data = res.result.data.items
+  return result
+}

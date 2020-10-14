@@ -1,9 +1,8 @@
 import request from '@/utils/request'
-import { API_PREFIX } from '@/api/prefix'
 
 const userApi = {
-  Login: API_PREFIX.prod + '/auth/login',
-  list: API_PREFIX.prod + '/api/services/app/RegionalOffice/GetAllList',
+  Login: '/api/TokenAuth/Authenticate',
+  list: '/api/services/app/RegionalOffice/GetAllList',
   Logout: '/auth/logout',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',
@@ -11,14 +10,14 @@ const userApi = {
   SendSms: '/account/sms',
   SendSmsErr: '/account/sms_err',
   // get my info
-  UserInfo: '/user/info',
+  UserInfo: '/api/TokenAuth/GetUserRoleInfo',
   UserMenu: '/user/nav'
 }
 
 /**
  * login func
  * parameter: {
- *     username: '',
+ *     userNameOrEmailAddress: '',
  *     password: '',
  *     remember_me: true,
  *     captcha: '12345'
@@ -45,10 +44,7 @@ export function getSmsCaptcha (parameter) {
 export function getInfo () {
   return request({
     url: userApi.UserInfo,
-    method: 'get',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    method: 'get'
   })
 }
 
@@ -62,10 +58,7 @@ export function getCurrentUserNav () {
 export function logout () {
   return request({
     url: userApi.Logout,
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    method: 'post'
   })
 }
 

@@ -71,7 +71,7 @@
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
 
-  import { Project } from '@/views/project/project'
+  import { ProjectService } from '@/views/project/project.service'
 
   const columns = [
     {
@@ -169,11 +169,7 @@
         queryParam: {},
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-          Project.list().then(res => {
-            console.log(res)
-          })
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
           return getServiceList(requestParameters)
             .then(res => {
               return res.result
@@ -193,6 +189,9 @@
     },
     created () {
       getRoleList({ t: new Date() })
+      ProjectService.list().then(res => {
+        console.log(res)
+      })
     },
     computed: {
       rowSelection () {

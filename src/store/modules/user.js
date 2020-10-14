@@ -1,9 +1,9 @@
 import storage from 'store'
 import { login, getInfo, logout } from '@/views/user/user.service'
-import { Regional as regionalSvc } from '@/api/regional'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
-import { info } from '@/mock/services/user'
+/* import { info } from '@/mock/services/user' */
+import { INFO } from '@/mock/services/info'
 
 const user = {
   state: {
@@ -40,20 +40,9 @@ const user = {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           const result = response.result
-          storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', result.token)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
-    },
-
-    // 测试
-    Test ({ commit }) {
-      return new Promise((resolve, reject) => {
-        regionalSvc.list().then(response => {
-          resolve()
+          storage.set(ACCESS_TOKEN, result.data.accessToken, 7 * 24 * 60 * 60 * 1000)
+          commit('SET_TOKEN', result.data.accessToken)
+          resolve(result)
         }).catch(error => {
           reject(error)
         })
@@ -63,7 +52,8 @@ const user = {
     // 获取用户信息
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-         /* const result = info
+        const response = INFO
+        const result = response.result
 
         if (result.role && result.role.permissions.length > 0) {
           const role = result.role
@@ -84,15 +74,10 @@ const user = {
         commit('SET_NAME', { name: result.name, welcome: welcome() })
         commit('SET_AVATAR', result.avatar)
 
-        resolve({
-          code: 200,
-          message: '',
-          result
-        }) */
-
-          getInfo().then(response => {
-          console.log(response)
-          const result = response.result
+        resolve(response)
+        /* getInfo().then(response => {
+          console.log(response.result.data)
+          const result = response.result.data
 
           if (result.role && result.role.permissions.length > 0) {
             const role = result.role
@@ -116,7 +101,7 @@ const user = {
           resolve(response)
         }).catch(error => {
           reject(error)
-        })
+        }) */
       })
     },
 

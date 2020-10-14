@@ -1,11 +1,10 @@
 import request from '@/utils/request'
 
 const API = {
-  paged: '/api/services/app/RegionalOffice/GetPaged',
-  list: '/api/services/app/RegionalOffice/GetAllList'
+  list: '/api/services/app/Contract/GetContractListBySearch'
 }
 
-const Regional = {}
+const ContractService = {}
 
 /**
  * list func
@@ -14,12 +13,11 @@ const Regional = {}
  * @returns {*}
  */
 
-Regional.list = function list () {
-  console.log(API.list)
+ContractService.list = function list (parameter) {
   return request({
     url: API.list,
     method: 'get',
-    data: {}
+    params: parameter
   })
 }
 
@@ -34,12 +32,5 @@ Regional.list = function list () {
  * @param parameter
  * @returns {*}
  */
-Regional.paged = function (parameter) {
-  return request({
-    url: API.paged,
-    method: 'get',
-    data: parameter
-  })
-}
 
-export { Regional }
+export { ContractService }

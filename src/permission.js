@@ -24,11 +24,13 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     } else {
       // check login user.roles is null
+      console.log(store.getters.roles.length)
       if (store.getters.roles.length === 0) {
         // request login userInfo
         store
           .dispatch('GetInfo')
           .then(res => {
+            console.log(res)
             const roles = res.result && res.result.role
             // generate dynamic router
             store.dispatch('GenerateRoutes', { roles }).then(() => {

@@ -28,8 +28,8 @@
           type="text"
           placeholder="账户: admin"
           v-decorator="[
-            'username',
-            {rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
+            'userNameOrEmailAddress',
+            {initialValue: 'test01', rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
           ]"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -42,7 +42,7 @@
           placeholder="密码: admin or ant.design"
           v-decorator="[
             'password',
-            {rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
+            {initialValue: 'abc123', rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
           ]"
         >
           <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import md5 from 'md5'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 
@@ -119,15 +118,15 @@ export default {
 
         state.loginBtn = true
 
-        const validateFieldsKey = ['username', 'password']
+        const validateFieldsKey = ['userNameOrEmailAddress', 'password']
 
         validateFields(validateFieldsKey, { force: true }, (err, values) => {
           if (!err) {
             console.log('login form', values)
             const loginParams = { ...values }
-            delete loginParams.username
-            loginParams.username = values.username
-            loginParams.password = md5(values.password)
+            delete loginParams.userNameOrEmailAddress
+            loginParams.userNameOrEmailAddress = values.userNameOrEmailAddress
+            loginParams.password = values.password
             Login(loginParams)
               .then((res) => this.loginSuccess(res))
               .catch(err => this.requestFailed(err))

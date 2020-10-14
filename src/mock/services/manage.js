@@ -1,7 +1,7 @@
 import Mock from 'mockjs2'
 import { builder, getQueryParameters } from '../util'
 
-const totalCount = 5701
+const totalCount = 5702
 
 const serverList = (options) => {
   const parameters = getQueryParameters(options)
@@ -280,7 +280,7 @@ const radar = () => {
   ])
 }
 
-Mock.mock(/\/service/, 'get', serverList)
+Mock.mock(/\/servicess/, 'get', serverList)
 Mock.mock(/\/list\/search\/projects/, 'get', projects)
 Mock.mock(/\/workplace\/activity/, 'get', activity)
 Mock.mock(/\/workplace\/teams/, 'get', teams)

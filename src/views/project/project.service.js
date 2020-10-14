@@ -1,12 +1,11 @@
 import request from '@/utils/request'
-import { API_PREFIX } from '@/api/prefix'
 
 const API = {
-  paged: API_PREFIX.prod + '/api/services/app/RegionalOffice/GetPaged',
-  list: API_PREFIX.prod + '/api/services/app/Project/GetProjects'
+  paged: '/api/services/app/RegionalOffice/GetPaged',
+  list: '/api/services/app/Project/GetProjects'
 }
 
-const Project = {}
+const ProjectService = {}
 
 /**
  * list func
@@ -15,12 +14,11 @@ const Project = {}
  * @returns {*}
  */
 
-Project.list = function list () {
-  console.log(API.list)
+ProjectService.list = function list (parameter) {
   return request({
     url: API.list,
-    method: 'get',
-    data: {}
+    method: 'GET',
+    data: parameter
   })
 }
 
@@ -35,7 +33,7 @@ Project.list = function list () {
  * @param parameter
  * @returns {*}
  */
-Project.paged = function (parameter) {
+ProjectService.paged = function (parameter) {
   return request({
     url: API.paged,
     method: 'get',
@@ -43,4 +41,4 @@ Project.paged = function (parameter) {
   })
 }
 
-export { Project }
+export { ProjectService }
