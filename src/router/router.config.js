@@ -206,7 +206,7 @@ export const asyncRouterMap = [
             name: 'ContractItem',
             component: () => import('@/views/contract/Item'),
             hidden: true,
-            meta: { title: 'menu.contract.item', keepAlive: false, permission: ['contract'] }
+            meta: { title: 'menu.contract.item', keepAlive: true, permission: ['contract'] }
           },
           {
             path: '/contract/edit',
@@ -282,6 +282,13 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/change/vo/Edit'),
             meta: { title: 'menu.change.vo.edit', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/certificate',
+            name: 'ChangeCertificate',
+            hidden: true,
+            component: () => import('@/views/change/Certificate'),
+            meta: { title: 'menu.change.certificate', keepAlive: true, permission: ['change'] }
           }
         ]
       },

@@ -12,11 +12,35 @@
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
-              <a-button icon="search" type="primary" @click="handleAdd"></a-button>
+              <a-button icon="search" type="primary" @click="show = !show"></a-button>
             </a-col>
           </a-row>
         </a-form>
       </div>
+
+      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+        <a-row :gutter="48">
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合同名称">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合同编号">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="乙方单位">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-button type="success">搜索</a-button>
+            <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+          </a-col>
+        </a-row>
+      </a-form>
 
       <s-table
         style="margin-top: 5px"
@@ -43,7 +67,8 @@
           <template>
             <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem">
             </a-button>
-            <a-button class="btn-info" type="primary" icon="form" style="margin-left: 4px" title="编辑" @click="handleToEdit">
+            <a-button class="btn-info" type="primary" icon="form" style="margin-left: 4px" title="编辑"
+                      @click="handleToEdit">
             </a-button>
             <a-button type="primary" class="btn-info" icon="plus-square" style="margin-left: 4px" title="审批记录">
             </a-button>
@@ -60,6 +85,21 @@
         @ok="handleOk"
       />
       <step-by-step-modal ref="modal" @ok="handleOk"/>
+
+      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-row :gutter="48">
+          <a-col :md="12" :sm="24">
+            <a-form-item label="累计变更金额">
+              66,666
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="累计变更比例">
+              2.64%
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -74,6 +114,15 @@
 
     const columns = [
         {
+            title: '审批状态',
+            dataIndex: 'approvalStatus',
+            scopedSlots: { customRender: 'approvalStatus' }
+        },
+        {
+            title: '结算状态',
+            dataIndex: 'payStatus',
+        },
+        {
             title: '合同编号',
             dataIndex: 'no'
         },
@@ -81,11 +130,6 @@
             title: '合同名称',
             dataIndex: 'description',
             scopedSlots: { customRender: 'description' }
-        },
-        {
-            title: '审批状态',
-            dataIndex: 'approvalStatus',
-            scopedSlots: { customRender: 'approvalStatus' }
         },
         {
             title: '币种',
@@ -142,6 +186,7 @@
             this.columns = columns
             return {
                 // create model
+                show: false,
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
@@ -269,3 +314,15 @@
     }
 </script>
 
+<style lang="less" scoped>
+  .search-form {
+    background-color: #1E9FF2;
+    padding: 20px;
+    border-radius: 0.35rem;
+
+    /deep/ .ant-form-item-label label {
+      color: #fff;
+    }
+  }
+
+</style>
