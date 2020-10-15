@@ -23,6 +23,7 @@ const locale = {
   'menu.supplier.purchase': 'Purchase supplier',
   'menu.supplier.purchase.list': 'Supplier list',
   'menu.supplier.purchase.item': 'Supplier detail',
+  'menu.supplier.purchase.edit': 'Supplier Edit',
   'menu.supplier.other': 'Other supplier',
   'menu.supplier.other.list': 'Supplier list',
   'menu.supplier.other.item': 'Supplier detail',

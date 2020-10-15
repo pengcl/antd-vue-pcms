@@ -3,11 +3,11 @@
     <a-card :bordered="false">
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
-          <a-col :md="12" :sm="24">
-            <a-form-item label="供应商编号">
-              <a-input></a-input>
-            </a-form-item>
-          </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="供应商编号">
+                <a-input></a-input>
+              </a-form-item>
+            </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商名称">
               <a-input></a-input>
@@ -77,6 +77,16 @@
             <table>
               <thead>
               <tr>
+                <th colspan="12">
+                  <a-button icon="plus">
+                    添加员工
+                  </a-button>
+                  <a-button icon="stop">
+                    重置
+                  </a-button>
+                </th>
+              </tr>
+              <tr>
                 <th colspan="12">公司员工</th>
               </tr>
               <tr>
@@ -120,24 +130,28 @@
             <table>
               <thead>
               <tr>
-                <th colspan="7">变更信息</th>
+                <th colspan="4">
+                  <a-upload
+                  >
+                    <a-button>请选择</a-button>
+                  </a-upload>
+                </th>
               </tr>
               <tr>
-                <th style="width: 10%">审核状态</th>
-                <th style="width: 10%">供应商名称</th>
-                <th style="width: 10%">变更类型</th>
-                <th style="width: 14%">操作人</th>
-                <th style="width: 14%">操作时间</th>
-                <th style="width: 14%">变更备注</th>
-                <th style="width: 14%">审批时间</th>
+                <th colspan="4">公司介绍</th>
+              </tr>
+              <tr>
+                <th style="width: 25%">操作</th>
+                <th style="width: 25%">公司介绍文件</th>
+                <th style="width: 25%">上传人</th>
+                <th style="width: 25%">上传日期</th>
               </tr>
               </thead>
               <tbody>
               <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>
+                  <a-button type="danger" icon="delete"></a-button>
+                </td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -149,66 +163,30 @@
             <table>
               <thead>
               <tr>
-                <th colspan="6">合同信息</th>
+                <th colspan="4">
+                  <a-button icon="plus">
+                    添加银行账号
+                  </a-button>
+                  <a-button icon="stop">
+                    重置
+                  </a-button>
+                </th>
               </tr>
               <tr>
-                <th style="width: 20%">合同编号</th>
-                <th style="width: 20%">合同名称</th>
-                <th style="width: 20%">审核状态</th>
-                <th style="width: 20%">签约日期</th>
-                <th style="width: 10%">币种</th>
-                <th style="width: 10%">结算状态</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="4">银行信息</th>
+                <th colspan="4">银行账号</th>
               </tr>
               <tr>
+                <th style="width: 25%">操作</th>
                 <th style="width: 25%">开户银行</th>
                 <th style="width: 25%">银行账号</th>
                 <th style="width: 25%">银行地址</th>
-                <th style="width: 25%">备注</th>
               </tr>
               </thead>
               <tbody>
               <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="3">附件信息</th>
-              </tr>
-              <tr>
-                <th style="width: 30%">文档名称</th>
-                <th style="width: 20%">上传人</th>
-                <th style="width: 20%">上传日期</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
+                <td>
+                  <a-button type="danger" icon="delete"></a-button>
+                </td>
                 <td></td>
                 <td></td>
                 <td></td>
