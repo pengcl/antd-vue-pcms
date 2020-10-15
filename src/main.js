@@ -19,7 +19,8 @@ import bootstrap from './core/bootstrap'
 import './core/lazy_use' // use lazy load components
 import './permission' // permission control
 import './utils/filter' // global filter
-import './global.less' // global style
+import './global.less'
+import { SwaggerService } from '@/api/swagger.service' // global style
 
 Vue.config.productionTip = false
 
@@ -31,12 +32,14 @@ Vue.component('page-container', PageHeaderWrapper)
 Vue.component('page-header-wrapper', PageHeaderWrapper)
 
 window.umi_plugin_ant_themeVar = themePluginConfig.theme
-
-new Vue({
-  router,
-  store,
-  i18n,
-  // init localstorage, vuex
-  created: bootstrap,
-  render: h => h(App)
-}).$mount('#app')
+SwaggerService.getConfig().then(res => {
+  SwaggerService.set(res)
+  new Vue({
+    router,
+    store,
+    i18n,
+    // init localstorage, vuex
+    created: bootstrap,
+    render: h => h(App)
+  }).$mount('#app')
+})

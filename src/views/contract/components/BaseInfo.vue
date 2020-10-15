@@ -1,14 +1,17 @@
 <template>
-  <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
         <a-form-item
           label="项目名称(中文)"
         >
-          <a-input
+          <a-select
             :disabled="type === 'view'"
-            placeholder="请填写项目名称(中文)"
-            v-decorator="['name', { initialValue: '', rules: [{required: true, message: '请填写项目名称(中文)'}] }]"/>
+            placeholder="请选择项目名称(中文)"
+            v-model="data.contract.projectID"
+            v-decorator="[data.contract.projectID, { rules: [{required: true, message: '请选择项目名称(中文)'}] }]">
+            <a-select-option :value="data.contract.projectID">ant-design@alipay.com</a-select-option>
+          </a-select>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -18,7 +21,8 @@
           <a-select
             :disabled="type === 'view'"
             placeholder="请选择地区"
-            v-decorator="['paymentUser', { rules: [{required: true, message: '请选择城市'}] }]">
+            v-model="data.contract.tenderPackageItemID"
+            v-decorator="[data.contract.tenderPackageItemID, { rules: [{required: true, message: '请选择城市'}] }]">
             <a-select-option value="1">ant-design@alipay.com</a-select-option>
           </a-select>
         </a-form-item>
@@ -29,9 +33,13 @@
         >
           <a-select
             :disabled="type === 'view'"
-            placeholder="请选择地区"
-            v-decorator="['paymentUser', { rules: [{required: true, message: '请选择城市'}] }]">
-            <a-select-option value="1">ant-design@alipay.com</a-select-option>
+            placeholder="请选择合同类型"
+            v-model="data.contract.contractCategory"
+            v-decorator="[data.contract.contractCategory, { rules: [{required: true, message: '请选择合同类型'}] }]">
+            <a-select-option
+              v-for="type in selection.types"
+              :value="type.id"
+              :key="type.id">{{ type.nameCN }}</a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -41,9 +49,10 @@
         >
           <a-select
             :disabled="type === 'view'"
-            placeholder="请选择项目状态"
-            v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-            <a-select-option value="1">ant-design@alipay.com</a-select-option>
+            placeholder="请选择密级"
+            v-model="data.contract.secretLevelID"
+            v-decorator="['paymentUser', { rules: [{required: true, message: '请选择密级'}] }]">
+            <a-select-option :value="data.contract.secretLevelID">ant-design@alipay.com</a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -53,9 +62,10 @@
         >
           <a-select
             :disabled="type === 'view'"
-            placeholder="请选择项目状态"
-            v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-            <a-select-option value="1">ant-design@alipay.com</a-select-option>
+            placeholder="请选择原合同"
+            v-model="data.orgContractGuid"
+            v-decorator="[data.orgContractGuid, { rules: [{required: true, message: '请选择原合同'}] }]">
+            <a-select-option :value="1">ant-design@alipay.com</a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -65,8 +75,9 @@
         >
           <a-input
             :disabled="type === 'view'"
-            placeholder="请填写房产项目名称(英文)"
-            v-decorator="['name', { initialValue: '', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
+            placeholder="请填写本地合同编号"
+            v-model="data.contract.localContractNo"
+            v-decorator="[data.contract.localContractNo, { initialValue: '', rules: [{required: true, message: '请填写本地合同编号'}] }]"/>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -75,8 +86,9 @@
         >
           <a-input
             :disabled="type === 'view'"
-            placeholder="请填写房产项目名称(英文)"
-            v-decorator="['name', { initialValue: '', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
+            placeholder="请填写合同名称"
+            v-model="data.contract.contractName"
+            v-decorator="[data.contract.contractName, { initialValue: '', rules: [{required: true, message: '请填写合同名称'}] }]"/>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -86,7 +98,8 @@
           <a-select
             :disabled="type === 'view'"
             placeholder="请选择成本预算分类"
-            v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+            v-model="data.contract.contractType"
+            v-decorator="[data.contract.contractType, { rules: [{required: true, message: '请选择成本预算分类'}] }]">
             <a-select-option value="1">工程</a-select-option>
           </a-select>
         </a-form-item>
@@ -129,7 +142,7 @@
                 </a-select>
               </td>
               <td>
-                <a-input-number></a-input-number>
+                <a-input-number placeholder="请填写" :disabled="type === 'view'"></a-input-number>
               </td>
             </tr>
           </tbody>
@@ -246,15 +259,27 @@
 </template>
 
 <script>
-  export default {
+import { ContractService } from '@/views/contract/contract.service'
+
+export default {
     name: 'BaseInfo',
     data () {
+      console.log(this.form)
       return {
-        form: this.$form.createForm(this),
+        selection: {},
         loading: false
       }
     },
+    created () {
+      ContractService.types().then(res => {
+        this.selection.types = res.result.data
+      })
+    },
     props: {
+      data: {
+        type: Object,
+        default: null
+      },
       type: {
         type: String,
         default: 'view'
@@ -274,6 +299,7 @@
     border-radius: 3px 3px 0 0;
     border-style: solid;
     border-color: #ccc;
+
     thead {
       tr {
         th {
@@ -281,12 +307,14 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+
           button {
             margin-right: 10px;
           }
         }
       }
     }
+
     tbody {
       tr {
         td {
@@ -294,6 +322,7 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+
           button {
             margin-right: 10px;
           }

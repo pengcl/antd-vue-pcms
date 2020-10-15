@@ -1,27 +1,27 @@
 <template>
   <page-header-wrapper>
-    <a-card :bordered="false">
+    <a-card v-if="form" :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="24" :sm="24">
               <a-form-item label="项目编码">
-                HZO-HZ4
+                {{ form.contract.projectID }}
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
               <a-form-item label="房产项目名称(中)">
-                杭州望江新城項目 (Testing)
+                {{ form.contract.contractName }}
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="中央合同编号">
-                C-HZO-HZ4-ORG-14
+                {{ form.contract.contractNo }}
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="合同名称">
-                20200909
+                {{ form.contract.contractName }}
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24"></a-col>
@@ -51,22 +51,22 @@
 
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="基本资料">
-          <base-info :type="type" :id="id"/>
+          <base-info :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="2" tab="合同信息">
-          <contract-info title="合同信息" value="8个任务" :bordered="true"/>
+          <contract-info :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="3" tab="预算调整">
-          <budget-list title="预算调整" value="8个任务" :bordered="true"/>
+          <budget-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="4" tab="合同量清单">
-          <contract-list title="合同量清单" value="8个任务" :bordered="true"/>
+          <contract-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="5" tab="付款条款">
-          <pay-info title="付款条款" value="8个任务" :bordered="true"/>
+          <pay-info :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="6" tab="附件">
-          <attachment-list title="附件" value="8个任务" :bordered="true"/>
+          <attachment-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -100,22 +100,31 @@
   import BudgetList from '@/views/contract/components/BudgetList'
   import AttachmentList from '@/views/contract/components/AttachmentList'
   import { FooterToolBar } from '@/components'
+  import { ContractService } from '@/views/contract/contract.service'
+  import { SwaggerService } from '@/api/swagger.service'
 
-  const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
   export default {
     name: 'ContractItem',
     components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
     data () {
       return {
-        baseForm: this.$form.createForm(this),
-        memberForm: this.$form.createForm(this),
         loading: false,
         value: '',
-        dataSource: [],
-        selectedItems: []
+        dto: { orgContractGuid: SwaggerService.getDtoItem('ContractAllInfo', 'orgContractGuid'), contract: SwaggerService.getDto('Contract'), contractParty: SwaggerService.getDto('ContractParty') },
+        form: { orgContractGuid: null, contract: SwaggerService.getForm('Contract'), contractPartylst: SwaggerService.getForm('ContractParty') }
       }
     },
+    beforeCreate () {
+      /* this.dto = { contract: SwaggerService.getDto('Contract') }
+      console.log(this.dto) */
+    },
     created () {
+      console.log(this.dto)
+      ContractService.item(this.id).then(res => {
+        this.form.orgContractGuid = res.result.data.orgContractGuid
+        this.form = SwaggerService.getValue(this.form, res.result.data)
+        console.log(this.form)
+      })
     },
     computed: {
       id () {
@@ -123,10 +132,10 @@
       },
       type () {
         return this.$route.query.type
-      },
-      filteredOptions () {
-        return OPTIONS.filter(o => !this.selectedItems.includes(o))
       }
+    },
+    watch: {
+
     },
     methods: {
       approve () {

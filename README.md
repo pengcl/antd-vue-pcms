@@ -74,7 +74,7 @@ yarn run lint
 
 - [Vue-cli3](https://cli.vuejs.org/guide/) used by the project.
 
-- Disable Eslint (not recommended): remove `eslintConfig`  field in `package.json`  and `vue.config.js` field `lintOnSave: false`
+- Disable Eslint (not recommended): remove `eslintConfig`  field in `package.json`  and `vue.swagger.service.js` field `lintOnSave: false`
 
 - Load on Demand `/src/main.js` L14, in `import './core/lazy_use'`, `import './core/use''`. more [load-on-demand.md](./docs/load-on-demand.md)
 

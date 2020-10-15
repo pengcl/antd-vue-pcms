@@ -80,7 +80,7 @@
 <script>
   import moment from 'moment'
   import { STable, Ellipsis } from '@/components'
-  import { getRoleList, getServiceList } from '@/api/manage'
+  import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
@@ -179,7 +179,6 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
           return ContractService.list(requestParameters).then(res => {
             return fixedList(res, requestParameters)
           })
@@ -209,10 +208,10 @@
     },
     methods: {
       handleToItem (record) {
-        this.$router.push({ path: `/contract/item/${record.id}?type=view` })
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },
       handleToEdit (record) {
-        this.$router.push({ path: `/contract/item/${record.id}?type=edit` })
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
       },
       handleToAdd () {
         this.$router.push({ path: '/contract/edit' })

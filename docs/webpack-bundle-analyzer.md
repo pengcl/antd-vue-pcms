@@ -8,7 +8,7 @@ $ npm install --save-dev webpack-bundle-analyzer
 $ yarn add webpack-bundle-analyzer -D
 ```
 
-配置文件 `vue.config.js` 增加 `configureWebpack.plugins` 参数
+配置文件 `vue.swagger.service.js` 增加 `configureWebpack.plugins` 参数
 
 ```
 const path = require('path')
@@ -19,7 +19,7 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-// vue.config.js
+// vue.swagger.service.js
 module.exports = {
   configureWebpack: {
     plugins: [

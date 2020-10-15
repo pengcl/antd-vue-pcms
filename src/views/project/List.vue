@@ -66,12 +66,13 @@
 
 <script>
   import { STable, Ellipsis } from '@/components'
-  import { getRoleList, getServiceList } from '@/api/manage'
+  import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
 
   import { ProjectService } from '@/views/project/project.service'
+  import { fixedList } from '@/utils/util'
 
   const columns = [
     {
@@ -82,32 +83,32 @@
     },
     {
       title: '项目编号',
-      dataIndex: 'no'
+      dataIndex: 'projectCode'
     },
     {
       title: '房产项目名称',
-      dataIndex: 'description',
-      scopedSlots: { customRender: 'description' }
+      dataIndex: 'projectName',
+      scopedSlots: { customRender: 'projectName' }
     },
     {
       title: '地区',
-      dataIndex: 'callNo',
-      scopedSlots: { customRender: 'callNo' }
+      dataIndex: 'projAddress',
+      scopedSlots: { customRender: 'projAddress' }
     },
     {
       title: '城市',
-      dataIndex: 'city',
-      scopedSlots: { customRender: 'city' }
+      dataIndex: 'cityID',
+      scopedSlots: { customRender: 'cityID' }
     },
     {
       title: '项目状态',
-      dataIndex: 'status',
-      scopedSlots: { customRender: 'status' }
+      dataIndex: 'projStatus',
+      scopedSlots: { customRender: 'projStatus' }
     },
     {
       title: '审批状态',
-      dataIndex: 'approvalStatus',
-      scopedSlots: { customRender: 'approvalStatus' }
+      dataIndex: 'status',
+      scopedSlots: { customRender: 'status' }
     },
     {
       title: '创建者',
@@ -116,7 +117,7 @@
     },
     {
       title: '创建日期',
-      dataIndex: 'createAt'
+      dataIndex: 'beginDate'
     },
     {
       title: '最后更新者',
@@ -170,10 +171,9 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return getServiceList(requestParameters)
-            .then(res => {
-              return res.result
-            })
+          return ProjectService.list(requestParameters).then(res => {
+            return fixedList(res, requestParameters)
+          })
         },
         selectedRowKeys: [],
         selectedRows: []
