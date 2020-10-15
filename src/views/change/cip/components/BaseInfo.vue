@@ -71,6 +71,19 @@
           <a-textarea></a-textarea>
         </a-form-item>
       </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-item label="变更类型">
+          <a-select
+            :disabled="type === 'view'"
+            placeholder="请选择"
+            v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+            <a-select-option value="1">现场管理</a-select-option>
+            <a-select-option value="2">设计变更</a-select-option>
+            <a-select-option value="3">暂转固</a-select-option>
+            <a-select-option value="4">其他变更</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="此工作指令按下述理由发出">
           <a-checkbox-group>
@@ -149,12 +162,22 @@
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
+        <a-form-item label="人工/材料差价累计">
+          <a-input-number></a-input-number> 元
+        </a-form-item>
+      </a-col>
+      <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务之累计费用 (已提交)">
           <a-input-number></a-input-number> 元
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务之累计费用 (已审批)">
+          <a-input-number></a-input-number> 元
+        </a-form-item>
+      </a-col>
+      <a-col :md="24" :sm="24">
+        <a-form-item label="延长顾问服务费用累计">
           <a-input-number></a-input-number> 元
         </a-form-item>
       </a-col>
@@ -176,6 +199,24 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="顾问评估日期">
           <a-date-picker></a-date-picker>
+        </a-form-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-item label="合同约定出差次数">
+          <a-input-number></a-input-number> 次
+        </a-form-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-item label="已出差">
+          <a-input-number></a-input-number> 次
+        </a-form-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-item label="本次申请出差">
+          <a-radio-group>
+            <a-radio value="1">是</a-radio>
+            <a-radio value="2">否</a-radio>
+          </a-radio-group>
         </a-form-item>
       </a-col>
     </a-row>

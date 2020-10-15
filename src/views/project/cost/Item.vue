@@ -2,7 +2,7 @@
   <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增项目' : '编辑项目'">
     <a-card :bordered="false">
       <div v-if="id !== '0'" class="table-page-search-wrapper">
-        <a-form layout="inline">
+        <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="成本中心编码">

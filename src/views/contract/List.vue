@@ -19,10 +19,45 @@
 
       <div class="table-operator">
         <a-button type="success" @click="handleToAdd">新增合同</a-button>
-        <a-button type="primary" style="margin-left: 5px" @click="handleAdd">
+        <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
       </div>
+
+      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+        <a-row :gutter="48">
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合同编号">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合同名称">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="供应商名称">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="提交状态">
+              <a-select
+                placeholder="请选择"
+                v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
+                <a-select-option value="1">草拟中</a-select-option>
+                <a-select-option value="2">已审批</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-button type="success">搜索</a-button>
+            <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+          </a-col>
+        </a-row>
+      </a-form>
+
 
       <s-table
         style="margin-top: 5px"
@@ -82,80 +117,80 @@
   import { STable, Ellipsis } from '@/components'
   import { getRoleList } from '@/api/manage'
 
-  import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import CreateForm from '@/views/list/modules/CreateForm'
-  import { ContractService } from '@/views/contract/contract.service'
-  import { fixedList } from '@/utils/util'
+    import StepByStepModal from '@/views/list/modules/StepByStepModal'
+    import CreateForm from '@/views/list/modules/CreateForm'
+    import { ContractService } from '@/views/contract/contract.service'
+    import { fixedList } from '@/utils/util'
 
-  const columns = [
-    {
-      title: '操作',
-      dataIndex: 'action',
-      width: '150px',
-      scopedSlots: { customRender: 'action' }
-    },
-    {
-      title: '合同编号',
-      dataIndex: 'contractNo'
-    },
-    {
-      title: '合同名称',
-      dataIndex: 'contractName',
-      scopedSlots: { customRender: 'contractName' }
-    },
-    {
-      title: '合同金额',
-      dataIndex: 'contractAmount',
-      scopedSlots: { customRender: 'contractAmount' }
-    },
-    {
-      title: '签约日期',
-      dataIndex: 'signDate',
-      scopedSlots: { customRender: 'signDate' }
-    },
-    {
-      title: '审批状态',
-      dataIndex: 'auditStatus',
-      scopedSlots: { customRender: 'auditStatus' }
-    },
-    {
-      title: '建立日期',
-      dataIndex: 'creationTime'
-    },
-    {
-      title: '建立者',
-      dataIndex: 'creatorUser',
-      scopedSlots: { customRender: 'creatorUser' }
-    },
-    {
-      title: '最后更新日期',
-      dataIndex: 'updatedAt'
-    },
-    {
-      title: '最后更新者',
-      dataIndex: 'updater',
-      scopedSlots: { customRender: 'updater' }
-    }
-  ]
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' }
+        },
+        {
+            title: '合同编号',
+            dataIndex: 'contractNo'
+        },
+        {
+            title: '合同名称',
+            dataIndex: 'contractName',
+            scopedSlots: { customRender: 'contractName' }
+        },
+        {
+            title: '合同金额',
+            dataIndex: 'contractAmount',
+            scopedSlots: { customRender: 'contractAmount' }
+        },
+        {
+            title: '签约日期',
+            dataIndex: 'signDate',
+            scopedSlots: { customRender: 'signDate' }
+        },
+        {
+            title: '审批状态',
+            dataIndex: 'auditStatus',
+            scopedSlots: { customRender: 'auditStatus' }
+        },
+        {
+            title: '建立日期',
+            dataIndex: 'creationTime'
+        },
+        {
+            title: '建立者',
+            dataIndex: 'creatorUser',
+            scopedSlots: { customRender: 'creatorUser' }
+        },
+        {
+            title: '最后更新日期',
+            dataIndex: 'updatedAt'
+        },
+        {
+            title: '最后更新者',
+            dataIndex: 'updater',
+            scopedSlots: { customRender: 'updater' }
+        }
+    ]
 
-  const statusMap = {
-    0: {
-      status: 'default',
-      text: '关闭'
-    },
-    1: {
-      status: 'processing',
-      text: '运行中'
-    },
-    2: {
-      status: 'success',
-      text: '已上线'
-    },
-    3: {
-      status: 'error',
-      text: '异常'
+    const statusMap = {
+        0: {
+            status: 'default',
+            text: '关闭'
+        },
+        1: {
+            status: 'processing',
+            text: '运行中'
+        },
+        2: {
+            status: 'success',
+            text: '已上线'
+        },
+        3: {
+            status: 'error',
+            text: '异常'
+        }
     }
-  }
 
   export default {
     name: 'ContractList',
@@ -169,6 +204,7 @@
       this.columns = columns
       return {
         // create model
+        show: false,
         visible: false,
         confirmLoading: false,
         mdl: null,
@@ -179,6 +215,7 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
+          console.log('loadData request parameters:', requestParameters)
           return ContractService.list(requestParameters).then(res => {
             return fixedList(res, requestParameters)
           })
@@ -208,10 +245,10 @@
     },
     methods: {
       handleToItem (record) {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+        this.$router.push({ path: `/contract/item/${record.id}?type=view` })
       },
       handleToEdit (record) {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
+        this.$router.push({ path: `/contract/item/${record.id}?type=edit` })
       },
       handleToAdd () {
         this.$router.push({ path: '/contract/edit' })
@@ -296,3 +333,15 @@
     }
   }
 </script>
+
+<style lang="less" scoped>
+  .search-form {
+    background-color: #1E9FF2;
+    padding: 20px;
+    border-radius: 0.35rem;
+    /deep/ .ant-form-item-label label{
+        color: #fff;
+      }
+  }
+
+</style>

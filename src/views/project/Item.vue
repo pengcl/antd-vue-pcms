@@ -2,7 +2,7 @@
   <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增项目' : '编辑项目'">
     <a-card :bordered="false">
       <div v-if="id !== '0'" class="table-page-search-wrapper">
-        <a-form layout="inline">
+        <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目编码">
@@ -94,7 +94,7 @@
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-item
-                  label="项目名称编码(英文)"
+                  label="房产项目名称(英文)"
                 >
                   <a-input
                     :disabled="type === 'view'"
@@ -177,10 +177,9 @@
                 <a-form-item
                   label="工地面积"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
-                    placeholder="请填写工地面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写工地面积'}] }]"/>
+                    v-decorator="['area', { initialValue: '', rules: [{required: false, message: '请填写工地面积'}] }]"/>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -411,12 +410,14 @@
         </a-button>
       </a-button-group>
       <a-button-group>
-        <a-button @click="save()" v-if="type !== 'view'" :loading="loading" type="primary">
-          {{ id === '0' ? '新增' : '保存' }}
+        <a-button @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
+          {{ id === '0' ? '新增' : '储存' }}
         </a-button>
         <a-button @click="handleToEdit()" v-if="type === 'view'" type="primary">
           编辑
         </a-button>
+      </a-button-group>
+      <a-button-group>
         <a-button @click="back()" type="danger">
           关闭
         </a-button>

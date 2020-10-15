@@ -5,21 +5,9 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
-              <div style="display: flex;justify-content: space-between;margin-bottom: 10px">
-                <span style="font-weight: bold">合同变更情况</span>
-                <span>CIP：66,591,94</span>
-                <span>VO：100.00</span>
-              </div>
-            </a-col>
-          </a-row>
-          <a-row :gutter="48">
-            <a-col :md="12" :sm="24">
               <a-button type="success" @click="handleToAdd">新增CIP</a-button>
-              <a-button type="success" style="margin-left: 20px">新增VO</a-button>
-              <a-button type="success" style="margin-left: 20px">变更转补充协议</a-button>
-            </a-col>
-            <a-col :md="12" :sm="24">
-              <a-button type="primary" style="float: right">汇出</a-button>
+              <a-button type="success" style="margin-left: 20px">CIP转VO</a-button>
+              <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
             </a-col>
           </a-row>
         </a-form>
@@ -50,7 +38,7 @@
           <template>
             <a-button type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
             </a-button>
-            <a-button type="success" icon="form" style="margin-left: 4px" title="编辑"
+            <a-button type="primary" icon="form" style="margin-left: 4px" title="编辑"
                       @click="handleToEdit(record)">
             </a-button>
           </template>
@@ -86,21 +74,16 @@
             scopedSlots: { customRender: 'action' }
         },
         {
-            title: '编号',
-            dataIndex: 'no'
-        },
-        {
-            title: '变更名称',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
-        },
-        {
-            title: '变更类型（CIP/VO/CIP转VO）',
+            title: '审核状态',
             dataIndex: 'approvalStatus',
             scopedSlots: { customRender: 'approvalStatus' }
         },
         {
-            title: '金额',
+            title: '变更编号',
+            dataIndex: 'no'
+        },
+        {
+            title: '申请金额',
             dataIndex: 'callNo',
             scopedSlots: { customRender: 'callNo' }
         },
@@ -109,9 +92,18 @@
             dataIndex: 'createAt',
         },
         {
-            title: '审批状态',
+            title: '变更类型',
             dataIndex: 'approvalStatus',
             scopedSlots: { customRender: 'approvalStatus' }
+        },
+        {
+            title: '变更确认',
+            dataIndex: 'description',
+            scopedSlots: { customRender: 'description' }
+        },
+        {
+            title: '相关现场签证',
+            dataIndex: 'present'
         }
     ]
 
@@ -194,6 +186,9 @@
             },
             handleToAdd () {
                 this.$router.push({ path: '/change/cip/edit' })
+            },
+            handleToCertificate () {
+                this.$router.push({ path: '/change/certificate' })
             },
             handleAdd () {
                 this.mdl = null
