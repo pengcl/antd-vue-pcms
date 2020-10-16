@@ -96,6 +96,13 @@ export const asyncRouterMap = [
             meta: { title: 'menu.supplier.purchase.item', keepAlive: true, permission: ['supplier'] }
           },
           {
+            path: '/supplier/purchase/edit',
+            name: 'SupplierPurchaseEdit',
+            hidden: true,
+            component: () => import('@/views/supplier/purchase/Edit'),
+            meta: { title: 'menu.supplier.purchase.edit', keepAlive: true, permission: ['supplier'] }
+          },
+          {
             path: '/supplier/other/list',
             name: 'SupplierOtherList',
             component: () => import('@/views/supplier/other/List'),

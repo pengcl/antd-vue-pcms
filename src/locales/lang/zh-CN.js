@@ -19,12 +19,13 @@ const locale = {
   'menu.project.cost.list': '业态成本中心',
   'menu.project.cost.item': '业态成本详情',
 
-  'menu.supplier': '供应商信息管理',
+  'menu.supplier': '供应商管理',
   'menu.supplier.purchase': '采购类供应商',
-  'menu.supplier.purchase.list': '供应商列表',
+  'menu.supplier.purchase.list': '采购类供应商',
   'menu.supplier.purchase.item': '供应商详情',
+  'menu.supplier.purchase.edit':'供应商信息编辑',
   'menu.supplier.other': '其他类供应商',
-  'menu.supplier.other.list': '供应商列表',
+  'menu.supplier.other.list': '其他类供应商',
   'menu.supplier.other.item': '供应商详情',
 
   'menu.contract': '合同及成本控制',
