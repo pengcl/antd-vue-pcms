@@ -33,7 +33,7 @@
       </a-form>
 
 
-      <s-table
+      <!--<s-table
         style="margin-top: 5px"
         ref="table"
         size="default"
@@ -71,7 +71,53 @@
               title="审批记录"></a-button>
           </template>
         </span>
-      </s-table>
+      </s-table>-->
+      <a-table :columns="columns" :data-source="data" bordered style="margin-top: 20px">
+        <template slot="name" slot-scope="text">
+          <a>{{ text }}</a>
+        </template>
+        <template slot="action" slot-scope="text, record">
+          <a-button
+            class="btn-success"
+            type="primary"
+            icon="file-text"
+            title="查看"
+            @click="handleToItem(record)"></a-button>
+          <a-button
+            class="btn-info"
+            type="primary"
+            icon="form"
+            style="margin-left: 4px"
+            title="编辑"
+            @click="handleToEdit(record)"></a-button>
+        </template>
+        <template slot="detail" slot-scope="text">
+          <p>{{text.name}}</p>
+          <p>
+            <a-button-group>
+              <a-button type="success">{{text.status}}</a-button>
+            </a-button-group>
+            <a-button-group>
+              <a-button type="success">{{text.partner}}</a-button>
+            </a-button-group>
+            <a-button-group>
+              <a-button type="success">{{text.tax}}</a-button>
+            </a-button-group>
+          </p>
+          <a-row>
+            <a-col :span="12">
+              准入时间：{{text.date}}
+            </a-col>
+            <a-col :span="12">
+              供应商类别：{{text.category}}
+            </a-col>
+            <a-col :span="24">
+              公司地址：{{text.address}}
+            </a-col>
+          </a-row>
+        </template>
+      </a-table>
+
 
       <create-form
         ref="createModal"
@@ -96,14 +142,46 @@
     import { ContractService } from '@/views/contract/contract.service'
     import { fixedList } from '@/utils/util'
 
-    const columns = [
+    const renderContent = (value, row, index) => {
+        const obj = {
+            children: value,
+            attrs: {},
+        }
+        return obj
+    }
+
+    const data = [
         {
-            title: '供应商分类',
-            dataIndex: 'classification',
+            key: '1',
+            name: 'John Brown',
+            age: 32,
+            abbr: '供应商简称',
+            phone: 18889898989,
+            address: 'New York No. 1 Lake Park',
+            status: '已准入',
+            detail: { name:'供应商名称1',status:'待合作',partner:'张三',tax:'一般纳税人',date: '2020-10-16',category:'设计类-人防设计',address:'广东省广州市白云区龙禧中心F1234'},
+
         },
         {
-            title: '供应商信息',
-            dataIndex: 'information',
+            key: '2',
+            name: 'Jim Green',
+            abbr: '供应商简称',
+            phone: 18889898888,
+            age: 42,
+            address: 'London No. 1 Lake Park',
+            status: '已准入',
+            detail: { name:'供应商名称2',status:'已签约',partner:'李四',tax:'小额纳税人',date: '2020-10-16',category:'设计类-人防设计',address:'广东省广州市白云区龙禧中心F1234'},
+
+        },
+        {
+            key: '3',
+            name: 'Joe Black',
+            age: 32,
+            abbr: '供应商简称',
+            phone: 18900010002,
+            address: 'Sidney No. 1 Lake Park',
+            status: '已准入',
+            detail: { name:'供应商名称3',status:'待合作',partner:'王五',tax:'一般纳税人',date: '2020-10-16',category:'设计类-人防设计',address:'广东省广州市白云区龙禧中心F1234'},
         },
     ]
 
@@ -135,7 +213,45 @@
             StepByStepModal
         },
         data () {
+            const columns = [
+                {
+                    title: '供应商分类',
+                    dataIndex: 'name',
+                    customRender: (text, row, index) => {
+                        return
+                    <
+                        a
+                        href = 'javascript:;' > { text } < /a>;
+                    },
+                },
+                {
+                    title: '供应商信息',
+                    colSpan: 4,
+                    dataIndex: 'action',
+                    scopedSlots: { customRender: 'action' },
+                },
+                {
+                    title: '供应商简称',
+                    colSpan: 0,
+                    dataIndex: 'abbr',
+                    customRender: renderContent,
+                },
+                {
+                    title: '详情',
+                    dataIndex: 'detail',
+                    colSpan: 0,
+                    scopedSlots: { customRender: 'detail' },
+                },
+                {
+                    title: '审批状态',
+                    dataIndex: 'status',
+                    colSpan: 0,
+                    customRender: renderContent,
+                },
+            ]
+
             this.columns = columns
+            this.data = data
             return {
                 // create model
                 show: false,
@@ -179,10 +295,10 @@
         },
         methods: {
             handleToItem (record) {
-                this.$router.push({ path: `/contract/item/${record.id}?type=view` })
+                this.$router.push({ path: `/supplier/purchase/item/${record.id}?type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/contract/item/${record.id}?type=edit` })
+                this.$router.push({ path: `/supplier/purchase/item/${record.id}?type=edit` })
             },
             handleToAdd () {
                 this.$router.push({ path: '/supplier/purchase/edit' })
@@ -279,4 +395,7 @@
     }
   }
 
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 </style>
