@@ -1,11 +1,10 @@
 import request from '@/utils/request'
 
 const API = {
-  paged: '/api/services/app/RegionalOffice/GetPaged',
-  list: '/api/services/app/Project/GetProjects'
+  list: '/api/services/app/ProjectCostCenter/GetPaged'
 }
 
-const ProjectService = {}
+const CostService = {}
 
 /**
  * list func
@@ -14,7 +13,7 @@ const ProjectService = {}
  * @returns {*}
  */
 
-ProjectService.list = function list (parameter) {
+CostService.list = function list (parameter) {
   return request({
     url: API.list,
     method: 'GET',
@@ -33,7 +32,7 @@ ProjectService.list = function list (parameter) {
  * @param parameter
  * @returns {*}
  */
-ProjectService.paged = function (parameter) {
+CostService.paged = function (parameter) {
   return request({
     url: API.paged,
     method: 'get',
@@ -41,4 +40,4 @@ ProjectService.paged = function (parameter) {
   })
 }
 
-export { ProjectService }
+export { CostService }

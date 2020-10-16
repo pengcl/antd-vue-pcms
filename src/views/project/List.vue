@@ -6,11 +6,13 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="城市">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">深圳</a-select-option>
-                  <a-select-option value="1">广州</a-select-option>
-                  <a-select-option value="2">珠海</a-select-option>
-                </a-select>
+                <a-cascader
+                  :options="regionalOffices"
+                  :load-data="loadCities"
+                  placeholder="请选择"
+                  change-on-select
+                  @change="onChange"
+                />
               </a-form-item>
             </a-col>
           </a-row>
@@ -26,7 +28,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="projectGUID"
         bordered
         :columns="columns"
         :data="loadData"
@@ -65,13 +67,15 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
+  import { STable, Ellipsis, Cascader } from '@/components'
   import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
 
+  import { Regional as RegionalService } from '@/api/regional'
   import { ProjectService } from '@/views/project/project.service'
+  import { City as CityService } from '@/api/city'
   import { fixedList } from '@/utils/util'
 
   const columns = [
@@ -110,24 +114,24 @@
       dataIndex: 'status',
       scopedSlots: { customRender: 'status' }
     },
-    {
+    /* {
       title: '创建者',
       dataIndex: 'creator',
       scopedSlots: { customRender: 'creator' }
-    },
+    }, */
     {
       title: '创建日期',
       dataIndex: 'beginDate'
-    },
-    {
+    }
+    /* {
       title: '最后更新者',
       dataIndex: 'updater',
       scopedSlots: { customRender: 'updater' }
-    },
-    {
+    }, */
+    /* {
       title: '最后更新日期',
       dataIndex: 'updatedAt'
-    }
+    } */
   ]
 
   const statusMap = {
@@ -155,12 +159,14 @@
       STable,
       Ellipsis,
       CreateForm,
-      StepByStepModal
+      StepByStepModal,
+      Cascader
     },
     data () {
       this.columns = columns
       return {
         // create model
+        regionalOffices: [],
         visible: false,
         confirmLoading: false,
         mdl: null,
@@ -188,9 +194,18 @@
       }
     },
     created () {
-      getRoleList({ t: new Date() })
-      ProjectService.list().then(res => {
+      // getRoleList({ t: new Date() })
+      RegionalService.list().then(res => {
         console.log(res)
+        const options = []
+        res.result.data.items.forEach(item => {
+          options.push({
+            value: item.id,
+            label: item.nameCN,
+            isLeaf: false
+          })
+        })
+        this.regionalOffices = options
       })
     },
     computed: {
@@ -210,6 +225,34 @@
       },
       handleToAdd () {
         this.$router.push({ path: `/project/item/0?type=add` })
+      },
+      onChange (value, items) {
+        if (items) {
+          const city = items[1]
+          if (city) {
+            this.queryParam.CityID = city.value
+            this.$refs.table.refresh(true)
+          }
+        } else {
+          this.queryParam.CityID = ''
+          this.$refs.table.refresh(true)
+        }
+      },
+      loadCities (selectedOptions) {
+        const targetOption = selectedOptions[selectedOptions.length - 1]
+        targetOption.loading = true
+        CityService.list(targetOption.value).then(res => {
+          targetOption.loading = false
+          const items = []
+          res.result.data.items.forEach(item => {
+            items.push({
+              value: item.id,
+              label: item.nameCN
+            })
+          })
+          targetOption.children = items
+          this.regionalOffices = [...this.regionalOffices]
+        })
       }
     }
   }

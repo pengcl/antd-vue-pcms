@@ -71,12 +71,13 @@
 </template>
 
 <script>
-  import moment from 'moment'
   import { STable, Ellipsis } from '@/components'
-  import { getRoleList, getServiceList } from '@/api/manage'
+  import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
+  import { CostService } from '@/views/project/cost/cost.service'
+  import { fixedList } from '@/utils/util'
 
   const columns = [
     {
@@ -175,11 +176,9 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
-          return getServiceList(requestParameters)
-            .then(res => {
-              return res.result
-            })
+          return CostService.list(requestParameters).then(res => {
+            return fixedList(res, requestParameters)
+          })
         },
         selectedRowKeys: [],
         selectedRows: []

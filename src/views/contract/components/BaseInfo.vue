@@ -39,7 +39,8 @@
             <a-select-option
               v-for="type in selection.types"
               :value="type.id"
-              :key="type.id">{{ type.nameCN }}</a-select-option>
+              :key="type.id">{{ type.nameCN }}
+            </a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -127,7 +128,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr :v-for="item in data.contractPartylst">
               <td>
                 <a-button :disabled="type === 'view'" icon="close">
                   删除
@@ -235,8 +236,9 @@
             :disabled="type === 'view'"
             rows="4"
             placeholder="请输入合同主要内容"
+            v-model="data.contract.contractDetails"
             v-decorator="[
-              'description',
+              data.contract.contractDetails,
               {rules: [{ required: false, message: '请输入合同主要内容' }]}
             ]"/>
         </a-form-item>
@@ -248,8 +250,9 @@
             :disabled="type === 'view'"
             rows="4"
             placeholder="请输入备注"
+            v-model="data.contract.remarks"
             v-decorator="[
-              'description',
+              data.contract.remarks,
               {rules: [{ required: false, message: '请输入备注' }]}
             ]"/>
         </a-form-item>
@@ -259,9 +262,9 @@
 </template>
 
 <script>
-import { ContractService } from '@/views/contract/contract.service'
+  import { ContractService } from '@/views/contract/contract.service'
 
-export default {
+  export default {
     name: 'BaseInfo',
     data () {
       console.log(this.form)
@@ -273,6 +276,9 @@ export default {
     created () {
       ContractService.types().then(res => {
         this.selection.types = res.result.data
+      })
+      ContractService.masters().then(res => {
+        console.log(res)
       })
     },
     props: {
@@ -287,6 +293,11 @@ export default {
       id: {
         type: String,
         default: '0'
+      }
+    },
+    methods: {
+      filterParties (type) {
+        return this.data.contractPartylst.filter(item => item.partyType === type)
       }
     }
   }

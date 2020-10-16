@@ -55,6 +55,5 @@ export {
   ArticleListContent,
   FooterToolBar,
   AutoComplete,
-
   Dialog
 }

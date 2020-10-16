@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
 const API = {
-  list: '/api/services/app/Contract/GetContractListBySearch',
+  items: '/api/services/app/Contract/GetContractListBySearch',
   item: '/api/services/app/Contract/GetAllContractInfo',
-  types: '/api/services/app/GeneralType/GetContractCategoryTypes'
+  types: '/api/services/app/GeneralType/GetContractCategoryTypes',
+  masters: '/api/services/app/Contract/GetMasterContractInfo'
 }
 
 const ContractService = {}
@@ -15,9 +16,9 @@ const ContractService = {}
  * @returns {*}
  */
 
-ContractService.list = function (parameter) {
+ContractService.items = function (parameter) {
   return request({
-    url: API.list,
+    url: API.items,
     method: 'get',
     params: parameter
   })
@@ -36,6 +37,14 @@ ContractService.types = function () {
     url: API.types,
     method: 'get',
     params: {}
+  })
+}
+
+ContractService.masters = function (parameter) {
+  return request({
+    url: API.masters,
+    method: 'get',
+    params: parameter
   })
 }
 

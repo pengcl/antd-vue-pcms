@@ -58,12 +58,11 @@
         </a-row>
       </a-form>
 
-
       <s-table
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="contractGuid"
         bordered
         :columns="columns"
         :data="loadData"
@@ -216,7 +215,7 @@
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           console.log('loadData request parameters:', requestParameters)
-          return ContractService.list(requestParameters).then(res => {
+          return ContractService.items(requestParameters).then(res => {
             return fixedList(res, requestParameters)
           })
         },
@@ -245,10 +244,10 @@
     },
     methods: {
       handleToItem (record) {
-        this.$router.push({ path: `/contract/item/${record.id}?type=view` })
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },
       handleToEdit (record) {
-        this.$router.push({ path: `/contract/item/${record.id}?type=edit` })
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
       },
       handleToAdd () {
         this.$router.push({ path: '/contract/edit' })
