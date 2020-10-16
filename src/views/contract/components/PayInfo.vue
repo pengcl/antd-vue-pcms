@@ -17,36 +17,36 @@
       <a-col :md="24" :sm="24">
         <table>
           <thead>
-          <tr>
-            <th colspan="3">
-              <a-button :disabled="type === 'view'" icon="plus">
-                新增
-              </a-button>
-              <a-button :disabled="type === 'view'" icon="stop">
-                重置
-              </a-button>
-            </th>
-          </tr>
-          <tr>
-            <th style="width: 30%">操作</th>
-            <th style="width: 40%">描述</th>
-            <th style="width: 40%">累计百分比</th>
-          </tr>
+            <tr>
+              <th colspan="3">
+                <a-button :disabled="type === 'view'" icon="plus">
+                  新增
+                </a-button>
+                <a-button :disabled="type === 'view'" icon="stop">
+                  重置
+                </a-button>
+              </th>
+            </tr>
+            <tr>
+              <th style="width: 30%">操作</th>
+              <th style="width: 40%">描述</th>
+              <th style="width: 40%">累计百分比</th>
+            </tr>
           </thead>
           <tbody>
-          <tr>
-            <td>
-              <a-button :disabled="type === 'view'" icon="close">
-                删除
-              </a-button>
-            </td>
-            <td>
-              <a-input></a-input>
-            </td>
-            <td>
-              <a-input-number></a-input-number>
-            </td>
-          </tr>
+            <tr>
+              <td>
+                <a-button :disabled="type === 'view'" icon="close">
+                  删除
+                </a-button>
+              </td>
+              <td>
+                <a-input></a-input>
+              </td>
+              <td>
+                <a-input-number></a-input-number>
+              </td>
+            </tr>
           </tbody>
         </table>
       </a-col>
@@ -63,7 +63,20 @@
                 loading: false
             }
         },
-        props: {}
+        props: {
+          data: {
+            type: Object,
+            default: null
+          },
+          type: {
+            type: String,
+            default: 'view'
+          },
+          id: {
+            type: String,
+            default: '0'
+          }
+        }
     }
 </script>
 

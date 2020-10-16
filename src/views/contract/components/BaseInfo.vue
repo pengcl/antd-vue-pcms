@@ -63,11 +63,26 @@
         >
           <a-select
             :disabled="type === 'view'"
+            placeholder="请选择合同类型"
+            v-model="data.contract.masterContractID"
+            v-decorator="[data.contract.masterContractID, { rules: [{required: true, message: '请选择合同类型'}] }]">
+            <a-select-option
+              v-for="item in selection.masters"
+              :value="item[id]"
+              :key="item[id]">{{ item[id] }}
+            </a-select-option>
+          </a-select>
+          <!--<a-select
+            :disabled="type === 'view'"
             placeholder="请选择原合同"
             v-model="data.orgContractGuid"
             v-decorator="[data.orgContractGuid, { rules: [{required: true, message: '请选择原合同'}] }]">
-            <a-select-option :value="1">ant-design@alipay.com</a-select-option>
-          </a-select>
+            <a-select-option
+              v-for="item in selection.masters"
+              :key="item[data.contract.contractGuid]"
+              :value="item[data.contract.contractGuid]">{{ item[data.contract.contractGuid] }}
+            </a-select-option>
+          </a-select>-->
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -128,7 +143,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr :v-for="item in data.contractPartylst">
+            <tr v-for="item in filterParties(18)" :key="item.id">
               <td>
                 <a-button :disabled="type === 'view'" icon="close">
                   删除
@@ -171,7 +186,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr v-for="item in filterParties(19)" :key="item.id">
               <td>
                 <a-button :disabled="type === 'view'" icon="close">
                   删除
@@ -211,7 +226,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr v-for="item in filterParties(20)" :key="item.id">
               <td>
                 <a-button :disabled="type === 'view'" icon="close">
                   删除
@@ -267,7 +282,6 @@
   export default {
     name: 'BaseInfo',
     data () {
-      console.log(this.form)
       return {
         selection: {},
         loading: false
@@ -276,9 +290,6 @@
     created () {
       ContractService.types().then(res => {
         this.selection.types = res.result.data
-      })
-      ContractService.masters().then(res => {
-        console.log(res)
       })
     },
     props: {
@@ -295,9 +306,27 @@
         default: '0'
       }
     },
+    watch: {
+      'data.contract.contractCategory' (val) {
+        this.selection.masters = null
+        ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
+          this.selection.masters = res.result.data
+          this.$forceUpdate()
+        })
+      }
+    },
     methods: {
-      filterParties (type) {
-        return this.data.contractPartylst.filter(item => item.partyType === type)
+      filterParties (partyType) {
+        const items = []
+        if (this.data.contractPartylst.forEach) {
+          this.data.contractPartylst.forEach(item => {
+            if (item.partyType === partyType) {
+              items.push(item)
+            }
+          })
+        }
+        return items
+        // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
       }
     }
   }

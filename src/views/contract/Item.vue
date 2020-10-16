@@ -108,6 +108,7 @@
     components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
     data () {
       return {
+        tabActiveKey: 1,
         loading: false,
         value: '',
         dto: { orgContractGuid: SwaggerService.getDtoItem('ContractAllInfo', 'orgContractGuid'), contract: SwaggerService.getDto('Contract'), contractParty: SwaggerService.getDto('ContractParty') },
@@ -119,11 +120,9 @@
       console.log(this.dto) */
     },
     created () {
-      console.log(this.dto)
       ContractService.item(this.id).then(res => {
         this.form.orgContractGuid = res.result.data.orgContractGuid
         this.form = SwaggerService.getValue(this.form, res.result.data)
-        console.log(this.form)
       })
     },
     computed: {
