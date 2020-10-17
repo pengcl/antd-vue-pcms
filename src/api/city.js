@@ -14,7 +14,6 @@ const City = {}
  */
 
 City.list = function list (id) {
-  console.log(API.list)
   return request({
     url: API.list,
     method: 'get',

@@ -305,7 +305,7 @@ export const asyncRouterMap = [
         name: 'pay',
         redirect: '/pay/list',
         component: RouteView,
-        meta: { title: 'menu.pay', icon: 'audit', permission: ['pay'] },
+        meta: { title: 'menu.pay', icon: 'transaction', permission: ['pay'] },
         children: [
           {
             path: '/pay/signed',

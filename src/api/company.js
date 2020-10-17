@@ -1,7 +1,8 @@
 import request from '@/utils/request'
 
 const API = {
-  list: '/api/services/app/Company/GetAllCompanys'
+  list: '/api/services/app/Company/GetAllCompanys',
+  byCityList: '/api/services/app/Company/GetCityCompanys'
 }
 
 const Company = {}
@@ -14,9 +15,8 @@ const Company = {}
  */
 
 Company.list = function list (id) {
-  console.log(API.list)
   return request({
-    url: API.list,
+    url: id ? API.byCityList : API.list,
     method: 'get',
     params: { Id: id }
   })

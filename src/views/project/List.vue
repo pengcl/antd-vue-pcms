@@ -10,7 +10,6 @@
                   :options="regionalOffices"
                   :load-data="loadCities"
                   placeholder="请选择"
-                  change-on-select
                   @change="onChange"
                 />
               </a-form-item>
@@ -67,7 +66,7 @@
 </template>
 
 <script>
-  import { STable, Ellipsis, Cascader } from '@/components'
+  import { STable, Ellipsis } from '@/components'
   import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
@@ -159,8 +158,7 @@
       STable,
       Ellipsis,
       CreateForm,
-      StepByStepModal,
-      Cascader
+      StepByStepModal
     },
     data () {
       this.columns = columns
@@ -177,7 +175,7 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return ProjectService.list(requestParameters).then(res => {
+          return ProjectService.items(requestParameters).then(res => {
             return fixedList(res, requestParameters)
           })
         },
@@ -221,10 +219,10 @@
         this.$router.push({ path: `/project/item/${record.id}?type=view` })
       },
       handleToEdit (record) {
-        this.$router.push({ path: `/project/item/${record.id}?type=edit` })
+        this.$router.push({ path: `/project/item/${record.id}?type=update` })
       },
       handleToAdd () {
-        this.$router.push({ path: `/project/item/0?type=add` })
+        this.$router.push({ path: `/project/item/0?type=create` })
       },
       onChange (value, items) {
         if (items) {

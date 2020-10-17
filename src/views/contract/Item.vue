@@ -112,7 +112,7 @@
         loading: false,
         value: '',
         dto: { orgContractGuid: SwaggerService.getDtoItem('ContractAllInfo', 'orgContractGuid'), contract: SwaggerService.getDto('Contract'), contractParty: SwaggerService.getDto('ContractParty') },
-        form: { orgContractGuid: null, contract: SwaggerService.getForm('Contract'), contractPartylst: SwaggerService.getForm('ContractParty') }
+        form: { orgContractGuid: null, contract: SwaggerService.getForm('ContractInputDto'), contractPartylst: SwaggerService.getForm('ContractPartyInputDto') }
       }
     },
     beforeCreate () {
