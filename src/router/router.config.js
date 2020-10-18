@@ -308,83 +308,54 @@ export const asyncRouterMap = [
         meta: { title: 'menu.pay', icon: 'transaction', permission: ['pay'] },
         children: [
           {
-            path: '/pay/signed',
-            name: 'PaySigned',
-            redirect: '/pay/signed/ongoing/list',
-            component: RouteView,
-            meta: { title: 'menu.pay.signed', keepAlive: true, permission: ['pay'] },
-            children: [
-              {
-                path: '/pay/signed/ongoing/list',
-                name: 'PaySignedOngoingList',
-                component: () => import('@/views/contract/List'),
-                meta: { title: 'menu.pay.signed.ongoing.list', keepAlive: true, permission: ['pay'] }
-              },
-              {
-                path: '/pay/signed/ongoing/item/:id',
-                name: 'PaySignedOngoingItem',
-                component: () => import('@/views/contract/List'),
-                hidden: true,
-                meta: { title: 'menu.pay.signed.ongoing.item', keepAlive: true, permission: ['pay'] }
-              },
-              {
-                path: '/pay/signed/ongoing/approval/:id',
-                name: 'PaySignedOngoingApproval',
-                component: () => import('@/views/contract/List'),
-                hidden: true,
-                meta: { title: 'menu.pay.signed.ongoing.approval', keepAlive: true, permission: ['pay'] }
-              },
-              {
-                path: '/pay/signed/upcoming/list',
-                name: 'PaySignedUpcomingList',
-                component: () => import('@/views/contract/Item'),
-                meta: { title: 'menu.pay.signed.upcoming.list', keepAlive: false, permission: ['pay'] }
-              },
-              {
-                path: '/pay/signed/upcoming/item/:id',
-                name: 'PaySignedUpcomingItem',
-                component: () => import('@/views/contract/Item'),
-                hidden: true,
-                meta: { title: 'menu.pay.signed.upcoming.item', keepAlive: false, permission: ['pay'] }
-              },
-              {
-                path: '/pay/signed/apply',
-                name: 'PaySignedApply',
-                hidden: true,
-                component: () => import('@/views/contract/Edit'),
-                meta: { title: 'menu.pay.signed.apply', keepAlive: true, permission: ['pay'] }
-              }
-            ]
+            path: '/pay/signed/list',
+            name: 'PaySignedList',
+            component: () => import('@/views/pay/signed/List'),
+            meta: { title: 'menu.pay.signed.list', keepAlive: true, permission: ['pay'] },
+          },
+          {
+            path: '/pay/signed/edit',
+            name: 'PaySignedEdit',
+            hidden: true,
+            component: () => import('@/views/pay/signed/Edit'),
+            meta: { title: 'menu.pay.signed.edit', keepAlive: true, permission: ['pay'] },
           },
           {
             path: '/pay/unsigned/list',
             name: 'PayUnsignedList',
-            component: () => import('@/views/contract/Edit'),
+            component: () => import('@/views/pay/unsigned/List'),
             meta: { title: 'menu.pay.unsigned.list', keepAlive: true, permission: ['pay'] }
           },
           {
+            path: '/pay/unsigned/edit',
+            name: 'PayUnsignedEdit',
+            hidden: true,
+            component: () => import('@/views/pay/unsigned/Edit'),
+            meta: { title: 'menu.pay.unsigned.edit', keepAlive: true, permission: ['pay'] },
+          },
+          {
             path: '/pay/unsigned/item/:id',
-            name: 'PayUnsignedList',
+            name: 'PayUnsignedItem',
             hidden: true,
             component: () => import('@/views/contract/Edit'),
             meta: { title: 'menu.pay.unsigned.item', keepAlive: true, permission: ['pay'] }
           },
           {
             path: '/pay/unsigned/approval/:id',
-            name: 'PayUnsignedList',
+            name: 'PayUnsignedApprovalList',
             hidden: true,
             component: () => import('@/views/contract/Edit'),
             meta: { title: 'menu.pay.unsigned.approval', keepAlive: true, permission: ['pay'] }
           },
           {
             path: '/pay/account/list',
-            name: 'PayUnsignedList',
+            name: 'PayAccountList',
             component: () => import('@/views/contract/Edit'),
             meta: { title: 'menu.pay.account.list', keepAlive: true, permission: ['pay'] }
           },
           {
             path: '/pay/account/item/:id',
-            name: 'PayUnsignedList',
+            name: 'PayAccountItem',
             hidden: true,
             component: () => import('@/views/contract/Edit'),
             meta: { title: 'menu.pay.account.item', keepAlive: true, permission: ['pay'] }
