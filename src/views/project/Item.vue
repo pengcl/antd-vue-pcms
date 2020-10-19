@@ -468,11 +468,13 @@ export default {
       dataSource: [],
       selectedItems: [],
       data: null,
-      dto: SwaggerService.getDto('ProjectEditInput'),
-      form: SwaggerService.getForm('ProjectEditInputDto')
+      dto: {},
+      form: {}
     }
   },
   created () {
+    this.dto = SwaggerService.getDto('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'Input')
+    this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
     if (this.id !== '0') {
       ProjectService.item(this.id).then(res => {
         this.data = res.result.data
