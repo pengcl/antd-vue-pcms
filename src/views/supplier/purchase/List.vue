@@ -26,6 +26,11 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
+            <a-form-item label="供应商分类">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
             <a-button type="success">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>

@@ -73,151 +73,26 @@
               <a-textarea></a-textarea>
             </a-form-item>
           </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="12">公司员工</th>
-              </tr>
-              <tr>
-                <th style="width: 5%">操作</th>
-                <th style="width: 5%">联系人姓名</th>
-                <th style="width: 5%">现任职位</th>
-                <th style="width: 5%">公司联系人</th>
-                <th style="width: 10%">台鉴人</th>
-                <th style="width: 10%">业务联系人</th>
-                <th style="width: 10%">办公电话</th>
-                <th style="width: 10%">传真</th>
-                <th style="width: 10%">手机</th>
-                <th style="width: 10%">电子邮箱</th>
-                <th style="width: 10%">是否在职</th>
-                <th style="width: 10%">备注</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>
-                  <a-button icon="close">
-                    删除
-                  </a-button>
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="7">变更信息</th>
-              </tr>
-              <tr>
-                <th style="width: 10%">审核状态</th>
-                <th style="width: 10%">供应商名称</th>
-                <th style="width: 10%">变更类型</th>
-                <th style="width: 14%">操作人</th>
-                <th style="width: 14%">操作时间</th>
-                <th style="width: 14%">变更备注</th>
-                <th style="width: 14%">审批时间</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="6">合同信息</th>
-              </tr>
-              <tr>
-                <th style="width: 20%">合同编号</th>
-                <th style="width: 20%">合同名称</th>
-                <th style="width: 20%">审核状态</th>
-                <th style="width: 20%">签约日期</th>
-                <th style="width: 10%">币种</th>
-                <th style="width: 10%">结算状态</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="4">银行信息</th>
-              </tr>
-              <tr>
-                <th style="width: 25%">开户银行</th>
-                <th style="width: 25%">银行账号</th>
-                <th style="width: 25%">银行地址</th>
-                <th style="width: 25%">备注</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="3">附件信息</th>
-              </tr>
-              <tr>
-                <th style="width: 30%">文档名称</th>
-                <th style="width: 20%">上传人</th>
-                <th style="width: 20%">上传日期</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
         </a-row>
       </a-form>
+
+      <a-tabs default-active-key="1">
+        <a-tab-pane key="1" tab="公司员工">
+          <company-staff></company-staff>
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="变更信息">
+          <change-info></change-info>
+        </a-tab-pane>
+        <a-tab-pane key="3" tab="合同信息">
+          <contract-info></contract-info>
+        </a-tab-pane>
+        <a-tab-pane key="4" tab="银行信息">
+         <bank-info></bank-info>
+        </a-tab-pane>
+        <a-tab-pane key="5" tab="附件信息">
+          <attachment-info></attachment-info>
+        </a-tab-pane>
+      </a-tabs>
 
       <footer-tool-bar>
         <a-button-group>
@@ -242,10 +117,15 @@
 
 <script>
     import { FooterToolBar } from '@/components'
+    import CompanyStaff from './components/CompanyStaff'
+    import ChangeInfo from './components/ChangeInfo'
+    import ContractInfo from './components/ContractInfo'
+    import BankInfo from './components/BankInfo'
+    import AttachmentInfo from './components/AttachmentInfo'
 
     export default {
         name: 'Edit',
-        components: { FooterToolBar },
+        components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff, FooterToolBar },
         data () {
             return {}
         },
@@ -263,43 +143,5 @@
 <style lang="less" scoped>
   .ant-btn-group {
     margin-right: 8px;
-  }
-  table {
-    margin: 15px 0;
-    width: 100%;
-    border-width: 1px 1px 0 0;
-    border-radius: 3px 3px 0 0;
-    border-style: solid;
-    border-color: #ccc;
-
-    thead {
-      tr {
-        th {
-          background-color: #f5f5f5;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        td {
-          padding: 0.5em 0.6em 0.4em 0.6em !important;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
   }
 </style>

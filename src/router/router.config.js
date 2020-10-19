@@ -117,7 +117,6 @@ export const asyncRouterMap = [
           }
         ]
       },
-
       // cost
       {
         path: '/cost',
@@ -385,8 +384,16 @@ export const asyncRouterMap = [
             meta: { title: 'menu.checkout.contract.item', keepAlive: true, permission: ['checkout'] }
           },
           {
+            path: '/checkout/contract/Edit',
+            name: 'CheckoutContractEdit',
+            hidden: true,
+            component: () => import('@/views/checkout/contract/Edit'),
+            meta: { title: 'menu.checkout.contract.edit', keepAlive: true, permission: ['checkout'] }
+          },
+          {
             path: '/checkout/completed/list',
             name: 'CheckoutCompletedList',
+            hidden: true,
             component: () => import('@/views/checkout/completed/List'),
             meta: { title: 'menu.checkout.completed.list', keepAlive: true, permission: ['checkout'] }
           },

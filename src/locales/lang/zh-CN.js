@@ -77,6 +77,7 @@ const locale = {
   'menu.checkout': '结算管理',
   'menu.checkout.contract.list': '合同结算',
   'menu.checkout.contract.item': '合同结算详情',
+  'menu.checkout.contract.edit':'合同结算新增',
   'menu.checkout.completed.list': '竣工证书',
   'menu.checkout.completed.item': '竣工证书详情',
   'menu.checkout.project.list': '工程结算书',
