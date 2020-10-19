@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import { isArray } from 'ant-design-vue/lib/_util/vue-types/utils'
 
 const API = {
-  swagger: '/swagger/v1/swagger.json'
+  swagger: '/swagger/v1/swagger.json?v=' + Date.parse(new Date().toString())
 }
 
 const SwaggerService = { CONFIG: null }
@@ -43,7 +43,7 @@ SwaggerService.getForm = function (name) {
   const forItem = {}
   for (const key in obj) {
     if (obj[key]) {
-      forItem[key] = null
+      forItem[key] = ''
     }
   }
   return forItem
@@ -52,7 +52,7 @@ SwaggerService.getForm = function (name) {
 SwaggerService.getValue = function (valueDto, data) {
   const value = {}
   for (const key in valueDto) {
-    if (typeof valueDto[key] === 'object' && valueDto[key] !== null) {
+    if (typeof valueDto[key] === 'object' && valueDto[key] !== '') {
       if (isArray(data[key])) { // 是否Array类型
         value[key] = []
         data[key].forEach(item => {
