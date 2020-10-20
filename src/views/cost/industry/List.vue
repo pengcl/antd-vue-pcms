@@ -19,10 +19,40 @@
 
       <div class="table-operator">
         <a-button type="success" @click="handleToAdd">新增</a-button>
-        <a-button type="primary" style="margin-left: 5px" @click="handleAdd">
+        <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
       </div>
+
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+        <a-row :gutter="48">
+          <a-col :md="12" :sm="24">
+            <a-form-item label="编号">
+              <a-input v-model="queryParam.ContractNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="规划名称">
+              <a-input v-model="queryParam.ContractName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="提交状态">
+              <a-select
+                placeholder="请选择"
+                v-model="queryParam.AuditStatus"
+                v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
+                <a-select-option value="1">草拟中</a-select-option>
+                <a-select-option value="2">已审批</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-button type="success" @click="search()">搜索</a-button>
+            <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+          </a-col>
+        </a-row>
+      </a-form>
 
       <s-table
         style="margin-top: 5px"
@@ -210,6 +240,7 @@
             this._columns = _columns
             return {
                 // create model
+                show: false,
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
@@ -339,3 +370,15 @@
         }
     }
 </script>
+
+<style lang="less" scoped>
+  .search-form {
+    background-color: #1E9FF2;
+    padding: 20px;
+    border-radius: 0.35rem;
+
+    /deep/ .ant-form-item-label label {
+      color: #fff;
+    }
+  }
+</style>

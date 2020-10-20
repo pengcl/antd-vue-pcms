@@ -25,12 +25,16 @@
           <a-col :md="12" :sm="24">
             <a-form-item
               label="申请人">
+              <a-input></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item
               label="付款类型">
-
+              <a-select>
+                <a-select-option value="1">一般付款</a-select-option>
+                <a-select-option value="2">代付</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -185,9 +189,11 @@
               <thead>
               <tr>
                 <th colspan="4">
-                  <a-button icon="plus">
-                    上传
-                  </a-button>
+                  <a-upload>
+                    <a-button icon="plus">
+                      上传
+                    </a-button>
+                  </a-upload>
                 </th>
               </tr>
               <tr>

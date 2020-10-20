@@ -48,11 +48,6 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="公司所在地">
-              <a-cascader :options="selection.cities" placeholder="请选择公司所在地" @change="cityChange"/>
-            </a-form-item>
-          </a-col>
-          <!--<a-col :md="12" :sm="24">
             <a-form-item label="公司所在地(省)">
               <a-select placeholder="请选择" default-value="0">
                 <a-select-option value="0">深圳</a-select-option>
@@ -104,272 +99,26 @@
                 v-model="form.vendor.logRemark"></a-textarea>
             </a-form-item>
           </a-col>
-          <!--<a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="12">公司员工</th>
-                </tr>
-                <tr>
-                  <th style="width: 5%">操作</th>
-                  <th style="width: 5%">联系人姓名</th>
-                  <th style="width: 5%">现任职位</th>
-                  <th style="width: 5%">公司联系人</th>
-                  <th style="width: 10%">台鉴人</th>
-                  <th style="width: 10%">业务联系人</th>
-                  <th style="width: 10%">办公电话</th>
-                  <th style="width: 10%">传真</th>
-                  <th style="width: 10%">手机</th>
-                  <th style="width: 10%">电子邮箱</th>
-                  <th style="width: 10%">是否在职</th>
-                  <th style="width: 10%">备注</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <a-button icon="close">
-                      删除
-                    </a-button>
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="7">变更信息</th>
-                </tr>
-                <tr>
-                  <th style="width: 10%">审核状态</th>
-                  <th style="width: 10%">供应商名称</th>
-                  <th style="width: 10%">变更类型</th>
-                  <th style="width: 14%">操作人</th>
-                  <th style="width: 14%">操作时间</th>
-                  <th style="width: 14%">变更备注</th>
-                  <th style="width: 14%">审批时间</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="6">合同信息</th>
-                </tr>
-                <tr>
-                  <th style="width: 20%">合同编号</th>
-                  <th style="width: 20%">合同名称</th>
-                  <th style="width: 20%">审核状态</th>
-                  <th style="width: 20%">签约日期</th>
-                  <th style="width: 10%">币种</th>
-                  <th style="width: 10%">结算状态</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="4">银行信息</th>
-                </tr>
-                <tr>
-                  <th style="width: 25%">开户银行</th>
-                  <th style="width: 25%">银行账号</th>
-                  <th style="width: 25%">银行地址</th>
-                  <th style="width: 25%">备注</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="3">附件信息</th>
-                </tr>
-                <tr>
-                  <th style="width: 30%">文档名称</th>
-                  <th style="width: 20%">上传人</th>
-                  <th style="width: 20%">上传日期</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>-->
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="12">
-                    <a-button @click="showForm('employee')" icon="plus">
-                      添加员工
-                    </a-button>
-                    <a-button icon="stop">
-                      重置
-                    </a-button>
-                  </th>
-                </tr>
-                <tr>
-                  <th colspan="12">公司员工</th>
-                </tr>
-                <tr>
-                  <th style="width: 5%">操作</th>
-                  <th style="width: 5%">联系人姓名</th>
-                  <th style="width: 5%">现任职位</th>
-                  <th style="width: 5%">公司联系人</th>
-                  <th style="width: 10%">台鉴人</th>
-                  <th style="width: 10%">业务联系人</th>
-                  <th style="width: 10%">办公电话</th>
-                  <th style="width: 10%">传真</th>
-                  <th style="width: 10%">手机</th>
-                  <th style="width: 10%">电子邮箱</th>
-                  <th style="width: 10%">是否在职</th>
-                  <th style="width: 10%">备注</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <a-button icon="close">
-                      删除
-                    </a-button>
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="4">
-                    <a-upload
-                    >
-                      <a-button>请选择</a-button>
-                    </a-upload>
-                  </th>
-                </tr>
-                <tr>
-                  <th colspan="4">公司介绍</th>
-                </tr>
-                <tr>
-                  <th style="width: 25%">操作</th>
-                  <th style="width: 25%">公司介绍文件</th>
-                  <th style="width: 25%">上传人</th>
-                  <th style="width: 25%">上传日期</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <a-button type="danger" icon="delete"></a-button>
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th colspan="4">
-                    <a-button @click="showForm('bank')" icon="plus">
-                      添加银行账号
-                    </a-button>
-                    <a-button icon="stop">
-                      重置
-                    </a-button>
-                  </th>
-                </tr>
-                <tr>
-                  <th colspan="4">银行账号</th>
-                </tr>
-                <tr>
-                  <th style="width: 25%">操作</th>
-                  <th style="width: 25%">开户银行</th>
-                  <th style="width: 25%">银行账号</th>
-                  <th style="width: 25%">银行地址</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <a-button type="danger" icon="delete"></a-button>
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
         </a-row>
       </a-form>
+
+      <a-tabs default-active-key="1">
+        <a-tab-pane key="1" tab="公司员工">
+          <company-staff></company-staff>
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="变更信息">
+          <change-info></change-info>
+        </a-tab-pane>
+        <a-tab-pane key="3" tab="合同信息">
+          <contract-info></contract-info>
+        </a-tab-pane>
+        <a-tab-pane key="4" tab="银行信息">
+         <bank-info></bank-info>
+        </a-tab-pane>
+        <a-tab-pane key="5" tab="附件信息">
+          <attachment-info></attachment-info>
+        </a-tab-pane>
+      </a-tabs>
 
       <footer-tool-bar>
         <a-button-group>
@@ -388,36 +137,22 @@
           </a-button>
         </a-button-group>
       </footer-tool-bar>
-      <create-employee-form
-        :visible="visible.employeeForm"
-        :model="modal.employeeForm"
-        @cancel="handleCancel"
-        @ok="ok('employee')"
-      />
-      <create-bank-form
-        :visible="visible.bankForm"
-        :model="modal.bankForm"
-        @cancel="handleCancel"
-        @ok="ok('bank')"
-      />
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-  import { FooterToolBar } from '@/components'
-  import { SwaggerService } from '@/api/swagger.service'
-  import { SupplierService } from '@/views/supplier/supplier.service'
-  import { formatTree } from '@/utils/util'
-  import { TreeSelect } from 'ant-design-vue'
-  import CreateEmployeeForm from '../modules/CreateEmployee'
-  import CreateBankForm from '../modules/CreateBank'
-  import { City as CitySvc, formatCities } from '@/api/city'
+    import { FooterToolBar } from '@/components'
+    import CompanyStaff from './components/CompanyStaff'
+    import ChangeInfo from './components/ChangeInfo'
+    import ContractInfo from './components/ContractInfo'
+    import BankInfo from './components/BankInfo'
+    import AttachmentInfo from './components/AttachmentInfo'
 
   const SHOW_PARENT = TreeSelect.SHOW_PARENT
   export default {
     name: 'SupplierPurchaseItem',
-    components: { CreateEmployeeForm, FooterToolBar, CreateBankForm },
+    components: { CreateEmployeeForm, FooterToolBar, CreateBankForm,AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
     data () {
       return {
         SHOW_PARENT,
