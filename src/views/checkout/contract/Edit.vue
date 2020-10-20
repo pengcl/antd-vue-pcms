@@ -1,7 +1,7 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
               <a-form-item label="合同编号">
@@ -51,7 +51,12 @@
     import AttachmentList from '@/views/checkout/contract/components/AttachmentList'
     export default {
         name: 'Edit',
-        components: { AttachmentList, BudgetList, CostEstimates, ContractSettlement }
+        components: { AttachmentList, BudgetList, CostEstimates, ContractSettlement },
+        data () {
+            return {
+                form: this.$form.createForm(this)
+            }
+        },
     }
 </script>
 

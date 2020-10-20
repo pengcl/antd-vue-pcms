@@ -123,73 +123,73 @@ export const asyncRouterMap = [
         name: 'cost',
         redirect: '/cost/enact/list',
         component: RouteView,
-        meta: { title: 'menu.cost', icon: 'property-safety', permission: ['cost'] },
+        meta: { title: 'menu.cost', icon: 'property-safety', permission: ['budget'] },
         children: [
           {
             path: '/cost/enact/list',
             name: 'CostEnactList',
             component: () => import('@/views/cost/enact/List'),
-            meta: { title: 'menu.cost.enact.list', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.enact.list', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/enact/item/:id',
             hidden: true,
             name: 'CostEnactItem',
             component: () => import('@/views/cost/enact/Item'),
-            meta: { title: 'menu.cost.enact.item', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.enact.item', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/resolve/list',
             name: 'CostResolveList',
             component: () => import('@/views/cost/resolve/List'),
-            meta: { title: 'menu.cost.resolve.list', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.resolve.list', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/resolve/item/:id',
             name: 'CostResolveItem',
             hidden: true,
             component: () => import('@/views/cost/resolve/Item'),
-            meta: { title: 'menu.cost.resolve.item', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.resolve.item', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/industry/list',
             name: 'CostIndustryList',
             component: () => import('@/views/cost/industry/List'),
-            meta: { title: 'menu.cost.industry.list', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.industry.list', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/industry/edit',
             name: 'CostIndustryEdit',
             hidden: true,
             component: () => import('@/views/cost/industry/Edit'),
-            meta: { title: 'menu.cost.industry.edit', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.industry.edit', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/industry/item/:id',
             name: 'CostIndustryItem',
             hidden: true,
             component: () => import('@/views/cost/industry/Item'),
-            meta: { title: 'menu.cost.industry.item', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.industry.item', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/bid/list',
             name: 'CostBidList',
             component: () => import('@/views/cost/bid/List'),
-            meta: { title: 'menu.cost.bid.list', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.bid.list', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/bid/edit',
             name: 'CostBidEdit',
             hidden: true,
             component: () => import('@/views/cost/bid/Edit'),
-            meta: { title: 'menu.cost.bid.edit', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.bid.edit', keepAlive: true, permission: ['budget'] }
           },
           {
             path: '/cost/bid/item/:id',
             name: 'CostBidItem',
             hidden: true,
             component: () => import('@/views/cost/bid/Item'),
-            meta: { title: 'menu.cost.bid.edit', keepAlive: true, permission: ['cost'] }
+            meta: { title: 'menu.cost.bid.item', keepAlive: true, permission: ['budget'] }
           }
         ]
       },
@@ -486,7 +486,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.settings.notification', hidden: true, keepAlive: true, permission: ['settings'] }
           }
         ]
-      }
+      },
 
       // budget
       /* {

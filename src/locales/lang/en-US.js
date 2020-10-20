@@ -47,14 +47,14 @@ const locale = {
   'menu.change.certificate': 'Certificate',
 
   'menu.cost': 'Costs',
-  'menu.cost.enact.list': 'Enact',
+  'menu.cost.enact.list': 'Enact List',
   'menu.cost.enact.item': 'Enact Detail',
-  'menu.cost.resolve.list': 'Resolve',
+  'menu.cost.resolve.list': 'Resolve List',
   'menu.cost.resolve.item': 'Resolve Detail',
-  'menu.cost.industry.list': 'Industry',
+  'menu.cost.industry.list': 'Industry List',
   'menu.cost.industry.edit': 'Industry Edit',
   'menu.cost.industry.item': 'Industry Detail',
-  'menu.cost.bid.list': 'Bid',
+  'menu.cost.bid.list': 'Bid List',
   'menu.cost.bid.edit': 'Bid Edit',
   'menu.cost.bid.item': 'Bid Detail',
 

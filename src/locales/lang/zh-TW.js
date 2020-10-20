@@ -43,11 +43,18 @@ const locale = {
   'menu.change.vo.list': '变更指令',
   'menu.change.vo.item': '变更指令详细',
   'menu.change.vo.edit': '变更指令编辑',
+
   'menu.cost': '成本预算管理',
   'menu.cost.enact.list': '成本预算制定',
+  'menu.cost.enact.item': '成本预算编制',
   'menu.cost.resolve.list': '行业预算分解',
+  'menu.cost.resolve.item': '行业预算查看',
   'menu.cost.industry.list': '行业分判包',
+  'menu.cost.industry.edit': '新增行业分判包',
+  'menu.cost.industry.item': '行业分判包详细',
   'menu.cost.bid.list': '招投标分判包',
+  'menu.cost.bid.edit': '新增招投标分判包',
+  'menu.cost.bid.item': '招投标分判包详细',
 
   'menu.pay': '付款管理',
   'menu.pay.signed': '合同付款申请',

@@ -120,7 +120,7 @@
     }
 
     export default {
-        name: 'ProjectList',
+        name: 'CostEnactList',
         components: {
             STable,
             Ellipsis,
