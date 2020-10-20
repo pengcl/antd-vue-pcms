@@ -48,6 +48,11 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
+            <a-form-item label="公司所在地">
+              <a-cascader :options="selection.cities" placeholder="请选择公司所在地" @change="cityChange"/>
+            </a-form-item>
+          </a-col>
+          <!--<a-col :md="12" :sm="24">
             <a-form-item label="公司所在地(省)">
               <a-select placeholder="请选择" default-value="0">
                 <a-select-option value="0">深圳</a-select-option>
@@ -113,7 +118,7 @@
           <contract-info></contract-info>
         </a-tab-pane>
         <a-tab-pane key="4" tab="银行信息">
-         <bank-info></bank-info>
+          <bank-info></bank-info>
         </a-tab-pane>
         <a-tab-pane key="5" tab="附件信息">
           <attachment-info></attachment-info>
@@ -137,6 +142,18 @@
           </a-button>
         </a-button-group>
       </footer-tool-bar>
+      <create-employee-form
+        :visible="visible.employeeForm"
+        :model="modal.employeeForm"
+        @cancel="handleCancel"
+        @ok="ok('employee')"
+      />
+      <create-bank-form
+        :visible="visible.bankForm"
+        :model="modal.bankForm"
+        @cancel="handleCancel"
+        @ok="ok('bank')"
+      />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -148,11 +165,18 @@
     import ContractInfo from './components/ContractInfo'
     import BankInfo from './components/BankInfo'
     import AttachmentInfo from './components/AttachmentInfo'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { SupplierService } from '@/views/supplier/supplier.service'
+    import { formatTree } from '@/utils/util'
+    import { TreeSelect } from 'ant-design-vue'
+    import CreateEmployeeForm from '../modules/CreateEmployee'
+    import CreateBankForm from '../modules/CreateBank'
+    import { City as CitySvc, formatCities } from '@/api/city'
 
   const SHOW_PARENT = TreeSelect.SHOW_PARENT
   export default {
     name: 'SupplierPurchaseItem',
-    components: { CreateEmployeeForm, FooterToolBar, CreateBankForm,AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
+    components: { CreateEmployeeForm, FooterToolBar, CreateBankForm, AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
     data () {
       return {
         SHOW_PARENT,
