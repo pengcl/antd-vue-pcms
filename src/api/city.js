@@ -1,7 +1,24 @@
 import request from '@/utils/request'
 
+export function formatCities (data) {
+  const cities = []
+  data.forEach(item => {
+    if (item.city) {
+      item.children = formatCities(item.city)
+    }
+    cities.push({
+      label: item.name,
+      value: item.name,
+      children: item.children
+    })
+  })
+  return cities
+}
+
 const API = {
-  list: '/api/services/app/City/GetRegionalOfficeCitys'
+  list: '/api/services/app/City/GetRegionalOfficeCitys',
+  full: '/api/services/app/City/GetProvinceCityAreaTree',
+  cities: '/api/services/app/City/GetProvinceCityTree'
 }
 
 const City = {}
@@ -18,6 +35,22 @@ City.list = function list (id) {
     url: API.list,
     method: 'get',
     params: { Id: id }
+  })
+}
+
+City.full = function list () {
+  return request({
+    url: API.full,
+    method: 'GET',
+    params: {}
+  })
+}
+
+City.cities = function list () {
+  return request({
+    url: API.cities,
+    method: 'GET',
+    params: {}
   })
 }
 

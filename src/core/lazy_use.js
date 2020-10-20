@@ -44,6 +44,7 @@ import {
   Statistic,
   Descriptions,
   Cascader,
+  TreeSelect,
   message,
   notification
 } from 'ant-design-vue'
@@ -99,6 +100,7 @@ Vue.use(Result)
 Vue.use(Statistic)
 Vue.use(Descriptions)
 Vue.use(Cascader)
+Vue.use(TreeSelect)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message
