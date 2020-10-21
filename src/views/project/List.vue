@@ -33,6 +33,7 @@
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :expandIconColumnIndex="2"
       >
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
@@ -66,192 +67,229 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
 
-  import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import CreateForm from '@/views/list/modules/CreateForm'
+import { STable, Ellipsis } from '@/components'
+import { getRoleList } from '@/api/manage'
 
-  import { Regional as RegionalService } from '@/api/regional'
-  import { ProjectService } from '@/views/project/project.service'
-  import { City as CityService } from '@/api/city'
-  import { fixedList } from '@/utils/util'
+import StepByStepModal from '@/views/list/modules/StepByStepModal'
+import CreateForm from '@/views/list/modules/CreateForm'
 
-  const columns = [
-    {
-      title: '操作',
-      dataIndex: 'action',
-      width: '150px',
-      scopedSlots: { customRender: 'action' }
-    },
-    {
-      title: '项目编号',
-      dataIndex: 'projectCode'
-    },
-    {
-      title: '房产项目名称',
-      dataIndex: 'projectName',
-      scopedSlots: { customRender: 'projectName' }
-    },
-    {
-      title: '地区',
-      dataIndex: 'projAddress',
-      scopedSlots: { customRender: 'projAddress' }
-    },
-    {
-      title: '城市',
-      dataIndex: 'cityID',
-      scopedSlots: { customRender: 'cityID' }
-    },
-    {
-      title: '项目状态',
-      dataIndex: 'projStatus',
-      scopedSlots: { customRender: 'projStatus' }
-    },
-    {
-      title: '审批状态',
-      dataIndex: 'status',
-      scopedSlots: { customRender: 'status' }
-    },
-    /* {
-      title: '创建者',
-      dataIndex: 'creator',
-      scopedSlots: { customRender: 'creator' }
-    }, */
-    {
-      title: '创建日期',
-      dataIndex: 'beginDate'
-    }
-    /* {
-      title: '最后更新者',
-      dataIndex: 'updater',
-      scopedSlots: { customRender: 'updater' }
-    }, */
-    /* {
-      title: '最后更新日期',
-      dataIndex: 'updatedAt'
-    } */
-  ]
+import { Regional as RegionalService } from '@/api/regional'
+import { ProjectService } from '@/views/project/project.service'
+import { City as CityService } from '@/api/city'
+import { Company as CompanyService } from '@/api/company'
 
-  const statusMap = {
-    0: {
-      status: 'default',
-      text: '关闭'
-    },
-    1: {
-      status: 'processing',
-      text: '运行中'
-    },
-    2: {
-      status: 'success',
-      text: '已上线'
-    },
-    3: {
-      status: 'error',
-      text: '异常'
-    }
+function fixedList (res, params) {
+  const result = {}
+  result.pageSize = params.pageSize
+  result.pageNo = params.pageNo
+  if (res.result.data) {
+    result.totalPage = Math.ceil(res.result.data.projects.items.length / params.pageSize)
+    result.totalCount = res.result.data.projects.items.length
+    result.data = formatList(res.result.data.projects.items)
+  } else {
+    result.totalPage = 0
+    result.totalCount = 0
+    result.data = []
   }
+  return result
+}
 
-  export default {
-    name: 'ProjectList',
-    components: {
-      STable,
-      Ellipsis,
-      CreateForm,
-      StepByStepModal
-    },
-    data () {
-      this.columns = columns
-      return {
-        // create model
-        regionalOffices: [],
-        visible: false,
-        confirmLoading: false,
-        mdl: null,
-        // 高级搜索 展开/关闭
-        advanced: false,
-        // 查询参数
-        queryParam: {},
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return ProjectService.items(requestParameters).then(res => {
-            return fixedList(res, requestParameters)
-          })
-        },
-        selectedRowKeys: [],
-        selectedRows: []
-      }
-    },
-    filters: {
-      statusFilter (type) {
-        return statusMap[type].text
-      },
-      statusTypeFilter (type) {
-        return statusMap[type].status
-      }
-    },
-    created () {
-      // getRoleList({ t: new Date() })
-      RegionalService.list().then(res => {
-        console.log(res)
-        const options = []
-        res.result.data.items.forEach(item => {
-          options.push({
-            value: item.id,
-            label: item.nameCN,
-            isLeaf: false
-          })
+function formatList (items) {
+  const list = []
+  items.forEach(item => {
+    if (item.childs) {
+      item.children = formatList(item.childs.items)
+    } else {
+      item.children = null
+    }
+    list.push(item)
+  })
+  return list
+}
+
+const columns = [
+  {
+    title: '操作',
+    dataIndex: 'action',
+    width: '150px',
+    scopedSlots: { customRender: 'action' }
+  },
+  {
+    title: '项目编号',
+    dataIndex: 'projectCode'
+  },
+  {
+    title: '房产项目名称',
+    dataIndex: 'projectName',
+    scopedSlots: { customRender: 'projectName' }
+  },
+  {
+    title: '地区',
+    dataIndex: 'projAddress',
+    scopedSlots: { customRender: 'projAddress' }
+  },
+  {
+    title: '城市',
+    dataIndex: 'cityID',
+    scopedSlots: { customRender: 'cityID' }
+  },
+  {
+    title: '项目状态',
+    dataIndex: 'projStatus',
+    scopedSlots: { customRender: 'projStatus' }
+  },
+  {
+    title: '审批状态',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' }
+  },
+  /* {
+    title: '创建者',
+    dataIndex: 'creator',
+    scopedSlots: { customRender: 'creator' }
+  }, */
+  {
+    title: '创建日期',
+    dataIndex: 'beginDate'
+  }
+  /* {
+    title: '最后更新者',
+    dataIndex: 'updater',
+    scopedSlots: { customRender: 'updater' }
+  }, */
+  /* {
+    title: '最后更新日期',
+    dataIndex: 'updatedAt'
+  } */
+]
+
+const statusMap = {
+  0: {
+    status: 'default',
+    text: '关闭'
+  },
+  1: {
+    status: 'processing',
+    text: '运行中'
+  },
+  2: {
+    status: 'success',
+    text: '已上线'
+  },
+  3: {
+    status: 'error',
+    text: '异常'
+  }
+}
+
+export default {
+  name: 'ProjectList',
+  components: {
+    STable,
+    Ellipsis,
+    CreateForm,
+    StepByStepModal
+  },
+  data () {
+    this.columns = columns
+    return {
+      // create model
+      regionalOffices: [],
+      visible: false,
+      confirmLoading: false,
+      mdl: null,
+      // 高级搜索 展开/关闭
+      advanced: false,
+      // 查询参数
+      queryParam: {},
+      // 加载数据方法 必须为 Promise 对象
+      loadData: parameter => {
+        const requestParameters = Object.assign({}, parameter, this.queryParam)
+        return ProjectService.items(requestParameters).then(res => {
+          return fixedList(res, parameter)
         })
-        this.regionalOffices = options
+      },
+      selectedRowKeys: [],
+      selectedRows: []
+    }
+  },
+  filters: {
+    statusFilter (type) {
+      return statusMap[type].text
+    },
+    statusTypeFilter (type) {
+      return statusMap[type].status
+    }
+  },
+  created () {
+    // getRoleList({ t: new Date() })
+    RegionalService.list().then(res => {
+      const options = []
+      res.result.data.items.forEach(item => {
+        options.push({
+          value: item.id,
+          label: item.nameCN,
+          isLeaf: false
+        })
       })
-    },
-    computed: {
-      rowSelection () {
-        return {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
-        }
+      this.regionalOffices = options
+    })
+  },
+  watch: {
+    'params.Id' (value) {
+      CompanyService.list(value).then(res => {
+        this.selection.companies = res.result.data
+        this.$forceUpdate()
+      })
+    }
+  },
+  computed: {
+    rowSelection () {
+      return {
+        selectedRowKeys: this.selectedRowKeys,
+        onChange: this.onSelectChange
       }
+    }
+  },
+  methods: {
+    handleToItem (record) {
+      this.$router.push({ path: `/project/item/${record.id}?type=view` })
     },
-    methods: {
-      handleToItem (record) {
-        this.$router.push({ path: `/project/item/${record.id}?type=view` })
-      },
-      handleToEdit (record) {
-        this.$router.push({ path: `/project/item/${record.id}?type=update` })
-      },
-      handleToAdd () {
-        this.$router.push({ path: `/project/item/0?type=create` })
-      },
-      onChange (value, items) {
-        if (items) {
-          const city = items[1]
-          if (city) {
-            this.queryParam.CityID = city.value
-            this.$refs.table.refresh(true)
-          }
-        } else {
-          this.queryParam.CityID = ''
+    handleToEdit (record) {
+      this.$router.push({ path: `/project/item/${record.id}?type=update` })
+    },
+    handleToAdd () {
+      this.$router.push({ path: `/project/item/0?type=create` })
+    },
+    onChange (value, items) {
+      if (items) {
+        const city = items[1]
+        if (city) {
+          this.queryParam.Id = city.value
           this.$refs.table.refresh(true)
         }
-      },
-      loadCities (selectedOptions) {
-        const targetOption = selectedOptions[selectedOptions.length - 1]
-        targetOption.loading = true
-        CityService.list(targetOption.value).then(res => {
-          targetOption.loading = false
-          const items = []
-          res.result.data.items.forEach(item => {
-            items.push({
-              value: item.id,
-              label: item.nameCN
-            })
-          })
-          targetOption.children = items
-          this.regionalOffices = [...this.regionalOffices]
-        })
+      } else {
+        this.queryParam.Id = ''
+        this.$refs.table.refresh(true)
       }
+    },
+    loadCities (selectedOptions) {
+      const targetOption = selectedOptions[selectedOptions.length - 1]
+      targetOption.loading = true
+      CityService.list(targetOption.value).then(res => {
+        targetOption.loading = false
+        const items = []
+        res.result.data.items.forEach(item => {
+          items.push({
+            value: item.id,
+            label: item.nameCN
+          })
+        })
+        targetOption.children = items
+        this.regionalOffices = [...this.regionalOffices]
+      })
     }
   }
+}
 </script>

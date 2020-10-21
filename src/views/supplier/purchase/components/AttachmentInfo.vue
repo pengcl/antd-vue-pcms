@@ -5,16 +5,28 @@
         <table>
           <thead>
           <tr>
-            <th colspan="3">附件信息</th>
+            <th colspan="4">
+              <a-upload
+              >
+                <a-button>请选择</a-button>
+              </a-upload>
+            </th>
           </tr>
           <tr>
-            <th style="width: 30%">文档名称</th>
-            <th style="width: 20%">上传人</th>
-            <th style="width: 20%">上传日期</th>
+            <th colspan="4">公司介绍</th>
+          </tr>
+          <tr>
+            <th style="width: 25%">操作</th>
+            <th style="width: 25%">公司介绍文件</th>
+            <th style="width: 25%">上传人</th>
+            <th style="width: 25%">上传日期</th>
           </tr>
           </thead>
           <tbody>
           <tr>
+            <td>
+              <a-button type="danger" icon="delete"></a-button>
+            </td>
             <td></td>
             <td></td>
             <td></td>

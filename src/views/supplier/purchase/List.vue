@@ -95,8 +95,6 @@
   import { STable, Ellipsis } from '@/components'
   import { getRoleList } from '@/api/manage'
 
-  import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import CreateForm from '@/views/list/modules/CreateForm'
   import { fixedList } from '@/utils/util'
   import { SupplierService } from '@/views/supplier/supplier.service'
 
@@ -105,8 +103,6 @@
     components: {
       STable,
       Ellipsis,
-      CreateForm,
-      StepByStepModal
     },
     data () {
       const columns = [
@@ -143,7 +139,7 @@
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
-        queryParam: {},
+        queryParam: {RegisterType:1},
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)

@@ -5,18 +5,30 @@
         <table>
           <thead>
           <tr>
-            <th colspan="4">银行信息</th>
+            <th colspan="4">
+              <a-button icon="plus">
+                添加银行账号
+              </a-button>
+              <a-button icon="stop">
+                重置
+              </a-button>
+            </th>
           </tr>
           <tr>
+            <th colspan="4">银行账号</th>
+          </tr>
+          <tr>
+            <th style="width: 25%">操作</th>
             <th style="width: 25%">开户银行</th>
             <th style="width: 25%">银行账号</th>
             <th style="width: 25%">银行地址</th>
-            <th style="width: 25%">备注</th>
           </tr>
           </thead>
           <tbody>
           <tr>
-            <td></td>
+            <td>
+              <a-button type="danger" icon="delete"></a-button>
+            </td>
             <td></td>
             <td></td>
             <td></td>

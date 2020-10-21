@@ -3,6 +3,7 @@ import request from '@/utils/request'
 const API = {
   items: '/api/services/app/Vendor/GetVendorPage', // 项目列表
   item: '/api/services/app/Vendor/GetVendor', // 项目详情forEdit
+  update: '/api/services/app/Vendor/UpdateVendorChange',
   check: '/api/services/app/Vendor/CheckVendor',
   banks: '/api/services/app/Vendor/GetVendorBankList',
   bank: '/api/services/app/Vendor/GetVendorBank',
@@ -25,6 +26,14 @@ SupplierService.item = function list (GID) {
     url: API.item,
     method: 'GET',
     params: { GID }
+  })
+}
+
+SupplierService.update = function list (parameter) {
+  return request({
+    url: API.update,
+    method: 'PUT',
+    data: parameter
   })
 }
 

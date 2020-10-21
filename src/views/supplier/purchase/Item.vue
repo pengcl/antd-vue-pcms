@@ -109,7 +109,7 @@
 
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="公司员工">
-          <company-staff></company-staff>
+          <company-staff :items="form.vendorEmployeeList"></company-staff>
         </a-tab-pane>
         <a-tab-pane key="2" tab="变更信息">
           <change-info></change-info>
@@ -127,7 +127,7 @@
 
       <footer-tool-bar>
         <a-button-group>
-          <a-button :disabled="type === 'view'" @click="handleToEdit()" type="success">
+          <a-button :disabled="type === 'view'" @click="save()" type="success">
             储存
           </a-button>
         </a-button-group>
@@ -142,192 +142,126 @@
           </a-button>
         </a-button-group>
       </footer-tool-bar>
-      <create-employee-form
-        :visible="visible.employeeForm"
-        :model="modal.employeeForm"
-        @cancel="handleCancel"
-        @ok="ok('employee')"
-      />
-      <create-bank-form
-        :visible="visible.bankForm"
-        :model="modal.bankForm"
-        @cancel="handleCancel"
-        @ok="ok('bank')"
-      />
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-    import { FooterToolBar } from '@/components'
-    import CompanyStaff from './components/CompanyStaff'
-    import ChangeInfo from './components/ChangeInfo'
-    import ContractInfo from './components/ContractInfo'
-    import BankInfo from './components/BankInfo'
-    import AttachmentInfo from './components/AttachmentInfo'
-    import { SwaggerService } from '@/api/swagger.service'
-    import { SupplierService } from '@/views/supplier/supplier.service'
-    import { formatTree } from '@/utils/util'
-    import { TreeSelect } from 'ant-design-vue'
-    import CreateEmployeeForm from '../modules/CreateEmployee'
-    import CreateBankForm from '../modules/CreateBank'
-    import { City as CitySvc, formatCities } from '@/api/city'
+import { FooterToolBar } from '@/components'
+import CompanyStaff from './components/CompanyStaff'
+import ChangeInfo from './components/ChangeInfo'
+import ContractInfo from './components/ContractInfo'
+import BankInfo from './components/BankInfo'
+import AttachmentInfo from './components/AttachmentInfo'
+import { SwaggerService } from '@/api/swagger.service'
+import { SupplierService } from '@/views/supplier/supplier.service'
+import { formatTree } from '@/utils/util'
+import { TreeSelect } from 'ant-design-vue'
+import { City as CitySvc, formatCities } from '@/api/city'
 
-  const SHOW_PARENT = TreeSelect.SHOW_PARENT
-  export default {
-    name: 'SupplierPurchaseItem',
-    components: { CreateEmployeeForm, FooterToolBar, CreateBankForm, AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
-    data () {
-      return {
-        SHOW_PARENT,
-        visible: {
-          employeeForm: false,
-          bankForm: false
-        },
-        modal: {
-          employeeForm: null,
-          bankForm: null
-        },
-        selection: {},
-        dto: {},
-        form: {
-          vendor: {},
-          vendorBankList: {},
-          vendorEmployeeList: {}
-        }
-      }
-    },
-    created () {
-      this.dto = SwaggerService.getDto('VendorChange')
-      this.form.vendor = SwaggerService.getForm('VendorChangeDto')
-      if (this.id !== '0') {
-        SupplierService.item(this.id).then(res => {
-          this.data = res.result.data
-          this.form.vendor = SwaggerService.getValue(this.form.vendor, res.result.data)
-        })
-      }
-      SupplierService.types().then(res => {
-        this.selection.types = formatTree([res.result], ['title:packageName', 'value:packageCode', 'key:gid'])
-        this.$forceUpdate()
-      })
-      CitySvc.cities().then(res => {
-        this.selection.cities = formatCities(res.result.data.provinces)
-        this.$forceUpdate()
-      })
-    },
-    computed: {
-      id () {
-        return this.$route.params.id
-      },
-      type () {
-        return this.$route.query.type
-      }
-    },
-    methods: {
-      cityChange (value) {
-        console.log(value)
-      },
-      showForm (target) {
-        this.modal[target + 'Form'] = null
-        this.visible[target + 'Form'] = true
-      },
-      handleEdit (record) {
-        this.visible = true
-        this.mdl = { ...record }
-      },
-      ok (target) {
-        const form = this.$refs.createModal.form
-        this.confirmLoading = true
-        form.validateFields((errors, values) => {
-          if (!errors) {
-            console.log('values', values)
-            if (values.id > 0) {
-              // 修改 e.g.
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-
-                this.$message.info('修改成功')
-              })
-            } else {
-              // 新增
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-
-                this.$message.info('新增成功')
-              })
-            }
-          } else {
-            this.confirmLoading = false
-          }
-        })
-      },
-      handleCancel () {
-        this.visible = false
-
-        const form = this.$refs.createModal.form
-        form.resetFields() // 清理表单数据（可不做）
+const SHOW_PARENT = TreeSelect.SHOW_PARENT
+export default {
+  name: 'SupplierPurchaseItem',
+  components: { FooterToolBar, AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
+  data () {
+    return {
+      SHOW_PARENT,
+      selection: {},
+      dto: {},
+      form: {
+        vendor: {},
+        vendorBankList: [],
+        vendorEmployeeList: []
       }
     }
+  },
+  created () {
+    this.dto = SwaggerService.getDto('VendorChange')
+    this.form.vendor = SwaggerService.getForm('VendorChangeDto')
+    if (this.id !== '0') {
+      SupplierService.item(this.id).then(res => {
+        this.data = res.result.data
+        this.form.vendor = SwaggerService.getValue(this.form.vendor, res.result.data)
+        this.form.vendorEmployeeList = res.result.data.vendorEmployeeList
+        console.log(this.form.vendorEmployeeList)
+      })
+    }
+    SupplierService.types().then(res => {
+      this.selection.types = formatTree([res.result], ['title:packageName', 'value:packageCode', 'key:gid'])
+      this.$forceUpdate()
+    })
+    CitySvc.cities().then(res => {
+      this.selection.cities = formatCities(res.result.data.provinces)
+      this.$forceUpdate()
+    })
+  },
+  computed: {
+    id () {
+      return this.$route.params.id
+    },
+    type () {
+      return this.$route.query.type
+    }
+  },
+  methods: {
+    cityChange (value) {
+      console.log(value)
+    },
+    handleEdit (record) {
+      this.visible = true
+      this.mdl = { ...record }
+    },
+    save () {
+      console.log(this.form)
+      SupplierService.update(this.form).then(res => {
+        console.log(res)
+      })
+    }
   }
+}
 </script>
 
 <style lang="less" scoped>
-  .ant-btn-group {
-    margin-right: 8px;
-  }
+.ant-btn-group {
+  margin-right: 8px;
+}
 
-  table {
-    margin: 15px 0;
-    width: 100%;
-    border-width: 1px 1px 0 0;
-    border-radius: 3px 3px 0 0;
-    border-style: solid;
-    border-color: #ccc;
+table {
+  margin: 15px 0;
+  width: 100%;
+  border-width: 1px 1px 0 0;
+  border-radius: 3px 3px 0 0;
+  border-style: solid;
+  border-color: #ccc;
 
-    thead {
-      tr {
-        th {
-          background-color: #f5f5f5;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
+  thead {
+    tr {
+      th {
+        background-color: #f5f5f5;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
+        border-color: #ccc;
 
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        td {
-          padding: 0.5em 0.6em 0.4em 0.6em !important;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
+        button {
+          margin-right: 10px;
         }
       }
     }
   }
+
+  tbody {
+    tr {
+      td {
+        padding: 0.5em 0.6em 0.4em 0.6em !important;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
+        border-color: #ccc;
+
+        button {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
 </style>
