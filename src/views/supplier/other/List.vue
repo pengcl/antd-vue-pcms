@@ -101,7 +101,7 @@
         name: 'SupplierOtherList',
       components: {
         STable,
-        Ellipsis,
+        Ellipsis
       },
       data () {
         const columns = [
@@ -138,7 +138,7 @@
           // 高级搜索 展开/关闭
           advanced: false,
           // 查询参数
-          queryParam: {RegisterType:2},
+          queryParam: { RegisterType: 2 },
           // 加载数据方法 必须为 Promise 对象
           loadData: parameter => {
             const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -168,14 +168,14 @@
       methods: {
         handleToItem (record) {
           console.log(record)
-          this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })
+          this.$router.push({ path: `/supplier/other/item/${record.gid}?type=view` })
         },
         handleToEdit (record) {
           console.log(record)
-          this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=edit` })
+          this.$router.push({ path: `/supplier/other/item/${record.gid}?type=edit` })
         },
         handleToAdd () {
-          this.$router.push({ path: '/supplier/purchase/edit' })
+          this.$router.push({ path: `/supplier/other/item/0?type=add` })
         },
         handleAdd () {
           this.mdl = null

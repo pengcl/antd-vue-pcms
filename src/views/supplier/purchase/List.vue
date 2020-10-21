@@ -176,7 +176,7 @@
         this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=edit` })
       },
       handleToAdd () {
-        this.$router.push({ path: '/supplier/purchase/edit' })
+        this.$router.push({ path: `/supplier/purchase/item/0?type=add` })
       },
       handleAdd () {
         this.mdl = null

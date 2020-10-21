@@ -10,7 +10,7 @@
                   <a-button @click="showForm()" icon="plus">
                     添加员工
                   </a-button>
-                  <a-button icon="stop">
+                  <a-button @click="clear()" icon="stop">
                     重置
                   </a-button>
                 </th>
@@ -34,23 +34,23 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr v-for="(item, index) in items" :key="item.id">
                 <td>
-                  <a-button icon="close">
+                  <a-button @click="del(index)" icon="close">
                     删除
                   </a-button>
                 </td>
+                <td>{{ item.employeeName }}</td>
+                <td>{{ item.jobPosition }}</td>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{ item.officePhone }}</td>
+                <td>{{ item.fox }}</td>
+                <td>{{ item.mobilePhone }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.isIncumbent }}</td>
+                <td>{{ item.remarks }}</td>
               </tr>
             </tbody>
           </table>
@@ -104,42 +104,16 @@ export default {
           // 重置表单数据
           form.resetFields()
           // 刷新表格
-          /*console.log('values', values)
-          if (values.id > 0) {
-            // 修改 e.g.
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-
-              this.$message.info('修改成功')
-            })
-          } else {
-            // 新增
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-
-              this.$message.info('新增成功')
-            })
-          }*/
         } else {
           this.confirmLoading = false
         }
       })
+    },
+    del (index) {
+      this.items.splice(index, 1)
+    },
+    clear () {
+      this.items = []
     },
     handleCancel () {
       this.visible = false

@@ -148,11 +148,11 @@
 
 <script>
 import { FooterToolBar } from '@/components'
-import CompanyStaff from './components/CompanyStaff'
-import ChangeInfo from './components/ChangeInfo'
-import ContractInfo from './components/ContractInfo'
-import BankInfo from './components/BankInfo'
-import AttachmentInfo from './components/AttachmentInfo'
+import CompanyStaff from '../components/CompanyStaff'
+import ChangeInfo from '../components/ChangeInfo'
+import ContractInfo from '../components/ContractInfo'
+import BankInfo from '../components/BankInfo'
+import AttachmentInfo from '../components/AttachmentInfo'
 import { SwaggerService } from '@/api/swagger.service'
 import { SupplierService } from '@/views/supplier/supplier.service'
 import { formatTree } from '@/utils/util'
