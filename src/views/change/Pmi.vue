@@ -42,13 +42,36 @@
         </a-row>
       </a-form>
 
+      <a-table :columns="columns" :data-source="data" bordered>
+        <template slot="footer" slot-scope="currentPageData">
+          <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+            <a-row :gutter="48">
+              <a-col :md="12" :sm="24">
+                <a-form-item label="累计变更金额"></a-form-item>
+              </a-col>
+              <a-col :md="12" :sm="24">
+                <a-form-item label="变更比列"></a-form-item>
+              </a-col>
+            </a-row>
+          </a-form>
+
+        </template>
+      </a-table>
+
+        <a-row :gutter="48" style="margin-top: 10px">
+          <a-col :md="12" :sm="24">
+            <a-button type="success" @click="handleToAdd">新增CIP</a-button>
+            <a-button type="success" style="margin-left: 20px">CIP转VO</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
+          </a-col>
+        </a-row>
       <s-table
         style="margin-top: 5px"
         ref="table"
         size="default"
         rowKey="key"
         bordered
-        :columns="columns"
+        :columns="_columns"
         :data="loadData"
         :alert="false"
         showPagination="auto"
@@ -63,14 +86,12 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text,record">
           <template>
-            <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem">
+            <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
             </a-button>
             <a-button class="btn-info" type="primary" icon="form" style="margin-left: 4px" title="编辑"
-                      @click="handleToEdit">
-            </a-button>
-            <a-button type="primary" class="btn-info" icon="plus-square" style="margin-left: 4px" title="审批记录">
+                      @click="handleToEdit(record)">
             </a-button>
           </template>
         </span>
@@ -86,20 +107,6 @@
       />
       <step-by-step-modal ref="modal" @ok="handleOk"/>
 
-      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-        <a-row :gutter="48">
-          <a-col :md="12" :sm="24">
-            <a-form-item label="累计变更金额">
-              66,666
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="累计变更比例">
-              2.64%
-            </a-form-item>
-          </a-col>
-        </a-row>
-      </a-form>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -155,6 +162,47 @@
         }
     ]
 
+    const _columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' }
+        },
+        {
+            title: '审核状态',
+            dataIndex: 'approvalStatus',
+            scopedSlots: { customRender: 'approvalStatus' }
+        },
+        {
+            title: '变更编号',
+            dataIndex: 'no'
+        },
+        {
+            title: '申请金额',
+            dataIndex: 'callNo',
+            scopedSlots: { customRender: 'callNo' }
+        },
+        {
+            title: '申报日期',
+            dataIndex: 'createAt',
+        },
+        {
+            title: '变更类型',
+            dataIndex: 'approvalStatus',
+            scopedSlots: { customRender: 'approvalStatus' }
+        },
+        {
+            title: '变更确认',
+            dataIndex: 'description',
+            scopedSlots: { customRender: 'description' }
+        },
+        {
+            title: '相关现场签证',
+            dataIndex: 'present'
+        }
+    ]
+
     const statusMap = {
         0: {
             status: 'default',
@@ -175,7 +223,7 @@
     }
 
     export default {
-        name: 'TableList',
+        name: 'ChangePmiList',
         components: {
             STable,
             Ellipsis,
@@ -184,6 +232,7 @@
         },
         data () {
             this.columns = columns
+            this._columns = _columns
             return {
                 // create model
                 show: false,
@@ -227,11 +276,17 @@
             }
         },
         methods: {
-            handleToItem () {
-                this.$router.push({ path: '/contract/item/1' })
+            handleToItem (record) {
+                this.$router.push({ path: `/change/cip/item/${record.id}?type=view` })
             },
-            handleToEdit () {
-                this.$router.push({ path: '/contract/edit/1' })
+            handleToEdit (record) {
+                this.$router.push({ path: `/change/cip/item/${record.id}?type=edit` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: '/change/cip/edit' })
+            },
+            handleToCertificate () {
+                this.$router.push({ path: '/change/certificate' })
             },
             handleAdd () {
                 this.mdl = null
@@ -323,6 +378,9 @@
     /deep/ .ant-form-item-label label {
       color: #fff;
     }
+  }
+  /deep/ .ant-table-footer{
+    padding-bottom: 0;
   }
 
 </style>
