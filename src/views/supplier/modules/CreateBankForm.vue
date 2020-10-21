@@ -11,59 +11,19 @@
       <a-form :form="form">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-form-item label="联系人姓名">
+            <a-form-item label="开户银行">
               <a-input
-                v-decorator="['employeeName', {rules: [{required: true, min: 2,max:5, message: '请输入至少两个字符的姓名！'}]}]"/>
+                v-decorator="['bankName', {rules: [{required: true, message: '请输入开户银行！'}]}]"/>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="现任职位">
-              <a-input v-decorator="['jobPosition', { initialValue: '' }]"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="公司联系人">
-              <a-input></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="台鉴人">
-              <a-input></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="业务联系人">
-              <a-input></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="办公电话">
-              <a-input v-decorator="['officePhone', { initialValue: '' }]"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="传真">
-              <a-input v-decorator="['fox', { initialValue: '' }]"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="手机">
-              <a-input v-decorator="['mobilePhone', { initialValue: '' }]"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="电子邮箱">
-              <a-input v-decorator="['email', { initialValue: '' }]"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="是否在职">
-              <a-input v-decorator="['isIncumbent', { initialValue: '' }]"></a-input>
+            <a-form-item label="银行账号">
+              <a-input v-decorator="['bankAccounts', {rules: [{required: true, message: '请输入银行账号！'}]}]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="备注">
-              <a-input v-decorator="['remarks', { initialValue: '' }]"></a-input>
+            <a-form-item label="银行地址">
+              <a-input v-decorator="['bankAddr', {rules: [{required: true, message: '请输入银行地址！'}]}]"></a-input>
             </a-form-item>
           </a-col>
         </a-row>

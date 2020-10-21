@@ -39,7 +39,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="projectGUID"
+        rowKey="id"
         bordered
         :columns="columns"
         :data="loadData"
@@ -53,6 +53,7 @@
             title="查看"
             @click="handleToItem(record)"></a-button>
           <a-button
+            v-if="record.logGID"
             class="btn-info"
             type="primary"
             icon="form"
@@ -102,7 +103,7 @@
     name: 'SupplierPurchaseList',
     components: {
       STable,
-      Ellipsis,
+      Ellipsis
     },
     data () {
       const columns = [
@@ -139,7 +140,7 @@
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
-        queryParam: {RegisterType:1},
+        queryParam: { RegisterType: 1 },
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -173,7 +174,7 @@
       },
       handleToEdit (record) {
         console.log(record)
-        this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=edit` })
+        this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
       },
       handleToAdd () {
         this.$router.push({ path: `/supplier/purchase/item/0?type=add` })

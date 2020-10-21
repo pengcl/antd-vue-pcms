@@ -2,8 +2,11 @@ import request from '@/utils/request'
 
 const API = {
   items: '/api/services/app/Vendor/GetVendorPage', // 项目列表
-  item: '/api/services/app/Vendor/GetVendor', // 项目详情forEdit
+  viewEntity: '/api/services/app/Vendor/GetVendor', // 项目详情forEdit
+  updateEntity: '/api/services/app/Vendor/GetVendorChangeEntity',
+  generate: '/api/services/app/Vendor/CreateVendorChangeBG',
   update: '/api/services/app/Vendor/UpdateVendorChange',
+  add: '/api/services/app/Vendor/CreateVendorChangeZR',
   check: '/api/services/app/Vendor/CheckVendor',
   banks: '/api/services/app/Vendor/GetVendorBankList',
   bank: '/api/services/app/Vendor/GetVendorBank',
@@ -21,11 +24,35 @@ SupplierService.items = function list (parameter) {
   })
 }
 
-SupplierService.item = function list (GID) {
+SupplierService.viewEntity = function list (GID) {
   return request({
-    url: API.item,
+    url: API.viewEntity,
     method: 'GET',
     params: { GID }
+  })
+}
+
+SupplierService.updateEntity = function list (LogGID) {
+  return request({
+    url: API.updateEntity,
+    method: 'GET',
+    params: { LogGID }
+  })
+}
+
+SupplierService.generate = function (vendorGID) {
+  return request({
+    url: API.generate + '?vendorGID=' + vendorGID,
+    method: 'POST',
+    data: {}
+  })
+}
+
+SupplierService.add = function list (parameter) {
+  return request({
+    url: API.add,
+    method: 'POST',
+    data: parameter
   })
 }
 

@@ -62,7 +62,7 @@
       :visible="visible"
       :model="model"
       @cancel="handleCancel"
-      @ok="ok('employee')">
+      @ok="ok()">
     </create-employee-form>
   </div>
 </template>
@@ -75,6 +75,10 @@ export default {
   name: 'CompanyStaff',
   components: { CreateEmployeeForm },
   props: {
+    vendor: {
+      type: Object,
+      default: null
+    },
     items: {
       type: Array,
       default: null
@@ -89,7 +93,7 @@ export default {
   },
   methods: {
     showForm () {
-      this.model = null
+      this.model = { logGID: this.vendor.logGID, vendorGID: this.vendor.vendorGID }
       this.visible = true
     },
     ok () {
@@ -97,7 +101,6 @@ export default {
       this.confirmLoading = true
       form.validateFields((errors, values) => {
         if (!errors) {
-          console.log(values)
           this.items.push(values)
           this.visible = false
           this.confirmLoading = false

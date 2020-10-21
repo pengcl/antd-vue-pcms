@@ -123,6 +123,7 @@
       ContractService.item(this.id).then(res => {
         this.form.orgContractGuid = res.result.data.orgContractGuid
         this.form = SwaggerService.getValue(this.form, res.result.data)
+        console.log(this.form)
       })
     },
     computed: {

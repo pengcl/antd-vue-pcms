@@ -49,7 +49,7 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="公司所在地">
-              <a-cascader :options="selection.cities" placeholder="请选择公司所在地" @change="cityChange"/>
+              <a-cascader :options="selection.cities" :default-value="[form.vendor.province, form.vendor.city]" placeholder="请选择公司所在地" @change="cityChange"/>
             </a-form-item>
           </a-col>
           <!--<a-col :md="12" :sm="24">
@@ -109,7 +109,7 @@
 
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="公司员工">
-          <company-staff :items="form.vendorEmployeeList"></company-staff>
+          <company-staff :vendor="form.vendor" :items="form.vendorEmployeeList"></company-staff>
         </a-tab-pane>
         <a-tab-pane key="2" tab="变更信息">
           <change-info></change-info>
@@ -118,7 +118,7 @@
           <contract-info></contract-info>
         </a-tab-pane>
         <a-tab-pane key="4" tab="银行信息">
-          <bank-info></bank-info>
+          <bank-info :vendor="form.vendor" :items="form.vendorBankList"></bank-info>
         </a-tab-pane>
         <a-tab-pane key="5" tab="附件信息">
           <attachment-info></attachment-info>
@@ -127,12 +127,17 @@
 
       <footer-tool-bar>
         <a-button-group>
-          <a-button :disabled="type === 'view'" @click="save()" type="success">
+          <a-button v-if="type !== 'view'" @click="save()" type="success">
             储存
           </a-button>
         </a-button-group>
+        <a-button-group>
+          <a-button v-if="type === 'view' && !form.vendor.logGID" @click="askUpdate()" type="success">
+            供应商信息变更
+          </a-button>
+        </a-button-group>
         <a-button-group disabled>
-          <a-button :disabled="type === 'view'" @click="approve()" type="success">
+          <a-button v-if="type !== 'view'" @click="approve()" type="success">
             提请审批
           </a-button>
         </a-button-group>
@@ -179,11 +184,15 @@ export default {
     this.dto = SwaggerService.getDto('VendorChange')
     this.form.vendor = SwaggerService.getForm('VendorChangeDto')
     if (this.id !== '0') {
-      SupplierService.item(this.id).then(res => {
+      SupplierService[this.type + 'Entity'](this.id).then(res => {
         this.data = res.result.data
-        this.form.vendor = SwaggerService.getValue(this.form.vendor, res.result.data)
+        if (this.type === 'view') {
+          this.form.vendor = res.result.data
+        } else {
+          this.form.vendor = res.result.data.vendor
+        }
         this.form.vendorEmployeeList = res.result.data.vendorEmployeeList
-        console.log(this.form.vendorEmployeeList)
+        this.form.vendorBankList = res.result.data.vendorBankList
       })
     }
     SupplierService.types().then(res => {
@@ -206,14 +215,29 @@ export default {
   methods: {
     cityChange (value) {
       console.log(value)
+      this.form.vendor.province = value[0]
+      this.form.vendor.city = value[1]
     },
     handleEdit (record) {
       this.visible = true
       this.mdl = { ...record }
     },
+    askUpdate () {
+      SupplierService.generate(this.id).then(res => {
+        console.log(res.result.data)
+        this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
+      })
+    },
     save () {
-      console.log(this.form)
-      SupplierService.update(this.form).then(res => {
+      this.form.vendorEmployeeList.forEach(item => {
+        item.logGID = this.form.vendor.logGID
+        item.vendorGID = this.form.vendor.vendorGID
+      })
+      this.form.vendorBankList.forEach(item => {
+        item.logGID = this.form.vendor.logGID
+        item.vendorGID = this.form.vendor.vendorGID
+      })
+      SupplierService[this.type](this.form).then(res => {
         console.log(res)
       })
     }

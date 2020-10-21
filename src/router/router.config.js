@@ -86,34 +86,34 @@ export const asyncRouterMap = [
             path: '/supplier/purchase/list',
             name: 'SupplierPurchaseList',
             component: () => import('@/views/supplier/purchase/List'),
-            meta: { title: 'menu.supplier.purchase.list', keepAlive: true, permission: ['supplier'] }
+            meta: { title: 'menu.supplier.purchase.list', keepAlive: false, permission: ['supplier'] }
           },
           {
             path: '/supplier/purchase/item/:id',
             name: 'SupplierPurchaseItem',
             hidden: true,
             component: () => import('@/views/supplier/purchase/Item'),
-            meta: { title: 'menu.supplier.purchase.item', keepAlive: true, permission: ['supplier'] }
+            meta: { title: 'menu.supplier.purchase.item', keepAlive: false, permission: ['supplier'] }
           },
           {
             path: '/supplier/purchase/edit',
             name: 'SupplierPurchaseEdit',
             hidden: true,
             component: () => import('@/views/supplier/purchase/Edit'),
-            meta: { title: 'menu.supplier.purchase.edit', keepAlive: true, permission: ['supplier'] }
+            meta: { title: 'menu.supplier.purchase.edit', keepAlive: false, permission: ['supplier'] }
           },
           {
             path: '/supplier/other/list',
             name: 'SupplierOtherList',
             component: () => import('@/views/supplier/other/List'),
-            meta: { title: 'menu.supplier.other.list', keepAlive: true, permission: ['supplier'] }
+            meta: { title: 'menu.supplier.other.list', keepAlive: false, permission: ['supplier'] }
           },
           {
             path: '/supplier/other/item/:id',
             name: 'SupplierOtherItem',
             hidden: true,
             component: () => import('@/views/supplier/other/Item'),
-            meta: { title: 'menu.supplier.other.item', keepAlive: true, permission: ['supplier'] }
+            meta: { title: 'menu.supplier.other.item', keepAlive: false, permission: ['supplier'] }
           }
         ]
       },

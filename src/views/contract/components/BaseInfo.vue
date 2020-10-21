@@ -5,26 +5,22 @@
         <a-form-item
           label="项目名称(中文)"
         >
-          <a-select
+          <a-input
             :disabled="type === 'view'"
             placeholder="请选择项目名称(中文)"
             v-model="data.contract.projectID"
-            v-decorator="[data.contract.projectID, { rules: [{required: true, message: '请选择项目名称(中文)'}] }]">
-            <a-select-option :value="data.contract.projectID">ant-design@alipay.com</a-select-option>
-          </a-select>
+            v-decorator="[data.contract.projectID, { rules: [{required: true, message: '请选择项目名称(中文)'}] }]"/>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="招投标分判包编号"
         >
-          <a-select
+          <a-input
             :disabled="type === 'view'"
             placeholder="请选择地区"
             v-model="data.contract.tenderPackageItemID"
-            v-decorator="[data.contract.tenderPackageItemID, { rules: [{required: true, message: '请选择城市'}] }]">
-            <a-select-option value="1">ant-design@alipay.com</a-select-option>
-          </a-select>
+            v-decorator="[data.contract.tenderPackageItemID, { rules: [{required: true, message: '请选择城市'}] }]"/>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -52,8 +48,12 @@
             :disabled="type === 'view'"
             placeholder="请选择密级"
             v-model="data.contract.secretLevelID"
-            v-decorator="['paymentUser', { rules: [{required: true, message: '请选择密级'}] }]">
-            <a-select-option :value="data.contract.secretLevelID">ant-design@alipay.com</a-select-option>
+            v-decorator="['data.contract.secretLevelID', { rules: [{required: true, message: '请选择密级'}] }]">
+            <a-select-option
+              v-for="item in selection.secrets"
+              :key="item.id"
+              :value="item.id">{{ item.nameCN }}
+            </a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -277,97 +277,103 @@
 </template>
 
 <script>
-  import { ContractService } from '@/views/contract/contract.service'
+import { ContractService } from '@/views/contract/contract.service'
+import { Base as BaseService } from '@/api/base'
 
-  export default {
-    name: 'BaseInfo',
-    data () {
-      return {
-        selection: {},
-        loading: false
-      }
+export default {
+  name: 'BaseInfo',
+  data () {
+    return {
+      selection: {},
+      loading: false
+    }
+  },
+  created () {
+    ContractService.types().then(res => {
+      this.selection.types = res.result.data
+      this.$forceUpdate()
+    })
+    BaseService.secretTypes().then(res => {
+      this.selection.secrets = res.result.data
+      this.$forceUpdate()
+    })
+  },
+  props: {
+    data: {
+      type: Object,
+      default: null
     },
-    created () {
-      ContractService.types().then(res => {
-        this.selection.types = res.result.data
+    type: {
+      type: String,
+      default: 'view'
+    },
+    id: {
+      type: String,
+      default: '0'
+    }
+  },
+  watch: {
+    'data.contract.contractCategory' (val) {
+      this.selection.masters = null
+      ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
+        this.selection.masters = res.result.data
+        this.$forceUpdate()
       })
-    },
-    props: {
-      data: {
-        type: Object,
-        default: null
-      },
-      type: {
-        type: String,
-        default: 'view'
-      },
-      id: {
-        type: String,
-        default: '0'
-      }
-    },
-    watch: {
-      'data.contract.contractCategory' (val) {
-        this.selection.masters = null
-        ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
-          this.selection.masters = res.result.data
-          this.$forceUpdate()
+    }
+  },
+  methods: {
+    filterParties (partyType) {
+      const items = []
+      if (this.data.contractPartylst.forEach) {
+        this.data.contractPartylst.forEach(item => {
+          if (item.partyType === partyType) {
+            items.push(item)
+          }
         })
       }
-    },
-    methods: {
-      filterParties (partyType) {
-        const items = []
-        if (this.data.contractPartylst.forEach) {
-          this.data.contractPartylst.forEach(item => {
-            if (item.partyType === partyType) {
-              items.push(item)
-            }
-          })
-        }
-        return items
-        // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
-      }
+      return items
+      // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
     }
   }
+}
 </script>
 <style lang="less" scoped>
-  table {
-    margin: 15px 0;
-    width: 100%;
-    border-width: 1px 1px 0 0;
-    border-radius: 3px 3px 0 0;
-    border-style: solid;
-    border-color: #ccc;
+table {
+  margin: 15px 0;
+  width: 100%;
+  border-width: 1px 1px 0 0;
+  border-radius: 3px 3px 0 0;
+  border-style: solid;
+  border-color: #ccc;
 
-    thead {
-      tr {
-        th {
-          background-color: #f5f5f5;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
+  thead {
+    tr {
+      th {
+        background-color: #f5f5f5;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
+        border-color: #ccc;
 
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        td {
-          padding: 0.5em 0.6em 0.4em 0.6em !important;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
+        button {
+          margin-right: 10px;
         }
       }
     }
   }
+
+  tbody {
+    tr {
+      td {
+        padding: 0.5em 0.6em 0.4em 0.6em !important;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
+        border-color: #ccc;
+
+        button {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
 </style>

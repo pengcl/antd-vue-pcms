@@ -11,6 +11,14 @@
       <a-form :form="form">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
+            <!--<a-form-item label="联系人姓名" hidden>
+              <a-input
+                v-decorator="['logGID', {rules: [{required: true, initialValue: model.logGID}]}]"/>
+            </a-form-item>
+            <a-form-item label="联系人姓名" hidden>
+              <a-input
+                v-decorator="['vendorGID', {rules: [{required: true, initialValue: model.vendorGID}]}]"/>
+            </a-form-item>-->
             <a-form-item label="联系人姓名">
               <a-input
                 v-decorator="['employeeName', {rules: [{required: true, min: 2,max:5, message: '请输入至少两个字符的姓名！'}]}]"/>
