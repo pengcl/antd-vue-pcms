@@ -7,8 +7,7 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-cascader
-                  :options="regionalOffices"
-                  :load-data="loadProjects"
+                  :options="cities"
                   placeholder="请选择"
                   @change="onChange"
                 />
@@ -76,14 +75,39 @@
 <script>
 import { STable, Ellipsis } from '@/components'
 import { getRoleList } from '@/api/manage'
-
-import StepByStepModal from '@/views/list/modules/StepByStepModal'
-import CreateForm from '@/views/list/modules/CreateForm'
 import { CostService } from '@/views/project/cost/cost.service'
 import { fixedList } from '@/utils/util'
-import { Regional as RegionalService } from '@/api/regional'
-import { City as CityService } from '@/api/city'
 import { ProjectService } from '@/views/project/project.service'
+
+function fixedProjects (projects) {
+  const list = []
+  if (projects) {
+    if (projects.items) {
+      projects.items.forEach(item => {
+        item.label = item.projectName
+        item.value = item.projectGUID
+        item.children = fixedProjects(item.childs)
+        list.push(item)
+      })
+    }
+  }
+  return list
+}
+
+function formatList (items) {
+  const list = []
+  items.forEach(item => {
+    if (item.childs) {
+      item.children = formatList(item.childs.items)
+    } else {
+      item.children = null
+    }
+    item.label = item.projectName
+    item.value = item.projectGUID
+    list.push(item)
+  })
+  return list
+}
 
 const columns = [
   {
@@ -126,44 +150,16 @@ const columns = [
   }
 ]
 
-const statusMap = {
-  0: {
-    status: 'default',
-    text: '关闭'
-  },
-  1: {
-    status: 'processing',
-    text: '运行中'
-  },
-  2: {
-    status: 'success',
-    text: '已上线'
-  },
-  3: {
-    status: 'error',
-    text: '异常'
-  }
-}
-
 export default {
   name: 'ProjectCostList',
   components: {
     STable,
-    Ellipsis,
-    CreateForm,
-    StepByStepModal
+    Ellipsis
   },
   data () {
     this.columns = columns
     return {
-      // create model
-      visible: false,
-      regionalOffices: [],
-      confirmLoading: false,
-      mdl: null,
-      // 高级搜索 展开/关闭
-      advanced: false,
-      // 查询参数
+      cities: [],
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
@@ -171,40 +167,25 @@ export default {
         return CostService.list(requestParameters).then(res => {
           return fixedList(res, requestParameters)
         })
-      },
-      selectedRowKeys: [],
-      selectedRows: []
-    }
-  },
-  filters: {
-    statusFilter (type) {
-      return statusMap[type].text
-    },
-    statusTypeFilter (type) {
-      return statusMap[type].status
+      }
     }
   },
   created () {
     // getRoleList({ t: new Date() })
-    RegionalService.list().then(res => {
-      const options = []
-      res.result.data.items.forEach(item => {
-        options.push({
-          value: item.id,
-          label: item.nameCN,
-          isLeaf: false
+    ProjectService.tree().then(res => {
+      const cities = []
+      res.result.data.citys.forEach(item => {
+        const children = formatList(item.projects.items)
+        console.log(children)
+        cities.push({
+          label: item.city.nameCN,
+          value: item.city.id,
+          children: children
         })
       })
-      this.regionalOffices = options
+      this.cities = cities
+      this.$forceUpdate()
     })
-  },
-  computed: {
-    rowSelection () {
-      return {
-        selectedRowKeys: this.selectedRowKeys,
-        onChange: this.onSelectChange
-      }
-    }
   },
   methods: {
     handleToItem (record) {
@@ -216,49 +197,14 @@ export default {
     handleToAdd () {
       this.$router.push({ path: `/project/cost/item/0?type=add` })
     },
-    onChange (value, items) {
-      console.log(value)
-      if (value.length === 3) {
-        this.queryParam.ProjectGUID = value[2]
+    onChange (value) {
+      if (value.length >= 2) {
+        this.queryParam.ProjectGUID = value[value.length - 1]
         this.$refs.table.refresh(true)
       } else {
         this.queryParam.ProjectGUID = ''
         this.$refs.table.refresh(true)
       }
-      /* if (items) {
-        const city = items[1];
-        if (city) {
-          this.queryParam.Id = city.value;
-          this.$refs.table.refresh(true);
-        }
-      } else {
-        this.queryParam.Id = '';
-        this.$refs.table.refresh(true);
-      } */
-    },
-    loadProjects (selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
-      ProjectService.tree(targetOption.value).then(res => {
-        targetOption.loading = false
-        const items = []
-        res.result.data.citys.forEach(item => {
-          const childrens = []
-          item.projects.items.forEach(item => {
-            childrens.push({
-              value: item.projectGUID,
-              label: item.projectName
-            })
-          })
-          items.push({
-            value: item.city.id,
-            label: item.city.nameCN,
-            children: childrens
-          })
-        })
-        targetOption.children = items
-        this.regionalOffices = [...this.regionalOffices]
-      })
     }
   }
 }

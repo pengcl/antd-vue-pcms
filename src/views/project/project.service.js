@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 const API = {
   list: '/api/services/app/Project/GetCityProjectTree', // 项目列表
-  tree: '/api/services/app/Project/GetRegionalOfficeProjectTree',
+  tree: '/api/services/app/Project/GetUserProjectTree',
   item: '/api/services/app/Project/GetProjectEditById', // 项目详情forEdit
   types: '/api/services/app/GeneralType/GetProjectStatusGeneralTypes', // 项目状态合集
   create: '/api/services/app/Project/CreateProject', // 创建
@@ -24,11 +24,11 @@ ProjectService.items = function list (parameter) {
   })
 }
 
-ProjectService.tree = function list (Id) {
+ProjectService.tree = function list () {
   return request({
     url: API.tree,
     method: 'GET',
-    params: { Id }
+    params: {}
   })
 }
 

@@ -6,12 +6,15 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="城市">
-                <a-cascader
-                  :options="regionalOffices"
-                  :load-data="loadCities"
-                  placeholder="请选择"
-                  @change="onChange"
-                />
+                <a-select
+                  placeholder="请选择城市"
+                  v-model="queryParam.Id">
+                  <a-select-option
+                    v-for="city in cities"
+                    :key="city.city.id"
+                    :value="city.city.id">{{ city.city.nameCN }}
+                  </a-select-option>
+                </a-select>
               </a-form-item>
             </a-col>
           </a-row>
@@ -70,14 +73,7 @@
 
 import { STable, Ellipsis } from '@/components'
 import { getRoleList } from '@/api/manage'
-
-import StepByStepModal from '@/views/list/modules/StepByStepModal'
-import CreateForm from '@/views/list/modules/CreateForm'
-
-import { Regional as RegionalService } from '@/api/regional'
 import { ProjectService } from '@/views/project/project.service'
-import { City as CityService } from '@/api/city'
-import { Company as CompanyService } from '@/api/company'
 
 function fixedList (res, params) {
   const result = {}
@@ -164,43 +160,17 @@ const columns = [
   } */
 ]
 
-const statusMap = {
-  0: {
-    status: 'default',
-    text: '关闭'
-  },
-  1: {
-    status: 'processing',
-    text: '运行中'
-  },
-  2: {
-    status: 'success',
-    text: '已上线'
-  },
-  3: {
-    status: 'error',
-    text: '异常'
-  }
-}
-
 export default {
   name: 'ProjectList',
   components: {
     STable,
     Ellipsis,
-    CreateForm,
-    StepByStepModal
   },
   data () {
     this.columns = columns
     return {
-      // create model
-      regionalOffices: [],
-      visible: false,
-      confirmLoading: false,
-      mdl: null,
-      // 高级搜索 展开/关闭
-      advanced: false,
+      // 城市
+      cities: [],
       // 查询参数
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
@@ -209,39 +179,19 @@ export default {
         return ProjectService.items(requestParameters).then(res => {
           return fixedList(res, parameter)
         })
-      },
-      selectedRowKeys: [],
-      selectedRows: []
-    }
-  },
-  filters: {
-    statusFilter (type) {
-      return statusMap[type].text
-    },
-    statusTypeFilter (type) {
-      return statusMap[type].status
+      }
     }
   },
   created () {
     // getRoleList({ t: new Date() })
-    RegionalService.list().then(res => {
-      const options = []
-      res.result.data.items.forEach(item => {
-        options.push({
-          value: item.id,
-          label: item.nameCN,
-          isLeaf: false
-        })
-      })
-      this.regionalOffices = options
+    ProjectService.tree().then(res => {
+      this.cities = res.result.data.citys
+      console.log(this.cities)
     })
   },
   watch: {
-    'params.Id' (value) {
-      CompanyService.list(value).then(res => {
-        this.selection.companies = res.result.data
-        this.$forceUpdate()
-      })
+    'queryParam.Id' () {
+      this.$refs.table.refresh(true)
     }
   },
   computed: {
@@ -261,34 +211,6 @@ export default {
     },
     handleToAdd () {
       this.$router.push({ path: `/project/item/0?type=create` })
-    },
-    onChange (value, items) {
-      if (items) {
-        const city = items[1]
-        if (city) {
-          this.queryParam.Id = city.value
-          this.$refs.table.refresh(true)
-        }
-      } else {
-        this.queryParam.Id = ''
-        this.$refs.table.refresh(true)
-      }
-    },
-    loadCities (selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
-      CityService.list(targetOption.value).then(res => {
-        targetOption.loading = false
-        const items = []
-        res.result.data.items.forEach(item => {
-          items.push({
-            value: item.id,
-            label: item.nameCN
-          })
-        })
-        targetOption.children = items
-        this.regionalOffices = [...this.regionalOffices]
-      })
     }
   }
 }
