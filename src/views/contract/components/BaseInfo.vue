@@ -128,10 +128,10 @@
           <thead>
             <tr>
               <th colspan="3">
-                <a-button :disabled="type === 'view'" icon="plus">
+                <a-button @click="addParty(18)" :disabled="type === 'view'" icon="plus">
                   新增
                 </a-button>
-                <a-button :disabled="type === 'view'" icon="stop">
+                <a-button @click="clear(18)" :disabled="type === 'view'" icon="stop">
                   重置
                 </a-button>
               </th>
@@ -143,9 +143,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filterParties(18)" :key="item.id">
+            <tr v-for="(item,index) in filterParties(18)" :key="item.id">
               <td>
-                <a-button :disabled="type === 'view'" icon="close">
+                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                   删除
                 </a-button>
               </td>
@@ -172,10 +172,10 @@
           <thead>
             <tr>
               <th colspan="2">
-                <a-button :disabled="type === 'view'" icon="plus">
+                <a-button @click="addParty(19)" :disabled="type === 'view'" icon="plus">
                   新增
                 </a-button>
-                <a-button :disabled="type === 'view'" icon="stop">
+                <a-button @click="clear(19)" :disabled="type === 'view'" icon="stop">
                   重置
                 </a-button>
               </th>
@@ -188,7 +188,7 @@
           <tbody>
             <tr v-for="item in filterParties(19)" :key="item.id">
               <td>
-                <a-button :disabled="type === 'view'" icon="close">
+                <a-button @click="del(item.partyGuid ? 'partyGuid' : '_id',item.partyGuid ? item.partyGuid : item._id)" :disabled="type === 'view'" icon="close">
                   删除
                 </a-button>
               </td>
@@ -212,10 +212,10 @@
           <thead>
             <tr>
               <th colspan="2">
-                <a-button :disabled="type === 'view'" icon="plus">
+                <a-button @click="addParty(20)" :disabled="type === 'view'" icon="plus">
                   新增
                 </a-button>
-                <a-button :disabled="type === 'view'" icon="stop">
+                <a-button @click="clear(20)" :disabled="type === 'view'" icon="stop">
                   重置
                 </a-button>
               </th>
@@ -226,9 +226,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filterParties(20)" :key="item.id">
+            <tr v-for="(item,index) in filterParties(20)" :key="item.id">
               <td>
-                <a-button :disabled="type === 'view'" icon="close">
+                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                   删除
                 </a-button>
               </td>
@@ -333,6 +333,37 @@ export default {
       }
       return items
       // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
+    },
+    addParty (partyType) {
+      const party = {
+        _id: Date.parse(new Date().toString()),
+        contractID: this.id,
+        id: '',
+        partID: '',
+        partName: '',
+        partyGuid: '',
+        partyType: partyType,
+        percentage: 0
+      }
+      this.data.contractPartylst.push(party)
+    },
+    clear (partyType) {
+      const items = []
+      this.data.contractPartylst.forEach(item => {
+        if (item.partyType !== partyType) {
+          items.push(item)
+        }
+      })
+      this.data.contractPartylst = items
+    },
+    del (key, id) {
+      let index = 0
+      this.data.contractPartylst.forEach((item, i) => {
+        if (item[key] === id) {
+          index = i
+        }
+      })
+      this.data.contractPartylst.splice(index, 1)
     }
   }
 }

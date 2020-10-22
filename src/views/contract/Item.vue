@@ -49,7 +49,7 @@
         </a-form>
       </div>
 
-      <a-tabs default-active-key="1">
+      <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
           <base-info :data="form" :type="type" :id="id"/>
         </a-tab-pane>
@@ -101,7 +101,6 @@
   import AttachmentList from '@/views/contract/components/AttachmentList'
   import { FooterToolBar } from '@/components'
   import { ContractService } from '@/views/contract/contract.service'
-  import { SwaggerService } from '@/api/swagger.service'
 
   export default {
     name: 'ContractItem',
@@ -110,19 +109,12 @@
       return {
         tabActiveKey: 1,
         loading: false,
-        value: '',
-        dto: { orgContractGuid: SwaggerService.getDtoItem('ContractAllInfo', 'orgContractGuid'), contract: SwaggerService.getDto('Contract'), contractParty: SwaggerService.getDto('ContractParty') },
-        form: { orgContractGuid: null, contract: SwaggerService.getForm('ContractInputDto'), contractPartylst: SwaggerService.getForm('ContractPartyInputDto') }
+        form: null
       }
-    },
-    beforeCreate () {
-      /* this.dto = { contract: SwaggerService.getDto('Contract') }
-      console.log(this.dto) */
     },
     created () {
       ContractService.item(this.id).then(res => {
-        this.form.orgContractGuid = res.result.data.orgContractGuid
-        this.form = SwaggerService.getValue(this.form, res.result.data)
+        this.form = res.result.data
         console.log(this.form)
       })
     },
