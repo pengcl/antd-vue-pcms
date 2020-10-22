@@ -252,6 +252,7 @@ export const asyncRouterMap = [
           {
             path: '/change/cip/list',
             name: 'ChangeCipList',
+            hidden: true,
             component: () => import('@/views/change/cip/List'),
             meta: { title: 'menu.change.cip.list', keepAlive: true, permission: ['change'] }
           },

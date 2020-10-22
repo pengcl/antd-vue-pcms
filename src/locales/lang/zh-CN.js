@@ -41,7 +41,7 @@ const locale = {
   'menu.change.cip.list': '变更台账',
   'menu.change.cip.item': '变更台账详细',
   'menu.change.cip.edit': '变更台账编辑',
-  'menu.change.vo.list': '变更指令',
+  'menu.change.vo.list': '变更台账',
   'menu.change.vo.item': '变更指令详细',
   'menu.change.vo.edit': '变更指令编辑',
   'menu.change.certificate': '现场签证',

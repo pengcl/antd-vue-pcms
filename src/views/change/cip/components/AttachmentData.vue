@@ -104,7 +104,7 @@
         <table>
           <thead>
           <tr>
-            <th colspan="10">
+            <th colspan="9">
               <a-button :disabled="type === 'view'" icon="plus">
                 新增
               </a-button>
@@ -122,7 +122,6 @@
             <th style="width: 10%">预付款条款</th>
             <th style="width: 10%">预付款回扣条款</th>
             <th style="width: 10%">百分比</th>
-            <th style="width: 10%">有预付款履约保函</th>
             <th style="width: 10%">单位</th>
             <th style="width: 10%">数量</th>
             <th style="width: 10%">单价</th>
@@ -147,9 +146,6 @@
             </td>
             <td>
               <a-input-number></a-input-number>
-            </td>
-            <td>
-              否
             </td>
             <td>
               <a-select

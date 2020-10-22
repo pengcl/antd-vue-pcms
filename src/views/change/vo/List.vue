@@ -5,17 +5,37 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
-              <a-button type="success" @click="handleToAdd">新增项目</a-button>
-              <a-button type="primary" style="margin-left: 5px" @click="handleAdd">
-                <a-icon type="search"></a-icon>
-              </a-button>
+              <a-form-item label="项目">
+                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
+                  <a-select-option value="0">杭州项目综合体</a-select-option>
+                </a-select>
+              </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
-              <a-button type="primary" style="float: right">汇出</a-button>
+              <a-button icon="search" type="primary" @click="show = !show"></a-button>
             </a-col>
           </a-row>
         </a-form>
       </div>
+
+      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+        <a-row :gutter="48">
+          <a-col :md="12" :sm="24">
+            <a-form-item label="指令编号">
+              <a-input></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-item label="申报日期">
+              <a-date-picker></a-date-picker><span style="margin: 0 10px;color: #fff">至</span><a-date-picker></a-date-picker>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-button type="success">搜索</a-button>
+            <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+          </a-col>
+        </a-row>
+      </a-form>
 
       <s-table
         style="margin-top: 10px"
@@ -26,6 +46,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
+        :scroll="{ x: 1500, y: 300 }"
         showPagination="auto"
       >
         <span slot="serial" slot-scope="text, record, index">
@@ -71,54 +92,87 @@
 
     const columns = [
         {
-            title: '操作',
-            dataIndex: 'action',
-            width: '150px',
-            scopedSlots: { customRender: 'action' }
-        },
-        {
-            title: '变更指令批核 (批准) 编码',
+            title: '序号',
             dataIndex: 'no'
         },
         {
-            title: '变更指令批核 (批准) 金额',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
+            title: '变更编号',
+            dataIndex: 'changeNo'
         },
         {
-            title: '项目编码',
-            dataIndex: 'projectNo'
-        },
-        {
-            title: '项目名称',
-            dataIndex: 'projectName',
-        },
-        {
-            title: '合同编码',
-            dataIndex: 'contractNo'
-        },
-        {
-            title: '合同名称',
-            dataIndex: 'contractName'
-        },
-        {
-            title: '合同金额',
-            dataIndex: 'contractAmount'
-        },
-        {
-            title: '状态',
+            title: '审核状态',
             dataIndex: 'approvalStatus',
             scopedSlots: { customRender: 'approvalStatus' }
         },
         {
-            title: '最后更新日期',
-            dataIndex: 'updatedAt'
+            title:'是否生成',
+            dataIndex:'isGenerated'
         },
         {
-            title: '最后更新者',
-            dataIndex: 'updater',
-            scopedSlots: { customRender: 'updater' }
+            title:'当前步骤',
+            dataIndex:'currentStep'
+        },
+        {
+            title:'当前审批人',
+            dataIndex:'currentApprover'
+        },
+        {
+            title:'合同编号',
+            dataIndex:'contractNo'
+        },
+        {
+            title: '项目指令编号',
+            dataIndex: 'projectNo'
+        },
+        {
+            title:'变更分类',
+            dataIndex:'changeClassification'
+        },
+        {
+            title: '变更名称',
+            dataIndex: 'changeName',
+        },
+        {
+            title: '申报日期',
+            dataIndex: 'declarationDate'
+        },
+        {
+            title: '申报金额',
+            dataIndex: 'declarationAmount'
+        },
+        {
+            title:'变更日期',
+            dataIndex: 'changeData'
+        },
+        {
+            title: '归档时间',
+            dataIndex: 'archiveDate'
+        },
+        {
+            title: '确认金额',
+            dataIndex: 'confirmAmount',
+        },
+        {
+            title:'变更状态',
+            dataIndex:'changeType'
+        },
+        {
+            title:'确认状态',
+            dataIndex:'confirmStatus'
+        },
+        {
+            title:'变更类型',
+            dataIndex:'changeType'
+        },
+        {
+            title:'上报为后补指令',
+            dataIndex:'afterInstruction'
+        },
+        {
+            title:'后补指令确认',
+            dataIndex:'afterInstructionConfirm'
         }
+
     ]
 
     const statusMap = {
@@ -152,6 +206,7 @@
             this.columns = columns
             return {
                 // create model
+                show: false,
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
@@ -281,3 +336,15 @@
         }
     }
 </script>
+
+<style lang="less" scoped>
+  .search-form {
+    background-color: #1E9FF2;
+    padding: 20px;
+    border-radius: 0.35rem;
+
+    /deep/ .ant-form-item-label label {
+      color: #fff;
+    }
+  }
+</style>

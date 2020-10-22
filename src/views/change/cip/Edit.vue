@@ -35,10 +35,6 @@
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
-              <a-form-item label="编号">
-              </a-form-item>
-            </a-col>
-            <a-col :md="24" :sm="24">
               <a-form-item label="状态">
                 草拟中 (1.6)
               </a-form-item>
