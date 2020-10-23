@@ -101,8 +101,7 @@ import BudgetList from '@/views/contract/components/BudgetList'
 import AttachmentList from '@/views/contract/components/AttachmentList'
 import { FooterToolBar } from '@/components'
 import { ContractService } from '@/views/contract/contract.service'
-import {ProjectService} from '@/views/project/project.service';
-import {SwaggerService} from '@/api/swagger.service';
+import { SwaggerService } from '@/api/swagger.service'
 
 export default {
   name: 'ContractItem',
@@ -111,17 +110,15 @@ export default {
     return {
       tabActiveKey: 1,
       loading: false,
-      form: null
+      form: SwaggerService.getForm('ContractAllInfoDto')
     }
   },
   created () {
+    console.log(this.form);
     if (this.id !== '0') {
       ContractService.item(this.id).then(res => {
         this.form = res.result.data
       })
-    }else {
-      this.form = SwaggerService.getForm('ContractAllInfoDto')
-      console.log(this.form);
     }
   },
   computed: {

@@ -42,8 +42,16 @@ SwaggerService.getForm = function (name) {
   const obj = SwaggerService.CONFIG.components.schemas[name].properties
   const forItem = {}
   for (const key in obj) {
-    if (obj[key]) {
-      forItem[key] = ''
+    const item = obj[key]
+    if (item.$ref) {
+      const dto = item.$ref.split('/').reverse()[0]
+      forItem[key] = SwaggerService.getForm(dto)
+    } else {
+      if (item.type === 'array') {
+        forItem[key] = []
+      } else {
+        forItem[key] = ''
+      }
     }
   }
   return forItem
