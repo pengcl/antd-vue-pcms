@@ -248,10 +248,10 @@
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },
       handleToEdit (record) {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
       },
       handleToAdd () {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=add` })
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=create` })
       },
       handleAdd () {
         this.mdl = null

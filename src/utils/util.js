@@ -92,6 +92,42 @@ export function formatTree (data, keys) {
   return items
 }
 
+export function compare (a, b) {
+  if (a === b) {
+    return 0
+  }
+
+  const aComponents = a.split('.')
+  const bComponents = b.split('.')
+
+  const len = Math.min(aComponents.length, bComponents.length)
+
+  // loop while the components are equal
+  for (let i = 0; i < len; i++) {
+    // A bigger than B
+    if (parseInt(aComponents[i]) > parseInt(bComponents[i])) {
+      return 1
+    }
+
+    // B bigger than A
+    if (parseInt(aComponents[i]) < parseInt(bComponents[i])) {
+      return -1
+    }
+  }
+
+  // If one's a prefix of the other, the longer one is greater.
+  if (aComponents.length > bComponents.length) {
+    return 1
+  }
+
+  if (aComponents.length < bComponents.length) {
+    return -1
+  }
+
+  // Otherwise they are the same.
+  return 0
+}
+
 /* export function getLabel(values, value) {
   let label = '';
   values.forEach(item => {

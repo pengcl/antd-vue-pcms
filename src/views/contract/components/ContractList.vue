@@ -11,92 +11,92 @@
       <a-col :md="24" :sm="24">
         <table>
           <thead>
-          <tr>
-            <th colspan="25">
-              <a-button @click="add('')" :disabled="type === 'view'" icon="plus">
-                新增
-              </a-button>
-              <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
-                重置
-              </a-button>
-            </th>
-          </tr>
-          <tr>
-            <th rowspan="2">操作</th>
-            <th rowspan="2">
-              带数项目
-            </th>
-            <th style="width: 5%" rowspan="2">清单编号</th>
-            <th style="width: 5%" rowspan="2">标段</th>
-            <th style="width: 5%" rowspan="2">楼栋</th>
-            <th style="width: 5%" rowspan="2">分部</th>
-            <th style="width: 5%" rowspan="2">分项</th>
-            <th style="width: 5%" rowspan="2">预留字段0</th>
-            <th style="width: 5%" rowspan="2">预留字段1</th>
-            <th style="width: 5%" rowspan="2">清单描述</th>
-            <th style="width: 5%" rowspan="2">业态成本中心</th>
-            <th style="width: 5%" rowspan="2">清单项类别</th>
-            <th style="width: 15%" colspan="4">供应</th>
-            <th style="width: 15%" colspan="4">安装</th>
-            <th style="width: 15%" colspan="4">供应+安装</th>
-            <th style="width: 5%" rowspan="2">合计</th>
-          </tr>
-          <tr>
-            <th>单位</th>
-            <th>工程量</th>
-            <th>单价</th>
-            <th>小计</th>
-            <th>单位</th>
-            <th>工程量</th>
-            <th>单价</th>
-            <th>小计</th>
-            <th>单位</th>
-            <th>工程量</th>
-            <th>单价</th>
-            <th>小计</th>
-          </tr>
+            <tr>
+              <th colspan="25">
+                <a-button @click="add()" :disabled="type === 'view'" icon="plus">
+                  新增
+                </a-button>
+                <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
+                  重置
+                </a-button>
+              </th>
+            </tr>
+            <tr>
+              <th rowspan="2">操作</th>
+              <th rowspan="2">
+                带数项目
+              </th>
+              <th style="width: 5%" rowspan="2">清单编号</th>
+              <th style="width: 5%" rowspan="2">标段</th>
+              <th style="width: 5%" rowspan="2">楼栋</th>
+              <th style="width: 5%" rowspan="2">分部</th>
+              <th style="width: 5%" rowspan="2">分项</th>
+              <th style="width: 5%" rowspan="2">预留字段0</th>
+              <th style="width: 5%" rowspan="2">预留字段1</th>
+              <th style="width: 5%" rowspan="2">清单描述</th>
+              <th style="width: 5%" rowspan="2">业态成本中心</th>
+              <th style="width: 5%" rowspan="2">清单项类别</th>
+              <th style="width: 15%" colspan="4">供应</th>
+              <th style="width: 15%" colspan="4">安装</th>
+              <th style="width: 15%" colspan="4">供应+安装</th>
+              <th style="width: 5%" rowspan="2">合计</th>
+            </tr>
+            <tr>
+              <th>单位</th>
+              <th>工程量</th>
+              <th>单价</th>
+              <th>小计</th>
+              <th>单位</th>
+              <th>工程量</th>
+              <th>单价</th>
+              <th>小计</th>
+              <th>单位</th>
+              <th>工程量</th>
+              <th>单价</th>
+              <th>小计</th>
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="item in data.contractBQlst" :key="item.id">
-            <td>
-              <div style="width: 220px;">
-                <a-button @click="add(item.srNo)" :disabled="type === 'view'" icon="plus">
-                  添加子项
-                </a-button>
-                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
-                  删除
-                </a-button>
-              </div>
-            </td>
-            <td>
-              <a-icon
-                @click="item.isCarryData = !item.isCarryData"
-                :type="item.isCarryData ? 'check-square' : 'border'"/>
-            </td>
-            <td>{{ item.srNo }}</td>
-            <td>{{ item.section }}</td>
-            <td>{{ item.building }}</td>
-            <td></td>
-            <td></td>
-            <td>{{ item.remark1 }}</td>
-            <td>{{ item.remark2 }}</td>
-            <td>{{ item.description }}</td>
-            <td>{{ item.costCenter }}</td>
-            <td>{{ item.itemType }}</td>
-            <td>{{ item.unitMaterial }}</td>
-            <td>{{ item.quantityMaterial }}</td>
-            <td>{{ item.unitPriceMaterial }}</td>
-            <td>{{ item.subAmountMaterial }}</td>
-            <td>{{ item.unitWork }}</td>
-            <td>{{ item.quantityWork }}</td>
-            <td>{{ item.unitPriceWork }}</td>
-            <td>{{ item.subAmountWork }}</td>
-            <td>{{ item.unitWorkMat }}</td>
-            <td>{{ item.quantityWorkMat }}</td>
-            <td>{{ item.unitPriceWorkMat }}</td>
-            <td>{{ item.subAmountWorkMat }}</td>
-            <td>{{ item.allAmount }}</td>
-          </tr>
+            <tr v-if="!item.isDeleted" v-for="(item,index) in data.contractBQlst" :key="item.id">
+              <td>
+                <div style="width: 220px;">
+                  <a-button @click="add(item.srNo)" :disabled="type === 'view'" icon="plus">
+                    添加子项
+                  </a-button>
+                  <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                    删除
+                  </a-button>
+                </div>
+              </td>
+              <td>
+                <a-icon
+                  @click="item.isCarryData = !item.isCarryData"
+                  :type="item.isCarryData ? 'check-square' : 'border'"/>
+              </td>
+              <td>{{ item.srNo }}</td>
+              <td>{{ item.section }}</td>
+              <td>{{ item.building }}</td>
+              <td></td>
+              <td></td>
+              <td>{{ item.remark1 }}</td>
+              <td>{{ item.remark2 }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.costCenter }}</td>
+              <td>{{ item.itemType }}</td>
+              <td>{{ item.unitMaterial }}</td>
+              <td>{{ item.quantityMaterial }}</td>
+              <td>{{ item.unitPriceMaterial }}</td>
+              <td>{{ item.subAmountMaterial }}</td>
+              <td>{{ item.unitWork }}</td>
+              <td>{{ item.quantityWork }}</td>
+              <td>{{ item.unitPriceWork }}</td>
+              <td>{{ item.subAmountWork }}</td>
+              <td>{{ item.unitWorkMat }}</td>
+              <td>{{ item.quantityWorkMat }}</td>
+              <td>{{ item.unitPriceWorkMat }}</td>
+              <td>{{ item.subAmountWorkMat }}</td>
+              <td>{{ item.allAmount }}</td>
+            </tr>
           </tbody>
         </table>
       </a-col>
@@ -105,18 +105,36 @@
 </template>
 
 <script>
+import { compare } from '@/utils/util'
+import { SwaggerService } from '@/api/swagger.service'
 
-function getNo(string) {
-  string.split('.');
+function getNo (str, key, items) {
+  if (items.length === 0) {
+    return '1'
+  }
+  const isRoot = str === '0' || !str
+  const filterItems = !isRoot ? items.filter(item => item[key].indexOf(str) === 0).sort((a, b) => b[key] - a[key]) : items
+  filterItems.sort((a, b) => {
+    return compare(b[key], a[key])
+  })
+  const arr = !isRoot ? filterItems[0][key].split('.').reverse() : filterItems[0][key].split('.')
+  arr[0] = parseInt(arr[0], 10) + 1 + ''
+  const result = !isRoot ? arr.reverse().join('.') : arr[0]
+  return isNaN(result) ? '1' : result
 }
 
 export default {
   name: 'ContractList',
-  data() {
+  data () {
     return {
       form: this.$form.createForm(this),
       loading: false
-    };
+    }
+  },
+  filters: {
+    filterDeleted (items) {
+      return items.filter(item => !item.isDeleted)
+    }
   },
   props: {
     data: {
@@ -133,13 +151,25 @@ export default {
     }
   },
   methods: {
-    add(stringNo) {
-      if (stringNo) {
-        this.data.contractBQlst.filter(item => item.srNo.indexOf(stringNo) !== -1)
-      }
+    add (stringNo) {
+      const newSrNo = getNo(stringNo, 'srNo', this.data.contractBQlst)
+      const data = SwaggerService.getForm('ContractBQInputDto')
+      data.contractID = this.data.contract.id
+      data.srNo = newSrNo;
+      this.data.contractBQlst.push(data);
+      console.log(data)
+      console.log(newSrNo)
+    },
+    del (index) {
+      this.data.contractBQlst[index].isDeleted = true
+    },
+    clear () {
+      this.data.contractBQlst.forEach(item => {
+        item.isDeleted = true
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
