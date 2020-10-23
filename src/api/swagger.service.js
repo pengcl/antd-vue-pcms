@@ -47,10 +47,16 @@ SwaggerService.getForm = function (name) {
       const dto = item.$ref.split('/').reverse()[0]
       forItem[key] = SwaggerService.getForm(dto)
     } else {
+      console.log(item.format)
       if (item.type === 'array') {
         forItem[key] = []
       } else {
-        forItem[key] = null
+        forItem[key] = ''
+        /* if (item.format === 'int32') {
+          forItem[key] = 0
+        } else {
+          forItem[key] = ''
+        } */
       }
     }
   }
