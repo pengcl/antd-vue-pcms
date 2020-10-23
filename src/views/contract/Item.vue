@@ -114,7 +114,6 @@ export default {
     }
   },
   created () {
-    console.log(this.form);
     if (this.id !== '0') {
       ContractService.item(this.id).then(res => {
         this.form = res.result.data
