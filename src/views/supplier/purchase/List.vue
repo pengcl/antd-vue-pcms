@@ -177,7 +177,7 @@
         this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
       },
       handleToAdd () {
-        this.$router.push({ path: `/supplier/purchase/item/0?type=add` })
+        this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
       },
       handleAdd () {
         this.mdl = null

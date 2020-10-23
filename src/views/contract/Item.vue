@@ -101,6 +101,8 @@ import BudgetList from '@/views/contract/components/BudgetList'
 import AttachmentList from '@/views/contract/components/AttachmentList'
 import { FooterToolBar } from '@/components'
 import { ContractService } from '@/views/contract/contract.service'
+import {ProjectService} from '@/views/project/project.service';
+import {SwaggerService} from '@/api/swagger.service';
 
 export default {
   name: 'ContractItem',
@@ -113,10 +115,11 @@ export default {
     }
   },
   created () {
-    ContractService.item(this.id).then(res => {
-      this.form = res.result.data
-      console.log(this.form)
-    })
+    if (this.id !== '0') {
+      ContractService.item(this.id).then(res => {
+        this.form = res.result.data
+      })
+    }
   },
   computed: {
     id () {

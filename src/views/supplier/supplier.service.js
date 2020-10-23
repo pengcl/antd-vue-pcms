@@ -48,7 +48,7 @@ SupplierService.generate = function (vendorGID) {
   })
 }
 
-SupplierService.add = function list (parameter) {
+SupplierService.create = function list (parameter) {
   return request({
     url: API.add,
     method: 'POST',

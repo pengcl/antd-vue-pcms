@@ -251,7 +251,7 @@
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
       },
       handleToAdd () {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=create` })
+        this.$router.push({ path: `/contract/item/0?type=create` })
       },
       handleAdd () {
         this.mdl = null
