@@ -6,9 +6,11 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="项目">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">广佛新世界第一期</a-select-option>
-                </a-select>
+                  <a-cascader
+                    :options="cities"
+                    placeholder="请选择"
+                    @change="onChange"
+                  />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -71,6 +73,7 @@
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
+    import { ProjectService } from '@/views/project/project.service'
 
     const columns = [
         {
@@ -119,6 +122,7 @@
         }
     }
 
+
     export default {
         name: 'CostEnactList',
         components: {
@@ -131,6 +135,7 @@
             this.columns = columns
             return {
                 // create model
+                cities: [],
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
@@ -161,6 +166,20 @@
         },
         created () {
             getRoleList({ t: new Date() })
+            ProjectService.tree().then(res => {
+                const cities = []
+                res.result.data.citys.forEach(item => {
+                    const children = formatList(item.projects.items)
+                    console.log(children)
+                    cities.push({
+                        label: item.city.nameCN,
+                        value: item.city.id,
+                        children: children
+                    })
+                })
+                this.cities = cities
+                this.$forceUpdate()
+            })
         },
         computed: {
             rowSelection () {
@@ -179,6 +198,15 @@
             },
             handleToAdd () {
                 this.$router.push({ path: `/cost/enact/item/0?type=add` })
+            },
+            onChange (value) {
+                if (value.length >= 2) {
+                    this.queryParam.ProjectGUID = value[value.length - 1]
+                    this.$refs.table.refresh(true)
+                } else {
+                    this.queryParam.ProjectGUID = ''
+                    this.$refs.table.refresh(true)
+                }
             }
         }
     }

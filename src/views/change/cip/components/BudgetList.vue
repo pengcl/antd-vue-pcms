@@ -1,7 +1,7 @@
 <template>
   <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
-      <a-col :md="8" :sm="24">
+      <a-col :md="24" :sm="24">
         <a-radio-group name="radioGroup" :default-value="1">
           <a-radio :value="1">
             预计变更金额
@@ -35,12 +35,23 @@
         </table>
       </a-col>
     </a-row>
+    <a-row :gutter="48">
+      <a-col :md="24" :sm="24" style="margin-top: 10px">
+        <a-button type="success">储存</a-button>
+        <a-button type="danger" style="margin-left: 10px">关闭</a-button>
+      </a-col>
+    </a-row>
   </a-form>
 </template>
 
 <script>
     export default {
-        name: 'BudgetList'
+        name: 'BudgetList',
+        data () {
+            return {
+                form: this.$form.createForm(this)
+            }
+        }
     }
 </script>
 

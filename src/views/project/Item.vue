@@ -430,10 +430,7 @@
       </a-button-group>
       <a-button-group>
         <a-button @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
-          {{ id === '0' ? '新增' : '储存' }}
-        </a-button>
-        <a-button @click="handleToEdit()" v-if="type === 'view'" type="primary">
-          编辑
+          储存
         </a-button>
       </a-button-group>
       <a-button-group>

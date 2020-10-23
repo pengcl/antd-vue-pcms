@@ -30,7 +30,6 @@
           <tr>
             <td>
               <a-select
-                :disabled="type === 'view'"
                 placeholder="请选择"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
                 <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
@@ -51,7 +50,6 @@
           <tr>
             <td>
               <a-select
-                :disabled="type === 'view'"
                 placeholder="请选择"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
                 <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
@@ -74,7 +72,6 @@
       <a-col :md="12" :sm="24">
         <a-form-item label="变更类型">
           <a-select
-            :disabled="type === 'view'"
             placeholder="请选择"
             v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
             <a-select-option value="1">现场管理</a-select-option>
@@ -107,7 +104,6 @@
           <a-row>
             <a-col :span="8">
               <a-select
-                :disabled="type === 'view'"
                 placeholder="请选择"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
                 <a-select-option value="1">有影响</a-select-option>
@@ -116,7 +112,6 @@
             </a-col>
             <a-col :span="8">
               <a-select
-                :disabled="type === 'view'"
                 placeholder="请选择"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
                 <a-select-option value="1">增加</a-select-option>
@@ -218,6 +213,17 @@
             <a-radio value="2">否</a-radio>
           </a-radio-group>
         </a-form-item>
+      </a-col>
+    </a-row>
+    <a-row :gutter="48">
+      <a-col :md="24" :sm="24">
+        <a-button type="success">启动审批流程</a-button>
+      </a-col>
+    </a-row>
+    <a-row :gutter="48">
+      <a-col :md="24" :sm="24" style="margin-top: 10px">
+        <a-button type="success">储存</a-button>
+        <a-button type="danger" style="margin-left: 10px">关闭</a-button>
       </a-col>
     </a-row>
   </a-form>

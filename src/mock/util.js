@@ -36,3 +36,18 @@ export const getQueryParameters = (options) => {
 export const getBody = (options) => {
   return options.body && JSON.parse(options.body)
 }
+
+export const formatList = (items) => {
+  const list = []
+  items.forEach(item => {
+    if (item.childs) {
+      item.children = formatList(item.childs.items)
+    } else {
+      item.children = null
+    }
+    item.label = item.projectName
+    item.value = item.projectGUID
+    list.push(item)
+  })
+  return list
+}

@@ -75,12 +75,23 @@
         </table>
       </a-col>
     </a-row>
+    <a-row :gutter="48">
+      <a-col :md="24" :sm="24" style="margin-top: 10px">
+        <a-button type="success">储存</a-button>
+        <a-button type="danger" style="margin-left: 10px">关闭</a-button>
+      </a-col>
+    </a-row>
   </a-form>
 </template>
 
 <script>
     export default {
-        name: 'CostEstimates'
+        name: 'CostEstimates',
+        data () {
+            return {
+                form: this.$form.createForm(this)
+            }
+        }
     }
 </script>
 
