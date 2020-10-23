@@ -50,7 +50,7 @@ SwaggerService.getForm = function (name) {
       if (item.type === 'array') {
         forItem[key] = []
       } else {
-        forItem[key] = ''
+        forItem[key] = null
       }
     }
   }
