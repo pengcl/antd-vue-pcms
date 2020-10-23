@@ -93,65 +93,71 @@
   </page-header-wrapper>
 </template>
 <script>
-    import BaseInfo from '@/views/contract/components/BaseInfo'
-    import ContractInfo from '@/views/contract/components/ContractInfo'
-    import PayInfo from '@/views/contract/components/PayInfo'
-    import ContractList from '@/views/contract/components/ContractList'
-    import BudgetList from '@/views/contract/components/BudgetList'
-    import AttachmentList from '@/views/contract/components/AttachmentList'
-    import { FooterToolBar } from '@/components'
-    import { ContractService } from '@/views/contract/contract.service'
+import BaseInfo from '@/views/contract/components/BaseInfo'
+import ContractInfo from '@/views/contract/components/ContractInfo'
+import PayInfo from '@/views/contract/components/PayInfo'
+import ContractList from '@/views/contract/components/ContractList'
+import BudgetList from '@/views/contract/components/BudgetList'
+import AttachmentList from '@/views/contract/components/AttachmentList'
+import { FooterToolBar } from '@/components'
+import { ContractService } from '@/views/contract/contract.service'
+import {ProjectService} from '@/views/project/project.service';
+import {SwaggerService} from '@/api/swagger.service';
 
-    export default {
-        name: 'ContractItem',
-        components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
-        data () {
-            return {
-                tabActiveKey: 1,
-                loading: false,
-                form: null
-            }
-        },
-        created () {
-            if (this.id !== '0') {
-                ContractService.item(this.id).then(res => {
-                    this.form = res.result.data
-                    console.log(this.form)
-                })
-            }
-        },
-        computed: {
-            id () {
-                return this.$route.params.id
-            },
-            type () {
-                return this.$route.query.type
-            }
-        },
-        watch: {},
-        methods: {
-            approve () {
-                console.log('approve')
-            },
-            save () {
-                console.log('save')
-            },
-            handleChange (selectedItems) {
-                this.selectedItems = selectedItems
-            },
-            back () {
-                console.log('back')
-                this.$router.push({ path: `/contract/list` })
-            },
-            handleToEdit () {
-                console.log('handleToEdit')
-                this.$router.push({ path: `/contract/item/${this.id}?type=edit` })
-            }
-        }
+export default {
+  name: 'ContractItem',
+  components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
+  data () {
+    return {
+      tabActiveKey: 1,
+      loading: false,
+      form: null
     }
+  },
+  created () {
+    if (this.id !== '0') {
+      ContractService.item(this.id).then(res => {
+        this.form = res.result.data
+      })
+    }else {
+      this.form = SwaggerService.getForm('ContractAllInfoDto')
+      console.log(this.form);
+    }
+  },
+  computed: {
+    id () {
+      return this.$route.params.id
+    },
+    type () {
+      return this.$route.query.type
+    }
+  },
+  watch: {},
+  methods: {
+    approve () {
+      console.log('approve')
+    },
+    save () {
+      ContractService[this.type](this.form).then(res => {
+        console.log(res)
+      })
+    },
+    handleChange (selectedItems) {
+      this.selectedItems = selectedItems
+    },
+    back () {
+      console.log('back')
+      this.$router.push({ path: `/contract/list` })
+    },
+    handleToEdit () {
+      console.log('handleToEdit')
+      this.$router.push({ path: `/contract/item/${this.id}?type=edit` })
+    }
+  }
+}
 </script>
 <style lang="less" scoped>
-  .ant-btn-group {
-    margin-right: 8px;
-  }
+.ant-btn-group {
+  margin-right: 8px;
+}
 </style>
