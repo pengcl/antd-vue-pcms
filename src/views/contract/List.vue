@@ -18,7 +18,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success" @click="handleToAdd">新增进度款</a-button>
+        <a-button type="success" @click="handleToAdd">新增合同</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -251,7 +251,7 @@
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
       },
       handleToAdd () {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=add` })
+        this.$router.push({ path: '/contract/item/0?type=add' })
       },
       handleAdd () {
         this.mdl = null

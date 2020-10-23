@@ -502,12 +502,11 @@
         </a-button>
       </a-button-group>
       <a-button-group>
-        <a-button @click="save()" v-if="type !== 'view'" :loading="loading" type="primary">
-          {{ id === '0' ? '新增' : '保存' }}
+        <a-button @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
+          储存
         </a-button>
-        <a-button @click="handleToEdit()" v-if="type === 'view'" type="primary">
-          编辑
-        </a-button>
+      </a-button-group>
+      <a-button-group>
         <a-button @click="back()" type="danger">
           关闭
         </a-button>
@@ -559,7 +558,7 @@
       },
       back () {
         console.log('back')
-        this.$router.push({ path: `/project/list` })
+        this.$router.push({ path: '/project/cost/list' })
       },
       handleToEdit () {
         console.log('handleToEdit')

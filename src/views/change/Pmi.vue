@@ -55,7 +55,7 @@
                 <a-form-item label="累计变更金额"></a-form-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item label="变更比列"></a-form-item>
+                <a-form-item label="变更比例"></a-form-item>
               </a-col>
             </a-row>
           </a-form>
@@ -65,7 +65,8 @@
 
         <a-row :gutter="48" style="margin-top: 10px">
           <a-col :md="12" :sm="24">
-            <a-button type="success" @click="handleToAdd">新增CIP</a-button>
+            变更列表
+            <a-button type="success" @click="handleToAdd" style="margin-left: 20px">新增CIP</a-button>
             <a-button type="success" style="margin-left: 20px">CIP转VO</a-button>
             <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
           </a-col>
@@ -153,13 +154,8 @@
             scopedSlots: { customRender: 'callNo' }
         },
         {
-            title: '预估结算金额',
+            title: '预计结算金额',
             dataIndex: 'forecastAmount',
-        },
-        {
-            title: '乙方',
-            dataIndex: 'creator',
-            scopedSlots: { customRender: 'creator' }
         },
         {
             title: '签约日期',

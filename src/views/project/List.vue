@@ -55,7 +55,7 @@
               title="编辑">
             </a-button>
             <a-button
-              @click="handleToItem(record)"
+              @click="handleToEdit(record)"
               type="primary"
               class="btn-info"
               icon="plus-square"
