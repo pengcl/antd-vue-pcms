@@ -64,6 +64,19 @@
         </a-form>
       </div>
 
+      <div class="table-operator">
+        <a-row :gutter="48">
+          <a-col :md="24" :sm="24">
+            <a-button type="success">启动审批流程</a-button>
+          </a-col>
+        </a-row>
+        <a-row :gutter="48">
+          <a-col :md="24" :sm="24" style="margin-top: 10px">
+            <a-button type="success">储存</a-button>
+            <a-button type="danger">关闭</a-button>
+          </a-col>
+        </a-row>
+      </div>
     </a-card>
   </page-header-wrapper>
 </template>

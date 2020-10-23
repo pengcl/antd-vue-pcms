@@ -65,13 +65,13 @@
           <p>{{ record.vendorAbbreviation }}</p>
           <p>
             <a-button-group v-if="record.vendorStatus">
-              <a-button type="success">{{ record.vendorStatus }}</a-button>
+              <span class="label">{{ record.vendorStatus }}</span>
             </a-button-group>
             <a-button-group v-if="record.legalRep">
-              <a-button type="success">{{ record.legalRep }}</a-button>
+              <span class="label">{{ record.legalRep }}</span>
             </a-button-group>
             <a-button-group v-if="record.registerType">
-              <a-button type="success">{{ record.registerType }}</a-button>
+              <span class="label">{{ record.registerType }}</span>
             </a-button-group>
           </p>
           <a-row>
@@ -92,172 +92,171 @@
 </template>
 
 <script>
-  import moment from 'moment'
-  import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
+    import moment from 'moment'
+    import { STable, Ellipsis } from '@/components'
+    import { getRoleList } from '@/api/manage'
 
-  import { fixedList } from '@/utils/util'
-  import { SupplierService } from '@/views/supplier/supplier.service'
+    import { fixedList } from '@/utils/util'
+    import { SupplierService } from '@/views/supplier/supplier.service'
 
-  export default {
-    name: 'SupplierPurchaseList',
-    components: {
-      STable,
-      Ellipsis
-    },
-    data () {
-      const columns = [
-        {
-          title: '供应商信息',
-          colSpan: 4,
-          dataIndex: 'action',
-          scopedSlots: { customRender: 'action' }
+    export default {
+        name: 'SupplierPurchaseList',
+        components: {
+            STable,
+            Ellipsis
         },
-        {
-          title: '供应商简称',
-          colSpan: 0,
-          dataIndex: 'vendorName',
-          scopedSlots: { customRender: 'vendorName' }
-        },
-        {
-          title: '详情',
-          dataIndex: 'id',
-          colSpan: 0,
-          scopedSlots: { customRender: 'detail' }
-        },
-        {
-          title: '审批状态',
-          dataIndex: 'vendorStatus',
-          colSpan: 0,
-          scopedSlots: { customRender: 'vendorStatus' }
-        }
-      ]
+        data () {
+            const columns = [
+                {
+                    title: '供应商信息',
+                    colSpan: 4,
+                    dataIndex: 'action',
+                    scopedSlots: { customRender: 'action' }
+                },
+                {
+                    title: '供应商简称',
+                    colSpan: 0,
+                    dataIndex: 'vendorName',
+                    scopedSlots: { customRender: 'vendorName' }
+                },
+                {
+                    title: '详情',
+                    dataIndex: 'id',
+                    colSpan: 0,
+                    scopedSlots: { customRender: 'detail' }
+                },
+                {
+                    title: '审批状态',
+                    dataIndex: 'vendorStatus',
+                    colSpan: 0,
+                    scopedSlots: { customRender: 'vendorStatus' }
+                }
+            ]
 
-      this.columns = columns
-      return {
-        show: false,
-        mdl: null,
-        // 高级搜索 展开/关闭
-        advanced: false,
-        // 查询参数
-        queryParam: { RegisterType: 1 },
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
-          return SupplierService.items(requestParameters).then(res => {
-            console.log(res)
-            return fixedList(res, requestParameters)
-          })
-        },
-        selectedRowKeys: [],
-        selectedRows: []
-      }
-    },
-    filters: {
-    },
-    created () {
-      getRoleList({ t: new Date() })
-    },
-    computed: {
-      rowSelection () {
-        return {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
-        }
-      }
-    },
-    methods: {
-      handleToItem (record) {
-        console.log(record)
-        this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })
-      },
-      handleToEdit (record) {
-        console.log(record)
-        this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
-      },
-      handleToAdd () {
-        this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
-      },
-      handleAdd () {
-        this.mdl = null
-        this.visible = true
-      },
-      handleEdit (record) {
-        this.visible = true
-        this.mdl = { ...record }
-      },
-      handleOk () {
-        const form = this.$refs.createModal.form
-        this.confirmLoading = true
-        form.validateFields((errors, values) => {
-          if (!errors) {
-            console.log('values', values)
-            if (values.id > 0) {
-              // 修改 e.g.
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-
-                this.$message.info('修改成功')
-              })
-            } else {
-              // 新增
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-
-                this.$message.info('新增成功')
-              })
+            this.columns = columns
+            return {
+                show: false,
+                mdl: null,
+                // 高级搜索 展开/关闭
+                advanced: false,
+                // 查询参数
+                queryParam: { RegisterType: 1 },
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    console.log('loadData request parameters:', requestParameters)
+                    return SupplierService.items(requestParameters).then(res => {
+                        console.log(res)
+                        return fixedList(res, requestParameters)
+                    })
+                },
+                selectedRowKeys: [],
+                selectedRows: []
             }
-          } else {
-            this.confirmLoading = false
-          }
-        })
-      },
-      handleCancel () {
-        this.visible = false
+        },
+        filters: {},
+        created () {
+            getRoleList({ t: new Date() })
+        },
+        computed: {
+            rowSelection () {
+                return {
+                    selectedRowKeys: this.selectedRowKeys,
+                    onChange: this.onSelectChange
+                }
+            }
+        },
+        methods: {
+            handleToItem (record) {
+                console.log(record)
+                this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })
+            },
+            handleToEdit (record) {
+                console.log(record)
+                this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
+            },
+            handleAdd () {
+                this.mdl = null
+                this.visible = true
+            },
+            handleEdit (record) {
+                this.visible = true
+                this.mdl = { ...record }
+            },
+            handleOk () {
+                const form = this.$refs.createModal.form
+                this.confirmLoading = true
+                form.validateFields((errors, values) => {
+                    if (!errors) {
+                        console.log('values', values)
+                        if (values.id > 0) {
+                            // 修改 e.g.
+                            new Promise((resolve, reject) => {
+                                setTimeout(() => {
+                                    resolve()
+                                }, 1000)
+                            }).then(res => {
+                                this.visible = false
+                                this.confirmLoading = false
+                                // 重置表单数据
+                                form.resetFields()
+                                // 刷新表格
+                                this.$refs.table.refresh()
 
-        const form = this.$refs.createModal.form
-        form.resetFields() // 清理表单数据（可不做）
-      },
-      handleSub (record) {
-        if (record.status !== 0) {
-          this.$message.info(`${record.no} 订阅成功`)
-        } else {
-          this.$message.error(`${record.no} 订阅失败，规则已关闭`)
+                                this.$message.info('修改成功')
+                            })
+                        } else {
+                            // 新增
+                            new Promise((resolve, reject) => {
+                                setTimeout(() => {
+                                    resolve()
+                                }, 1000)
+                            }).then(res => {
+                                this.visible = false
+                                this.confirmLoading = false
+                                // 重置表单数据
+                                form.resetFields()
+                                // 刷新表格
+                                this.$refs.table.refresh()
+
+                                this.$message.info('新增成功')
+                            })
+                        }
+                    } else {
+                        this.confirmLoading = false
+                    }
+                })
+            },
+            handleCancel () {
+                this.visible = false
+
+                const form = this.$refs.createModal.form
+                form.resetFields() // 清理表单数据（可不做）
+            },
+            handleSub (record) {
+                if (record.status !== 0) {
+                    this.$message.info(`${record.no} 订阅成功`)
+                } else {
+                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
+                }
+            },
+            onSelectChange (selectedRowKeys, selectedRows) {
+                this.selectedRowKeys = selectedRowKeys
+                this.selectedRows = selectedRows
+            },
+            toggleAdvanced () {
+                this.advanced = !this.advanced
+            },
+            resetSearchForm () {
+                this.queryParam = {
+                    date: moment(new Date())
+                }
+            }
         }
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
-      },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
-      },
-      resetSearchForm () {
-        this.queryParam = {
-          date: moment(new Date())
-        }
-      }
     }
-  }
 </script>
 
 <style lang="less" scoped>
@@ -273,5 +272,13 @@
 
   .ant-btn-group {
     margin-right: 8px;
+  }
+
+  .label {
+    padding: 8px 15px;
+    background-color: #28d094;
+    color: #fff;
+    line-height: 20px;
+    border-radius: 5px;
   }
 </style>
