@@ -43,7 +43,7 @@
         <a-col :md="12" :sm="24">
           <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
           <a-button type="success">储存</a-button>
-          <a-button type="danger" style="margin-left: 5px">关闭</a-button>
+          <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
@@ -161,6 +161,9 @@
             }
         },
         methods: {
+            back () {
+                this.$router.push({ path: `/cost/enact/list` })
+            },
             handleToItem (record) {
                 this.$router.push({ path: `/project/item/${record.id}?type=view` })
             },

@@ -6,11 +6,11 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">广佛新世界第一期</a-select-option>
-                  <a-select-option value="1">广州新世界第一期</a-select-option>
-                  <a-select-option value="2">珠海新世界第一期</a-select-option>
-                </a-select>
+                <a-cascader
+                  :options="cities"
+                  placeholder="请选择"
+                  @change="onChange"
+                />
               </a-form-item>
             </a-col>
           </a-row>
@@ -113,14 +113,16 @@
 </template>
 
 <script>
-  import moment from 'moment'
-  import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
+    import moment from 'moment'
+    import { STable, Ellipsis } from '@/components'
+    import { getRoleList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
     import { ContractService } from '@/views/contract/contract.service'
     import { fixedList } from '@/utils/util'
+    import { ProjectService } from '@/views/project/project.service'
+    import { formatList } from '../../mock/util'
 
     const columns = [
         {
@@ -192,163 +194,167 @@
         }
     }
 
-  export default {
-    name: 'ContractList',
-    components: {
-      STable,
-      Ellipsis,
-      CreateForm,
-      StepByStepModal
-    },
-    data () {
-      this.columns = columns
-      return {
-        // create model
-        show: false,
-        visible: false,
-        confirmLoading: false,
-        mdl: null,
-        // 高级搜索 展开/关闭
-        advanced: false,
-        // 查询参数
-        queryParam: {},
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
-          return ContractService.items(requestParameters).then(res => {
-            return fixedList(res, requestParameters)
-          })
+    export default {
+        name: 'ContractList',
+        components: {
+            STable,
+            Ellipsis,
+            CreateForm,
+            StepByStepModal
         },
-        selectedRowKeys: [],
-        selectedRows: []
-      }
-    },
-    filters: {
-      statusFilter (type) {
-        return statusMap[type].text
-      },
-      statusTypeFilter (type) {
-        return statusMap[type].status
-      }
-    },
-    created () {
-      getRoleList({ t: new Date() })
-    },
-    computed: {
-      rowSelection () {
-        return {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
-        }
-      }
-    },
-    methods: {
-      handleToItem (record) {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
-      },
-      handleToEdit (record) {
-        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
-      },
-      handleToAdd () {
-        this.$router.push({ path: `/contract/item/0?type=create` })
-      },
-      handleAdd () {
-        this.mdl = null
-        this.visible = true
-      },
-      handleEdit (record) {
-        this.visible = true
-        this.mdl = { ...record }
-      },
-      search () {
-        console.log('search')
-        this.show = !this.show
-        this.$refs.table.refresh(true)
-      },
-      onChange (value, items) {
-        if (items) {
-          const city = items[1]
-          if (city) {
-            this.queryParam.CityID = city.value
-            this.$refs.table.refresh(true)
-          }
-        } else {
-          this.queryParam.CityID = ''
-          this.$refs.table.refresh(true)
-        }
-      },
-      handleOk () {
-        const form = this.$refs.createModal.form
-        this.confirmLoading = true
-        form.validateFields((errors, values) => {
-          if (!errors) {
-            console.log('values', values)
-            if (values.id > 0) {
-              // 修改 e.g.
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-
-                this.$message.info('修改成功')
-              })
-            } else {
-              // 新增
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-
-                this.$message.info('新增成功')
-              })
+        data () {
+            this.columns = columns
+            return {
+                // create model
+                cities: [],
+                show: false,
+                visible: false,
+                confirmLoading: false,
+                mdl: null,
+                // 高级搜索 展开/关闭
+                advanced: false,
+                // 查询参数
+                queryParam: {},
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    console.log('loadData request parameters:', requestParameters)
+                    return ContractService.items(requestParameters).then(res => {
+                        return fixedList(res, requestParameters)
+                    })
+                },
+                selectedRowKeys: [],
+                selectedRows: []
             }
-          } else {
-            this.confirmLoading = false
-          }
-        })
-      },
-      handleCancel () {
-        this.visible = false
+        },
+        filters: {
+            statusFilter (type) {
+                return statusMap[type].text
+            },
+            statusTypeFilter (type) {
+                return statusMap[type].status
+            }
+        },
+        created () {
+            getRoleList({ t: new Date() })
+            ProjectService.tree().then(res => {
+                const cities = []
+                res.result.data.citys.forEach(item => {
+                    const children = formatList(item.projects.items)
+                    console.log(children)
+                    cities.push({
+                        label: item.city.nameCN,
+                        value: item.city.id,
+                        children: children
+                    })
+                })
+                this.cities = cities
+                this.$forceUpdate()
+            })
+        },
+        methods: {
+            handleToItem (record) {
+                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+            },
+            handleToEdit (record) {
+                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: `/contract/item/0?type=create` })
+            },
+            handleAdd () {
+                this.mdl = null
+                this.visible = true
+            },
+            handleEdit (record) {
+                this.visible = true
+                this.mdl = { ...record }
+            },
+            search () {
+                console.log('search')
+                this.show = !this.show
+                this.$refs.table.refresh(true)
+            },
+            onChange (value) {
+                if (value.length >= 2) {
+                    this.queryParam.ProjectGUID = value[value.length - 1]
+                    this.$refs.table.refresh(true)
+                } else {
+                    this.queryParam.ProjectGUID = ''
+                    this.$refs.table.refresh(true)
+                }
+            },
+            handleOk () {
+                const form = this.$refs.createModal.form
+                this.confirmLoading = true
+                form.validateFields((errors, values) => {
+                    if (!errors) {
+                        console.log('values', values)
+                        if (values.id > 0) {
+                            // 修改 e.g.
+                            new Promise((resolve, reject) => {
+                                setTimeout(() => {
+                                    resolve()
+                                }, 1000)
+                            }).then(res => {
+                                this.visible = false
+                                this.confirmLoading = false
+                                // 重置表单数据
+                                form.resetFields()
+                                // 刷新表格
+                                this.$refs.table.refresh()
 
-        const form = this.$refs.createModal.form
-        form.resetFields() // 清理表单数据（可不做）
-      },
-      handleSub (record) {
-        if (record.status !== 0) {
-          this.$message.info(`${record.no} 订阅成功`)
-        } else {
-          this.$message.error(`${record.no} 订阅失败，规则已关闭`)
+                                this.$message.info('修改成功')
+                            })
+                        } else {
+                            // 新增
+                            new Promise((resolve, reject) => {
+                                setTimeout(() => {
+                                    resolve()
+                                }, 1000)
+                            }).then(res => {
+                                this.visible = false
+                                this.confirmLoading = false
+                                // 重置表单数据
+                                form.resetFields()
+                                // 刷新表格
+                                this.$refs.table.refresh()
+
+                                this.$message.info('新增成功')
+                            })
+                        }
+                    } else {
+                        this.confirmLoading = false
+                    }
+                })
+            },
+            handleCancel () {
+                this.visible = false
+
+                const form = this.$refs.createModal.form
+                form.resetFields() // 清理表单数据（可不做）
+            },
+            handleSub (record) {
+                if (record.status !== 0) {
+                    this.$message.info(`${record.no} 订阅成功`)
+                } else {
+                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
+                }
+            },
+            onSelectChange (selectedRowKeys, selectedRows) {
+                this.selectedRowKeys = selectedRowKeys
+                this.selectedRows = selectedRows
+            },
+            toggleAdvanced () {
+                this.advanced = !this.advanced
+            },
+            resetSearchForm () {
+                this.queryParam = {
+                    date: moment(new Date())
+                }
+            }
         }
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
-      },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
-      },
-      resetSearchForm () {
-        this.queryParam = {
-          date: moment(new Date())
-        }
-      }
     }
-  }
 </script>
 
 <style lang="less" scoped>
@@ -356,9 +362,10 @@
     background-color: #1E9FF2;
     padding: 20px;
     border-radius: 0.35rem;
-    /deep/ .ant-form-item-label label{
-        color: #fff;
-      }
+
+    /deep/ .ant-form-item-label label {
+      color: #fff;
+    }
   }
 
 </style>

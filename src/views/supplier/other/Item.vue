@@ -204,6 +204,9 @@ export default {
     }
   },
   methods: {
+      back () {
+          this.$router.push({ path: `/supplier/other/list` })
+      },
     cityChange (value) {
       console.log(value)
     },
