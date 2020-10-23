@@ -49,7 +49,8 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="公司所在地">
-              <a-cascader :options="selection.cities" :default-value="[form.vendor.province, form.vendor.city]" placeholder="请选择公司所在地" @change="cityChange"/>
+              <a-cascader :options="selection.cities" :default-value="[form.vendor.province, form.vendor.city]"
+                          placeholder="请选择公司所在地" @change="cityChange"/>
             </a-form-item>
           </a-col>
           <!--<a-col :md="12" :sm="24">
@@ -152,140 +153,143 @@
 </template>
 
 <script>
-import { FooterToolBar } from '@/components'
-import CompanyStaff from '../components/CompanyStaff'
-import ChangeInfo from '../components/ChangeInfo'
-import ContractInfo from '../components/ContractInfo'
-import BankInfo from '../components/BankInfo'
-import AttachmentInfo from '../components/AttachmentInfo'
-import { SwaggerService } from '@/api/swagger.service'
-import { SupplierService } from '@/views/supplier/supplier.service'
-import { formatTree } from '@/utils/util'
-import { TreeSelect } from 'ant-design-vue'
-import { City as CitySvc, formatCities } from '@/api/city'
+    import { FooterToolBar } from '@/components'
+    import CompanyStaff from '../components/CompanyStaff'
+    import ChangeInfo from '../components/ChangeInfo'
+    import ContractInfo from '../components/ContractInfo'
+    import BankInfo from '../components/BankInfo'
+    import AttachmentInfo from '../components/AttachmentInfo'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { SupplierService } from '@/views/supplier/supplier.service'
+    import { formatTree } from '@/utils/util'
+    import { TreeSelect } from 'ant-design-vue'
+    import { City as CitySvc, formatCities } from '@/api/city'
 
-const SHOW_PARENT = TreeSelect.SHOW_PARENT
-export default {
-  name: 'SupplierPurchaseItem',
-  components: { FooterToolBar, AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
-  data () {
-    return {
-      SHOW_PARENT,
-      selection: {},
-      dto: {},
-      form: {
-        vendor: {},
-        vendorBankList: [],
-        vendorEmployeeList: []
-      }
-    }
-  },
-  created () {
-    this.dto = SwaggerService.getDto('VendorChange')
-    this.form.vendor = SwaggerService.getForm('VendorChangeDto')
-    if (this.id !== '0') {
-      SupplierService[this.type + 'Entity'](this.id).then(res => {
-        this.data = res.result.data
-        if (this.type === 'view') {
-          this.form.vendor = res.result.data
-        } else {
-          this.form.vendor = res.result.data.vendor
+    const SHOW_PARENT = TreeSelect.SHOW_PARENT
+    export default {
+        name: 'SupplierPurchaseItem',
+        components: { FooterToolBar, AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
+        data () {
+            return {
+                SHOW_PARENT,
+                selection: {},
+                dto: {},
+                form: {
+                    vendor: {},
+                    vendorBankList: [],
+                    vendorEmployeeList: []
+                }
+            }
+        },
+        created () {
+            this.dto = SwaggerService.getDto('VendorChange')
+            this.form.vendor = SwaggerService.getForm('VendorChangeDto')
+            if (this.id !== '0') {
+                SupplierService[this.type + 'Entity'](this.id).then(res => {
+                    this.data = res.result.data
+                    if (this.type === 'view') {
+                        this.form.vendor = res.result.data
+                    } else {
+                        this.form.vendor = res.result.data.vendor
+                    }
+                    this.form.vendorEmployeeList = res.result.data.vendorEmployeeList
+                    this.form.vendorBankList = res.result.data.vendorBankList
+                })
+            }
+            SupplierService.types().then(res => {
+                this.selection.types = formatTree([res.result], ['title:packageName', 'value:packageCode', 'key:gid'])
+                this.$forceUpdate()
+            })
+            CitySvc.cities().then(res => {
+                this.selection.cities = formatCities(res.result.data.provinces)
+                this.$forceUpdate()
+            })
+        },
+        computed: {
+            id () {
+                return this.$route.params.id
+            },
+            type () {
+                return this.$route.query.type
+            }
+        },
+        methods: {
+            back () {
+                this.$router.push({ path: `/supplier/purchase/list` })
+            },
+            cityChange (value) {
+                console.log(value)
+                this.form.vendor.province = value[0]
+                this.form.vendor.city = value[1]
+            },
+            handleEdit (record) {
+                this.visible = true
+                this.mdl = { ...record }
+            },
+            askUpdate () {
+                SupplierService.generate(this.id).then(res => {
+                    console.log(res.result.data)
+                    this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
+                })
+            },
+            save () {
+                this.form.vendorEmployeeList.forEach(item => {
+                    item.logGID = this.form.vendor.logGID
+                    item.vendorGID = this.form.vendor.vendorGID
+                })
+                this.form.vendorBankList.forEach(item => {
+                    item.logGID = this.form.vendor.logGID
+                    item.vendorGID = this.form.vendor.vendorGID
+                })
+                SupplierService[this.type](this.form).then(res => {
+                    console.log(res)
+                })
+            }
         }
-        this.form.vendorEmployeeList = res.result.data.vendorEmployeeList
-        this.form.vendorBankList = res.result.data.vendorBankList
-      })
     }
-    SupplierService.types().then(res => {
-      this.selection.types = formatTree([res.result], ['title:packageName', 'value:packageCode', 'key:gid'])
-      this.$forceUpdate()
-    })
-    CitySvc.cities().then(res => {
-      this.selection.cities = formatCities(res.result.data.provinces)
-      this.$forceUpdate()
-    })
-  },
-  computed: {
-    id () {
-      return this.$route.params.id
-    },
-    type () {
-      return this.$route.query.type
-    }
-  },
-  methods: {
-    cityChange (value) {
-      console.log(value)
-      this.form.vendor.province = value[0]
-      this.form.vendor.city = value[1]
-    },
-    handleEdit (record) {
-      this.visible = true
-      this.mdl = { ...record }
-    },
-    askUpdate () {
-      SupplierService.generate(this.id).then(res => {
-        console.log(res.result.data)
-        this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
-      })
-    },
-    save () {
-      this.form.vendorEmployeeList.forEach(item => {
-        item.logGID = this.form.vendor.logGID
-        item.vendorGID = this.form.vendor.vendorGID
-      })
-      this.form.vendorBankList.forEach(item => {
-        item.logGID = this.form.vendor.logGID
-        item.vendorGID = this.form.vendor.vendorGID
-      })
-      SupplierService[this.type](this.form).then(res => {
-        console.log(res)
-      })
-    }
-  }
-}
 </script>
 
 <style lang="less" scoped>
-.ant-btn-group {
-  margin-right: 8px;
-}
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 
-table {
-  margin: 15px 0;
-  width: 100%;
-  border-width: 1px 1px 0 0;
-  border-radius: 3px 3px 0 0;
-  border-style: solid;
-  border-color: #ccc;
+  table {
+    margin: 15px 0;
+    width: 100%;
+    border-width: 1px 1px 0 0;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-color: #ccc;
 
-  thead {
-    tr {
-      th {
-        background-color: #f5f5f5;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
+    thead {
+      tr {
+        th {
+          background-color: #f5f5f5;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
 
-        button {
-          margin-right: 10px;
+          button {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          padding: 0.5em 0.6em 0.4em 0.6em !important;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
         }
       }
     }
   }
-
-  tbody {
-    tr {
-      td {
-        padding: 0.5em 0.6em 0.4em 0.6em !important;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
-
-        button {
-          margin-right: 10px;
-        }
-      }
-    }
-  }
-}
 </style>
