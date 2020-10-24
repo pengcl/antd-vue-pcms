@@ -22,7 +22,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success" @click="handleToAdd">新增项目</a-button>
+        <a-button :disabled="!queryParam.Id" type="success" @click="handleToAdd">新增项目</a-button>
         <a-button type="primary" style="margin-left: 5px">汇出</a-button>
       </div>
 
@@ -164,7 +164,7 @@
         name: 'ProjectList',
         components: {
             STable,
-            Ellipsis,
+            Ellipsis
         },
         data () {
             this.columns = columns
@@ -210,7 +210,7 @@
                 this.$router.push({ path: `/project/item/${record.id}?type=update&isStaged=` + isStaged })
             },
             handleToAdd () {
-                this.$router.push({ path: `/project/item/0?type=create` })
+                this.$router.push({ path: `/project/item/0?type=create&cityId=${this.queryParam.Id}` })
             }
         }
     }

@@ -58,7 +58,7 @@
       </a-form>
 
       <a-table :columns="columns" :data-source="data" bordered>
-        <template slot="footer" slot-scope="currentPageData">
+        <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="8" :sm="24">
@@ -75,7 +75,6 @@
 
         </template>
       </a-table>
-
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
@@ -122,27 +121,13 @@
           </template>
         </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-    import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
     import { getRoleList } from '@/api/manage'
-
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { ContractService } from '@/views/contract/contract.service'
     import { fixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
@@ -165,7 +150,7 @@
         },
         {
             title: '币种',
-            dataIndex: 'currency',
+            dataIndex: 'currency'
         },
         {
             title: '合同金额',
@@ -179,14 +164,14 @@
         },
         {
             title: '结算状态',
-            dataIndex: 'payState',
+            dataIndex: 'payState'
         }
     ]
 
     const _columns = [
         {
-            title:'操作',
-            dataIndex:'action',
+            title: '操作',
+            dataIndex: 'action',
             scopedSlots: { customRender: 'action' }
         },
         {
@@ -205,7 +190,7 @@
         },
         {
             title: '申请批准金额',
-            dataIndex: 'currency',
+            dataIndex: 'currency'
         },
         {
             title: '支付金额',
@@ -223,45 +208,19 @@
         }
     ]
 
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
-
     export default {
-        name: 'ContractList',
+        name: 'PaySignedList',
         components: {
             STable,
-            Ellipsis,
-            CreateForm,
-            StepByStepModal
+            Ellipsis
         },
         data () {
             this.columns = columns
             this._columns = _columns
             return {
                 // create model
-                cities:[],
+                cities: [],
                 show: false,
-                visible: false,
-                confirmLoading: false,
-                mdl: null,
-                // 高级搜索 展开/关闭
-                advanced: false,
                 // 查询参数
                 queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
@@ -271,17 +230,7 @@
                     return ContractService.items(requestParameters).then(res => {
                         return fixedList(res, requestParameters)
                     })
-                },
-                selectedRowKeys: [],
-                selectedRows: []
-            }
-        },
-        filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
+                }
             }
         },
         created () {
@@ -301,13 +250,6 @@
                 this.$forceUpdate()
             })
         },
-        computed: {
-            rowSelection () {
-                return {
-                    selectedRowKeys: this.selectedRowKeys,
-                }
-            }
-        },
         methods: {
             handleToItem (record) {
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
@@ -318,16 +260,7 @@
             handleToAdd () {
                 this.$router.push({ path: '/pay/signed/edit' })
             },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
             search () {
-                console.log('search')
                 this.show = !this.show
                 this.$refs.table.refresh(true)
             },
@@ -338,75 +271,6 @@
                 } else {
                     this.queryParam.ProjectGUID = ''
                     this.$refs.table.refresh(true)
-                }
-            },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading = false
-                    }
-                })
-            },
-            handleCancel () {
-                this.visible = false
-
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
-            onSelectChange (selectedRowKeys, selectedRows) {
-                this.selectedRowKeys = selectedRowKeys
-                this.selectedRows = selectedRows
-            },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
-            },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
                 }
             }
         }

@@ -47,7 +47,6 @@ SwaggerService.getForm = function (name) {
       const dto = item.$ref.split('/').reverse()[0]
       forItem[key] = SwaggerService.getForm(dto)
     } else {
-      console.log(item.format)
       if (item.type === 'array') {
         forItem[key] = []
       } else {

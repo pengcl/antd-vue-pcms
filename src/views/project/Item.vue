@@ -40,12 +40,21 @@
                 <a-form-item
                   label="城市"
                 >
-                  <a-cascader
+                  <!--<a-cascader
                     :options="regionalOffices"
                     :load-data="loadCities"
                     placeholder="请选择"
                     @change="onChange"
-                  />
+                  />-->
+                  <a-select
+                    placeholder="请选择城市"
+                    v-model="form.cityID">
+                    <a-select-option
+                      v-for="city in selection.cities"
+                      :key="city.city.id"
+                      :value="city.city.id">{{ city.city.nameCN }}
+                    </a-select-option>
+                  </a-select>
                   <!--<a-select
                     :disabled="type === 'view'"
                     placeholder="请选择地区"
@@ -470,6 +479,7 @@ export default {
     }
   },
   created () {
+    console.log('create')
     this.dto = SwaggerService.getDto('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'Input')
     this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
     if (this.id !== '0') {
@@ -478,19 +488,13 @@ export default {
         this.form = SwaggerService.getValue(this.form, res.result.data)
       })
     }
+    this.form.cityID = this.$route.query.cityId ? parseInt(this.$route.query.cityId, 10) : ''
     ProjectService.types().then(res => {
       this.selection.types = res.result.data
     })
-    RegionalService.list().then(res => {
-      const options = []
-      res.result.data.items.forEach(item => {
-        options.push({
-          value: item.id,
-          label: item.nameCN,
-          isLeaf: false
-        })
-      })
-      this.regionalOffices = options
+    ProjectService.tree().then(res => {
+      this.selection.cities = res.result.data.citys
+      this.$forceUpdate()
     })
     CurrencyService.list().then(res => {
       this.selection.currencies = res.result.data.items
