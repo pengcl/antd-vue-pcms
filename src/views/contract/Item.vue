@@ -117,10 +117,12 @@ export default {
     if (this.id !== '0') {
       ContractService.item(this.id).then(res => {
         this.form = res.result.data
+        this.form.master = {}
       })
     } else {
       this.form.contract.id = 0
       this.form.contract.isDeleted = false
+      this.form.master = {}
       // this.form.contract.projectID = 0;
     }
   },
