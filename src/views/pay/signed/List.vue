@@ -61,7 +61,7 @@
         <span slot="contractNo" slot-scope="text, record">
             <a @click="getContractAmt(record)">{{text}}</a>
         </span>
-        <template slot="footer" slot-scope="currentPageData">
+        <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="8" :sm="24">
@@ -129,16 +129,6 @@
           </template>
         </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
