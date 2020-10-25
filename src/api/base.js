@@ -2,6 +2,7 @@ import request from '@/utils/request'
 
 const API = {
   secretTypes: '/api/services/app/GeneralType/GetSecretLevelTypes',
+  unitTypes: '/api/services/app/GeneralType/GetUnitTypes',
   full: '/api/services/app/City/GetProvinceCityAreaTree',
   cities: '/api/services/app/City/GetProvinceCityTree'
 }
@@ -15,9 +16,17 @@ const Base = {}
  * @returns {*}
  */
 
-Base.secretTypes = function list () {
+Base.secretTypes = function () {
   return request({
     url: API.secretTypes,
+    method: 'GET',
+    params: {}
+  })
+}
+
+Base.unitTypes = function () {
+  return request({
+    url: API.unitTypes,
     method: 'GET',
     params: {}
   })

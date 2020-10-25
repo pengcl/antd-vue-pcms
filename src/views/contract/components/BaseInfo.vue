@@ -61,17 +61,41 @@
         <a-form-item
           label="选择原合同"
         >
-          <a-select
+          <a-auto-complete
+            :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15"
+            class="certain-category-search"
+            dropdown-class-name="certain-category-search-dropdown"
+            :dropdown-match-select-width="false"
+            :dropdown-style="{ width: '300px' }"
+            size="large"
+            style="width: 100%"
+            placeholder="请选择原合同"
+            option-label-prop="value"
+            :filter-option="filterMaster"
+            @select="select"
+          >
+            <template slot="dataSource">
+              <a-select-option v-for="item in selection.masters" :key="JSON.stringify(item)" :value="item.contractName">
+                <span>{{ item.contractName }}</span>
+                <p class="certain-search-item-count">合同编号：{{ item.contractNo }}</p>
+              </a-select-option>
+            </template>
+            <a-input>
+              <a-icon slot="suffix" type="search" class="certain-category-icon" />
+            </a-input>
+          </a-auto-complete>
+          <!--<a-select
             :disabled="type === 'view'"
             placeholder="请选择合同类型"
             v-model="data.contract.masterContractID"
+            @change="change()"
             v-decorator="[data.contract.masterContractID, { rules: [{required: true, message: '请选择合同类型'}] }]">
             <a-select-option
               v-for="item in selection.masters"
-              :value="item[id]"
-              :key="item[id]">{{ item[id] }}
+              :value="item.contractGuid"
+              :key="item.contractGuid">{{ item.contractName }}
             </a-select-option>
-          </a-select>
+          </a-select>-->
           <!--<a-select
             :disabled="type === 'view'"
             placeholder="请选择原合同"
@@ -333,6 +357,15 @@ export default {
       }
       return items
       // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
+    },
+    filterMaster (input, option) {
+      return (
+        option.componentOptions.propsData.label.toUpperCase().indexOf(input.toUpperCase()) >= 0
+      )
+    },
+    select (value, item) {
+      this.data.master = JSON.parse(item.data.key)
+      this.data.contract.masterContractID = this.data.master.contractGuid
     },
     addParty (partyType) {
       const party = {
