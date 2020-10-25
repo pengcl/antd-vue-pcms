@@ -57,29 +57,36 @@
         </a-row>
       </a-form>
 
-      <a-table :columns="columns" :data-source="data" bordered>
+      <s-table :columns="columns" :data="loadData2" bordered>
+        <span slot="contractNo" slot-scope="text, record">
+            <a @click="getContractAmt(record)">{{text}}</a>
+        </span>
         <template slot="footer" slot-scope="currentPageData">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="8" :sm="24">
-                <a-form-item label="预计结算金额"></a-form-item>
+                <a-form-item label="预计结算金额">{{contractAmt.contractEstimateAmount}}</a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="累计批准金额"></a-form-item>
+                <a-form-item label="累计批准金额">{{contractAmt.paymentRequestAmountTotal}} 占
+                  {{contractAmt.paymentRequestAmountTotalRatio ? contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}
+                </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="累计付款金额"></a-form-item>
+                <a-form-item label="累计付款金额">{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio ?
+                  contractAmt.paymentAmountTotalRatio + '%' : ''}}
+                </a-form-item>
               </a-col>
             </a-row>
           </a-form>
 
         </template>
-      </a-table>
+      </s-table>
 
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd">新增付款</a-button>
+          <a-button type="success" @click="handleToAdd" v-if="id">新增付款</a-button>
           <a-button type="success" style="margin-left: 10px">发票管理</a-button>
         </a-col>
       </a-row>
@@ -143,15 +150,17 @@
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { ContractService } from '@/views/contract/contract.service'
     import { fixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
+    import { SignedService } from './signed.service'
+    import { ContractService } from '@/views/contract/contract.service'
 
     const columns = [
         {
             title: '合同编号',
-            dataIndex: 'contractNo'
+            dataIndex: 'contractNo',
+            scopedSlots: { customRender: 'contractNo' }
         },
         {
             title: '合同名称',
@@ -160,8 +169,7 @@
         },
         {
             title: '乙方单位',
-            dataIndex: 'creatorUser',
-            scopedSlots: { customRender: 'creatorUser' }
+            dataIndex: 'partyInfo',
         },
         {
             title: '币种',
@@ -185,8 +193,8 @@
 
     const _columns = [
         {
-            title:'操作',
-            dataIndex:'action',
+            title: '操作',
+            dataIndex: 'action',
             scopedSlots: { customRender: 'action' }
         },
         {
@@ -255,7 +263,10 @@
             this._columns = _columns
             return {
                 // create model
-                cities:[],
+                id: '',
+                contractAmt: {},
+                cities: [],
+                data: [],
                 show: false,
                 visible: false,
                 confirmLoading: false,
@@ -267,8 +278,26 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return ContractService.items(requestParameters).then(res => {
+                    if (this.id) {
+                        return SignedService.paymentList(this.id).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    } else {
+                        const res = {
+                            'result': {
+                                'data': {
+                                    'totalCount': 0,
+                                    'items': []
+                                }
+                            }
+                        }
+                        console.log(fixedList(res, requestParameters))
+                        return fixedList(res, requestParameters)
+                    }
+                },
+                loadData2: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    return SignedService.items(requestParameters).then(res => {
                         return fixedList(res, requestParameters)
                     })
                 },
@@ -290,7 +319,6 @@
                 const cities = []
                 res.result.data.citys.forEach(item => {
                     const children = formatList(item.projects.items)
-                    console.log(children)
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,
@@ -300,6 +328,7 @@
                 this.cities = cities
                 this.$forceUpdate()
             })
+
         },
         computed: {
             rowSelection () {
@@ -309,6 +338,13 @@
             }
         },
         methods: {
+            getContractAmt (record) {
+                this.id = record.contractGuid
+                this.$refs.table.refresh(true)
+                SignedService.contractAmt(record.contractGuid).then(res => {
+                    this.contractAmt = res.result.data
+                })
+            },
             handleToItem (record) {
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
             },
@@ -316,7 +352,7 @@
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
             },
             handleToAdd () {
-                this.$router.push({ path: '/pay/signed/edit' })
+                this.$router.push({ path: `/pay/signed/item/${this.id}?type=create` })
             },
             handleAdd () {
                 this.mdl = null
@@ -327,7 +363,6 @@
                 this.mdl = { ...record }
             },
             search () {
-                console.log('search')
                 this.show = !this.show
                 this.$refs.table.refresh(true)
             },
@@ -345,7 +380,6 @@
                 this.confirmLoading = true
                 form.validateFields((errors, values) => {
                     if (!errors) {
-                        console.log('values', values)
                         if (values.id > 0) {
                             // 修改 e.g.
                             new Promise((resolve, reject) => {
@@ -418,12 +452,13 @@
     background-color: #1E9FF2;
     padding: 20px;
     border-radius: 0.35rem;
-    /deep/ .ant-form-item-label label{
+
+    /deep/ .ant-form-item-label label {
       color: #fff;
     }
   }
 
-  /deep/ .ant-table-footer{
+  /deep/ .ant-table-footer {
     padding-bottom: 0;
   }
 

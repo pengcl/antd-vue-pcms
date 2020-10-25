@@ -4,9 +4,9 @@
       <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-              <a-form-item label="合同编号">
-                <a-input></a-input>
-              </a-form-item>
+            <a-form-item label="合同编号">
+              <a-input></a-input>
+            </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
@@ -28,19 +28,36 @@
 
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="合同结算">
-            <contract-settlement></contract-settlement>
+          <contract-settlement></contract-settlement>
         </a-tab-pane>
         <a-tab-pane key="2" tab="造价估算">
-            <cost-estimates></cost-estimates>
+          <cost-estimates></cost-estimates>
         </a-tab-pane>
         <a-tab-pane key="3" tab="预算调整">
-            <budget-list></budget-list>
+          <budget-list></budget-list>
         </a-tab-pane>
         <a-tab-pane key="4" tab="附件">
-            <attachment-list></attachment-list>
+          <attachment-list></attachment-list>
         </a-tab-pane>
       </a-tabs>
     </a-card>
+    <footer-tool-bar>
+      <a-button-group>
+        <a-button :disabled="type === 'view'" @click="approve()" type="success">
+          启动审批流程
+        </a-button>
+      </a-button-group>
+      <a-button-group>
+        <a-button :disabled="type === 'view'" @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
+          储存
+        </a-button>
+      </a-button-group>
+      <a-button-group>
+        <a-button @click="back()" type="danger">
+          关闭
+        </a-button>
+      </a-button-group>
+    </footer-tool-bar>
   </page-header-wrapper>
 </template>
 
@@ -49,17 +66,26 @@
     import CostEstimates from '@/views/checkout/contract/components/CostEstimates'
     import BudgetList from '@/views/checkout/contract/components/BudgetList'
     import AttachmentList from '@/views/checkout/contract/components/AttachmentList'
+    import { FooterToolBar } from '@/components'
+
     export default {
         name: 'Edit',
-        components: { AttachmentList, BudgetList, CostEstimates, ContractSettlement },
+        components: { AttachmentList, BudgetList, CostEstimates, ContractSettlement, FooterToolBar },
         data () {
             return {
                 form: this.$form.createForm(this)
             }
         },
+        methods: {
+            back () {
+                this.$router.push({ path: '/checkout/contract/list' })
+            }
+        }
     }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 </style>

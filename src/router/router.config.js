@@ -314,6 +314,13 @@ export const asyncRouterMap = [
             meta: { title: 'menu.pay.signed.list', keepAlive: true, permission: ['pay'] },
           },
           {
+            path: '/pay/signed/item/:id',
+            name: 'PaySignedItem',
+            hidden: true,
+            component: () => import('@/views/pay/signed/Item'),
+            meta: { title: 'menu.pay.signed.item', keepAlive: true, permission: ['pay'] },
+          },
+          {
             path: '/pay/signed/edit',
             name: 'PaySignedEdit',
             hidden: true,

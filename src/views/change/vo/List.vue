@@ -35,6 +35,7 @@
           <a-col :md="24" :sm="24">
             <a-button type="success">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px">导出</a-button>
           </a-col>
         </a-row>
       </a-form>

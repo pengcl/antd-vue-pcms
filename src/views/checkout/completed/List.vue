@@ -62,7 +62,7 @@
               <a-textarea></a-textarea>
             </a-form-item>
           </a-col>
-          <a-col :md="24" :sm="24">
+          <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;">
             证书内容
           </a-col>
           <a-col :md="12" :sm="24">
@@ -99,18 +99,39 @@
             <a-form-item label="竣工证书"></a-form-item>
           </a-col>
         </a-row>
-
       </a-form>
     </a-card>
+    <footer-tool-bar>
+      <a-button-group>
+        <a-button @click="save()" :loading="loading" type="success">
+          储存
+        </a-button>
+      </a-button-group>
+      <a-button-group>
+        <a-button @click="back()" type="danger">
+          关闭
+        </a-button>
+      </a-button-group>
+    </footer-tool-bar>
   </page-header-wrapper>
 </template>
 
 <script>
-export default {
-  name: 'CheckoutCompletedList',
-}
+    import { FooterToolBar } from '@/components'
+
+    export default {
+        name: 'CheckoutCompletedList',
+        components: { FooterToolBar },
+        methods: {
+            back () {
+                this.$router.push({ path: '/checkout/contract/list' })
+            }
+        }
+    }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 </style>

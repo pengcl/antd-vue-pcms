@@ -46,6 +46,11 @@
         </a-row>
       </a-form>
 
+      <a-row>
+        <a-col :md="24" :sm="24">
+          合同列表
+        </a-col>
+      </a-row>
       <a-table :columns="columns" :data-source="data" bordered>
 
       </a-table>
@@ -53,7 +58,8 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToCompleted">新增竣工证书</a-button>
+          结算列表
+          <a-button type="success" @click="handleToCompleted" style="margin-left: 10px">新增竣工证书</a-button>
           <a-button type="success" style="margin-left: 10px" @click="handleToAdd">新增合同结算</a-button>
           <a-button type="success" style="margin-left: 10px">打印工程财务结算书</a-button>
         </a-col>
