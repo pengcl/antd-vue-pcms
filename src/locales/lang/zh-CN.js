@@ -4,6 +4,7 @@ import momentCN from 'moment/locale/zh-cn'
 const components = {
   antLocale: antd,
   momentName: 'zh-cn',
+  format: 'llll',
   momentLocale: momentCN
 }
 
@@ -23,7 +24,7 @@ const locale = {
   'menu.supplier.purchase': '采购类供应商',
   'menu.supplier.purchase.list': '采购类供应商',
   'menu.supplier.purchase.item': '供应商详情',
-  'menu.supplier.purchase.edit':'供应商信息编辑',
+  'menu.supplier.purchase.edit': '供应商信息编辑',
   'menu.supplier.other': '其他类供应商',
   'menu.supplier.other.list': '其他类供应商',
   'menu.supplier.other.item': '供应商详情',
@@ -60,14 +61,14 @@ const locale = {
 
   'menu.pay': '付款管理',
   'menu.pay.signed.list': '合同付款申请',
-  'menu.pay.signed.item':'新增合同付款',
+  'menu.pay.signed.item': '新增合同付款',
   'menu.pay.signed.ongoing.list': '进度款申报列表',
   'menu.pay.signed.ongoing.item': '进度款申报列详情',
   'menu.pay.signed.ongoing.approval': '进度款申报审定',
   'menu.pay.signed.upcoming.list': '资金计划列表',
   'menu.pay.signed.upcoming.item': '资金计划列详情',
   'menu.pay.unsigned.list': '非合同付款申请',
-  'menu.pay.unsigned.edit':'非合同付款申请新增',
+  'menu.pay.unsigned.edit': '非合同付款申请新增',
   'menu.pay.unsigned.item': '非合同付款详情',
   'menu.pay.unsigned.approval': '非合同付款审批',
   'menu.pay.signed.apply': '付款申请',
@@ -77,7 +78,7 @@ const locale = {
   'menu.checkout': '结算管理',
   'menu.checkout.contract.list': '合同结算',
   'menu.checkout.contract.item': '合同结算详情',
-  'menu.checkout.contract.edit':'合同结算新增',
+  'menu.checkout.contract.edit': '合同结算新增',
   'menu.checkout.completed.list': '竣工证书',
   'menu.checkout.completed.item': '竣工证书详情',
   'menu.checkout.project.list': '工程结算书',
