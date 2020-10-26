@@ -175,7 +175,7 @@
               </td>
               <td>
                 <a-select
-                  :disabled="type === 'view'"
+                  :disabled="true"
                   placeholder="请选择"
                   :readonly="true"
                   v-model="item.id"
@@ -184,7 +184,7 @@
                 </a-select>
               </td>
               <td>
-                <a-input-number placeholder="请填写" :disabled="type === 'view'"></a-input-number>
+                <a-input-number placeholder="请填写" v-model="item.percentage" :disabled="type === 'view'"></a-input-number>
               </td>
             </tr>
           </tbody>
@@ -428,7 +428,7 @@
           id: 0,
           partyID: 0,
           partyName: '',
-          partyGuid: '',
+          partyGuid: 0,
           partyType: partyType,
           percentage: 0
         }
