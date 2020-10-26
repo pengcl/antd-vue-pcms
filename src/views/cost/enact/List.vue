@@ -6,11 +6,11 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="项目">
-                  <a-cascader
-                    :options="cities"
-                    placeholder="请选择"
-                    @change="onChange"
-                  />
+                <a-cascader
+                  :options="cities"
+                  placeholder="请选择"
+                  @change="onChange"
+                />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -69,12 +69,14 @@
 
 <script>
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
+    import { getRoleList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
+    import { CostService } from '@/views/cost/cost.service'
     import { formatList } from '../../../mock/util'
+    import { fixedList } from '@/utils/util'
 
     const columns = [
         {
@@ -123,7 +125,6 @@
         }
     }
 
-
     export default {
         name: 'CostEnactList',
         components: {
@@ -148,9 +149,10 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     console.log('loadData request parameters:', requestParameters)
-                    return getServiceList(requestParameters)
+                    return CostService.items(requestParameters)
                         .then(res => {
-                            return res.result
+                        console.log(res)
+                            return fixedList(res, requestParameters)
                         })
                 },
                 selectedRowKeys: [],
@@ -167,6 +169,7 @@
         },
         created () {
             getRoleList({ t: new Date() })
+
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {

@@ -68,12 +68,14 @@ export function removeLoadingAnimate (id = '', timeout = 1500) {
 }
 
 export function fixedList (res, params) {
+  const total = res.result.data.totalCount ? res.result.data.totalCount : res.result.data.length
+  const items = res.result.data.items ? res.result.data.items : res.result.data
   const result = {}
   result.pageSize = params.pageSize
   result.pageNo = params.pageNo
-  result.totalPage = Math.ceil(res.result.data.totalCount / params.pageSize)
-  result.totalCount = res.result.data.totalCount
-  result.data = res.result.data.items
+  result.totalPage = Math.ceil(total / params.pageSize)
+  result.totalCount = total
+  result.data = items
   return result
 }
 
