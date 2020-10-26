@@ -64,13 +64,13 @@
           <p>{{ record.vendorAbbreviation }}</p>
           <p>
             <a-button-group v-if="record.vendorStatus">
-              <a-button type="success">{{ record.vendorStatus }}</a-button>
+              <span class="label">{{ record.vendorStatus }}</span>
             </a-button-group>
             <a-button-group v-if="record.legalRep">
-              <a-button type="success">{{ record.legalRep }}</a-button>
+              <span class="label">{{ record.legalRep }}</span>
             </a-button-group>
             <a-button-group v-if="record.registerType">
-              <a-button type="success">{{ record.registerType }}</a-button>
+              <span class="label">{{ record.registerType }}</span>
             </a-button-group>
           </p>
           <a-row>
@@ -271,5 +271,13 @@
 
 .ant-btn-group {
   margin-right: 8px;
+}
+
+.label {
+  padding: 8px 15px;
+  background-color: #28d094;
+  color: #fff;
+  line-height: 20px;
+  border-radius: 5px;
 }
 </style>

@@ -72,16 +72,13 @@
     </a-card>
     <footer-tool-bar>
       <a-button-group>
-        <a-button :disabled="type === 'view'" @click="save()" v-if="type !== 'view'" :loading="loading" type="primary">
-          {{ id === '0' ? '新增' : '保存' }}
-        </a-button>
-        <a-button :disabled="type === 'view'" @click="handleToEdit()" v-if="type === 'view'" type="primary">
-          编辑
-        </a-button>
-      </a-button-group>
-      <a-button-group disabled>
         <a-button :disabled="type === 'view'" @click="approve()" type="success">
           提请审批
+        </a-button>
+      </a-button-group>
+      <a-button-group>
+        <a-button :disabled="type === 'view'" @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
+          储存
         </a-button>
       </a-button-group>
       <a-button-group>
@@ -158,6 +155,7 @@ export default {
   }
 }
 </script>
+
 <style lang="less" scoped>
 .ant-btn-group {
   margin-right: 8px;

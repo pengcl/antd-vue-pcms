@@ -3,7 +3,6 @@
     <a-card :bordered="false">
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
-          <a-col :md="24" :sm="24">工程结算书</a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
               <a-input></a-input>
@@ -61,7 +60,10 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="扣款是否已处理">
-              <a-input></a-input>
+              <a-select>
+                <a-select-option value="1">是</a-select-option>
+                <a-select-option value="2">否</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -72,15 +74,42 @@
         </a-row>
       </a-form>
     </a-card>
+    <footer-tool-bar>
+      <a-button-group>
+        <a-button :disabled="type === 'view'" @click="approve()" type="success">
+          启动审批流程
+        </a-button>
+      </a-button-group>
+      <a-button-group>
+        <a-button :disabled="type === 'view'" @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
+          储存
+        </a-button>
+      </a-button-group>
+      <a-button-group>
+        <a-button @click="back()" type="danger">
+          关闭
+        </a-button>
+      </a-button-group>
+    </footer-tool-bar>
   </page-header-wrapper>
 </template>
 
 <script>
-export default {
-  name: 'CheckoutProjectList'
-}
+    import { FooterToolBar } from '@/components'
+
+    export default {
+        name: 'CheckoutProjectList',
+        components: { FooterToolBar },
+        methods: {
+            back () {
+                this.$router.push({ path: '/checkout/contract/list' })
+            }
+        }
+    }
 </script>
 
-<style scoped>
-
+<style lang="less" scoped>
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 </style>

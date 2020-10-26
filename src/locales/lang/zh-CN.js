@@ -60,7 +60,7 @@ const locale = {
 
   'menu.pay': '付款管理',
   'menu.pay.signed.list': '合同付款申请',
-  'menu.pay.signed.edit':'新增合同付款',
+  'menu.pay.signed.item':'新增合同付款',
   'menu.pay.signed.ongoing.list': '进度款申报列表',
   'menu.pay.signed.ongoing.item': '进度款申报列详情',
   'menu.pay.signed.ongoing.approval': '进度款申报审定',

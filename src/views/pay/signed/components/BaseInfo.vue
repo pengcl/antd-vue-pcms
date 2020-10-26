@@ -5,31 +5,31 @@
         <a-form-item
           label="项目编号及名称"
         >
-          <a-input></a-input>
+          <a-input :disabled="true" :value="baseInfo.projectCode + ' ' + baseInfo.projectName"></a-input>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item
           label="合同编号及名称">
-          <a-input></a-input>
+          <a-input :disabled="true" :value="baseInfo.contractCode + ' ' + baseInfo.contractName"></a-input>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item
           label="合同承包单位">
-          <a-input></a-input>
+          <a-input :disabled="true" :value="baseInfo.venderName"></a-input>
         </a-form-item>
       </a-col>
       <a-col :md="8" :sm="24">
         <a-form-item
           label="付款每月截止日期">
-          <a-date-picker></a-date-picker>
+          <a-input :disabled="true" :value="baseInfo.paymentCutOffDate"></a-input>
         </a-form-item>
       </a-col>
       <a-col :md="8" :sm="24">
         <a-form-item
           label="合同付款期限">
-          <a-input-number></a-input-number>
+          <a-input-number :disabled="true" :value="baseInfo.paymentDeadlineDay"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="8" :sm="24">
@@ -81,36 +81,54 @@
           <tr>
             <td rowspan="4" style="text-align: center">原合同</td>
             <td>合同金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>预计结算金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>累计支付金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
           </tr>
           <tr>
             <td>承包单位送单时间</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>单位承包上报金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>现场确认时间</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
           </tr>
           <tr>
             <td>顾问公司出估值时间</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>申请批准日期</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>申请批准金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
           </tr>
           <tr>
             <td>付款类型</td>
             <td colspan="5">
-                <a-select
-                  placeholder="请选择"
-                  v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                  <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
-                </a-select>
+              <a-select
+                placeholder="请选择"
+                v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
+              </a-select>
             </td>
           </tr>
           </tbody>
@@ -252,27 +270,45 @@
           <tr>
             <td rowspan="4" style="text-align: center">专业分包合同</td>
             <td>合同金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>预计结算金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>累计支付金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
           </tr>
           <tr>
             <td>承包单位送单时间</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>单位承包上报金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>现场确认时间</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
           </tr>
           <tr>
             <td>顾问公司出估值时间</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>申请批准日期</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
             <td>申请批准金额</td>
-            <td><a-input></a-input></td>
+            <td>
+              <a-input></a-input>
+            </td>
           </tr>
           <tr>
             <td>付款类型</td>
@@ -335,18 +371,23 @@
 </template>
 
 <script>
-    import { ContractService } from '@/views/contract/contract.service'
+
+
+    import { SignedService } from '../signed.service'
 
     export default {
         name: 'BaseInfo',
         data () {
             return {
                 selection: {},
-                loading: false
+                loading: false,
+                baseInfo: {}
             }
         },
         created () {
-
+            SignedService.getCreateData(this.id).then(res => {
+                this.baseInfo = res.result.data
+            })
         },
         props: {
             data: {

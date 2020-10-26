@@ -1,3 +1,22 @@
 .ant-form-item{
   margin-bottom: 15px;
 }
+
+.ant-form-item-label{
+  label{
+    &.ant-form-item-required{
+      &::before{
+        position: absolute;
+        right: 0;
+        top: -1px;
+       }
+      &::after{
+        left: 10px;
+      }
+    }
+  }
+
+}
+
+
+

@@ -60,7 +60,7 @@ const locale = {
 
   'menu.pay': 'Pay',
   'menu.pay.signed.list': 'Pay Signed',
-  'menu.pay.signed.edit': 'Pay Signed Edit',
+  'menu.pay.signed.item': 'Pay Signed Edit',
   'menu.pay.signed.ongoing.item': 'Pay signed ongoing detail',
   'menu.pay.signed.ongoing.approval': 'Pay signed ongoing approval',
   'menu.pay.signed.upcoming.list': 'Pay signed upcoming list',
