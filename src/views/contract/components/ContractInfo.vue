@@ -86,8 +86,8 @@
             placeholder="请选择"
             v-model="data.contract.isNeedTrip"
             v-decorator="['data.contract.isNeedTrip', { rules: [{required: true, message: '请选择'}] }]">
-            <a-select-option value="true">是</a-select-option>
-            <a-select-option value="false">否</a-select-option>
+            <a-select-option value="1">是</a-select-option>
+            <a-select-option value="0">否</a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -281,31 +281,31 @@
       <a-col :md="24" :sm="24">
         <a-form-item
           label="LOA日期">
-          <a-date-picker v-model="data.contract.loaSignDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.loaSignDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="合同批出日期">
-          <a-date-picker v-model="data.contract.issueDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.issueDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="合同签署日期">
-          <a-date-picker v-model="data.contract.signDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.signDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="合同开始日期">
-          <a-date-picker v-model="data.contract.contractCommencementDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.contractCommencementDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="合同竣工日期">
-          <a-date-picker v-model="data.contract.contractCompletionDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.contractCompletionDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -317,13 +317,13 @@
       <a-col :md="12" :sm="24">
         <a-form-item
           label="竣工证书的实际开始日期">
-          <a-date-picker v-model="data.contract.practicalCommencementDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.practicalCommencementDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="竣工证书的实际竣工日期">
-          <a-date-picker v-model="data.contract.practicalCompletionDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.practicalCompletionDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -353,13 +353,13 @@
       <a-col :md="12" :sm="24">
         <a-form-item
           label="预计保修/保固期届满日">
-          <a-date-picker v-model="data.contract.targetDLPCompletionDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.targetDLPCompletionDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="保修/保固期证书的保修/保固期期完成日">
-          <a-date-picker v-model="data.contract.dlpCompletionDate"></a-date-picker>
+          <a-date-picker :format="dateFormat" v-model="data.contract.dlpCompletionDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -441,10 +441,10 @@
                 <a-input v-model="item.bondGracePeriodTerms"></a-input>
               </td>
               <td>
-                <a-date-picker v-model="item.bondExpirationDate"></a-date-picker>
+                <a-date-picker :format="dateFormat" v-model="item.bondExpirationDate"></a-date-picker>
               </td>
               <td>
-                <a-date-picker v-model="item.bondExtendedExpirationDate"></a-date-picker>
+                <a-date-picker :format="dateFormat" v-model="item.bondExtendedExpirationDate"></a-date-picker>
               </td>
               <td>
                 <a-input v-model="item.bondExpirationDateTerms"></a-input>
@@ -528,10 +528,10 @@
                 </a-select>
               </td>
               <td>
-                <a-date-picker v-model="item.insuranceExpirationDate"></a-date-picker>
+                <a-date-picker :format="dateFormat" v-model="item.insuranceExpirationDate"></a-date-picker>
               </td>
               <td>
-                <a-date-picker v-model="item.insuranceExtendedExpirationDate"></a-date-picker>
+                <a-date-picker :format="dateFormat" v-model="item.insuranceExtendedExpirationDate"></a-date-picker>
               </td>
               <td>
                 <a-select
@@ -586,7 +586,7 @@
                 <!-- todo: 提交质量保证书日期条款 -->
               </td>
               <td>
-                <a-date-picker></a-date-picker>
+                <a-date-picker :format="dateFormat"></a-date-picker>
               </td>
               <td>
                 <a-input></a-input>
@@ -651,14 +651,15 @@
 
 <script>
 import { Currency as CurrencyService } from '@/api/currency'
-import { Base as BaseService } from '@/api/base'
+import { Base as BaseService, dateFormat } from '@/api/base'
 
 export default {
   name: 'ContractInfo',
   data () {
     return {
       selection: {},
-      loading: false
+      loading: false,
+      dateFormat
     }
   },
   created () {
