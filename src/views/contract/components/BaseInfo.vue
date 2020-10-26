@@ -338,7 +338,7 @@ export default {
   },
   watch: {
     'data.contract.contractCategory' (val) {
-      this.selection.masters = null
+      this.selection.masters = []
       ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
         this.selection.masters = res.result.data
         this.$forceUpdate()
@@ -359,8 +359,9 @@ export default {
       // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
     },
     filterMaster (input, option) {
+      console.log(option.componentOptions.propsData)
       return (
-        option.componentOptions.propsData.label.toUpperCase().indexOf(input.toUpperCase()) >= 0
+        option.componentOptions.propsData.value.indexOf(input.toUpperCase()) >= 0
       )
     },
     select (value, item) {

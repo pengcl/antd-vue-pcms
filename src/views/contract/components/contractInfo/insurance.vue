@@ -28,46 +28,50 @@
           </tr>
         </thead>
         <tbody>
-          <tr for>
+          <tr v-for="(item, index) in data.contractInsuarancelst" :key="index">
             <td>
               <a-button :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number v-model="item.insuranceAmount"></a-input-number>
             </td>
             <td>
               <a-select
                 placeholder="请选择"
-                v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
+                v-model="item.insuranceType"
+                v-decorator="['item.insuranceType', { rules: [{required: true, message: '请选择'}] }]">
                 <a-select-option value="1">承建商工程全险</a-select-option>
                 <a-select-option value="2">第三者保险</a-select-option>
               </a-select>
             </td>
+            <!-- todo:保险类别 -->
             <td>
-              <a-input></a-input>
+              <a-input v-model="item.insuranceTerms"></a-input>
             </td>
             <td>
               <a-select
                 placeholder="请选择"
+                v-model="item.insuranceStatus"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
                 <a-select-option value="1">已提交</a-select-option>
-                <a-select-option value="2">未提交</a-select-option>
+                <a-select-option value="0">未提交</a-select-option>
               </a-select>
             </td>
             <td>
-              <a-date-picker></a-date-picker>
+              <a-date-picker :format="dateFormat" v-model="item.insuranceExpirationDate"></a-date-picker>
             </td>
             <td>
-              <a-date-picker></a-date-picker>
+              <a-date-picker :format="dateFormat" v-model="item.insuranceExtendedExpirationDate"></a-date-picker>
             </td>
             <td>
               <a-select
                 placeholder="请选择"
+                v-model="item.insuranceExtensionStatus"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
                 <a-select-option value="1">已提交</a-select-option>
-                <a-select-option value="2">未提交</a-select-option>
+                <a-select-option value="0">未提交</a-select-option>
               </a-select>
             </td>
           </tr>

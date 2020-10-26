@@ -40,7 +40,7 @@
             <!-- todo: 提交质量保证书日期条款 -->
             </td>
             <td>
-              <a-date-picker></a-date-picker>
+              <a-date-picker :format="dateFormat"></a-date-picker>
             </td>
             <td>
               <a-input></a-input>

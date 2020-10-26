@@ -44,10 +44,8 @@
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
-          label="原合同金额"
-        >
-          <a-input-number :disabled="true" :min="0">{{ data.master.contractAmount }}</a-input-number>
+        <a-form-item label="原合同金额">
+          <a-input-number :disabled="true" :value="data.master.contractAmount"></a-input-number>
           元
         </a-form-item>
       </a-col>
