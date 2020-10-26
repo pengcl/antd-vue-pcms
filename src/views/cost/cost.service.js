@@ -25,11 +25,11 @@ CostService.items = function (parameter) {
   })
 }
 
-CostService.subjectItems = function (id) {
+CostService.subjectItems = function (parameter) {
   return request({
     url: API.subjectItems,
     method: 'get',
-    params: { id }
+    params: parameter
   })
 }
 
