@@ -44,7 +44,7 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            {{ record.code }}
+            {{record.code}}
             <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
             </a-button>
             <!--<a-button
@@ -79,7 +79,7 @@
     import { formatList } from '../../../mock/util'
     import { fixedList } from '@/utils/util'
 
-    const columns = [
+    const defaultColumns = [
 
         {
             title: '科目代码',
@@ -90,23 +90,10 @@
         {
             title: '科目名称',
             dataIndex: 'name'
-        },
-        {
-            title: '业态成本中心A',
-            dataIndex: 'costA',
-            scopedSlots: { customRender: 'costA' }
-        },
-        {
-            title: '业态成本中心B',
-            dataIndex: 'costB',
-            scopedSlots: { customRender: 'costB' }
-        },
-        {
-            title: '业态成本中心C',
-            dataIndex: 'costC',
-            scopedSlots: { customRender: 'costC' }
         }
     ]
+
+    const columns = defaultColumns
 
     const statusMap = {
         0: {
@@ -151,28 +138,45 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     // console.log('loadData request parameters:', requestParameters)
-                    const result = []
+                    const result = {
+                        result:{
+                          data:{
+                            items:[]
+                          }
+                        }
+                    }
                     return CostService.items(requestParameters).then(res => {
+                      this.columns = JSON.parse(JSON.stringify(defaultColumns))
+                      console.log(this.columns)
                           CostService.subjectItems(this.queryParam.ProjectGUID)
                             .then(res2 => {
-                              res.result.data.forEach(item => {
-                                  const obj = {
-                                    id: item.id,
-                                    code: item.code,
-                                    name: item.nameCN,
-                                    costA: '',
-                                    costB: '',
-                                    costC: ''
+                              res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1=> {
+                                this.columns.push(
+                                  {
+                                    title: subjectItem1.costCenterName,
+                                    dataIndex: 'cost'+subjectItem1.costCenterId
                                   }
-                                  result.push(obj)
+                                )
                               })
-
-                              // result = fixedList(result, requestParameters);
-                              console.log(result)
-                              return result
+                              res.result.data.forEach(item=> {
+                                const obj = {}
+                                res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2=> {
+                                  //加载成本
+                                  const costName = 'cost'+subjectItem2.costCenterId
+                                  subjectItem2.mainElements.forEach(itemA=> {
+                                      if(item.id===itemA.elementTypeId){
+                                        obj['id']=item.id
+                                        obj['code']=item.code
+                                        obj['name']=item.nameCN
+                                        obj[costName] = itemA.amount +'  '+itemA.percentage+'%';
+                                      }
+                                  })
+                                })
+                                result.result.data.items.push(obj);
+                              })
                             })
-                        //
-                    })
+                        return fixedList(result, requestParameters)
+                      })
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -223,6 +227,7 @@
                 this.$router.push({ path: `/cost/enact/item/0?type=add` })
             },
             onChange (value) {
+                this.columns = []
                 if (value.length >= 2) {
                     this.queryParam.ProjectGUID = value[value.length - 1]
                     this.$refs.table.refresh(true)
