@@ -32,7 +32,7 @@ Base.unitTypes = function () {
   })
 }
 
-const dateFormat = 'YYYY/MM/DD'
+const dateFormat = ''
 const datetimeFormat = 'YYYY/MM/DD'
 
 export { Base, dateFormat, datetimeFormat }
