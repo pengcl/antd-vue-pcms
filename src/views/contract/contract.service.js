@@ -6,7 +6,8 @@ const API = {
   types: '/api/services/app/GeneralType/GetContractCategoryTypes',
   masters: '/api/services/app/Contract/GetMasterContractInfo',
   create: '/api/services/app/Contract/CreateContractAllInfo',
-  update: '/api/services/app/Contract/UpdateContractAllInfo'
+  update: '/api/services/app/Contract/UpdateContractAllInfo',
+  vendors: '/api/services/app/Contract/GetVendorList'
 }
 
 const ContractService = {}
@@ -63,6 +64,14 @@ ContractService.update = function (parameter) {
     url: API.update,
     method: 'PUT',
     data: parameter
+  })
+}
+
+ContractService.vendors = function () {
+  return request({
+    url: API.vendors,
+    method: 'GET',
+    params: {}
   })
 }
 

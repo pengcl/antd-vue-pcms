@@ -81,7 +81,7 @@
               </a-select-option>
             </template>
             <a-input>
-              <a-icon slot="suffix" type="search" class="certain-category-icon" />
+              <a-icon slot="suffix" type="search" class="certain-category-icon"/>
             </a-input>
           </a-auto-complete>
           <!--<a-select
@@ -212,7 +212,10 @@
           <tbody>
             <tr v-for="item in filterParties(19)" :key="item.id">
               <td>
-                <a-button @click="del(item.partyGuid ? 'partyGuid' : '_id',item.partyGuid ? item.partyGuid : item._id)" :disabled="type === 'view'" icon="close">
+                <a-button
+                  @click="del(item.partyGuid ? 'partyGuid' : '_id',item.partyGuid ? item.partyGuid : item._id)"
+                  :disabled="type === 'view'"
+                  icon="close">
                   删除
                 </a-button>
               </td>
@@ -220,8 +223,13 @@
                 <a-select
                   :disabled="type === 'view'"
                   placeholder="请选择"
-                  v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                  <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
+                  v-model="item.partyGuid"
+                  @change="partyChange(key)"
+                  v-decorator="['item.partyGuid', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                  <a-select-option v-for="option in selection.vendors" :key="JSON.stringify(option)" :value="option.gid">{{
+                    option.vendorName
+                  }}
+                  </a-select-option>
                 </a-select>
               </td>
             </tr>
@@ -301,144 +309,153 @@
 </template>
 
 <script>
-import { ContractService } from '@/views/contract/contract.service'
-import { Base as BaseService } from '@/api/base'
+  import { ContractService } from '@/views/contract/contract.service'
+  import { Base as BaseService } from '@/api/base'
 
-export default {
-  name: 'BaseInfo',
-  data () {
-    return {
-      selection: {},
-      loading: false
-    }
-  },
-  created () {
-    ContractService.types().then(res => {
-      this.selection.types = res.result.data
-      this.$forceUpdate()
-    })
-    BaseService.secretTypes().then(res => {
-      this.selection.secrets = res.result.data
-      this.$forceUpdate()
-    })
-  },
-  props: {
-    data: {
-      type: Object,
-      default: null
+  export default {
+    name: 'BaseInfo',
+    data () {
+      return {
+        selection: {},
+        loading: false
+      }
     },
-    type: {
-      type: String,
-      default: 'view'
-    },
-    id: {
-      type: String,
-      default: '0'
-    }
-  },
-  watch: {
-    'data.contract.contractCategory' (val) {
-      this.selection.masters = []
-      ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
-        this.selection.masters = res.result.data
+    created () {
+      ContractService.types().then(res => {
+        this.selection.types = res.result.data
         this.$forceUpdate()
       })
-    }
-  },
-  methods: {
-    filterParties (partyType) {
-      const items = []
-      if (this.data.contractPartylst.forEach) {
+      BaseService.secretTypes().then(res => {
+        this.selection.secrets = res.result.data
+        this.$forceUpdate()
+      })
+      ContractService.vendors().then(res => {
+        console.log(res)
+        this.selection.vendors = res.result.data
+        this.$forceUpdate()
+      })
+    },
+    props: {
+      data: {
+        type: Object,
+        default: null
+      },
+      type: {
+        type: String,
+        default: 'view'
+      },
+      id: {
+        type: String,
+        default: '0'
+      }
+    },
+    watch: {
+      'data.contract.contractCategory' (val) {
+        this.selection.masters = []
+        ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
+          this.selection.masters = res.result.data
+          this.$forceUpdate()
+        })
+      }
+    },
+    methods: {
+      filterParties (partyType) {
+        const items = []
+        if (this.data.contractPartylst.forEach) {
+          this.data.contractPartylst.forEach(item => {
+            if (item.partyType === partyType) {
+              items.push(item)
+            }
+          })
+        }
+        return items
+        // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
+      },
+      filterMaster (input, option) {
+        console.log(option.componentOptions.propsData)
+        return (
+          option.componentOptions.propsData.value.indexOf(input.toUpperCase()) >= 0
+        )
+      },
+      select (value, item) {
+        this.data.master = JSON.parse(item.data.key)
+        this.data.contract.masterContractID = this.data.master.contractGuid
+      },
+      partyChange (value, item) {
+        console.log(value, item.data.key)
+        // item.partyID = ''
+      },
+      addParty (partyType) {
+        const party = {
+          _id: Date.parse(new Date().toString()),
+          contractID: this.id,
+          id: 0,
+          partyID: 0,
+          partyName: '',
+          partyGuid: '',
+          partyType: partyType,
+          percentage: 0
+        }
+        this.data.contractPartylst.push(party)
+      },
+      clear (partyType) {
+        const items = []
         this.data.contractPartylst.forEach(item => {
-          if (item.partyType === partyType) {
+          if (item.partyType !== partyType) {
             items.push(item)
           }
         })
+        this.data.contractPartylst = items
+      },
+      del (key, id) {
+        let index = 0
+        this.data.contractPartylst.forEach((item, i) => {
+          if (item[key] === id) {
+            index = i
+          }
+        })
+        this.data.contractPartylst.splice(index, 1)
       }
-      return items
-      // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
-    },
-    filterMaster (input, option) {
-      console.log(option.componentOptions.propsData)
-      return (
-        option.componentOptions.propsData.value.indexOf(input.toUpperCase()) >= 0
-      )
-    },
-    select (value, item) {
-      this.data.master = JSON.parse(item.data.key)
-      this.data.contract.masterContractID = this.data.master.contractGuid
-    },
-    addParty (partyType) {
-      const party = {
-        _id: Date.parse(new Date().toString()),
-        contractID: this.id,
-        id: '',
-        partID: '',
-        partName: '',
-        partyGuid: '',
-        partyType: partyType,
-        percentage: 0
-      }
-      this.data.contractPartylst.push(party)
-    },
-    clear (partyType) {
-      const items = []
-      this.data.contractPartylst.forEach(item => {
-        if (item.partyType !== partyType) {
-          items.push(item)
-        }
-      })
-      this.data.contractPartylst = items
-    },
-    del (key, id) {
-      let index = 0
-      this.data.contractPartylst.forEach((item, i) => {
-        if (item[key] === id) {
-          index = i
-        }
-      })
-      this.data.contractPartylst.splice(index, 1)
     }
   }
-}
 </script>
 <style lang="less" scoped>
-table {
-  margin: 15px 0;
-  width: 100%;
-  border-width: 1px 1px 0 0;
-  border-radius: 3px 3px 0 0;
-  border-style: solid;
-  border-color: #ccc;
+  table {
+    margin: 15px 0;
+    width: 100%;
+    border-width: 1px 1px 0 0;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-color: #ccc;
 
-  thead {
-    tr {
-      th {
-        background-color: #f5f5f5;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
+    thead {
+      tr {
+        th {
+          background-color: #f5f5f5;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
 
-        button {
-          margin-right: 10px;
+          button {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          padding: 0.5em 0.6em 0.4em 0.6em !important;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
         }
       }
     }
   }
-
-  tbody {
-    tr {
-      td {
-        padding: 0.5em 0.6em 0.4em 0.6em !important;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
-
-        button {
-          margin-right: 10px;
-        }
-      }
-    }
-  }
-}
 </style>
