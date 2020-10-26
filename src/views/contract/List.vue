@@ -103,13 +103,13 @@
 </template>
 
 <script>
-    import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
+  import { STable, Ellipsis } from '@/components'
+  import { getRoleList } from '@/api/manage'
 
-    import { ContractService } from '@/views/contract/contract.service'
-    import { fixedList } from '@/utils/util'
-    import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../mock/util'
+  import { ContractService } from '@/views/contract/contract.service'
+  import { fixedList } from '@/utils/util'
+  import { ProjectService } from '@/views/project/project.service'
+  import { formatList } from '../../mock/util'
 
     const columns = [
         {
@@ -153,73 +153,72 @@
         },
     ]
 
-    export default {
-        name: 'ContractList',
-        components: {
-            STable,
-            Ellipsis
-        },
-        data () {
-            this.columns = columns
-            return {
-                // create model
-                cities: [],
-                show: false,
-                // 查询参数
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return ContractService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
-                }
-            }
-        },
-        created () {
-            getRoleList({ t: new Date() })
-            ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items)
-                    console.log(children)
-                    cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
-                })
-                this.cities = cities
-                this.$forceUpdate()
-            })
-        },
-        methods: {
-            handleToItem (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
-            },
-            handleToEdit (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
-            },
-            handleToAdd () {
-                this.$router.push({ path: `/contract/item/0?type=create` })
-            },
-            search () {
-                console.log('search')
-                this.show = !this.show
-                this.$refs.table.refresh(true)
-            },
-            onChange (value) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
-            }
+  export default {
+    name: 'ContractList',
+    components: {
+      STable,
+      Ellipsis
+    },
+    data () {
+      this.columns = columns
+      return {
+        // create model
+        cities: [],
+        city: '',
+        show: false,
+        // 查询参数
+        queryParam: {},
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          return ContractService.items(requestParameters).then(res => {
+            return fixedList(res, requestParameters)
+          })
         }
+      }
+    },
+    created () {
+      getRoleList({ t: new Date() })
+      ProjectService.tree().then(res => {
+        const cities = []
+        res.result.data.citys.forEach(item => {
+          const children = formatList(item.projects.items)
+          cities.push({
+            label: item.city.nameCN,
+            value: item.city.id,
+            children: children
+          })
+        })
+        this.cities = cities
+        this.$forceUpdate()
+      })
+    },
+    methods: {
+      handleToItem (record) {
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+      },
+      handleToEdit (record) {
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
+      },
+      handleToAdd () {
+        this.$router.push({ path: `/contract/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
+      },
+      search () {
+        this.show = !this.show
+        this.$refs.table.refresh(true)
+      },
+      onChange (value) {
+        if (value.length >= 2) {
+          this.queryParam.ProjectGUID = value[value.length - 1]
+          this.$refs.table.refresh(true)
+        } else {
+          this.city = value
+          this.$refs.table.refresh(true)
+        }
+        this.$forceUpdate()
+      }
     }
+  }
 </script>
 
 <style lang="less" scoped>

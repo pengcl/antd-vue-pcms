@@ -82,7 +82,13 @@ const locale = {
 
   'menu.report': '报表管理',
   'menu.data': '基础数据设置',
-  'menu.system': '系统管理'
+
+  'menu.settings': '系统设置',
+  'menu.settings.base': '基本设置',
+  'menu.settings.security': '案例设置',
+  'menu.settings.custom': '个性化设置',
+  'menu.settings.binding': '账户绑定',
+  'menu.settings.notification': '消息通知'
 }
 
 export default {
