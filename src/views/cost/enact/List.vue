@@ -31,7 +31,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="code"
         bordered
         :columns="columns"
         :data="loadData"
@@ -44,7 +44,7 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            {{record.code}}
+            {{ record.code }}
             <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
             </a-button>
             <!--<a-button
@@ -69,173 +69,145 @@
 </template>
 
 <script>
-    import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
+  import { STable, Ellipsis } from '@/components'
+  import { getRoleList } from '@/api/manage'
 
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
-    import { ProjectService } from '@/views/project/project.service'
-    import { CostService } from '@/views/cost/cost.service'
-    import { formatList } from '../../../mock/util'
-    import { fixedList } from '@/utils/util'
+  import StepByStepModal from '@/views/list/modules/StepByStepModal'
+  import CreateForm from '@/views/list/modules/CreateForm'
+  import { ProjectService } from '@/views/project/project.service'
+  import { CostService } from '@/views/cost/cost.service'
+  import { formatList } from '../../../mock/util'
+  import { fixedList } from '@/utils/util'
 
-    const defaultColumns = [
+  const defaultColumns = [
 
-        {
-            title: '科目代码',
-            dataIndex: 'action',
-            width: '150px',
-            scopedSlots: { customRender: 'action' }
-        },
-        {
-            title: '科目名称',
-            dataIndex: 'name'
-        }
-    ]
-
-    const columns = defaultColumns
-
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
+    {
+      title: '科目代码',
+      dataIndex: 'action',
+      width: '150px',
+      scopedSlots: { customRender: 'action' }
+    },
+    {
+      title: '科目名称',
+      dataIndex: 'name'
     }
+  ]
 
-    export default {
-        name: 'CostEnactList',
-        components: {
-            STable,
-            Ellipsis,
-            CreateForm,
-            StepByStepModal
-        },
-        data () {
-            this.columns = columns
-            return {
-                // create model
-                cities: [],
-                visible: false,
-                confirmLoading: false,
-                mdl: null,
-                // 高级搜索 展开/关闭
-                advanced: false,
-                // 查询参数
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    // console.log('loadData request parameters:', requestParameters)
-                    const result = {
-                        result:{
-                          data:{
-                            items:[]
-                          }
-                        }
+  const columns = defaultColumns
+
+  export default {
+    name: 'CostEnactList',
+    components: {
+      STable,
+      Ellipsis,
+      CreateForm,
+      StepByStepModal
+    },
+    data () {
+      this.columns = columns
+      return {
+        // create model
+        cities: [],
+        visible: false,
+        confirmLoading: false,
+        mdl: null,
+        // 高级搜索 展开/关闭
+        advanced: false,
+        // 查询参数
+        queryParam: {},
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const _columns = JSON.parse(JSON.stringify(defaultColumns))
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          // console.log('loadData request parameters:', requestParameters)
+          const result = {
+            result: {
+              data: []
+            }
+          }
+          return CostService.items(requestParameters).then(res => {
+            const requestParameters2 = Object.assign({}, parameter, { Id: this.queryParam.ProjectGUID })
+            return CostService.subjectItems(requestParameters2)
+              .then(res2 => {
+                res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
+                  _columns.push(
+                    {
+                      title: subjectItem1.costCenterName,
+                      dataIndex: 'cost' + subjectItem1.costCenterId
                     }
-                    return CostService.items(requestParameters).then(res => {
-                      this.columns = JSON.parse(JSON.stringify(defaultColumns))
-                      console.log(this.columns)
-                          CostService.subjectItems(this.queryParam.ProjectGUID)
-                            .then(res2 => {
-                              res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1=> {
-                                this.columns.push(
-                                  {
-                                    title: subjectItem1.costCenterName,
-                                    dataIndex: 'cost'+subjectItem1.costCenterId
-                                  }
-                                )
-                              })
-                              res.result.data.forEach(item=> {
-                                const obj = {}
-                                res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2=> {
-                                  //加载成本
-                                  const costName = 'cost'+subjectItem2.costCenterId
-                                  subjectItem2.mainElements.forEach(itemA=> {
-                                      if(item.id===itemA.elementTypeId){
-                                        obj['id']=item.id
-                                        obj['code']=item.code
-                                        obj['name']=item.nameCN
-                                        obj[costName] = itemA.amount +'  '+itemA.percentage+'%';
-                                      }
-                                  })
-                                })
-                                result.result.data.items.push(obj);
-                              })
-                            })
-                        return fixedList(result, requestParameters)
-                      })
-                },
-                selectedRowKeys: [],
-                selectedRows: []
-            }
-        },
-        filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
-            }
-        },
-        created () {
-            getRoleList({ t: new Date() })
-
-            ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items)
-                    // console.log(children)
-                    cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
+                  )
                 })
-                this.cities = cities
+                this.columns = _columns
                 this.$forceUpdate()
-            })
+                res.result.data.forEach(item => {
+                  const obj = {}
+                  res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
+                    // 加载成本
+                    const costName = 'cost' + subjectItem2.costCenterId
+                    subjectItem2.mainElements.forEach(itemA => {
+                      if (item.id === itemA.elementTypeId) {
+                        obj['id'] = item.id
+                        obj['code'] = item.code
+                        obj['name'] = item.nameCN
+                        obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
+                      }
+                    })
+                  })
+                  result.result.data.push(obj)
+                })
+                return fixedList(result, parameter)
+              })
+          })
         },
-        computed: {
-            rowSelection () {
-                return {
-                    selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
-                }
-            }
-        },
-        methods: {
-            handleToItem (record) {
-                this.$router.push({ path: `/cost/enact/item/${record.id}?type=view` })
-            },
-            handleToEdit (record) {
-                this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit` })
-            },
-            handleToAdd () {
-                this.$router.push({ path: `/cost/enact/item/0?type=add` })
-            },
-            onChange (value) {
-                this.columns = []
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
-            }
+        selectedRowKeys: [],
+        selectedRows: []
+      }
+    },
+    created () {
+      getRoleList({ t: new Date() })
+
+      ProjectService.tree().then(res => {
+        const cities = []
+        res.result.data.citys.forEach(item => {
+          const children = formatList(item.projects.items)
+          // console.log(children)
+          cities.push({
+            label: item.city.nameCN,
+            value: item.city.id,
+            children: children
+          })
+        })
+        this.cities = cities
+        this.$forceUpdate()
+      })
+    },
+    computed: {
+      rowSelection () {
+        return {
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange
         }
+      }
+    },
+    methods: {
+      handleToItem (record) {
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view` })
+      },
+      handleToEdit (record) {
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit` })
+      },
+      handleToAdd () {
+        this.$router.push({ path: `/cost/enact/item/0?type=add` })
+      },
+      onChange (value) {
+        if (value.length >= 2) {
+          this.queryParam.ProjectGUID = value[value.length - 1]
+          this.$refs.table.refresh(true)
+        } else {
+          this.queryParam.ProjectGUID = ''
+          this.$refs.table.refresh(true)
+        }
+      }
     }
+  }
 </script>
