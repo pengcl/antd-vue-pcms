@@ -1,17 +1,17 @@
 <template>
   <page-header-wrapper>
-    <a-card v-if="form" :bordered="false">
+    <a-card v-if="form && project" :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="24" :sm="24">
               <a-form-item label="项目编码">
-                {{ form.contract.projectID }}
+                {{ project.projectCode }}
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
               <a-form-item label="房产项目名称(中)">
-                {{ form.contract.contractName }}
+                {{ project.projectName }}
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -51,7 +51,7 @@
 
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
-          <base-info :data="form" :type="type" :id="id"/>
+          <base-info :project="project" :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="2" tab="合同信息">
           <contract-info :data="form" :type="type" :id="id"/>
@@ -99,6 +99,7 @@ import AttachmentList from '@/views/contract/components/AttachmentList'
 import { FooterToolBar } from '@/components'
 import { ContractService } from '@/views/contract/contract.service'
 import { SwaggerService } from '@/api/swagger.service'
+import { ProjectService } from '@/views/project/project.service'
 
 export default {
   name: 'ContractItem',
@@ -107,6 +108,7 @@ export default {
     return {
       tabActiveKey: 1,
       loading: false,
+      project: null,
       form: SwaggerService.getForm('ContractAllInfoDto')
     }
   },
@@ -115,11 +117,20 @@ export default {
       ContractService.item(this.id).then(res => {
         this.form = res.result.data
         this.form.master = {}
+        ProjectService.view2(this.form.contract.projectID).then(res => {
+          console.log(res)
+          this.project = res.result.data
+        })
       })
     } else {
       this.form.contract.id = 0
       this.form.contract.isDeleted = false
       this.form.master = {}
+      ProjectService.view(this.ProjectGUID).then(res => {
+        console.log(res)
+        this.project = res.result.data
+        this.form.contract.projectID = this.project.projectCode
+      })
       // this.form.contract.projectID = 0;
     }
   },
@@ -129,6 +140,9 @@ export default {
     },
     type () {
       return this.$route.query.type
+    },
+    ProjectGUID () {
+      return this.$route.query.ProjectGUID
     }
   },
   watch: {},
