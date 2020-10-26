@@ -152,10 +152,10 @@
           <thead>
             <tr>
               <th colspan="3">
-                <a-button @click="addParty(18)" :disabled="type === 'view'" icon="plus">
+                <a-button @click="addParty(18)" :disabled="filterParties(18).length >= 1" icon="plus">
                   新增
                 </a-button>
-                <a-button @click="clear(18)" :disabled="type === 'view'" icon="stop">
+                <a-button @click="clear(18)" :disabled="true" icon="stop">
                   重置
                 </a-button>
               </th>
@@ -167,16 +167,17 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in filterParties(18)" :key="item.id">
+            <tr v-for="(item,index) in filterParties(18)" :key="index">
               <td>
-                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
-                  删除
-                </a-button>
+              <!--<a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                删除
+              </a-button>-->
               </td>
               <td>
                 <a-select
                   :disabled="type === 'view'"
                   placeholder="请选择"
+                  :readonly="true"
                   v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
                   <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
                 </a-select>
@@ -224,11 +225,10 @@
                   :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.partyGuid"
-                  @change="partyChange(key)"
+                  @change="partyChange"
                   v-decorator="['item.partyGuid', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                  <a-select-option v-for="option in selection.vendors" :key="JSON.stringify(option)" :value="option.gid">{{
-                    option.vendorName
-                  }}
+                  <a-select-option v-for="option in selection.vendors" :key="JSON.stringify(option)" :value="option.gid">
+                    {{ option.vendorName }}
                   </a-select-option>
                 </a-select>
               </td>
@@ -258,9 +258,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in filterParties(20)" :key="item.id">
+            <tr v-for="(item,index) in filterParties(20)" :key="index">
               <td>
-                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                <a-button @click="del(item.partyGuid ? 'partyGuid' : '_id',item.partyGuid ? item.partyGuid : item._id)" :disabled="type === 'view'" icon="close">
                   删除
                 </a-button>
               </td>
@@ -268,8 +268,12 @@
                 <a-select
                   :disabled="type === 'view'"
                   placeholder="请选择"
-                  v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                  <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
+                  v-model="item.partyGuid"
+                  @change="partyChange"
+                  v-decorator="['item.partyGuid', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                  <a-select-option v-for="option in selection.vendors" :key="JSON.stringify(option)" :value="option.gid">
+                    {{ option.vendorName }}
+                  </a-select-option>
                 </a-select>
               </td>
             </tr>
@@ -369,7 +373,6 @@
           })
         }
         return items
-        // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
       },
       filterMaster (input, option) {
         console.log(option.componentOptions.propsData)
@@ -381,8 +384,14 @@
         this.data.master = JSON.parse(item.data.key)
         this.data.contract.masterContractID = this.data.master.contractGuid
       },
-      partyChange (value, item) {
-        console.log(value, item.data.key)
+      partyChange (value, option) {
+        option = JSON.parse(option.data.key)
+        this.data.contractPartylst.forEach(item => {
+          if (value === item.partyGuid) {
+            item.partyID = option.id
+            item.partyName = option.vendorName
+          }
+        })
         // item.partyID = ''
       },
       addParty (partyType) {
@@ -399,22 +408,18 @@
         this.data.contractPartylst.push(party)
       },
       clear (partyType) {
-        const items = []
         this.data.contractPartylst.forEach(item => {
           if (item.partyType !== partyType) {
-            items.push(item)
+            item.isDisabled = true
           }
         })
-        this.data.contractPartylst = items
       },
       del (key, id) {
-        let index = 0
         this.data.contractPartylst.forEach((item, i) => {
           if (item[key] === id) {
-            index = i
+            item.isDisabled = true
           }
         })
-        this.data.contractPartylst.splice(index, 1)
       }
     }
   }

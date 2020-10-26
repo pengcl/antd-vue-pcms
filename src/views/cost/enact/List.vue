@@ -69,169 +69,168 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
+    import { STable, Ellipsis } from '@/components'
+    import { getRoleList } from '@/api/manage'
 
-  import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import CreateForm from '@/views/list/modules/CreateForm'
-  import { ProjectService } from '@/views/project/project.service'
-  import { CostService } from '@/views/cost/cost.service'
-  import { formatList } from '../../../mock/util'
-  import { fixedList } from '@/utils/util'
+    import StepByStepModal from '@/views/list/modules/StepByStepModal'
+    import CreateForm from '@/views/list/modules/CreateForm'
+    import { ProjectService } from '@/views/project/project.service'
+    import { CostService } from '@/views/cost/cost.service'
+    import { formatList } from '../../../mock/util'
+    import { fixedList } from '@/utils/util'
 
-  const columns = [
+    const columns = [
 
-    {
-      title: '科目代码',
-      dataIndex: 'action',
-      width: '150px',
-      scopedSlots: { customRender: 'action' }
-    },
-    {
-      title: '科目名称',
-      dataIndex: 'name'
-    },
-    {
-      title: '业态成本中心A',
-      dataIndex: 'costA',
-      scopedSlots: { customRender: 'costA' }
-    },
-    {
-      title: '业态成本中心B',
-      dataIndex: 'costB',
-      scopedSlots: { customRender: 'costB' }
-    },
-    {
-      title: '业态成本中心C',
-      dataIndex: 'costC',
-      scopedSlots: { customRender: 'costC' }
-    }
-  ]
-
-  const statusMap = {
-    0: {
-      status: 'default',
-      text: '关闭'
-    },
-    1: {
-      status: 'processing',
-      text: '运行中'
-    },
-    2: {
-      status: 'success',
-      text: '已上线'
-    },
-    3: {
-      status: 'error',
-      text: '异常'
-    }
-  }
-
-  export default {
-    name: 'CostEnactList',
-    components: {
-      STable,
-      Ellipsis,
-      CreateForm,
-      StepByStepModal
-    },
-    data () {
-      this.columns = columns
-      return {
-        // create model
-        cities: [],
-        visible: false,
-        confirmLoading: false,
-        mdl: null,
-        // 高级搜索 展开/关闭
-        advanced: false,
-        // 查询参数
-        queryParam: {},
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          // console.log('loadData request parameters:', requestParameters)
-          const result = {
-            result: {
-              data: []
-            }
-          }
-          return CostService.items(requestParameters).then(res => {
-            const requestParameters2 = Object.assign({}, parameter, { id: this.queryParam.ProjectGUID })
-            return CostService.subjectItems(requestParameters2)
-              .then(res2 => {
-                res.result.data.forEach(item => {
-                  const obj = {
-                    id: item.id,
-                    code: item.code,
-                    name: item.nameCN,
-                    costA: '',
-                    costB: '',
-                    costC: ''
-                  }
-                  result.result.data.push(obj)
-                })
-                return fixedList(result, parameter)
-              })
-          })
+        {
+            title: '科目代码',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' }
         },
-        selectedRowKeys: [],
-        selectedRows: []
-      }
-    },
-    filters: {
-      statusFilter (type) {
-        return statusMap[type].text
-      },
-      statusTypeFilter (type) {
-        return statusMap[type].status
-      }
-    },
-    created () {
-      getRoleList({ t: new Date() })
+        {
+            title: '科目名称',
+            dataIndex: 'name'
+        },
+        {
+            title: '业态成本中心A',
+            dataIndex: 'costA',
+            scopedSlots: { customRender: 'costA' }
+        },
+        {
+            title: '业态成本中心B',
+            dataIndex: 'costB',
+            scopedSlots: { customRender: 'costB' }
+        },
+        {
+            title: '业态成本中心C',
+            dataIndex: 'costC',
+            scopedSlots: { customRender: 'costC' }
+        }
+    ]
 
-      ProjectService.tree().then(res => {
-        const cities = []
-        res.result.data.citys.forEach(item => {
-          const children = formatList(item.projects.items)
-          // console.log(children)
-          cities.push({
-            label: item.city.nameCN,
-            value: item.city.id,
-            children: children
-          })
-        })
-        this.cities = cities
-        this.$forceUpdate()
-      })
-    },
-    computed: {
-      rowSelection () {
-        return {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
+    const statusMap = {
+        0: {
+            status: 'default',
+            text: '关闭'
+        },
+        1: {
+            status: 'processing',
+            text: '运行中'
+        },
+        2: {
+            status: 'success',
+            text: '已上线'
+        },
+        3: {
+            status: 'error',
+            text: '异常'
         }
-      }
-    },
-    methods: {
-      handleToItem (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view` })
-      },
-      handleToEdit (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit` })
-      },
-      handleToAdd () {
-        this.$router.push({ path: `/cost/enact/item/0?type=add` })
-      },
-      onChange (value) {
-        if (value.length >= 2) {
-          this.queryParam.ProjectGUID = value[value.length - 1]
-          this.$refs.table.refresh(true)
-        } else {
-          this.queryParam.ProjectGUID = ''
-          this.$refs.table.refresh(true)
-        }
-      }
     }
-  }
+
+    export default {
+        name: 'CostEnactList',
+        components: {
+            STable,
+            Ellipsis,
+            CreateForm,
+            StepByStepModal
+        },
+        data () {
+            this.columns = columns
+            return {
+                // create model
+                cities: [],
+                visible: false,
+                confirmLoading: false,
+                mdl: null,
+                // 高级搜索 展开/关闭
+                advanced: false,
+                // 查询参数
+                queryParam: {},
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    // console.log('loadData request parameters:', requestParameters)
+                    const result = []
+                    return CostService.items(requestParameters).then(res => {
+                          CostService.subjectItems(this.queryParam.ProjectGUID)
+                            .then(res2 => {
+                              res.result.data.forEach(item => {
+                                  const obj = {
+                                    id: item.id,
+                                    code: item.code,
+                                    name: item.nameCN,
+                                    costA: '',
+                                    costB: '',
+                                    costC: ''
+                                  }
+                                  result.push(obj)
+                              })
+
+                              // result = fixedList(result, requestParameters);
+                              console.log(result)
+                              return result
+                            })
+                        //
+                    })
+                },
+                selectedRowKeys: [],
+                selectedRows: []
+            }
+        },
+        filters: {
+            statusFilter (type) {
+                return statusMap[type].text
+            },
+            statusTypeFilter (type) {
+                return statusMap[type].status
+            }
+        },
+        created () {
+            getRoleList({ t: new Date() })
+
+            ProjectService.tree().then(res => {
+                const cities = []
+                res.result.data.citys.forEach(item => {
+                    const children = formatList(item.projects.items)
+                    // console.log(children)
+                    cities.push({
+                        label: item.city.nameCN,
+                        value: item.city.id,
+                        children: children
+                    })
+                })
+                this.cities = cities
+                this.$forceUpdate()
+            })
+        },
+        computed: {
+            rowSelection () {
+                return {
+                    selectedRowKeys: this.selectedRowKeys,
+                    onChange: this.onSelectChange
+                }
+            }
+        },
+        methods: {
+            handleToItem (record) {
+                this.$router.push({ path: `/cost/enact/item/${record.id}?type=view` })
+            },
+            handleToEdit (record) {
+                this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: `/cost/enact/item/0?type=add` })
+            },
+            onChange (value) {
+                if (value.length >= 2) {
+                    this.queryParam.ProjectGUID = value[value.length - 1]
+                    this.$refs.table.refresh(true)
+                } else {
+                    this.queryParam.ProjectGUID = ''
+                    this.$refs.table.refresh(true)
+                }
+            }
+        }
+    }
 </script>
