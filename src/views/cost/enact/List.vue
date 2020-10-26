@@ -4,7 +4,7 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
+            <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-cascader
                   :options="cities"
@@ -44,6 +44,7 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
+            {{record.code}}
             <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
             </a-button>
             <!--<a-button
@@ -79,6 +80,7 @@
     import { fixedList } from '@/utils/util'
 
     const columns = [
+
         {
             title: '科目代码',
             dataIndex: 'action',
@@ -87,22 +89,22 @@
         },
         {
             title: '科目名称',
-            dataIndex: 'no'
+            dataIndex: 'name'
         },
         {
             title: '业态成本中心A',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
+            dataIndex: 'costA',
+            scopedSlots: { customRender: 'costA' }
         },
         {
             title: '业态成本中心B',
-            dataIndex: 'callNo',
-            scopedSlots: { customRender: 'callNo' }
+            dataIndex: 'costB',
+            scopedSlots: { customRender: 'costB' }
         },
         {
             title: '业态成本中心C',
-            dataIndex: 'city',
-            scopedSlots: { customRender: 'city' }
+            dataIndex: 'costC',
+            scopedSlots: { customRender: 'costC' }
         }
     ]
 
@@ -148,12 +150,29 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return CostService.items(requestParameters)
-                        .then(res => {
-                        console.log(res)
-                            return fixedList(res, requestParameters)
-                        })
+                    // console.log('loadData request parameters:', requestParameters)
+                    const result = []
+                    return CostService.items(requestParameters).then(res => {
+                          CostService.subjectItems(this.queryParam.ProjectGUID)
+                            .then(res2 => {
+                              res.result.data.forEach(item=> {
+                                  const obj = {
+                                    id: item.id,
+                                    code: item.code,
+                                    name: item.nameCN,
+                                    costA: '',
+                                    costB: '',
+                                    costC: ''
+                                  }
+                                  result.push(obj);
+                              })
+
+                              // result = fixedList(result, requestParameters);
+                              console.log(result);
+                              return result
+                            })
+                        //
+                    })
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -174,7 +193,7 @@
                 const cities = []
                 res.result.data.citys.forEach(item => {
                     const children = formatList(item.projects.items)
-                    console.log(children)
+                    // console.log(children)
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,

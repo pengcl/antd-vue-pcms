@@ -25,6 +25,14 @@ CostService.items = function (parameter) {
   })
 }
 
+CostService.subjectItems = function (Id) {
+  return request({
+    url: API.subjectItems,
+    method: 'get',
+    params: { Id }
+  })
+}
+
 CostService.item = function (contractGuid) {
   return request({
     url: API.item,
