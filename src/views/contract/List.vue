@@ -151,15 +151,6 @@
             dataIndex: 'creatorUser',
             scopedSlots: { customRender: 'creatorUser' }
         },
-        {
-            title: '最后更新日期',
-            dataIndex: 'updatedAt'
-        },
-        {
-            title: '最后更新者',
-            dataIndex: 'updater',
-            scopedSlots: { customRender: 'updater' }
-        }
     ]
 
     export default {

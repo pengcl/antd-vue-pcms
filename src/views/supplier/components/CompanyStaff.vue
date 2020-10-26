@@ -87,8 +87,8 @@ export default {
   data () {
     return {
       visible: false,
-      model: null,
-      form: null
+          model: null,
+          form: null
     }
   },
   methods: {

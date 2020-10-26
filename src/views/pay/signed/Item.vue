@@ -3,10 +3,10 @@
     <a-card :bordered="false">
       <a-tabs default-active-key="1">
         <a-tab-pane key="1" tab="基本资料">
-          <base-info :data="form" :type="type" :id="id"></base-info>
+          <base-info :type="type" :id="id"></base-info>
         </a-tab-pane>
         <a-tab-pane key="2" tab="进度款支付明细表">
-          <pay-detail :data="form" :type="type" :id="id"></pay-detail>
+          <pay-detail :type="type" :id="id"></pay-detail>
         </a-tab-pane>
       </a-tabs>
 
@@ -43,6 +43,9 @@
         computed: {
             id () {
                 return this.$route.params.id
+            },
+            type () {
+                return this.$route.query.type
             }
         }
 

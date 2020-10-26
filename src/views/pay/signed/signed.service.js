@@ -5,7 +5,10 @@ const API = {
   contractAmt: '/api/services/app/Payment/GetPaymentContractAmt',
   paymentList: '/api/services/app/Payment/GetPaymentPage',
   getCreateData: '/api/services/app/Payment/GetPaymentCreatePageData',
-  types: '/api/services/app/GeneralType/GetContractCategoryTypes',
+  paymentTypes: '/api/services/app/Payment/GetPaymentBusinessTypeList',
+  moneyTypes: '/api/services/app/Payment/GetPaymenTypeList',
+  certificateTypes: '/api/services/app/Payment/GetExpenseAccountTypeList',
+  vendorTypes: '/api/services/app/Payment/GetPaymentContractVendor',
   masters: '/api/services/app/Contract/GetMasterContractInfo',
   create: '/api/services/app/Contract/CreateContractAllInfo',
   update: '/api/services/app/Contract/UpdateContractAllInfo'
@@ -47,6 +50,38 @@ SignedService.paymentList = function (contractGid) {
 SignedService.getCreateData = function (contractGid) {
   return request({
     url: API.getCreateData,
+    method: 'get',
+    params: { contractGid }
+  })
+}
+
+SignedService.paymentTypes = function () {
+  return request({
+    url: API.paymentTypes,
+    method: 'get',
+    params: {}
+  })
+}
+
+SignedService.moneyTypes = function () {
+  return request({
+    url: API.moneyTypes,
+    method: 'get',
+    params: {}
+  })
+}
+
+SignedService.certificateTypes = function () {
+  return request({
+    url: API.certificateTypes,
+    method: 'get',
+    params: {}
+  })
+}
+
+SignedService.vendorTypes = function (contractGid) {
+  return request({
+    url: API.vendorTypes,
     method: 'get',
     params: { contractGid }
   })

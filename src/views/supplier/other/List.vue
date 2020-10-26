@@ -275,8 +275,7 @@
 
 .label {
   padding: 8px 15px;
-  background-color: #28d094;
-  color: #fff;
+  background-color: #f8cbad;
   line-height: 20px;
   border-radius: 5px;
 }

@@ -69,11 +69,11 @@
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="累计批准金额">{{contractAmt.paymentRequestAmountTotal}} 占
-                  {{contractAmt.paymentRequestAmountTotalRatio ? contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}
+                  {{contractAmt.paymentRequestAmountTotalRatio || contractAmt.paymentRequestAmountTotalRatio === 0 ? contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="累计付款金额">{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio ?
+                <a-form-item label="累计付款金额">{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio || contractAmt.paymentAmountTotalRatio === 0  ?
                   contractAmt.paymentAmountTotalRatio + '%' : ''}}
                 </a-form-item>
               </a-col>
