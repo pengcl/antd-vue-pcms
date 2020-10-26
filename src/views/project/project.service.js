@@ -4,6 +4,8 @@ const API = {
   list: '/api/services/app/Project/GetCityProjectTree', // 项目列表
   tree: '/api/services/app/Project/GetUserProjectTree',
   item: '/api/services/app/Project/GetProjectEditById', // 项目详情forEdit
+  view: '/api/services/app/Project/GetProjectByGUID',
+  view2: '/api/services/app/Project/GetProjectByCode',
   types: '/api/services/app/GeneralType/GetProjectStatusGeneralTypes', // 项目状态合集
   create: '/api/services/app/Project/CreateProject', // 创建
   update: '/api/services/app/Project/UpdateProject', // 更新
@@ -35,6 +37,22 @@ ProjectService.tree = function list () {
 ProjectService.item = function list (Id) {
   return request({
     url: API.item,
+    method: 'GET',
+    params: { Id }
+  })
+}
+
+ProjectService.view = function list (Id) {
+  return request({
+    url: API.view,
+    method: 'GET',
+    params: { Id }
+  })
+}
+
+ProjectService.view2 = function list (Id) {
+  return request({
+    url: API.view2,
     method: 'GET',
     params: { Id }
   })

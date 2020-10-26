@@ -103,129 +103,131 @@
 </template>
 
 <script>
-    import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
+  import { STable, Ellipsis } from '@/components'
+  import { getRoleList } from '@/api/manage'
 
-    import { ContractService } from '@/views/contract/contract.service'
-    import { fixedList } from '@/utils/util'
-    import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../mock/util'
+  import { ContractService } from '@/views/contract/contract.service'
+  import { fixedList } from '@/utils/util'
+  import { ProjectService } from '@/views/project/project.service'
+  import { formatList } from '../../mock/util'
 
-    const columns = [
-        {
-            title: '操作',
-            dataIndex: 'action',
-            width: '150px',
-            scopedSlots: { customRender: 'action' }
-        },
-        {
-            title: '合同编号',
-            dataIndex: 'contractNo'
-        },
-        {
-            title: '合同名称',
-            dataIndex: 'contractName',
-            scopedSlots: { customRender: 'contractName' }
-        },
-        {
-            title: '合同金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
-        },
-        {
-            title: '签约日期',
-            dataIndex: 'signDate',
-            scopedSlots: { customRender: 'signDate' }
-        },
-        {
-            title: '审批状态',
-            dataIndex: 'auditStatus',
-            scopedSlots: { customRender: 'auditStatus' }
-        },
-        {
-            title: '建立日期',
-            dataIndex: 'creationTime'
-        },
-        {
-            title: '建立者',
-            dataIndex: 'creatorUser',
-            scopedSlots: { customRender: 'creatorUser' }
-        },
-        {
-            title: '最后更新日期',
-            dataIndex: 'updatedAt'
-        },
-        {
-            title: '最后更新者',
-            dataIndex: 'updater',
-            scopedSlots: { customRender: 'updater' }
-        }
-    ]
-
-    export default {
-        name: 'ContractList',
-        components: {
-            STable,
-            Ellipsis
-        },
-        data () {
-            this.columns = columns
-            return {
-                // create model
-                cities: [],
-                show: false,
-                // 查询参数
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return ContractService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
-                }
-            }
-        },
-        created () {
-            getRoleList({ t: new Date() })
-            ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items)
-                    cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
-                })
-                this.cities = cities
-                this.$forceUpdate()
-            })
-        },
-        methods: {
-            handleToItem (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
-            },
-            handleToEdit (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
-            },
-            handleToAdd () {
-                this.$router.push({ path: `/contract/item/0?type=create` })
-            },
-            search () {
-                this.show = !this.show
-                this.$refs.table.refresh(true)
-            },
-            onChange (value) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
-            }
-        }
+  const columns = [
+    {
+      title: '操作',
+      dataIndex: 'action',
+      width: '150px',
+      scopedSlots: { customRender: 'action' }
+    },
+    {
+      title: '合同编号',
+      dataIndex: 'contractNo'
+    },
+    {
+      title: '合同名称',
+      dataIndex: 'contractName',
+      scopedSlots: { customRender: 'contractName' }
+    },
+    {
+      title: '合同金额',
+      dataIndex: 'contractAmount',
+      scopedSlots: { customRender: 'contractAmount' }
+    },
+    {
+      title: '签约日期',
+      dataIndex: 'signDate',
+      scopedSlots: { customRender: 'signDate' }
+    },
+    {
+      title: '审批状态',
+      dataIndex: 'auditStatus',
+      scopedSlots: { customRender: 'auditStatus' }
+    },
+    {
+      title: '建立日期',
+      dataIndex: 'creationTime'
+    },
+    {
+      title: '建立者',
+      dataIndex: 'creatorUser',
+      scopedSlots: { customRender: 'creatorUser' }
+    },
+    {
+      title: '最后更新日期',
+      dataIndex: 'updatedAt'
+    },
+    {
+      title: '最后更新者',
+      dataIndex: 'updater',
+      scopedSlots: { customRender: 'updater' }
     }
+  ]
+
+  export default {
+    name: 'ContractList',
+    components: {
+      STable,
+      Ellipsis
+    },
+    data () {
+      this.columns = columns
+      return {
+        // create model
+        cities: [],
+        city: '',
+        show: false,
+        // 查询参数
+        queryParam: {},
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          return ContractService.items(requestParameters).then(res => {
+            return fixedList(res, requestParameters)
+          })
+        }
+      }
+    },
+    created () {
+      getRoleList({ t: new Date() })
+      ProjectService.tree().then(res => {
+        const cities = []
+        res.result.data.citys.forEach(item => {
+          const children = formatList(item.projects.items)
+          cities.push({
+            label: item.city.nameCN,
+            value: item.city.id,
+            children: children
+          })
+        })
+        this.cities = cities
+        this.$forceUpdate()
+      })
+    },
+    methods: {
+      handleToItem (record) {
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+      },
+      handleToEdit (record) {
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=update` })
+      },
+      handleToAdd () {
+        this.$router.push({ path: `/contract/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
+      },
+      search () {
+        this.show = !this.show
+        this.$refs.table.refresh(true)
+      },
+      onChange (value) {
+        if (value.length >= 2) {
+          this.queryParam.ProjectGUID = value[value.length - 1]
+          this.$refs.table.refresh(true)
+        } else {
+          this.city = value
+          this.$refs.table.refresh(true)
+        }
+        this.$forceUpdate()
+      }
+    }
+  }
 </script>
 
 <style lang="less" scoped>
