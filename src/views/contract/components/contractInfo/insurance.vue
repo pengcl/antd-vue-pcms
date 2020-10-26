@@ -28,7 +28,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr for>
             <td>
               <a-button :disabled="type === 'view'" icon="close">
                 删除
