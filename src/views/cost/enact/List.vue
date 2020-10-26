@@ -151,11 +151,17 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     // console.log('loadData request parameters:', requestParameters)
-                    const result = []
+                    const result = {
+                        result:{
+                          data:{
+                            items:[]
+                          }
+                        }
+                    }
                     return CostService.items(requestParameters).then(res => {
-                          CostService.subjectItems(this.queryParam.ProjectGUID)
-                            .then(res2 => {
-                              res.result.data.forEach(item=> {
+                            CostService.subjectItems(this.queryParam.ProjectGUID)
+                              .then(res2 => {
+                                res.result.data.forEach(item=> {
                                   const obj = {
                                     id: item.id,
                                     code: item.code,
@@ -164,15 +170,11 @@
                                     costB: '',
                                     costC: ''
                                   }
-                                  result.push(obj);
+                                  result.result.data.items.push(obj);
+                                })
                               })
-
-                              // result = fixedList(result, requestParameters);
-                              console.log(result);
-                              return result
-                            })
-                        //
-                    })
+                          return fixedList(result, requestParameters)
+                        })
                 },
                 selectedRowKeys: [],
                 selectedRows: []

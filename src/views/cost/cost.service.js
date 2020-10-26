@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 const API = {
   items: '/api/services/app/Element/GetMainElementList',
-  subjectItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanSubListToEdit'
+  subjectItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanSubListToEditByGUID'
   // item: '/api/services/app/Contract/GetAllContractInfo',
   // create: '/api/services/app/Contract/CreateContractAllInfo',
   // update: '/api/services/app/Contract/UpdateContractAllInfo'6
@@ -25,11 +25,11 @@ CostService.items = function (parameter) {
   })
 }
 
-CostService.subjectItems = function (Id) {
+CostService.subjectItems = function (id) {
   return request({
     url: API.subjectItems,
     method: 'get',
-    params: { Id }
+    params: { id }
   })
 }
 
