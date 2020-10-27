@@ -107,6 +107,7 @@
 <script>
 import { compare } from '@/utils/util'
 import { SwaggerService } from '@/api/swagger.service'
+import { ContractService } from '@/views/contract/contract.service'
 
 function getNo (str, key, items) {
   if (items.length === 0) {
@@ -131,6 +132,12 @@ export default {
       loading: false
     }
   },
+  created () {
+    console.log(this.project)
+    ContractService.centers(this.id).then(res => {
+      console.log(res)
+    })
+  },
   filters: {
     filterDeleted (items) {
       return items.filter(item => !item.isDeleted)
@@ -148,6 +155,10 @@ export default {
     id: {
       type: String,
       default: '0'
+    },
+    project: {
+      type: Object,
+      default: null
     }
   },
   methods: {
@@ -155,8 +166,8 @@ export default {
       const newSrNo = getNo(stringNo, 'srNo', this.data.contractBQlst)
       const data = SwaggerService.getForm('ContractBQInputDto')
       data.contractID = this.data.contract.id
-      data.srNo = newSrNo;
-      this.data.contractBQlst.push(data);
+      data.srNo = newSrNo
+      this.data.contractBQlst.push(data)
       console.log(data)
       console.log(newSrNo)
     },

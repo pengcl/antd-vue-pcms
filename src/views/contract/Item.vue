@@ -59,7 +59,7 @@
         <a-tab-pane key="3" tab="预算调整">
           <budget-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
-        <a-tab-pane key="4" tab="合同量清单">
+        <a-tab-pane :project="project" key="4" tab="合同量清单">
           <contract-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="5" tab="付款条款">
