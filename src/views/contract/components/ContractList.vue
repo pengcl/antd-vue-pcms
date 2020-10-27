@@ -26,8 +26,8 @@
               <th rowspan="2">
                 带数项目
               </th>
-              <th style="width: 5%" rowspan="2">清单编号</th>
-              <th style="width: 5%" rowspan="2">标段</th>
+              <th style="width: 60px" rowspan="2">清单编号</th>
+              <th style="width: 60px" rowspan="2">标段</th>
               <th style="width: 5%" rowspan="2">楼栋</th>
               <th style="width: 5%" rowspan="2">分部</th>
               <th style="width: 5%" rowspan="2">分项</th>
@@ -73,14 +73,14 @@
                   @click="item.isCarryData = !item.isCarryData"
                   :type="item.isCarryData ? 'check-square' : 'border'"/>
               </td>
-              <td>{{ item.srNo }}</td>
-              <td>{{ item.section }}</td>
-              <td>{{ item.building }}</td>
+              <td><a-input :disabled="true" :value="item.srNo"></a-input></td>
+              <td><a-input v-model="item.section"></a-input></td>
+              <td><a-input v-model="item.building"></a-input></td>
               <td></td>
               <td></td>
-              <td>{{ item.remark1 }}</td>
-              <td>{{ item.remark2 }}</td>
-              <td>{{ item.description }}</td>
+              <td><a-input v-model="item.remark1"></a-input></td>
+              <td><a-input v-model="item.remark2"></a-input></td>
+              <td><a-input v-model="item.description"></a-input></td>
               <td><!--{{ item.costCenter }}-->
                 <a-select :default-value="item | getValue(index)" style="width: 200px" mode="multiple" @change="centerChange">
                   <a-select-option :value="index + ':' + center.id + ':' + center.costCenterName" :itemIndex="index" v-for="center in selection.centers" :key="JSON.stringify(center)">
@@ -151,10 +151,13 @@
         return items.filter(item => !item.isDeleted)
       },
       getValue (item, index) {
+        console.log(item)
         const values = []
+        const ids = item.costCenter.split(':')
         const names = item.costCenterName.split(':')
-        names.forEach((name) => {
-          values.push(name)
+        ids.forEach((id, idsIndex) => {
+          const value = index + ':' + id + ':' + names[idsIndex]
+          values.push(value)
         })
         console.log(values)
         return values
