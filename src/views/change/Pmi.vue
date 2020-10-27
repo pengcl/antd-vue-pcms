@@ -49,26 +49,26 @@
           合同列表
         </a-col>
       </a-row>
-      <a-table :columns="columns" :data-source="data" bordered>
+      <s-table :columns="columns" :data="loadData" bordered :rowSelection="rowSelection">
         <template slot="footer" slot-scope="currentPageData">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
-                <a-form-item label="累计变更金额"></a-form-item>
+                <a-form-item label="累计变更金额">{{totalChangeAmt}}</a-form-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item label="变更比例"></a-form-item>
+                <a-form-item label="变更比例">{{totalChangeRate}}</a-form-item>
               </a-col>
             </a-row>
           </a-form>
 
         </template>
-      </a-table>
+      </s-table>
 
         <a-row :gutter="48" style="margin-top: 10px">
           <a-col :md="24" :sm="24" style="margin-bottom: 10px">
             <a-button type="success" @click="handleToAdd">新增CIP</a-button>
-            <a-button type="success" style="margin-left: 20px" @click="handleToAdd">CIP转VO</a-button>
+            <a-button type="success" style="margin-left: 20px">CIP转VO</a-button>
             <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -82,9 +82,10 @@
         rowKey="key"
         bordered
         :columns="_columns"
-        :data="loadData"
+        :data="loadData2"
         :alert="false"
         showPagination="auto"
+        :rowSelection="rowSelection2"
       >
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
@@ -107,16 +108,6 @@
         </span>
       </s-table>
 
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
-
     </a-card>
   </page-header-wrapper>
 </template>
@@ -128,27 +119,29 @@
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
+    import { ChangeService } from '@/views/change/change.service'
     import { ProjectService } from '@/views/project/project.service'
+    import { fixedList } from '@/utils/util'
     import { formatList } from '../../mock/util'
 
     const columns = [
         {
             title: '审批状态',
-            dataIndex: 'approvalStatus',
-            scopedSlots: { customRender: 'approvalStatus' }
+            dataIndex: 'auditStatus',
+            scopedSlots: { customRender: 'auditStatus' }
         },
         {
             title: '结算状态',
-            dataIndex: 'payStatus',
+            dataIndex: 'settlementStatus',
         },
         {
             title: '合同编号',
-            dataIndex: 'no'
+            dataIndex: 'contractNo'
         },
         {
             title: '合同名称',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
+            dataIndex: 'contractName'
+           
         },
         {
             title: '币种',
@@ -156,16 +149,15 @@
         },
         {
             title: '合同金额',
-            dataIndex: 'callNo',
-            scopedSlots: { customRender: 'callNo' }
+            dataIndex: 'contractAmount'
         },
         {
             title: '预计结算金额',
-            dataIndex: 'forecastAmount',
+            dataIndex: 'preSettleAmount',
         },
         {
             title: '签约日期',
-            dataIndex: 'createAt',
+            dataIndex: 'signDate',
         }
     ]
 
@@ -178,35 +170,35 @@
         },
         {
             title: '审核状态',
-            dataIndex: 'approvalStatus',
-            scopedSlots: { customRender: 'approvalStatus' }
+            dataIndex: 'auditStatus',
+            scopedSlots: { customRender: 'auditStatus' }
         },
         {
             title: '变更编号',
-            dataIndex: 'no'
+            dataIndex: 'voNo'
         },
         {
             title: '申请金额',
-            dataIndex: 'callNo',
-            scopedSlots: { customRender: 'callNo' }
+            dataIndex: 'cipAmount',
+            scopedSlots: { customRender: 'cipAmount' }
         },
         {
             title: '申报日期',
-            dataIndex: 'createAt',
+            dataIndex: 'createTime',
         },
         {
             title: '变更类型',
-            dataIndex: 'approvalStatus',
-            scopedSlots: { customRender: 'approvalStatus' }
+            dataIndex: 'voType',
+            scopedSlots: { customRender: 'voType' }
         },
         {
             title: '变更确认',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
+            dataIndex: 'voStatus',
+            scopedSlots: { customRender: 'voStatus' }
         },
-        {
+        { 
             title: '相关现场签证',
-            dataIndex: 'present'
+            dataIndex: 'signID'
         }
     ]
 
@@ -240,6 +232,7 @@
         data () {
             this.columns = columns
             this._columns = _columns
+           
             return {
                 // create model
                 cities:[],
@@ -251,17 +244,28 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
+                queryParam2 : {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return getServiceList(requestParameters)
+                    return ChangeService.items(requestParameters)
                         .then(res => {
-                            return res.result
+                            return fixedList(res,requestParameters);
+                        })
+                },
+                // 加载数据方法 必须为 Promise 对象
+                loadData2: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam2)
+                    return ChangeService.changeItems(requestParameters)
+                        .then(res => {
+                            return fixedList(res,requestParameters);
                         })
                 },
                 selectedRowKeys: [],
-                selectedRows: []
+                selectedRows: [],
+                totalChangeAmt : 0,
+                totalChangeRate : 0,
+                tableSelected : {}
             }
         },
         filters: {
@@ -291,32 +295,51 @@
         },
         computed: {
             rowSelection () {
+        			const that = this
                 return {
                     selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
+                    onChange: this.onSelectChange,
+                    type : 'radio',
+                    onSelect : function(record,selected,selectRows,nativeEvent){
+                    		that.queryParam2.contractGuid = record.contractGuid
+                    		that.totalChangeAmt = record.sumVOAmount
+                    		that.totalChangeRate = record.voRate
+                    		that.$refs.table.refresh()
+                    		that.tableSelected = {}
+                    }
+                }
+            },
+            rowSelection2 () {
+        			const that = this
+                return {
+                    type : 'radio',
+                    onSelect : function(record,selected,selectRows,nativeEvent){
+                    		that.tableSelected = record;
+                    }
                 }
             }
         },
         methods: {
             handleToItem (record) {
-                this.$router.push({ path: `/change/cip/item/${record.id}?type=view` })
+                this.$router.push({ path: `/change/cip/item/${record.cipGuid}?type=view&contractGuid=${this.queryParam2.contractGuid}` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/change/cip/item/${record.id}?type=edit` })
+                this.$router.push({ path: `/change/cip/item/${record.cipGuid}?type=edit&contractGuid=${this.queryParam2.contractGuid}` })
             },
             handleToAdd () {
-                this.$router.push({ path: '/change/cip/edit' })
+                this.$router.push({ path: `/change/cip/item/0?type=add&contractGuid=${this.queryParam2.contractGuid}` })
             },
             handleToCertificate () {
-                this.$router.push({ path: '/change/certificate' })
+            		if(this.tableSelected.voGuid != undefined){
+            			console.log('url',`/change/certificate/${this.tableSelected.cipGuid}`);
+                		this.$router.push({ path: `/change/certificate/${this.tableSelected.cipGuid}` })
+                }else{
+                		this.$message.warn('请选择变更记录');
+                }
             },
             handleAdd () {
                 this.mdl = null
                 this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
             },
             handleOk () {
                 const form = this.$refs.createModal.form
