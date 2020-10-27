@@ -156,7 +156,7 @@
             <thead>
             <tr>
               <th colspan="7">
-                <a-button icon="plus" @click="showForm">
+                <a-button icon="plus" @click="showForm(items)">
                   新增
                 </a-button>
                 <a-button>
@@ -282,108 +282,116 @@
           </table>
         </a-col>
         <a-col :md="24" :sm="24" style="font-size: 16px;font-weight: bold;text-indent: 1em">专业分包合同</a-col>
-        <a-col :md="24" :sm="24">
-          <table>
-            <tbody>
-            <tr>
-              <td rowspan="4" style="text-align: center">专业分包合同</td>
-              <td>合同金额</td>
-              <td>
-                <a-input></a-input>
-              </td>
-              <td>预计结算金额</td>
-              <td>
-                <a-input></a-input>
-              </td>
-              <td>累计支付金额</td>
-              <td>
-                <a-input></a-input>
-              </td>
-            </tr>
-            <tr>
-              <td>承包单位送单时间</td>
-              <td>
-                <a-input></a-input>
-              </td>
-              <td>单位承包上报金额</td>
-              <td>
-                <a-input></a-input>
-              </td>
-              <td>现场确认时间</td>
-              <td>
-                <a-input></a-input>
-              </td>
-            </tr>
-            <tr>
-              <td>顾问公司出估值时间</td>
-              <td>
-                <a-input></a-input>
-              </td>
-              <td>申请批准日期</td>
-              <td>
-                <a-input></a-input>
-              </td>
-              <td>申请批准金额</td>
-              <td>
-                <a-input></a-input>
-              </td>
-            </tr>
-            <tr>
-              <td>付款类型</td>
-              <td colspan="5">
-                <a-select
-                  placeholder="请选择"
-                  v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                  <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
-                </a-select>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </a-col>
-        <a-col :md="24" :sm="24">
-          <table>
-            <thead>
-            <tr>
-              <th colspan="6">
-                <a-button icon="plus">
-                  新增
-                </a-button>
-                <a-button icon="save">
-                  保存
-                </a-button>
-                <a-button icon="delete">
-                  删除
-                </a-button>
-                <a-button>
-                  附件上传
-                </a-button>
-                <a-button>
-                  发票管理
-                </a-button>
-              </th>
-            </tr>
-            <tr>
-              <th style="width: 10%">款项类型</th>
-              <th style="width: 10%">款项用途</th>
-              <th style="width: 20%">本期支付金额</th>
-              <th style="width: 20%">收款单位</th>
-              <th style="width: 20%">开户银行</th>
-              <th style="width: 20%">账号</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            </tbody>
-          </table>
-        </a-col>
+        <div v-for="item in baseInfo.contractNSCInfolst" :key="item.contractGID">
+          <a-col :md="24" :sm="24">
+            <table>
+              <tbody>
+              <tr>
+                <td rowspan="5" style="text-align: center">专业分包合同</td>
+                <td>合同编号</td>
+                <td>
+                  <a-input :disabled="true" :value="item.contractNo"></a-input>
+                </td>
+                <td>合同名称</td>
+                <td colspan="3">
+                  <a-input :disabled="true" :value="item.contractName"></a-input>
+                </td>
+              </tr>
+              <tr>
+                <td>合同金额</td>
+                <td>
+                  <a-input :disabled="true" :value="item.contractAmount"></a-input>
+                 </td>
+                <td>预计结算金额</td>
+                <td>
+                  <a-input :disabled="true" :value="item.contractEstimateAmount"></a-input>
+                </td>
+                <td>累计支付金额</td>
+                <td>
+                  <a-input :disabled="true" :value="item.paymentAmountTotal + '/' + item.paymentAmountTotalRatio + '%'"></a-input>
+                </td>
+              </tr>
+              <tr>
+                <td>承包单位送单时间</td>
+                <td>
+                  <a-input></a-input>
+                </td>
+                <td>单位承包上报金额</td>
+                <td>
+                  <a-input></a-input>
+                </td>
+                <td>现场确认时间</td>
+                <td>
+                  <a-input></a-input>
+                </td>
+              </tr>
+              <tr>
+                <td>顾问公司出估值时间</td>
+                <td>
+                  <a-input></a-input>
+                </td>
+                <td>申请批准日期</td>
+                <td>
+                  <a-input></a-input>
+                </td>
+                <td>申请批准金额</td>
+                <td>
+                  <a-input></a-input>
+                </td>
+              </tr>
+              <tr>
+                <td>付款类型</td>
+                <td colspan="5">
+                  <a-select
+                    placeholder="请选择"
+                    v-decorator="['paymentTypes', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                    <a-select-option v-for="type in paymentTypes" :value="type"
+                                     :key="type">{{type}}
+                    </a-select-option>
+                  </a-select>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <table>
+              <thead>
+              <tr>
+                <th colspan="6">
+                  <a-button icon="plus">
+                    新增
+                  </a-button>
+                  <a-button>
+                    附件上传
+                  </a-button>
+                  <a-button>
+                    发票管理
+                  </a-button>
+                </th>
+              </tr>
+              <tr>
+                <th style="width: 10%">款项类型</th>
+                <th style="width: 10%">款项用途</th>
+                <th style="width: 20%">本期支付金额</th>
+                <th style="width: 20%">收款单位</th>
+                <th style="width: 20%">开户银行</th>
+                <th style="width: 20%">账号</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              </tbody>
+            </table>
+          </a-col>
+        </div>
       </a-row>
     </a-form>
     <create-bank-form
@@ -472,8 +480,10 @@
                 })
                 return bankName
             },
-            showForm () {
-                this.model = {}
+            showForm (items) {
+                const obj = {}
+                items.push(obj)
+                this.model = items[items.length - 1]
                 this.visible = true
             },
             ok () {
@@ -518,11 +528,12 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;
