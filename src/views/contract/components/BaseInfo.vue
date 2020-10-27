@@ -216,7 +216,7 @@
             <tr v-if="!item.isDeleted" v-for="item in filterParties(19)" :key="item.id">
               <td>
                 <a-button
-                  @click="del(item.partyID)"
+                  @click="del(item.partyID || item._id)"
                   :disabled="type === 'view'"
                   icon="close">
                   删除
@@ -263,7 +263,7 @@
             <tr v-if="!item.isDeleted" v-for="(item,index) in filterParties(20)" :key="index">
               <td>
                 <a-button
-                  @click="del(item.partyID)"
+                  @click="del(item.partyID || item._id)"
                   :disabled="type === 'view'"
                   icon="close">
                   删除
@@ -424,6 +424,7 @@
       },
       addParty (partyType) {
         const party = {
+          _id: new Date().getTime(),
           contractID: this.id,
           id: 0,
           partyID: 0,
@@ -443,10 +444,12 @@
       },
       del (id) {
         this.data.contractPartylst.forEach((item, i) => {
-          if (item.partyID === id) {
+          const _id = item.partyID || item._id
+          if (_id === id) {
             console.log(item)
             item.isDeleted = true
           }
+          this.$forceUpdate()
         })
       }
     }

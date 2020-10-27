@@ -1,1 +1,1 @@
-import moment from 'moment'
+console.log(Date.parse(new Date()))
