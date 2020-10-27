@@ -25,23 +25,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.contractPaymentTermslst" :key="index">
+          <tr v-for="(item, index) in data.contractFluctuationClauselst" :key="index">
             <td>
               <a-button :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input v-model="item.fluctuationName"></a-input>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input v-model="item.adjustableRangeTerm"></a-input>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number v-model="item.adjustableRange"></a-input-number>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number v-model="item.adjustmentInterval"></a-input-number>
             </td>
           </tr>
         </tbody>

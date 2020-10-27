@@ -26,27 +26,27 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.contractFluctuationClauselst" :key="index">
+          <tr v-for="(item, index) in data.contractMaterialQualityGuaranteelst" :key="index">
             <td>
               <a-button :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input v-model="item.fluctuationName"></a-input>
+              <a-input v-model="item.materialName"></a-input>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input v-model="item.materialQualityWarrantyTerms"></a-input>
             <!-- todo: 提交质量保证书日期条款 -->
             </td>
             <td>
-              <a-date-picker :format="dateFormat"></a-date-picker>
+              <a-date-picker v-model="item.materialQualityGuaranteeSubmisisonDate"></a-date-picker>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input v-model="item.materialQualityWarrantyExpirationTerms"></a-input>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number v-model="item.materialQualityGuaranteeExpirationDay"></a-input-number>
             </td>
           </tr>
         </tbody>
