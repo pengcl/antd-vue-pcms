@@ -360,6 +360,7 @@
           }
           this.data.contractPartylst.push(party)
         }
+        this.$forceUpdate()
       })
     },
     props: {

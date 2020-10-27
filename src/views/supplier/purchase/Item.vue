@@ -49,8 +49,11 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="公司所在地">
-              <a-cascader :options="selection.cities" :default-value="[form.vendor.province, form.vendor.city]"
-                          placeholder="请选择公司所在地" @change="cityChange"/>
+              <a-cascader
+                :options="selection.cities"
+                :default-value="[form.vendor.province, form.vendor.city]"
+                placeholder="请选择公司所在地"
+                @change="cityChange"/>
             </a-form-item>
           </a-col>
           <!--<a-col :md="12" :sm="24">
@@ -125,6 +128,15 @@
           <attachment-info></attachment-info>
         </a-tab-pane>
       </a-tabs>
+      <a-modal
+        v-if="dialog"
+        :title="dialog.title"
+        :visible="dialog.visible"
+        @ok="dialog.confirm"
+        @cancel="dialog.cancel"
+      >
+        <p>{{ dialog.content }}</p>
+      </a-modal>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group>
@@ -166,89 +178,108 @@
     import { formatTree } from '@/utils/util'
     import { TreeSelect } from 'ant-design-vue'
     import { City as CitySvc, formatCities } from '@/api/city'
+    import { DIALOGCONFIG } from '@/api/base'
 
-    const SHOW_PARENT = TreeSelect.SHOW_PARENT
-    export default {
-        name: 'SupplierPurchaseItem',
-        components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
-        data () {
-            return {
-                SHOW_PARENT,
-                selection: {},
-                dto: {},
-                form: {
-                    vendor: {},
-                    vendorBankList: [],
-                    vendorEmployeeList: []
-                }
-            }
-        },
-        created () {
-            this.dto = SwaggerService.getDto('VendorChange')
-            this.form.vendor = SwaggerService.getForm('VendorChangeDto')
-            if (this.id !== '0') {
-                SupplierService[this.type + 'Entity'](this.id).then(res => {
-                    this.data = res.result.data
-                    if (this.type === 'view') {
-                        this.form.vendor = res.result.data
-                    } else {
-                        this.form.vendor = res.result.data.vendor
-                    }
-                    this.form.vendorEmployeeList = res.result.data.vendorEmployeeList
-                    this.form.vendorBankList = res.result.data.vendorBankList
-                })
-            }
-            SupplierService.types().then(res => {
-                this.selection.types = formatTree([res.result], ['title:packageName', 'value:packageCode', 'key:gid'])
-                this.$forceUpdate()
-            })
-            CitySvc.cities().then(res => {
-                this.selection.cities = formatCities(res.result.data.provinces)
-                this.$forceUpdate()
-            })
-        },
-        computed: {
-            id () {
-                return this.$route.params.id
-            },
-            type () {
-                return this.$route.query.type
-            }
-        },
-        methods: {
-            back () {
-                this.$router.push({ path: `/supplier/purchase/list` })
-            },
-            cityChange (value) {
-                console.log(value)
-                this.form.vendor.province = value[0]
-                this.form.vendor.city = value[1]
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
-            askUpdate () {
-                SupplierService.generate(this.id).then(res => {
-                    console.log(res.result.data)
-                    this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
-                })
-            },
-            save () {
-                this.form.vendorEmployeeList.forEach(item => {
-                    item.logGID = this.form.vendor.logGID
-                    item.vendorGID = this.form.vendor.vendorGID
-                })
-                this.form.vendorBankList.forEach(item => {
-                    item.logGID = this.form.vendor.logGID
-                    item.vendorGID = this.form.vendor.vendorGID
-                })
-                SupplierService[this.type](this.form).then(res => {
-                    console.log(res)
-                })
-            }
+  const DTO = {
+    create: 'ChangeVendorZRInputDto',
+    update: 'VendorChangeDto',
+    view: ''
+  }
+  const SHOW_PARENT = TreeSelect.SHOW_PARENT
+  export default {
+    name: 'SupplierPurchaseItem',
+    components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
+    data () {
+      return {
+        SHOW_PARENT,
+        dialog: DIALOGCONFIG,
+        selection: {},
+        form: {
+          vendor: {},
+          vendorBankList: [],
+          vendorEmployeeList: []
         }
+      }
+    },
+    created () {
+      this.dialog.show({
+        content: '添加成功',
+        title: '',
+        confirmText: '继续添加',
+        cancel: '返回上一页'
+      }, (state) => {
+        if (state) {
+
+        } else {
+          this.$router.push('/supplier/purchase/list')
+        }
+      })
+      this.form.vendor = SwaggerService.getForm(DTO[this.type])
+      if (this.id !== '0') {
+        SupplierService[this.type + 'Entity'](this.id).then(res => {
+          this.data = res.result.data
+          if (this.type === 'view') {
+            this.form.vendor = res.result.data
+          } else {
+            this.form.vendor = res.result.data.vendor
+          }
+          this.form.vendorEmployeeList = res.result.data.vendorEmployeeList
+          this.form.vendorBankList = res.result.data.vendorBankList
+        })
+      }
+      SupplierService.types().then(res => {
+        this.selection.types = formatTree([res.result], ['title:packageName', 'value:packageCode', 'key:gid'])
+        this.$forceUpdate()
+      })
+      CitySvc.cities().then(res => {
+        this.selection.cities = formatCities(res.result.data.provinces)
+        this.$forceUpdate()
+      })
+    },
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      }
+    },
+    methods: {
+      back () {
+        this.$router.push({ path: `/supplier/purchase/list` })
+      },
+      cityChange (value) {
+        console.log(value)
+        this.form.vendor.province = value[0]
+        this.form.vendor.city = value[1]
+      },
+      handleEdit (record) {
+        this.visible = true
+        this.mdl = { ...record }
+      },
+      askUpdate () {
+        SupplierService.generate(this.id).then(res => {
+          console.log(res.result.data)
+          this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
+        })
+      },
+      save () {
+        this.form.vendorEmployeeList.forEach(item => {
+          item.logGID = this.form.vendor.logGID
+          item.vendorGID = this.form.vendor.vendorGID
+        })
+        this.form.vendorBankList.forEach(item => {
+          item.logGID = this.form.vendor.logGID
+          item.vendorGID = this.form.vendor.vendorGID
+        })
+        SupplierService[this.type](this.form).then(res => {
+          this.dialog.show({ title: '系统提示', content: '添加成功', confirmText: '继续添加', cancel: '返回上一页' }, (state) => {
+            console.log(state)
+          })
+        })
+      }
     }
+  }
 </script>
 
 <style lang="less" scoped>

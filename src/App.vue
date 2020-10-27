@@ -11,6 +11,7 @@ import { domTitle, setDocumentTitle } from '@/utils/domUtil'
 import { i18nRender } from '@/locales'
 
 export default {
+  components: { },
   data () {
     return {
     }
