@@ -6,7 +6,7 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-button type="success" @click="handleToAdd">新增CIP</a-button>
-              <a-button type="success" style="margin-left: 20px">CIP转VO</a-button>
+              <a-button type="success" style="margin-left: 20px" @click="handleToAdd">CIP转VO</a-button>
               <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
             </a-col>
           </a-row>

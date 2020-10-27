@@ -137,45 +137,48 @@
       >
         <p>{{ dialog.content }}</p>
       </a-modal>
-      <footer-tool-bar>
-        <a-button-group>
-          <a-button v-if="type !== 'view'" @click="save()" type="success">
-            储存
-          </a-button>
-        </a-button-group>
-        <a-button-group>
-          <a-button v-if="type === 'view' && !form.vendor.logGID" @click="askUpdate()" type="success">
-            供应商信息变更
-          </a-button>
-        </a-button-group>
-        <a-button-group disabled>
-          <a-button v-if="type !== 'view'" @click="approve()" type="success">
-            提请审批
-          </a-button>
-        </a-button-group>
-        <a-button-group>
-          <a-button @click="back()" type="danger">
-            关闭
-          </a-button>
-        </a-button-group>
-      </footer-tool-bar>
+      <a-row :gutter="48">
+        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group>
+            <a-button v-if="type === 'view' && !form.vendor.logGID" @click="askUpdate()" type="success">
+              供应商信息变更
+            </a-button>
+          </a-button-group>
+          <a-button-group>
+            <a-button @click="approve()" type="success">
+              启动审批流程
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group>
+            <a-button :disabled="type === 'view'" @click="save" type="success">
+              储存
+            </a-button>
+          </a-button-group>
+          <a-button-group>
+            <a-button @click="back" type="danger">
+              关闭
+            </a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-  import { FooterToolBar } from '@/components'
-  import CompanyStaff from '../components/CompanyStaff'
-  import ChangeInfo from '../components/ChangeInfo'
-  import ContractInfo from '../components/ContractInfo'
-  import BankInfo from '../components/BankInfo'
-  import AttachmentInfo from '../components/AttachmentInfo'
-  import { SwaggerService } from '@/api/swagger.service'
-  import { SupplierService } from '@/views/supplier/supplier.service'
-  import { formatTree } from '@/utils/util'
-  import { TreeSelect } from 'ant-design-vue'
-  import { City as CitySvc, formatCities } from '@/api/city'
-  import { DIALOGCONFIG } from '@/api/base'
+    import CompanyStaff from '../components/CompanyStaff'
+    import ChangeInfo from '../components/ChangeInfo'
+    import ContractInfo from '../components/ContractInfo'
+    import BankInfo from '../components/BankInfo'
+    import AttachmentInfo from '../components/AttachmentInfo'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { SupplierService } from '@/views/supplier/supplier.service'
+    import { formatTree } from '@/utils/util'
+    import { TreeSelect } from 'ant-design-vue'
+    import { City as CitySvc, formatCities } from '@/api/city'
+    import { DIALOGCONFIG } from '@/api/base'
 
   const DTO = {
     create: 'ChangeVendorZRInputDto',
@@ -185,7 +188,7 @@
   const SHOW_PARENT = TreeSelect.SHOW_PARENT
   export default {
     name: 'SupplierPurchaseItem',
-    components: { FooterToolBar, AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
+    components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
     data () {
       return {
         SHOW_PARENT,
@@ -294,8 +297,15 @@
 
     thead {
       tr {
+        &:first-child{
+          th{
+            background-color: #f5f5f5;
+          }
+        }
         th {
-          background-color: #f5f5f5;
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;

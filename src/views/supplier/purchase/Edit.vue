@@ -197,33 +197,35 @@
         </a-row>
       </a-form>
 
-      <footer-tool-bar>
-        <a-button-group>
-          <a-button :disabled="type === 'view'" @click="handleToEdit()" type="success">
-            储存
-          </a-button>
-        </a-button-group>
-        <a-button-group disabled>
-          <a-button :disabled="type === 'view'" @click="approve()" type="success">
-            提请审批
-          </a-button>
-        </a-button-group>
-        <a-button-group>
-          <a-button @click="back()" type="danger">
-            关闭
-          </a-button>
-        </a-button-group>
-      </footer-tool-bar>
+      <a-row :gutter="48">
+        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group>
+            <a-button @click="approve()" type="success">
+              启动审批流程
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group>
+            <a-button :disabled="type === 'view'" @click="save" type="success">
+              储存
+            </a-button>
+          </a-button-group>
+          <a-button-group>
+            <a-button @click="back" type="danger">
+              关闭
+            </a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-    import { FooterToolBar } from '@/components'
 
     export default {
         name: 'Edit',
-        components: { FooterToolBar },
         data () {
             return {}
         },
@@ -252,8 +254,15 @@
 
     thead {
       tr {
+        &:first-child{
+          th{
+            background-color: #f5f5f5;
+          }
+        }
         th {
-          background-color: #f5f5f5;
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;

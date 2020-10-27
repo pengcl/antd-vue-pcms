@@ -10,23 +10,27 @@
         </a-tab-pane>
       </a-tabs>
 
-      <footer-tool-bar>
-        <a-button-group>
-          <a-button :disabled="type === 'view'" @click="handleToEdit()" type="success">
-            储存
-          </a-button>
-        </a-button-group>
-        <a-button-group disabled>
-          <a-button :disabled="type === 'view'" @click="approve()" type="success">
-            提请审批
-          </a-button>
-        </a-button-group>
-        <a-button-group>
-          <a-button @click="back()" type="danger">
-            关闭
-          </a-button>
-        </a-button-group>
-      </footer-tool-bar>
+      <a-row :gutter="48">
+        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group>
+            <a-button :disabled="type === 'view'" @click="approve()" type="success">
+              启动审批流程
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group>
+            <a-button :disabled="type === 'view'" @click="handleToEdit()" type="success">
+              储存
+            </a-button>
+          </a-button-group>
+          <a-button-group>
+            <a-button @click="back()" type="danger">
+              关闭
+            </a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -34,12 +38,10 @@
 <script>
     import BaseInfo from '@/views/pay/signed/components/BaseInfo'
     import PayDetail from './components/PayDetail'
-    import { FooterToolBar } from '@/components'
-    import { SignedService } from './signed.service'
 
     export default {
         name: 'Item',
-        components: { PayDetail, BaseInfo, FooterToolBar },
+        components: { PayDetail, BaseInfo},
         computed: {
             id () {
                 return this.$route.params.id

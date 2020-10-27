@@ -26,25 +26,25 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
-              <a-input v-model="queryParam.ContractNo"></a-input>
+              <a-input v-model="queryParam.contractNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
-              <a-input v-model="queryParam.ContractName"></a-input>
+              <a-input v-model="queryParam.contractName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商名称">
-              <a-input v-model="queryParam.VendorName"></a-input>
+              <a-input v-model="queryParam.vendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="提交状态">
               <a-select
                 placeholder="请选择"
-                v-model="queryParam.AuditStatus"
-                v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
+                v-model="queryParam.auditStatus"
+                v-decorator="[queryParam.auditStatus, { rules: [{required: true, message: '请选择'}] }]">
                 <a-select-option value="1">草拟中</a-select-option>
                 <a-select-option value="2">已审批</a-select-option>
               </a-select>
@@ -57,7 +57,7 @@
         </a-row>
       </a-form>
 
-      <s-table :columns="columns" :data="loadData2" bordered>
+      <s-table :columns="columns" :data="loadData2" ref="contractTable" bordered>
         <span slot="contractNo" slot-scope="text, record">
             <a @click="getContractAmt(record)">{{text}}</a>
         </span>
@@ -354,7 +354,7 @@
             },
             search () {
                 this.show = !this.show
-                this.$refs.table.refresh(true)
+                this.$refs.contractTable.refresh(true)
             },
             onChange (value) {
                 if (value.length >= 2) {

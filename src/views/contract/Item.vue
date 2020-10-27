@@ -69,24 +69,29 @@
           <attachment-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
       </a-tabs>
+      <a-row :gutter="48">
+        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group>
+            <a-button  @click="approve" type="success">
+              启动审批流程
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group>
+            <a-button :disabled="type === 'view'" @click="save" type="success">
+              储存
+            </a-button>
+          </a-button-group>
+          <a-button-group>
+            <a-button @click="back" type="danger">
+              关闭
+            </a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
     </a-card>
-    <footer-tool-bar>
-      <a-button-group>
-        <a-button :disabled="type === 'view'" @click="approve()" type="success">
-          提请审批
-        </a-button>
-      </a-button-group>
-      <a-button-group>
-        <a-button :disabled="type === 'view'" @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
-          储存
-        </a-button>
-      </a-button-group>
-      <a-button-group>
-        <a-button @click="back()" type="danger">
-          关闭
-        </a-button>
-      </a-button-group>
-    </footer-tool-bar>
+
   </page-header-wrapper>
 </template>
 <script>
@@ -96,14 +101,13 @@ import PayInfo from '@/views/contract/components/PayInfo'
 import ContractList from '@/views/contract/components/ContractList'
 import BudgetList from '@/views/contract/components/BudgetList'
 import AttachmentList from '@/views/contract/components/AttachmentList'
-import { FooterToolBar } from '@/components'
 import { ContractService } from '@/views/contract/contract.service'
 import { SwaggerService } from '@/api/swagger.service'
 import { ProjectService } from '@/views/project/project.service'
 
 export default {
   name: 'ContractItem',
-  components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo, FooterToolBar },
+  components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo},
   data () {
     return {
       tabActiveKey: 1,
