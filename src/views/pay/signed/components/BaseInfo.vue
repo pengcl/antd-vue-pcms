@@ -184,12 +184,12 @@
                   删除
                 </a-button>
               </td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{item.moneyType}}</td>
+              <td>{{item.paymentPurpose}}</td>
+              <td>{{item.paymentAmount}}</td>
+              <td>{{getVendorName(item.vendorType)}}</td>
+              <td>{{getBankName(item.vendorType,item.bankName)}}</td>
+              <td>{{item.bankAccounts}}</td>
             </tr>
             </tbody>
           </table>
@@ -415,7 +415,8 @@
                 visible: false,
                 model: null,
                 form: null,
-                items: []
+                items: [],
+                vendorTypes: []
             }
         },
         created () {
@@ -428,6 +429,9 @@
             )
             SignedService.certificateTypes().then(res => {
                 this.certificateTypes = res.result.data
+            })
+            SignedService.vendorTypes(this.id).then(res => {
+                this.vendorTypes = res.result.data
             })
         },
         props: {
@@ -446,6 +450,28 @@
         },
         watch: {},
         methods: {
+            getVendorName (id) {
+                let vendorName = ''
+                this.vendorTypes.forEach(item => {
+                    if (item.vendorGID === id) {
+                        vendorName = item.vendorName
+                    }
+                })
+                return vendorName
+            },
+            getBankName (id, gid) {
+                let bankName = ''
+                this.vendorTypes.forEach(item => {
+                    if (item.vendorGID === id) {
+                        item.bankList.forEach(v => {
+                            if (v.gid === gid) {
+                                bankName = v.bankName
+                            }
+                        })
+                    }
+                })
+                return bankName
+            },
             showForm () {
                 this.model = {}
                 this.visible = true
@@ -456,6 +482,7 @@
                 form.validateFields((errors, values) => {
                     if (!errors) {
                         this.items.push(values)
+                        console.log(this.items)
                         this.visible = false
                         this.confirmLoading = false
                         // 重置表单数据

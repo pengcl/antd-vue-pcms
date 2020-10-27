@@ -62,7 +62,8 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="账号">
-              <a-input :disabled="true" :value="bankAccounts"></a-input>
+              <a-input :disabled="true"
+                       v-decorator="['bankAccounts', { rules: [{required: true, message: '请选择收款单位'}] }]"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -100,9 +101,6 @@
                 moneyTypes: [],
                 vendorTypes: [],
                 bankList: [],
-                bankAccounts: '',
-                bankName: '',
-                secondCity:''
             }
         },
         created () {
@@ -122,7 +120,10 @@
         },
         methods: {
             onChange (value, option) {
-                this.bankAccounts = ''
+                this.form.setFieldsValue({
+                    bankName: '',
+                    bankAccounts: ''
+                })
                 this.vendorTypes.forEach(item => {
                     if (item.vendorGID === value) {
                         this.bankList = item.bankList
@@ -132,7 +133,9 @@
             bankChange (value, option) {
                 this.bankList.forEach(item => {
                     if (item.gid === value) {
-                        this.bankAccounts = item.bankAccounts
+                        this.form.setFieldsValue({
+                            bankAccounts: item.bankAccounts
+                        })
                     }
                 })
             }
