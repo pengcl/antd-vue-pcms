@@ -54,8 +54,9 @@
             <td>
               <a-select
                 placeholder="请选择"
-                v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">包(bag)</a-select-option>
+                v-decorator="['item.bondUnit', { rules: [{required: true, message: '请选择'}] }]">
+                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.id">{{ item.nameCN }}
+                </a-select-option>
               </a-select>
             </td>
             <td>
@@ -78,6 +79,8 @@
   </div>
 </template>
 <script>
+  import { Base as BaseService } from '@/api/base'
+
   export default {
     name: 'ContractInfoAdvanceCharge',
     data () {
@@ -100,6 +103,12 @@
         type: String,
         default: '0'
       }
+    },
+    created () {
+      BaseService.unitTypes().then(res => {
+        this.selection.unitTypes = res.result.data
+        this.$forceUpdate()
+      })
     },
     methods: {
       add (target) {
