@@ -81,7 +81,13 @@
               <td>{{ item.remark1 }}</td>
               <td>{{ item.remark2 }}</td>
               <td>{{ item.description }}</td>
-              <td>{{ item.costCenter }}</td>
+              <td><!--{{ item.costCenter }}-->
+                <a-select :default-value="item | getValue(index)" style="width: 200px" mode="multiple" @change="centerChange">
+                  <a-select-option :value="index + ':' + center.id + ':' + center.costCenterName" :itemIndex="index" v-for="center in selection.centers" :key="JSON.stringify(center)">
+                    {{ center.costCenterName }}
+                  </a-select-option>
+                </a-select>
+              </td>
               <td>{{ item.itemType }}</td>
               <td>{{ item.unitMaterial }}</td>
               <td>{{ item.quantityMaterial }}</td>
@@ -105,82 +111,114 @@
 </template>
 
 <script>
-import { compare } from '@/utils/util'
-import { SwaggerService } from '@/api/swagger.service'
-import { ContractService } from '@/views/contract/contract.service'
+  import { compare } from '@/utils/util'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { ContractService } from '@/views/contract/contract.service'
 
-function getNo (str, key, items) {
-  if (items.length === 0) {
-    return '1'
-  }
-  const isRoot = str === '0' || !str
-  const filterItems = !isRoot ? items.filter(item => item[key].indexOf(str) === 0).sort((a, b) => b[key] - a[key]) : items
-  filterItems.sort((a, b) => {
-    return compare(b[key], a[key])
-  })
-  const arr = !isRoot ? filterItems[0][key].split('.').reverse() : filterItems[0][key].split('.')
-  arr[0] = parseInt(arr[0], 10) + 1 + ''
-  const result = !isRoot ? arr.reverse().join('.') : arr[0]
-  return isNaN(result) ? '1' : result
-}
-
-export default {
-  name: 'ContractList',
-  data () {
-    return {
-      form: this.$form.createForm(this),
-      loading: false
+  function getNo (str, key, items) {
+    if (items.length === 0) {
+      return '1'
     }
-  },
-  created () {
-    console.log(this.project)
-    ContractService.centers(this.id).then(res => {
-      console.log(res)
+    const isRoot = str === '0' || !str
+    const filterItems = !isRoot ? items.filter(item => item[key].indexOf(str) === 0).sort((a, b) => b[key] - a[key]) : items
+    filterItems.sort((a, b) => {
+      return compare(b[key], a[key])
     })
-  },
-  filters: {
-    filterDeleted (items) {
-      return items.filter(item => !item.isDeleted)
-    }
-  },
-  props: {
-    data: {
-      type: Object,
-      default: null
+    const arr = !isRoot ? filterItems[0][key].split('.').reverse() : filterItems[0][key].split('.')
+    arr[0] = parseInt(arr[0], 10) + 1 + ''
+    const result = !isRoot ? arr.reverse().join('.') : arr[0]
+    return isNaN(result) ? '1' : result
+  }
+
+  export default {
+    name: 'ContractList',
+    data () {
+      return {
+        selection: {},
+        form: this.$form.createForm(this),
+        loading: false
+      }
     },
-    type: {
-      type: String,
-      default: 'view'
-    },
-    id: {
-      type: String,
-      default: '0'
-    },
-    project: {
-      type: Object,
-      default: null
-    }
-  },
-  methods: {
-    add (stringNo) {
-      const newSrNo = getNo(stringNo, 'srNo', this.data.contractBQlst)
-      const data = SwaggerService.getForm('ContractBQInputDto')
-      data.contractID = this.data.contract.id
-      data.srNo = newSrNo
-      this.data.contractBQlst.push(data)
-      console.log(data)
-      console.log(newSrNo)
-    },
-    del (index) {
-      this.data.contractBQlst[index].isDeleted = true
-    },
-    clear () {
-      this.data.contractBQlst.forEach(item => {
-        item.isDeleted = true
+    created () {
+      ContractService.centers(this.project.id).then(res => {
+        console.log(res)
+        this.selection.centers = res.result.data
+        this.$forceUpdate()
       })
+    },
+    filters: {
+      filterDeleted (items) {
+        return items.filter(item => !item.isDeleted)
+      },
+      getValue (item, index) {
+        const values = []
+        const names = item.costCenterName.split(':')
+        names.forEach((name) => {
+          values.push(name)
+        })
+        console.log(values)
+        return values
+      }
+    },
+    props: {
+      data: {
+        type: Object,
+        default: null
+      },
+      type: {
+        type: String,
+        default: 'view'
+      },
+      id: {
+        type: String,
+        default: '0'
+      },
+      project: {
+        type: Object,
+        default: null
+      }
+    },
+    methods: {
+      add (stringNo) {
+        const newSrNo = getNo(stringNo, 'srNo', this.data.contractBQlst)
+        const data = SwaggerService.getForm('ContractBQInputDto')
+        data.contractID = this.data.contract.id
+        data.srNo = newSrNo
+        this.data.contractBQlst.push(data)
+      },
+      del (index) {
+        this.data.contractBQlst[index].isDeleted = true
+      },
+      clear () {
+        this.data.contractBQlst.forEach(item => {
+          item.isDeleted = true
+        })
+      },
+      centerChange (values) {
+        let ids = ''
+        let names = ''
+        let item
+        values.forEach(value => {
+          const arr = value.split(':')
+          item = this.data.contractBQlst[arr[0]]
+          const id = arr[1]
+          const name = arr[2]
+          if (ids) {
+            ids = ids + ':' + id
+          } else {
+            ids = id
+          }
+          if (names) {
+            names = names + ':' + name
+          } else {
+            names = name
+          }
+        })
+        item.costCenter = ids
+        item.costCenterName = names
+      }
     }
   }
-}
 </script>
 
 <style lang="less" scoped>
@@ -194,11 +232,12 @@ export default {
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;

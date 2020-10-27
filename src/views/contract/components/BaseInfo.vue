@@ -167,7 +167,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in filterParties(18)" :key="index">
+            <tr v-if="item.isDisabled === false" v-for="(item,index) in filterParties(18)" :key="index">
               <td>
               <!--<a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
@@ -213,7 +213,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filterParties(19)" :key="item.id">
+            <tr v-if="item.isDisabled === false" v-for="item in filterParties(19)" :key="item.id">
               <td>
                 <a-button
                   @click="del(item.partyID)"
@@ -260,7 +260,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in filterParties(20)" :key="index">
+            <tr v-if="item.isDisabled === false" v-for="(item,index) in filterParties(20)" :key="index">
               <td>
                 <a-button
                   @click="del(item.partyID)"
