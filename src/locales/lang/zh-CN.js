@@ -4,7 +4,6 @@ import momentCN from 'moment/locale/zh-cn'
 const components = {
   antLocale: antd,
   momentName: 'zh-cn',
-  format: 'llll',
   momentLocale: momentCN
 }
 

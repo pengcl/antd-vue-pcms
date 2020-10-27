@@ -42,8 +42,8 @@
                 placeholder="请选择"
                 v-model="item.insuranceType"
                 v-decorator="['item.insuranceType', { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">承建商工程全险</a-select-option>
-                <a-select-option value="2">第三者保险</a-select-option>
+                <a-select-option :value="1">承建商工程全险</a-select-option>
+                <a-select-option :value="2">第三者保险</a-select-option>
               </a-select>
             </td>
             <!-- todo:保险类别 -->
@@ -55,8 +55,8 @@
                 placeholder="请选择"
                 v-model="item.insuranceStatus"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">已提交</a-select-option>
-                <a-select-option value="0">未提交</a-select-option>
+                <a-select-option :value="1">已提交</a-select-option>
+                <a-select-option :value="0">未提交</a-select-option>
               </a-select>
             </td>
             <td>
@@ -70,8 +70,8 @@
                 placeholder="请选择"
                 v-model="item.insuranceExtensionStatus"
                 v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">已提交</a-select-option>
-                <a-select-option value="0">未提交</a-select-option>
+                <a-select-option :value="1">已提交</a-select-option>
+                <a-select-option :value="0">未提交</a-select-option>
               </a-select>
             </td>
           </tr>
