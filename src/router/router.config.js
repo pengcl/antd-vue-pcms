@@ -291,7 +291,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.change.vo.edit', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/certificate',
+            path: '/change/certificate/:id',
             name: 'ChangeCertificate',
             hidden: true,
             component: () => import('@/views/change/Certificate'),

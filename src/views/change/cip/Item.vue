@@ -1,37 +1,37 @@
 <template>
   <page-header-wrapper>
-    <a-card :bordered="false">
+    <a-card v-if="contract" :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="24" :sm="24">
               <a-form-item label="项目编码">
-                HZO-HZ4
+                {{ contract.projectID }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="房产项目名称(中文)">
-                珠海中心 L1
+                {{ contract.projectName }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="房产项目名称(英文)">
-                Zhuhai shopping mall L1
+                {{ contract.projectEnName || '-'}}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="中央合同编号">
-                C-HZO-HZ4-ORG-14
+                {{ contract.contractNo }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="本地合同编号">
-                CON0001
+                {{ contract.localContractNo}}
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
               <a-form-item label="合同名称">
-                20200909
+                {{ contract.contractName }}
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
@@ -47,22 +47,22 @@
 
           <a-tabs default-active-key="1">
             <a-tab-pane key="1" tab="基本资料">
-              <base-info title="基本资料"></base-info>
+              <base-info title="基本资料" :data="form" :contract="contract" :type="type" :id="id"></base-info>
             </a-tab-pane>
             <a-tab-pane key="2" tab="造价估算">
-              <cost-estimates title="造价估算"></cost-estimates>
+              <cost-estimates title="造价估算" :data="form" :type="type" :id="id"></cost-estimates>
             </a-tab-pane>
             <a-tab-pane key="3" tab="预算调整">
-              <budget-list title="预算调整"></budget-list>
+              <budget-list title="预算调整" :data="form" :type="type" :id="id"></budget-list>
             </a-tab-pane>
             <a-tab-pane key="4" tab="附加资料">
-              <attachment-data title="附加资料"></attachment-data>
+              <attachment-data title="附加资料" :data="form" :type="type" :id="id"></attachment-data>
             </a-tab-pane>
             <a-tab-pane key="5" tab="附件">
-              <attachment-list></attachment-list>
+              <attachment-list :data="form" :type="type" :id="id"></attachment-list>
             </a-tab-pane>
             <a-tab-pane key="6" tab="流程">
-              <process></process>
+              <process :data="form" :type="type" :id="id"></process>
             </a-tab-pane>
           </a-tabs>
 
@@ -93,7 +93,67 @@
     import AttachmentData from '@/views/change/cip/components/AttachmentData'
     import AttachmentList from '@/views/change/cip/components/AttachmentList'
     import Process from '@/views/change/cip/components/Process'
+    import { ChangeService } from '@/views/change/change.service'
+import { SwaggerService } from '@/api/swagger.service'
     export default {
-        components: { Process, AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo }
+    		name : 'ChangeItem',
+        components: { Process, AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo },
+        data () {
+		    return {
+		      tabActiveKey: 1,
+		      loading: false,
+		      contract: SwaggerService.getForm('ContractOutputDto'),
+		      form : SwaggerService.getForm('VOAllInfoDto')
+		    }
+		  },
+		  created () {
+	        ChangeService.changeItem({guid :this.contractGuid}).then(res => {
+	        		this.contract = res.result
+	        		console.log('contract',this.contract)
+	        })
+		    if (this.id !== '0') {
+		      ChangeService.item(this.id).then(res => {
+		        this.form = res.result.data
+		        if(this.form.voMasterInfo == null){
+		        		this.form.voMasterInfo = {};
+		        }
+		      })
+		    } else {
+		      this.contract.cnotractGuid = this.contractGuid
+		    }
+		  },
+		  computed: {
+		    id () {
+		      return this.$route.params.id
+		    },
+		    type () {
+		      return this.$route.query.type
+		    },
+		    contractGuid (){
+		    		return this.$route.query.contractGuid
+		    }
+		  },
+		  watch: {},
+		  methods: {
+		    approve () {
+		      console.log('approve')
+		    },
+		    save () {
+		      ContractService[this.type](this.contract).then(res => {
+		        console.log(res)
+		      })
+		    },
+		    handleChange (selectedItems) {
+		      this.selectedItems = selectedItems
+		    },
+		    back () {
+		      console.log('back')
+		      this.$router.push({ path: `/change/pmi` })
+		    },
+		    handleToEdit () {
+		      console.log('handleToEdit')
+		      this.$router.push({ path: `/change/item/${this.id}?type=edit` })
+		    }
+		  }
     }
 </script>
