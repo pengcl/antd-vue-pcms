@@ -116,10 +116,16 @@
 </template>
 
 <script>
-
+    import { FooterToolBar } from '@/components'
 
     export default {
         name: 'Certificate',
+        components: { FooterToolBar },
+	    computed: {
+		    id () {
+		      return this.$route.params.id
+		    }
+		  }
     }
 </script>
 

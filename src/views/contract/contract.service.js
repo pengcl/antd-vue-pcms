@@ -7,7 +7,8 @@ const API = {
   masters: '/api/services/app/Contract/GetMasterContractInfo',
   create: '/api/services/app/Contract/CreateContractAllInfo',
   update: '/api/services/app/Contract/UpdateContractAllInfo',
-  vendors: '/api/services/app/Contract/GetVendorList'
+  vendors: '/api/services/app/Contract/GetVendorList',
+  centers: '/api/services/app/ProjectCostCenter/GetProjectCostCenters'
 }
 
 const ContractService = {}
@@ -72,6 +73,14 @@ ContractService.vendors = function () {
     url: API.vendors,
     method: 'GET',
     params: {}
+  })
+}
+
+ContractService.centers = function (Id) {
+  return request({
+    url: API.centers,
+    method: 'GET',
+    params: { Id }
   })
 }
 

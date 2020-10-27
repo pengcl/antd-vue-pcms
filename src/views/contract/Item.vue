@@ -60,7 +60,7 @@
           <budget-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="4" tab="合同量清单">
-          <contract-list :data="form" :type="type" :id="id"/>
+          <contract-list :project="project" :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane key="5" tab="付款条款">
           <pay-info :data="form" :type="type" :id="id"/>
@@ -72,7 +72,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group>
-            <a-button  @click="approve" type="success">
+            <a-button @click="approve" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
@@ -107,7 +107,7 @@ import { ProjectService } from '@/views/project/project.service'
 
 export default {
   name: 'ContractItem',
-  components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo},
+  components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
   data () {
     return {
       tabActiveKey: 1,
@@ -122,7 +122,6 @@ export default {
         this.form = res.result.data
         this.form.master = {}
         ProjectService.view2(this.form.contract.projectID).then(res => {
-          console.log(res)
           this.project = res.result.data
         })
       })
@@ -131,11 +130,9 @@ export default {
       this.form.contract.isDeleted = false
       this.form.master = {}
       ProjectService.view(this.ProjectGUID).then(res => {
-        console.log(res)
         this.project = res.result.data
         this.form.contract.projectID = this.project.projectCode
       })
-      // this.form.contract.projectID = 0;
     }
   },
   computed: {

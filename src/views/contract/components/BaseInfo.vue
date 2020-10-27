@@ -167,7 +167,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in filterParties(18)" :key="index">
+            <tr v-if="!item.isDeleted" v-for="(item,index) in filterParties(18)" :key="index">
               <td>
               <!--<a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
@@ -213,7 +213,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filterParties(19)" :key="item.id">
+            <tr v-if="!item.isDeleted" v-for="item in filterParties(19)" :key="item.id">
               <td>
                 <a-button
                   @click="del(item.partyID)"
@@ -260,7 +260,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item,index) in filterParties(20)" :key="index">
+            <tr v-if="!item.isDeleted" v-for="(item,index) in filterParties(20)" :key="index">
               <td>
                 <a-button
                   @click="del(item.partyID)"
@@ -436,15 +436,16 @@
       },
       clear (partyType) {
         this.data.contractPartylst.forEach(item => {
-          if (item.partyType !== partyType) {
-            item.isDisabled = true
+          if (item.partyType === partyType) {
+            item.isDeleted = true
           }
         })
       },
       del (id) {
         this.data.contractPartylst.forEach((item, i) => {
           if (item.partyID === id) {
-            item.isDisabled = true
+            console.log(item)
+            item.isDeleted = true
           }
         })
       }
