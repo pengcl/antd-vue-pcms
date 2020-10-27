@@ -62,7 +62,9 @@
     thead {
       tr {
         th {
-          background-color: #f5f5f5;
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;

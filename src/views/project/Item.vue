@@ -430,28 +430,31 @@
           </a-form>
         </a-tab-pane>
       </a-tabs>
+      <a-row :gutter="48">
+        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group>
+            <a-button  @click="approve()" type="success">
+              启动审批流程
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group>
+            <a-button :disabled="type === 'view'" @click="save" type="success">
+              储存
+            </a-button>
+          </a-button-group>
+          <a-button-group>
+            <a-button @click="back" type="danger">
+              关闭
+            </a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
     </a-card>
-    <footer-tool-bar>
-      <a-button-group>
-        <a-button @click="approve()" type="success">
-          启动审批流程
-        </a-button>
-      </a-button-group>
-      <a-button-group>
-        <a-button @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
-          储存
-        </a-button>
-      </a-button-group>
-      <a-button-group>
-        <a-button @click="back()" type="danger">
-          关闭
-        </a-button>
-      </a-button-group>
-    </footer-tool-bar>
   </page-header-wrapper>
 </template>
 <script>
-import { FooterToolBar } from '@/components'
 import { SwaggerService } from '@/api/swagger.service'
 import { ProjectService } from '@/views/project/project.service'
 import { City as CityService } from '@/api/city'
@@ -462,9 +465,6 @@ import { Company as CompanyService } from '@/api/company'
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 export default {
   name: 'ProjectItem',
-  components: {
-    FooterToolBar
-  },
   data () {
     return {
       regionalOffices: [],

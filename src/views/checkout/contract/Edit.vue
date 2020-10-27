@@ -40,24 +40,28 @@
           <attachment-list></attachment-list>
         </a-tab-pane>
       </a-tabs>
+      <a-row :gutter="48">
+        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group>
+            <a-button  @click="approve()" type="success">
+              启动审批流程
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group>
+            <a-button :disabled="type === 'view'" @click="save" type="success">
+              储存
+            </a-button>
+          </a-button-group>
+          <a-button-group>
+            <a-button @click="back()" type="danger">
+              关闭
+            </a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
     </a-card>
-    <footer-tool-bar>
-      <a-button-group>
-        <a-button :disabled="type === 'view'" @click="approve()" type="success">
-          启动审批流程
-        </a-button>
-      </a-button-group>
-      <a-button-group>
-        <a-button :disabled="type === 'view'" @click="save()" v-if="type !== 'view'" :loading="loading" type="success">
-          储存
-        </a-button>
-      </a-button-group>
-      <a-button-group>
-        <a-button @click="back()" type="danger">
-          关闭
-        </a-button>
-      </a-button-group>
-    </footer-tool-bar>
   </page-header-wrapper>
 </template>
 
@@ -66,11 +70,10 @@
     import CostEstimates from '@/views/checkout/contract/components/CostEstimates'
     import BudgetList from '@/views/checkout/contract/components/BudgetList'
     import AttachmentList from '@/views/checkout/contract/components/AttachmentList'
-    import { FooterToolBar } from '@/components'
 
     export default {
         name: 'Edit',
-        components: { AttachmentList, BudgetList, CostEstimates, ContractSettlement, FooterToolBar },
+        components: { AttachmentList, BudgetList, CostEstimates, ContractSettlement},
         data () {
             return {
                 form: this.$form.createForm(this)
