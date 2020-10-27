@@ -111,56 +111,47 @@
   import { ProjectService } from '@/views/project/project.service'
   import { formatList } from '../../mock/util'
 
-  const columns = [
-    {
-      title: '操作',
-      dataIndex: 'action',
-      width: '150px',
-      scopedSlots: { customRender: 'action' }
-    },
-    {
-      title: '合同编号',
-      dataIndex: 'contractNo'
-    },
-    {
-      title: '合同名称',
-      dataIndex: 'contractName',
-      scopedSlots: { customRender: 'contractName' }
-    },
-    {
-      title: '合同金额',
-      dataIndex: 'contractAmount',
-      scopedSlots: { customRender: 'contractAmount' }
-    },
-    {
-      title: '签约日期',
-      dataIndex: 'signDate',
-      scopedSlots: { customRender: 'signDate' }
-    },
-    {
-      title: '审批状态',
-      dataIndex: 'auditStatus',
-      scopedSlots: { customRender: 'auditStatus' }
-    },
-    {
-      title: '建立日期',
-      dataIndex: 'creationTime'
-    },
-    {
-      title: '建立者',
-      dataIndex: 'creatorUser',
-      scopedSlots: { customRender: 'creatorUser' }
-    },
-    {
-      title: '最后更新日期',
-      dataIndex: 'updatedAt'
-    },
-    {
-      title: '最后更新者',
-      dataIndex: 'updater',
-      scopedSlots: { customRender: 'updater' }
-    }
-  ]
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' }
+        },
+        {
+            title: '合同编号',
+            dataIndex: 'contractNo'
+        },
+        {
+            title: '合同名称',
+            dataIndex: 'contractName',
+            scopedSlots: { customRender: 'contractName' }
+        },
+        {
+            title: '合同金额',
+            dataIndex: 'contractAmount',
+            scopedSlots: { customRender: 'contractAmount' }
+        },
+        {
+            title: '签约日期',
+            dataIndex: 'signDate',
+            scopedSlots: { customRender: 'signDate' }
+        },
+        {
+            title: '审批状态',
+            dataIndex: 'auditStatus',
+            scopedSlots: { customRender: 'auditStatus' }
+        },
+        {
+            title: '建立日期',
+            dataIndex: 'creationTime'
+        },
+        {
+            title: '建立者',
+            dataIndex: 'creatorUser',
+            scopedSlots: { customRender: 'creatorUser' }
+        },
+    ]
 
   export default {
     name: 'ContractList',

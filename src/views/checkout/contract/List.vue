@@ -57,11 +57,13 @@
 
 
       <a-row :gutter="48" style="margin-top: 10px">
-        <a-col :md="12" :sm="24">
-          结算列表
-          <a-button type="success" @click="handleToCompleted" style="margin-left: 10px">新增竣工证书</a-button>
+        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button type="success" @click="handleToCompleted">新增竣工证书</a-button>
           <a-button type="success" style="margin-left: 10px" @click="handleToAdd">新增合同结算</a-button>
           <a-button type="success" style="margin-left: 10px">打印工程财务结算书</a-button>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          结算列表
         </a-col>
       </a-row>
       <s-table
