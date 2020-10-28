@@ -26,7 +26,7 @@
         </a-row>
       </a-form>
 
-      <a-tabs default-active-key="1">
+      <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="合同结算">
           <contract-settlement></contract-settlement>
         </a-tab-pane>

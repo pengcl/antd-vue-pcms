@@ -128,6 +128,7 @@ export default {
     } else {
       this.form.contract.id = 0
       this.form.contract.isDeleted = false
+      this.form.contract.currencyID = 3
       this.form.master = {}
       ProjectService.view(this.ProjectGUID).then(res => {
         this.project = res.result.data
