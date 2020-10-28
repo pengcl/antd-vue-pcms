@@ -8,7 +8,8 @@ const API = {
   create: '/api/services/app/Contract/CreateContractAllInfo',
   update: '/api/services/app/Contract/UpdateContractAllInfo',
   vendors: '/api/services/app/Contract/GetVendorList',
-  centers: '/api/services/app/ProjectCostCenter/GetProjectCostCenters'
+  centers: '/api/services/app/ProjectCostCenter/GetProjectCostCenters',
+  amount: '/api/services/app/Contract/GetContractAmountByBQList'
 }
 
 const ContractService = {}
@@ -81,6 +82,14 @@ ContractService.centers = function (Id) {
     url: API.centers,
     method: 'GET',
     params: { Id }
+  })
+}
+
+ContractService.amount = function (contractCatrgory, params) {
+  return request({
+    url: API.amount + '?contractCatrgory=' + contractCatrgory,
+    method: 'POST',
+    data: params
   })
 }
 
