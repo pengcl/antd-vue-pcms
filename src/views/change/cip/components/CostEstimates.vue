@@ -1,26 +1,33 @@
 <template>
-  <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
       	<div class="table-wrapper">
         <table>
           <thead>
           <tr>
-            <th colspan="23">
+            <th colspan="25">
               <a-button :disabled="type === 'view'" icon="plus" @click="add()">
                 新增
+              </a-button>
+              <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
+                重置
               </a-button>
               <a-button :disabled="type === 'view'">
                 按原合同条款
               </a-button>
-               <a-button type="primary" :disabled="type === 'view'">
+               <a-button type="primary" :disabled="type === 'view'" @click="countAmount()">
                 计算金额
               </a-button>
             </th>
           </tr>
           <tr>
-            <th style="width: 5%" rowspan="2">清单编号</th>
-            <th style="width: 5%" rowspan="2">标段</th>
+            <th rowspan="2">操作</th>
+            <th rowspan="2">
+              带数项目
+            </th>
+            <th style="width: 60px" rowspan="2">清单编号</th>
+            <th style="width: 60px" rowspan="2">标段</th>
             <th style="width: 5%" rowspan="2">楼栋</th>
             <th style="width: 5%" rowspan="2">分部</th>
             <th style="width: 5%" rowspan="2">分项</th>
@@ -51,6 +58,21 @@
           </thead>
           <tbody>
           	<tr v-if="!item.isDeleted" v-for="(item,index) in data.vobQlst" :key="item.id">
+          		<td>
+                  <div style="width: 220px;">
+                    <a-button @click="add(item.srNo)" :disabled="type === 'view'" icon="plus">
+                      添加子项
+                    </a-button>
+                    <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                      删除
+                    </a-button>
+                  </div>
+                </td>
+                <td>
+                  <a-icon
+                    @click="item.isCarryData = !item.isCarryData"
+                    :type="item.isCarryData ? 'check-square' : 'border'"/>
+                </td>
                 <td>
                   <a-input style="width:100px" :disabled="true" :value="item.srNo"></a-input>
                 </td>
@@ -180,7 +202,6 @@
   }
 
   function getNo (str, key, items) {
-    console.log('str',str,items)
     const isRoot = str === '0' || !str
     let result
     items = items.filter(item => !item.isDeleted)
@@ -217,6 +238,10 @@
 		      }
         },
 	    created () {
+	      this.data.vobQlst.sort((a, b) => {
+	        return compare(a.srNo, b.srNo)
+	      })
+	      
 	      BaseService.itemTypes(contractTypes[this.contract.contractCategory + 1]).then(res => {
 	        this.selection.itemTypes = res.result.data
 	      })
@@ -274,14 +299,20 @@
 	        data.contractID = this.id
 	        data.srNo = newSrNo
 	        data.isCarryData = false
+	        data.id = 0
+	        data.isDeleted = false
 	        this.data.vobQlst.push(data)
 	      },
-	      del (index) {
-	        if (this.data.vobQlst[index].isTemp) {
-	          this.data.vobQlst.splice(index, 1)
-	        } else {
-	          this.data.vobQlst[index].isDeleted = true
-	        }
+	       del (index) {
+	        const str = this.data.vobQlst[index].srNo
+	        const items = this.data.vobQlst.filter(item => item.srNo.indexOf(str) === 0)
+	        items.forEach(item => {
+	          if (item.isTemp) {
+	            this.data.vobQlst.splice(index, 1)
+	          } else {
+	            item.isDeleted = true
+	          }
+	        })
 	        this.$forceUpdate()
 	      },
 	      clear () {
@@ -322,6 +353,18 @@
 	        item.subAmountWork = item.quantityWork * item.unitPriceWork
 	        item.subAmountWorkMat = item.quantityWorkMat * item.unitPriceWorkMat
 	        item.allAmount = item.subAmountMaterial + item.subAmountWork + item.subAmountWorkMat
+	      },
+	      countAmount(){
+	      
+	      	ChangeService.bqAmount(this.data.vobQlst).then(item=>{
+	      		if(item.result.statusCode == 200){
+	      			this.data.voMasterInfo.voTotalAmountDecrease = item.result.data.voTotalAmountDecrease
+	      			this.data.voMasterInfo.voTotalAmountIncrease = item.result.data.voTotalAmountIncrease
+	      			this.data.voMasterInfo.voAmount = item.result.data.voAmount
+	      		}
+	      		this.$message.info('计算金额完成')
+	      		console.log('bqAmount',item)
+	      	})
 	      }
 	    }
     }
@@ -357,7 +400,7 @@
         }
       }
     }
-
+    
     tbody {
       tr {
         td {
@@ -370,6 +413,14 @@
             margin-right: 10px;
           }
         }
+      }
+      
+      input {
+    		width :  60px;
+      }
+    
+      .ant-select {
+    		width :  120px;
       }
     }
   }

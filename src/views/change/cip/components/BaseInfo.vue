@@ -183,12 +183,12 @@
         <a-form-item label="变更造价估算">
           <a-row>
             <a-col :span="2">
-              <a-input value="增加" :disabled="true"></a-input>
+              <a-input :value="data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease > 0 ? '增加' : '减少'" :disabled="true"></a-input>
             </a-col>
             <a-col :span="16">
               <a-input-number
               :disabled="true"
-              :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease-data.voMasterInfo.voTotalAmountDecrease)"
+              :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease)"
               ></a-input-number> 元
             </a-col>
           </a-row>

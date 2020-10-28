@@ -9,7 +9,8 @@ const API = {
   update: '/api/services/app/VO/UpdateVOAllInfo',
   contractParty : '/api/services/app/VO/GetPartyByContract',
   sendCopyParty : '/api/services/app/VO/GetSendCopyParty',
-  accumulateAmount : '/api/services/app/VO/GetAccumulateAmount'
+  accumulateAmount : '/api/services/app/VO/GetAccumulateAmount',
+  bqAmount : '/api/services/app/VO/GetVOAmountByBQList'
 }
 
 const ChangeService = {}
@@ -118,6 +119,17 @@ ChangeService.accumulateAmount = function(contractGuid){
 	    url: API.accumulateAmount,
 	    method: 'get',
 	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 计算造价估算金额
+ */
+ChangeService.bqAmount = function(parameter){
+	return request({
+	    url: API.bqAmount,
+	    method: 'post',
+	    data: parameter
 	  })
 }
 
