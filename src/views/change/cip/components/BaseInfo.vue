@@ -6,7 +6,7 @@
           <a-input
            :disabled="true"
            placeholder="请输入项目管理指令编码"
-            v-model="data.voMasterInfo.voNo"
+            :value="data.voMasterInfo.voNo"
           ></a-input>
         </a-form-item>
       </a-col>
@@ -14,7 +14,7 @@
         <a-form-item label="项目管理指令发出日期">
           <a-input
            :disabled="true"
-           v-model="data.voMasterInfo.creationTime"
+           :value="data.voMasterInfo.creationTime"
           ></a-input>
         </a-form-item>
       </a-col>
@@ -22,7 +22,7 @@
         <a-form-item label="项目管理指令最后更新日期">
           <a-input
            :disabled="true"
-           v-model="data.voMasterInfo.lastModificationTime"
+           :value="data.voMasterInfo.lastModificationTime"
            ></a-input>
         </a-form-item>
       </a-col>
@@ -39,10 +39,13 @@
           <tbody>
           <tr>
             <td>
-              <a-form-item
-               	v-model="data."
-                <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
-              </a-form-item>
+            	   <a-select
+                placeholder="请选择"
+               >
+                  <a-select-option v-for="option in selection.contractParties" :key="option.partID" :value="option.partID">
+                    {{option.partName }}
+                  </a-select-option>
+               </a-select>
             </td>
           </tr>
           </tbody>
@@ -60,8 +63,10 @@
             <td>
               <a-select
                 placeholder="请选择"
-                v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
+              >
+                 <a-select-option v-for="option in selection.sendCopyParties" :key="option.partID" :value="option.partID">
+                    {{option.partName }}
+                  </a-select-option>
               </a-select>
             </td>
           </tr>
@@ -102,25 +107,25 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="此工作指令按下述理由发出">
         	  
-          <a-checkbox-group v-model="data.voMasterInfo.reasonType" v-if="data.voMasterInfo.voType==='现场管理'">
+          <a-checkbox-group :value="splitVal(data.voMasterInfo.reasonType)" v-if="data.voMasterInfo.voType==='现场管理'">
             <a-checkbox value="紧急工程(安全)">紧急工程(安全)</a-checkbox>
             <a-checkbox value="索偿">索偿</a-checkbox>
             <a-checkbox value="其他">其他</a-checkbox>
           </a-checkbox-group>
           
-          <a-checkbox-group v-model="data.voMasterInfo.reasonType" v-if="data.voMasterInfo.voType==='设计变更'">
+          <a-checkbox-group :value="splitVal(data.voMasterInfo.reasonType)" v-if="data.voMasterInfo.voType==='设计变更'">
             <a-checkbox value="设计要求">设计要求</a-checkbox>
             <a-checkbox value="其他">其他</a-checkbox>
           </a-checkbox-group>
           
-          <a-checkbox-group v-model="data.voMasterInfo.reasonType"  v-if="data.voMasterInfo.voType==='其他变更'">
+          <a-checkbox-group :value="splitVal(data.voMasterInfo.reasonType)"  v-if="data.voMasterInfo.voType==='其他变更'">
             <a-checkbox value="法规要求">法规要求</a-checkbox>
             <a-checkbox value="人工/材料差价">人工/材料差价</a-checkbox>
             <a-checkbox value="延长顾问服务期之费用">延长顾问服务期之费用</a-checkbox>
             <a-checkbox value="其他">其他</a-checkbox>
           </a-checkbox-group>
           
-          <a-checkbox-group v-model="data.voMasterInfo.reasonType" v-if="data.voMasterInfo.voType==='暂转固'">
+          <a-checkbox-group :value="splitVal(data.voMasterInfo.reasonType)" v-if="data.voMasterInfo.voType==='暂转固'">
             <a-checkbox value="定款使用">暂定款使用</a-checkbox>
             <a-checkbox value="选择項目使用">选择項目使用</a-checkbox>
             <a-checkbox value="暂定料价及单价调整">暂定料价及单价调整</a-checkbox>
@@ -306,7 +311,10 @@
       }
     },
     created () {
-    		console.log('this.data',this.data);
+    		
+    		ChangeService.sendCopyParty({}).then(item=>{
+    			this.selection.sendCopyParties = item.result.data
+    		})
     },
     props: {
       data: {
@@ -327,71 +335,22 @@
       }
     },
     watch: {
-      'data.contract.contractCategory' (val) {
-        this.selection.masters = []
-        ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
-          this.selection.masters = res.result.data
-          this.$forceUpdate()
-        })
-      }
+    		'contract.contractGuid'(value){
+    			const contractPartyParams = { contractGuid : this.contract.contractGuid , masterContractID : this.contract.masterContractID, contractCategory : this.contract.contractCategory }
+	    		ChangeService.contractParty(contractPartyParams).then(item=>{
+	    			this.selection.contractParties = item.result.data
+	    			console.log('this.selection.contractParties',item)
+	    			this.$forceUpdate()
+	    		})
+    		}
     },
     methods: {
-      filterParties (partyType) {
-        const items = []
-        if (this.data.contractPartylst.forEach) {
-          this.data.contractPartylst.forEach(item => {
-            if (item.partyType === partyType) {
-              items.push(item)
-            }
-          })
-        }
-        return items
-        // return this.data.contractPartylst.__proto__.filter(item => item.partyType === type)
-      },
-      filterMaster (input, option) {
-        console.log(option.componentOptions.propsData)
-        return (
-          option.componentOptions.propsData.value.indexOf(input.toUpperCase()) >= 0
-        )
-      },
-      select (value, item) {
-        this.data.master = JSON.parse(item.data.key)
-        this.data.contract.masterContractID = this.data.master.contractGuid
-      },
       partyChange (value, item) {
         console.log(value, item.data.key)
         // item.partyID = ''
       },
-      addParty (partyType) {
-        const party = {
-          _id: Date.parse(new Date().toString()),
-          contractID: this.id,
-          id: 0,
-          partyID: 0,
-          partyName: '',
-          partyGuid: '',
-          partyType: partyType,
-          percentage: 0
-        }
-        this.data.contractPartylst.push(party)
-      },
-      clear (partyType) {
-        const items = []
-        this.data.contractPartylst.forEach(item => {
-          if (item.partyType !== partyType) {
-            items.push(item)
-          }
-        })
-        this.data.contractPartylst = items
-      },
-      del (key, id) {
-        let index = 0
-        this.data.contractPartylst.forEach((item, i) => {
-          if (item[key] === id) {
-            index = i
-          }
-        })
-        this.data.contractPartylst.splice(index, 1)
+      splitVal (val){
+      	return val ? val.split(';') : null;
       }
     }
   }

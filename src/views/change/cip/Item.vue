@@ -103,13 +103,12 @@ import { SwaggerService } from '@/api/swagger.service'
 		      tabActiveKey: 1,
 		      loading: false,
 		      contract: SwaggerService.getForm('ContractOutputDto'),
-		      form : SwaggerService.getForm('VOAllInfoDto')
+		      form : SwaggerService.getForm('VOAllInfoDto'),
 		    }
 		  },
 		  created () {
 	        ChangeService.changeItem({guid :this.contractGuid}).then(res => {
 	        		this.contract = res.result
-	        		console.log('contract',this.contract)
 	        })
 		    if (this.id !== '0') {
 		      ChangeService.item(this.id).then(res => {
