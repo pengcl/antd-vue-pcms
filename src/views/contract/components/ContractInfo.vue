@@ -1,33 +1,38 @@
 <template>
-  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form-model
+    ref="form"
+    :model="data.contract"
+    :rules="rules"
+    :label-col="{ span: 8 }"
+    :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="基本币种"
+          prop="baseCurrencyID"
         >
           <a-select
             placeholder="请选择"
-            v-model="data.contract.baseCurrencyID"
-            v-decorator="['data.contract.baseCurrencyID', { rules: [{required: true, message: '请选择'}] }]">
+            v-model="data.contract.baseCurrencyID">
             <a-select-option v-for="currency in selection.currencies" :key="currency.id" :value="currency.id">
               {{ currency.nameCN }}
             </a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="币种"
+          prop="currencyID"
         >
           <a-select
             placeholder="请选择"
-            v-model="data.contract.currencyID"
-            v-decorator="['data.contract.currencyID', { rules: [{required: true, message: '请选择'}] }]">
+            v-model="data.contract.currencyID">
             <a-select-option v-for="currency in selection.currencies" :key="currency.id" :value="currency.id">
               {{ currency.nameCN }}
             </a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
@@ -64,8 +69,7 @@
           <a-input
             :disabled="true"
             placeholder="请填写原合同金额(大写)"
-            :value="data.master.contractAmountText"
-            v-decorator="['data.master.contractAmountText', { initialValue: '', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
+            :value="data.master.contractAmountText"/>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -77,17 +81,17 @@
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="是否需出差"
+          prop="isNeedTrip"
         >
           <a-select
             placeholder="请选择"
-            v-model="data.contract.isNeedTrip"
-            v-decorator="['data.contract.isNeedTrip', { rules: [{required: true, message: '请选择'}] }]">
-            <a-select-option :value="true">是</a-select-option>
-            <a-select-option :value="false">否</a-select-option>
+            v-model="data.contract.isNeedTrip">
+            <a-select-option :value="1">是</a-select-option>
+            <a-select-option :value="0">否</a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
@@ -211,7 +215,7 @@
       <contract-info-fluctuation-clause :data="data" :type="type" :id="id"></contract-info-fluctuation-clause>
       <contract-info-payment-terms :data="data" :type="type" :id="id"></contract-info-payment-terms>
     </a-row>
-  </a-form>
+  </a-form-model>
 </template>
 
 <script>
@@ -232,7 +236,12 @@
       return {
         date: null,
         selection: {},
-        loading: false
+        loading: false,
+        rules: {
+          baseCurrencyID: [{ required: true, message: '请选择基本币种', trigger: 'change' }],
+          currencyID: [{ required: true, message: '请选择币种', trigger: 'change' }],
+          isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }]
+        }
       }
     },
     created () {
