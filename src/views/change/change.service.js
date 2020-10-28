@@ -8,7 +8,8 @@ const API = {
   create: '/api/services/app/VO/CreateAllVoInfo',
   update: '/api/services/app/VO/UpdateVOAllInfo',
   contractParty : '/api/services/app/VO/GetPartyByContract',
-  sendCopyParty : '/api/services/app/VO/GetSendCopyParty'
+  sendCopyParty : '/api/services/app/VO/GetSendCopyParty',
+  accumulateAmount : '/api/services/app/VO/GetAccumulateAmount'
 }
 
 const ChangeService = {}
@@ -105,6 +106,18 @@ ChangeService.sendCopyParty = function(parameter){
 	    url: API.sendCopyParty,
 	    method: 'get',
 	    params: parameter
+	  })
+}
+
+
+/**
+ * 获取合同变更相关累计金额信息
+ */
+ChangeService.accumulateAmount = function(contractGuid){
+	return request({
+	    url: API.accumulateAmount,
+	    method: 'get',
+	    params: {contractGuid}
 	  })
 }
 

@@ -2,15 +2,19 @@
   <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
+      	<div class="table-wrapper">
         <table>
           <thead>
           <tr>
             <th colspan="23">
-              <a-button :disabled="type === 'view'" icon="plus">
+              <a-button :disabled="type === 'view'" icon="plus" @click="add()">
                 新增
               </a-button>
               <a-button :disabled="type === 'view'">
                 按原合同条款
+              </a-button>
+               <a-button type="primary" :disabled="type === 'view'">
+                计算金额
               </a-button>
             </th>
           </tr>
@@ -46,46 +50,280 @@
           </tr>
           </thead>
           <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
+          	<tr v-if="!item.isDeleted" v-for="(item,index) in data.vobQlst" :key="item.id">
+                <td>
+                  <a-input style="width:100px" :disabled="true" :value="item.srNo"></a-input>
+                </td>
+                <td>
+                  <a-input v-model="item.section"></a-input>
+                </td>
+                <td>
+                  <a-input v-model="item.building"></a-input>
+                </td>
+                <td></td>
+                <td></td>
+                <td>
+                  <a-input v-model="item.remark1"></a-input>
+                </td>
+                <td>
+                  <a-input v-model="item.remark2"></a-input>
+                </td>
+                <td>
+                  <a-input v-model="item.description"></a-input>
+                </td>
+                <td><!--{{ item.costCenter }}-->
+                  <a-select
+                    :default-value="item | getValue(index)"
+                    style="width: 200px"
+                    mode="multiple"
+                    @change="centerChange">
+                    <a-select-option
+                      :value="index + ':' + center.id + ':' + center.costCenterName"
+                      :itemIndex="index"
+                      v-for="center in selection.centers"
+                      :key="JSON.stringify(center)">
+                      {{ center.costCenterName }}
+                    </a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-select
+                    placeholder="请选择"
+                    v-model="item.itemType"
+                    v-decorator="['item.itemType', { rules: [{required: true, message: '请选择'}] }]">
+                    <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">{{
+                      item.nameCN }}
+                    </a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-select
+                    placeholder="请选择"
+                    v-model="item.unitMaterial"
+                    v-decorator="['item.unitMaterial', { rules: [{required: true, message: '请选择'}] }]">
+                    <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
+                      item.nameCN }}
+                    </a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-input @change="valueChange(item)" v-model="item.quantityMaterial"></a-input>
+                </td>
+                <td>
+                  <a-input @change="valueChange(item)" v-model="item.unitPriceMaterial"></a-input>
+                </td>
+                <td>
+                  <a-input :disabled="true" v-model="item.subAmountMaterial"></a-input>
+                </td>
+                <td>
+                  <a-select
+                    placeholder="请选择"
+                    v-model="item.unitWork"
+                    v-decorator="['item.unitWork', { rules: [{required: true, message: '请选择'}] }]">
+                    <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
+                      item.nameCN }}
+                    </a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-input @change="valueChange(item)" v-model="item.quantityWork"></a-input>
+                </td>
+                <td>
+                  <a-input @change="valueChange(item)" v-model="item.unitPriceWork"></a-input>
+                </td>
+                <td>
+                  <a-input :disabled="true" v-model="item.subAmountWork"></a-input>
+                </td>
+                <td>
+                  <a-select
+                    placeholder="请选择"
+                    v-model="item.unitWorkMat"
+                    v-decorator="['item.unitWorkMat', { rules: [{required: true, message: '请选择'}] }]">
+                    <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
+                      item.nameCN }}
+                    </a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-input @change="valueChange(item)" v-model="item.quantityWorkMat"></a-input>
+                </td>
+                <td>
+                  <a-input @change="valueChange(item)" v-model="item.unitPriceWorkMat"></a-input>
+                </td>
+                <td>
+                  <a-input :disabled="true" v-model="item.subAmountWorkMat"></a-input>
+                </td>
+                <td>
+                  <a-input :disabled="true" v-model="item.allAmount"></a-input>
+                </td>
+              </tr>
           </tbody>
         </table>
+        </div>
       </a-col>
     </a-row>
   </a-form>
 </template>
 
 <script>
+
+  import { compare } from '@/utils/util'
+  import { Base as BaseService } from '@/api/base'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { ChangeService } from '@/views/change/change.service'
+  import { ContractService } from '@/views/contract/contract.service'
+  
+  const contractTypes = {
+    '15': 'contract',
+    '16': 'sa',
+    '17': 'nsc'
+  }
+
+  function getNo (str, key, items) {
+    console.log('str',str,items)
+    const isRoot = str === '0' || !str
+    let result
+    items = items.filter(item => !item.isDeleted)
+    items.sort((a, b) => {
+      return compare(b[key], a[key])
+    })
+    if (items.length === 0) {
+      return '1'
+    }
+    let arr
+    if (isRoot) {
+      arr = items[0][key].split('.')
+      arr[0] = parseInt(arr[0], 10) + 1 + ''
+      result = arr[0]
+    } else {
+      items = items.filter(item => item[key].indexOf(str) === 0)
+      arr = items[0][key].split('.')
+      if (items.length === 1) {
+        arr.push('0')
+      }
+      arr.reverse()
+      arr[0] = parseInt(arr[0], 10) + 1 + ''
+      result = arr.reverse().join('.')
+    }
+    return result
+  }
     export default {
         name: 'CostEstimates',
         data () {
             return {
-                form: this.$form.createForm(this)
-            }
-        }
+		        selection: {},
+		        form: this.$form.createForm(this),
+		        loading: false
+		      }
+        },
+	    created () {
+	      BaseService.itemTypes(contractTypes[this.contract.contractCategory + 1]).then(res => {
+	        this.selection.itemTypes = res.result.data
+	      })
+	      ContractService.centers(this.project.id).then(res => {
+	        this.selection.centers = res.result.data
+	        this.$forceUpdate()
+	      })
+	      BaseService.unitTypes().then(res => {
+	        this.selection.unitTypes = res.result.data
+	        this.$forceUpdate()
+	      })
+	    },
+	    filters: {
+	      filterDeleted (items) {
+	        return items.filter(item => !item.isDeleted)
+	      },
+	      getValue (item, index) {
+	        const values = []
+	        const ids = item.costCenter ? item.costCenter.split(':') : []
+	        const names = item.costCenterName ? item.costCenterName.split(':') : []
+	        ids.forEach((id, idsIndex) => {
+	          const value = index + ':' + id + ':' + names[idsIndex]
+	          values.push(value)
+	        })
+	        return values
+	      }
+	    },
+	    props: {
+	      data: {
+	        type: Object,
+	        default: null
+	      },
+	      type: {
+	        type: String,
+	        default: 'view'
+	      },
+	      id: {
+	        type: String,
+	        default: '0'
+	      },
+	      contract: {
+	        type: Object,
+	        default: null
+	      },
+	      project : {
+	      	type : Object,
+	      	default : null
+	      }
+	    },
+	    methods: {
+	      add (stringNo) {
+	        const newSrNo = getNo(stringNo, 'srNo', this.data.vobQlst)
+	        const data = SwaggerService.getForm('VOBQDto')
+	        data.isTemp = true
+	        data.contractID = this.id
+	        data.srNo = newSrNo
+	        data.isCarryData = false
+	        this.data.vobQlst.push(data)
+	      },
+	      del (index) {
+	        if (this.data.vobQlst[index].isTemp) {
+	          this.data.vobQlst.splice(index, 1)
+	        } else {
+	          this.data.vobQlst[index].isDeleted = true
+	        }
+	        this.$forceUpdate()
+	      },
+	      clear () {
+	        const list = []
+	        this.data.vobQlst.forEach(item => {
+	          item.isDeleted = true
+	          if (!item.isTemp) {
+	            list.push(item)
+	          }
+	          this.$forceUpdate()
+	        })
+	      },
+	      centerChange (values) {
+	        let ids = ''
+	        let names = ''
+	        let item
+	        values.forEach(value => {
+	          const arr = value.split(':')
+	          item = this.data.vobQlst[arr[0]]
+	          const id = arr[1]
+	          const name = arr[2]
+	          if (ids) {
+	            ids = ids + ':' + id
+	          } else {
+	            ids = id
+	          }
+	          if (names) {
+	            names = names + ':' + name
+	          } else {
+	            names = name
+	          }
+	        })
+	        item.costCenter = ids
+	        item.costCenterName = names
+	      },
+	      valueChange (item) {
+	        item.subAmountMaterial = item.quantityMaterial * item.unitPriceMaterial
+	        item.subAmountWork = item.quantityWork * item.unitPriceWork
+	        item.subAmountWorkMat = item.quantityWorkMat * item.unitPriceWorkMat
+	        item.allAmount = item.subAmountMaterial + item.subAmountWork + item.subAmountWorkMat
+	      }
+	    }
     }
 </script>
 

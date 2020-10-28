@@ -327,14 +327,18 @@
                 this.$router.push({ path: `/change/cip/item/${record.cipGuid}?type=edit&contractGuid=${this.queryParam2.contractGuid}` })
             },
             handleToAdd () {
-                this.$router.push({ path: `/change/cip/item/0?type=add&contractGuid=${this.queryParam2.contractGuid}` })
+            		if(this.queryParam2.contractGuid != undefined){
+                		this.$router.push({ path: `/change/cip/item/0?type=add&contractGuid=${this.queryParam2.contractGuid}` })
+                }else{
+                		this.$message.warn('请先选择合同')
+                }
             },
             handleToCertificate () {
             		if(this.tableSelected.voGuid != undefined){
             			console.log('url',`/change/certificate/${this.tableSelected.cipGuid}`);
                 		this.$router.push({ path: `/change/certificate/${this.tableSelected.cipGuid}` })
                 }else{
-                		this.$message.warn('请选择变更记录');
+                		this.$message.warn('请选择变更记录')
                 }
             },
             handleAdd () {
