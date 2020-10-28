@@ -5,19 +5,20 @@ const API = {
   changeItems : '/api/services/app/VO/GetVOListByContractGuid',
   changeItem : '/api/services/app/Contract/GetContractByGuid',
   item: '/api/services/app/VO/GetVOAllInfoByGuid',
-  create: '/api/services/app/Contract/CreateContractAllInfo',
-  update: '/api/services/app/Contract/UpdateContractAllInfo'
+  create: '/api/services/app/VO/CreateAllVoInfo',
+  update: '/api/services/app/VO/UpdateVOAllInfo',
+  contractParty : '/api/services/app/VO/GetPartyByContract',
+  sendCopyParty : '/api/services/app/VO/GetSendCopyParty'
 }
 
 const ChangeService = {}
 
 /**
- * list func
+ * 获取合同列表
  * parameter: null
  * @param parameter
  * @returns {*}
  */
-
 ChangeService.items = function (parameter) {
   return request({
     url: API.items,
@@ -26,14 +27,12 @@ ChangeService.items = function (parameter) {
   })
 }
 
-
 /**
- * list func
+ * 获取合同变更列表
  * parameter: null
  * @param parameter
  * @returns {*}
  */
-
 ChangeService.changeItems = function (parameter) {
   return request({
     url: API.changeItems,
@@ -42,7 +41,9 @@ ChangeService.changeItems = function (parameter) {
   })
 }
 
-
+/**
+ * 获取合同详情
+ */
 ChangeService.changeItem = function (parameter) {
   return request({
     url: API.changeItem,
@@ -52,7 +53,7 @@ ChangeService.changeItem = function (parameter) {
 }
 
 /**
- * item func
+ * 获取变更信息详情
  * 对应swagger VOAllInfoDto
  */
 ChangeService.item = function (voGuid) { 
@@ -63,6 +64,9 @@ ChangeService.item = function (voGuid) {
   })
 }
 
+/**
+ * 创建合同变更信息
+ */
 ChangeService.create = function (parameter) {
   return request({
     url: API.create,
@@ -71,6 +75,9 @@ ChangeService.create = function (parameter) {
   })
 }
 
+/**
+ * 修改合同变更信息
+ */
 ChangeService.update = function (parameter) {
   return request({
     url: API.update,
@@ -80,15 +87,25 @@ ChangeService.update = function (parameter) {
 }
 
 /**
- * login func
- * parameter: {
- *     username: '',
- *     password: '',
- *     remember_me: true,
- *     captcha: '12345'
- * }
- * @param parameter
- * @returns {*}
+ * 获取合同变更承包/顾问信息 接收公司列表
  */
+ChangeService.contractParty = function(parameter){
+	return request({
+	    url: API.contractParty,
+	    method: 'get',
+	    params: parameter
+	  })
+}
+
+/**
+ * 获取合同变更抄送公司列表
+ */
+ChangeService.sendCopyParty = function(parameter){
+	return request({
+	    url: API.sendCopyParty,
+	    method: 'get',
+	    params: parameter
+	  })
+}
 
 export { ChangeService }
