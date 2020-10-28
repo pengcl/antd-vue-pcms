@@ -1,5 +1,5 @@
 <template>
-  <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
         <a-form-item label="保修金/保固金/保留金比率上限">
@@ -8,7 +8,7 @@
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-button type="primary">全部按原合同条款</a-button>
+        <a-button type="primary" :disabled="type === 'view'" @click="repleaceAll()">全部按原合同条款</a-button>
       </a-col>
       <a-col :md="24" :sm="24">
         保修金/保固金/保留金：
@@ -18,13 +18,13 @@
           <thead>
           <tr>
             <th colspan="3">
-              <a-button :disabled="type === 'view'" icon="plus">
+              <a-button @click="addRetention()" :disabled="type === 'view'" icon="plus">
                 新增
               </a-button>
-              <a-button :disabled="type === 'view'" icon="stop">
+              <a-button @click="clear('voRetentionlst')" :disabled="type === 'view'" icon="stop">
                 重置
               </a-button>
-              <a-button :disabled="type === 'view'" icon="block">
+              <a-button @click="replaceRetentionsByContract()" :disabled="type === 'view'" icon="block">
                 按原合同条款
               </a-button>
             </th>
@@ -36,17 +36,17 @@
           </tr>
           </thead>
           <tbody>
-          <tr>
+          <tr v-if="!item.isDeleted" v-for="(item, index) in data.voRetentionlst" :key="index">
             <td>
-              <a-button :disabled="type === 'view'" icon="close">
+              <a-button @click="del(item,index,'voRetentionlst')" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input v-model="item.description"></a-input>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number v-model="item.percentage" :min="0"></a-input-number>
             </td>
           </tr>
           </tbody>
@@ -60,13 +60,13 @@
           <thead>
           <tr>
             <th colspan="4">
-              <a-button :disabled="type === 'view'" icon="plus">
+              <a-button @click="addRelease()" :disabled="type === 'view'" icon="plus">
                 新增
               </a-button>
-              <a-button :disabled="type === 'view'" icon="stop">
+              <a-button @click="clear('voRetentionReleaselst')" :disabled="type === 'view'" icon="stop">
                 重置
               </a-button>
-              <a-button :disabled="type === 'view'" icon="block">
+              <a-button  @click="replaceReleasesByContract()":disabled="type === 'view'" icon="block">
                 按原合同条款
               </a-button>
             </th>
@@ -79,20 +79,20 @@
           </tr>
           </thead>
           <tbody>
-          <tr>
+          <tr v-if="!item.isDeleted" v-for="(item,index) in data.voRetentionReleaselst" :key="index">
             <td>
-              <a-button :disabled="type === 'view'" icon="close">
+              <a-button @click="del(item,index,'voRetentionReleaselst')" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.description"></a-input>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.releaseTerms"></a-input>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number :disabled="type === 'view'" v-model="item.percentage" :min="0"></a-input-number>
             </td>
           </tr>
           </tbody>
@@ -173,14 +173,138 @@
 </template>
 
 <script>
+
+	
+  import { compare } from '@/utils/util'
+  import { Base as BaseService } from '@/api/base'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { ChangeService } from '@/views/change/change.service'
+  import { ContractService } from '@/views/contract/contract.service'
     export default {
         name: 'AttachmentData',
-        data () {
-            return {
-                form: this.$form.createForm(this)
-            }
-
-        }
+		data () {
+		  return {
+		    date: null,
+		    selection: {},
+		    loading: false
+		  }
+		},
+		props: {
+		  data: {
+		    type: Object,
+		    default: null
+		  },
+		  type: {
+		    type: String,
+		    default: 'view'
+		  },
+		  id: {
+		    type: String,
+		    default: '0'
+		  },
+		  contract : {
+		  	type : Object,
+		  	default : null
+		  }
+		},
+	    created () {
+	      BaseService.unitTypes().then(res => {
+	        this.selection.unitTypes = res.result.data
+	        this.$forceUpdate()
+	      })
+	    },
+		methods: {
+		  addRetention () {
+		    const item = {
+		      id: 0,
+		      isDeleted: false,
+		      isTemp : true,
+		      itemKey : '',
+		      void : '',
+		      description: '',
+		      percentage: ''
+		    }
+		    this.data.voRetentionlst.push(item)
+		  },
+		  del (item,index,target) {
+		  	console.log('item',item,index,target)
+		    item.isDeleted = true
+		    if(item.isTemp){
+		    		this.data[target].splice(index,1)
+		    }
+		    console.log(this.data[target])
+		    this.$forceUpdate()
+		  },
+		  clear (target) {
+		  	const list = []
+		    this.data[target].forEach(item => {
+		      item.isDeleted = true
+		      if(!item.isTemp){
+		      	list.push(item)
+		      }
+		    })
+		    this.data[target] = list
+		    this.$forceUpdate()
+		  },
+		  addRelease () {
+	        const item = {
+	          id: 0,
+	          isDeleted: false,
+	          isTemp : true,
+	          itemKey : '',
+		      void : '',
+	          description: '',
+	          percentage: '',
+	          releaseTerms : ''
+	        }
+	        this.data.voRetentionReleaselst.push(item)
+	      },
+	      replaceRetentionsByContract(){
+	      	this.clear('voRetentionlst')
+	      	ChangeService.retentions(this.contract.contractGuid).then(item=>{
+	      		if(item.result.statusCode == 200){
+	      			const items = item.result.data
+	      			items.forEach(retention => {
+	      				const temp = {
+				          id: 0,
+				          isDeleted: false,
+				          isTemp : true,
+				          itemKey : '',
+					      void : '',
+				          description: retention.description,
+				          percentage: retention.percentage
+				        }
+				        this.data.voRetentionlst.push(temp)
+	      			})
+	      		}
+	      	})
+	      },
+	      replaceReleasesByContract(){
+	      	this.clear('voRetentionReleaselst')
+	      	ChangeService.releases(this.contract.contractGuid).then(item=>{
+	      		if(item.result.statusCode == 200){
+	      			const items = item.result.data
+	      			items.forEach(release => {
+	      				const temp = {
+				          id: 0,
+				          isDeleted: false,
+				          isTemp : true,
+				          itemKey : '',
+					      void : '',
+				          description: release.description,
+				          percentage: release.percentage,
+				          releaseTerms : release.releaseTerms
+				        }
+				        this.data.voRetentionReleaselst.push(temp)
+	      			})
+	      		}
+	      	})
+	      },
+	      repleaceAll(){
+	      	this.replaceRetentionsByContract()
+	      	this.replaceReleasesByContract()
+	      }
+		}
     }
 </script>
 

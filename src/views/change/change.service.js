@@ -10,7 +10,10 @@ const API = {
   contractParty : '/api/services/app/VO/GetPartyByContract',
   sendCopyParty : '/api/services/app/VO/GetSendCopyParty',
   accumulateAmount : '/api/services/app/VO/GetAccumulateAmount',
-  bqAmount : '/api/services/app/VO/GetVOAmountByBQList'
+  bqAmount : '/api/services/app/VO/GetVOAmountByBQList',
+  retentions : '/api/services/app/Contract/GetContractRetentionlstByContractGuid',
+  releases : '/api/services/app/Contract/GetContractRetentionReleaselstByContractGuid',
+  bqList : '/api/services/app/Contract/GetContractBQByContractGuid'
 }
 
 const ChangeService = {}
@@ -130,6 +133,41 @@ ChangeService.bqAmount = function(parameter){
 	    url: API.bqAmount,
 	    method: 'post',
 	    data: parameter
+	  })
+}
+
+/**
+ * 获取合同保修金/保留金列表
+ */
+ChangeService.retentions = function(contractGuid){
+	return request({
+	    url: API.retentions,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+
+/**
+ * 获取合同保修金/保留金返还列表
+ */
+ChangeService.releases = function(contractGuid){
+	return request({
+	    url: API.releases,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+
+/**
+ * 获取合同清单列表
+ */
+ChangeService.bqList = function(contractGuid){
+	return request({
+	    url: API.bqList,
+	    method: 'get',
+	    params: {contractGuid}
 	  })
 }
 

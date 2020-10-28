@@ -322,6 +322,7 @@
 	          if (!item.isTemp) {
 	            list.push(item)
 	          }
+	          this.data.vobQlst = list
 	          this.$forceUpdate()
 	        })
 	      },

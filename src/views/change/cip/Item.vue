@@ -56,7 +56,7 @@
               <budget-list title="预算调整" :data="form" :type="type" :id="id"></budget-list>
             </a-tab-pane>
             <a-tab-pane key="4" tab="附加资料">
-              <attachment-data title="附加资料" :data="form" :type="type" :id="id"></attachment-data>
+              <attachment-data title="附加资料" :data="form" :contract="contract" :type="type" :id="id"></attachment-data>
             </a-tab-pane>
             <a-tab-pane key="5" tab="附件">
               <attachment-list :data="form" :type="type" :id="id"></attachment-list>

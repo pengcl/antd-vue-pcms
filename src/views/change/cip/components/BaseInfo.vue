@@ -41,6 +41,8 @@
             <td>
             	   <a-select
                 placeholder="请选择"
+                v-model="to"
+                @change="toChange"
                >
                   <a-select-option v-for="option in selection.contractParties" :key="option.partID" :value="option.partID">
                     {{option.partName }}
@@ -64,6 +66,8 @@
               <a-select
 				mode="multiple"
                 placeholder="请选择"
+                v-model="cc"
+                @change="ccChange"
               >
                  <a-select-option v-for="option in selection.sendCopyParties" :key="option.partID" :value="option.partID">
                     {{option.partName }}
@@ -318,6 +322,8 @@
     name: 'BaseInfo',
     data () {
       return {
+     	to : [],
+      	cc : [],
         selection: {},
         loading: false
       }
@@ -347,6 +353,9 @@
       }
     },
     watch: {
+    		'to'(value){
+    			console.log('toValue',value)
+    		},
     		'contract.contractGuid'(value){
     			const contractPartyParams = { contractGuid : this.contract.contractGuid , masterContractID : this.contract.masterContractID, contractCategory : this.contract.contractCategory }
 	    		ChangeService.contractParty(contractPartyParams).then(item=>{
@@ -362,11 +371,28 @@
 	    				this.selection.accumulateAmount = {}
 	    			}
 	    		})
+	    		
+	    		this.data.voPartylst.forEach(item => {
+	    			if(!item.isSendCopy){
+	    				this.to.push(item.partID)
+	    			}
+	    		})
+	    		this.data.voPartyLst.forEach(item => {
+	    			if(item.isSendCopy){
+	    				this.cc.push(item.partID)
+	    			}
+	    		})
     		}
     },
     methods: {
-      partyChange (value, item) {
+      toChange (value) {
         // item.partyID = ''
+        cnosole.log('toChange',value)
+        this.to = [value]
+      },
+      ccChange(value){
+      	console.log('ccChange',value)
+      	this.cc = value
       },
       splitVal (val){
       	return val ? val.split(';') : null;
