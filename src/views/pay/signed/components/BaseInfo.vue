@@ -184,12 +184,54 @@
                   删除
                 </a-button>
               </td>
-              <td>{{item.moneyType}}</td>
-              <td>{{item.paymentPurpose}}</td>
-              <td>{{item.paymentAmount}}</td>
-              <td>{{getVendorName(item.vendorType)}}</td>
-              <td>{{getBankName(item.vendorType,item.bankName)}}</td>
-              <td>{{item.bankAccounts}}</td>
+              <td>
+                <a-select
+                  v-model="item.moneyType"
+                  placeholder="请选择"
+                  v-decorator="['item.moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
+                  <a-select-option v-for="type in moneyTypes" :value="type"
+                                   :key="type">{{type}}
+                  </a-select-option>
+                </a-select>
+              </td>
+              <td>
+                <a-input v-model="item.paymentPurpose"
+                         placeholder="请输入"
+                         v-decorator="['item.paymentPurpose', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
+              </td>
+              <td>
+                <a-input v-model="item.paymentAmount"
+                         placeholder="请输入"
+                         v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
+              </td>
+              <td>
+                <a-select
+                  @change="onChange"
+                  placeholder="请选择"
+                  v-decorator="['vendorType', { rules: [{required: true, message: '请选择收款单位'}] }]">
+                  <a-select-option v-for="type in vendorTypes"
+                                   :value="type.vendorGID"
+                                   :key="type.vendorGID">{{type.vendorName}}
+                  </a-select-option>
+                </a-select>
+              </td>
+              <td>
+                <a-select
+                  :disabled="bankList.length < 1"
+                  @change="bankChange"
+                  placeholder="请选择"
+                  v-decorator="['bankName', { rules: [{required: true, message: '请选择收款单位'}] }]">
+                  <a-select-option v-for="type in bankList"
+                                   :value="type.gid"
+                                   :key="type.gid">{{type.bankName}}
+                  </a-select-option>
+                </a-select>
+              </td>
+              <td>
+                <a-input :disabled="true"
+                         v-model="item.bankAccounts"
+                         v-decorator="['bankAccounts', { rules: [{required: true, message: '请选择收款单位'}] }]"></a-input>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -301,14 +343,15 @@
                 <td>合同金额</td>
                 <td>
                   <a-input :disabled="true" :value="item.contractAmount"></a-input>
-                 </td>
+                </td>
                 <td>预计结算金额</td>
                 <td>
                   <a-input :disabled="true" :value="item.contractEstimateAmount"></a-input>
                 </td>
                 <td>累计支付金额</td>
                 <td>
-                  <a-input :disabled="true" :value="item.paymentAmountTotal + '/' + item.paymentAmountTotalRatio + '%'"></a-input>
+                  <a-input :disabled="true"
+                           :value="item.paymentAmountTotal + '/' + item.paymentAmountTotalRatio + '%'"></a-input>
                 </td>
               </tr>
               <tr>
@@ -424,7 +467,9 @@
                 model: null,
                 form: null,
                 items: [],
-                vendorTypes: []
+                vendorTypes: [],
+                moneyTypes: [],
+                bankList: []
             }
         },
         created () {
@@ -435,6 +480,9 @@
                     this.paymentTypes = res.result.data
                 }
             )
+            SignedService.moneyTypes().then(res => {
+                this.moneyTypes = res.result.data
+            })
             SignedService.certificateTypes().then(res => {
                 this.certificateTypes = res.result.data
             })
@@ -480,11 +528,30 @@
                 })
                 return bankName
             },
+            onChange (value, option) {
+                this.form.setFieldsValue({
+                    bankName: '',
+                    bankAccounts: ''
+                })
+                this.vendorTypes.forEach(item => {
+                    if (item.vendorGID === value) {
+                        this.bankList = item.bankList
+                    }
+                })
+            },
+            bankChange (value, option) {
+                this.bankList.forEach(item => {
+                    if (item.gid === value) {
+                        this.form.setFieldsValue({
+                            bankAccounts: item.bankAccounts
+                        })
+                    }
+                })
+            },
             showForm (items) {
                 const obj = {}
                 items.push(obj)
                 this.model = items[items.length - 1]
-                this.visible = true
             },
             ok () {
                 const form = this.$refs.createModal.form

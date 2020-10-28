@@ -107,7 +107,7 @@
         </a-row>
       </a-form>
 
-      <a-tabs default-active-key="1">
+      <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="公司员工">
           <company-staff :items="form.vendorEmployeeList"></company-staff>
         </a-tab-pane>

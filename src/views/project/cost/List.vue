@@ -28,22 +28,12 @@
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-form-item label="项目编号">
+            <a-form-item label="成本中心编号">
               <a-input v-model="queryParam.ContractNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="项目状态">
-              <a-input v-model="queryParam.ContractName"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="项目名称（中文）">
-              <a-input v-model="queryParam.VendorName"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="项目名称（英文）">
+            <a-form-item label="成本中心名称">
               <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>

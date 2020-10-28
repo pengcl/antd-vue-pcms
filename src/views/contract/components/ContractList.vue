@@ -239,6 +239,9 @@
       }
     },
     created () {
+      this.data.contractBQlst.sort((a, b) => {
+        return compare(a.srNo, b.srNo)
+      })
       BaseService.itemTypes(contractTypes[this.data.contract.contractCategory + 1]).then(res => {
         console.log(res)
         this.selection.itemTypes = res.result.data
@@ -297,11 +300,15 @@
         this.data.contractBQlst.push(data)
       },
       del (index) {
-        if (this.data.contractBQlst[index].isTemp) {
-          this.data.contractBQlst.splice(index, 1)
-        } else {
-          this.data.contractBQlst[index].isDeleted = true
-        }
+        const str = this.data.contractBQlst[index].srNo
+        const items = this.data.contractBQlst.filter(item => item.srNo.indexOf(str) === 0)
+        items.forEach(item => {
+          if (item.isTemp) {
+            items.splice(index, 1)
+          } else {
+            item.isDeleted = true
+          }
+        })
         this.$forceUpdate()
       },
       clear () {

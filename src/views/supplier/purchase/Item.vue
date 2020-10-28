@@ -111,14 +111,14 @@
         </a-row>
       </a-form>
 
-      <a-tabs default-active-key="1">
+      <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="公司员工">
           <company-staff :vendor="form.vendor" :items="form.vendorEmployeeList"></company-staff>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="变更信息">
+        <a-tab-pane key="2" tab="变更信息" v-if="type !== 'update'">
           <change-info></change-info>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="合同信息">
+        <a-tab-pane key="3" tab="合同信息" v-if="type !== 'update'">
           <contract-info></contract-info>
         </a-tab-pane>
         <a-tab-pane key="4" tab="银行信息">
@@ -202,7 +202,7 @@
       }
     },
     created () {
-      this.dialog.show({
+      /*this.dialog.show({
         content: '添加成功',
         title: '',
         confirmText: '继续添加',
@@ -213,7 +213,7 @@
         } else {
           this.$router.push('/supplier/purchase/list')
         }
-      })
+      })*/
       this.form.vendor = SwaggerService.getForm(DTO[this.type])
       if (this.id !== '0') {
         SupplierService[this.type + 'Entity'](this.id).then(res => {

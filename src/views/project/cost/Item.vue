@@ -1,5 +1,5 @@
 <template>
-  <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增项目' : '编辑项目'">
+  <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增业态成本中心' : '编辑业态成本中心'">
     <a-card :bordered="false">
       <div v-if="id !== '0'" class="table-page-search-wrapper">
         <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
@@ -32,7 +32,7 @@
           </a-row>
         </a-form>
       </div>
-      <a-tabs default-active-key="1">
+      <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="业态指标">
           <a-form :form="baseForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">

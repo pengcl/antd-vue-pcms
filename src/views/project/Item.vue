@@ -32,7 +32,7 @@
           </a-row>
         </a-form>
       </div>
-      <a-tabs default-active-key="1">
+      <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
@@ -433,7 +433,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group>
-            <a-button  @click="approve()" type="success">
+            <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
@@ -455,121 +455,122 @@
   </page-header-wrapper>
 </template>
 <script>
-import { SwaggerService } from '@/api/swagger.service'
-import { ProjectService } from '@/views/project/project.service'
-import { City as CityService } from '@/api/city'
-import { Regional as RegionalService } from '@/api/regional'
-import { Currency as CurrencyService } from '@/api/currency'
-import { Company as CompanyService } from '@/api/company'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { ProjectService } from '@/views/project/project.service'
+    import { City as CityService } from '@/api/city'
+    import { Regional as RegionalService } from '@/api/regional'
+    import { Currency as CurrencyService } from '@/api/currency'
+    import { Company as CompanyService } from '@/api/company'
 
-const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
-export default {
-  name: 'ProjectItem',
-  data () {
-    return {
-      regionalOffices: [],
-      loading: false,
-      value: '',
-      selection: {},
-      dataSource: [],
-      selectedItems: [],
-      data: null,
-      dto: {},
-      form: {}
-    }
-  },
-  created () {
-    console.log('create')
-    this.dto = SwaggerService.getDto('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'Input')
-    this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
-    if (this.id !== '0') {
-      ProjectService.item(this.id).then(res => {
-        this.data = res.result.data
-        this.form = SwaggerService.getValue(this.form, res.result.data)
-      })
-    }
-    this.form.cityID = this.$route.query.cityId ? parseInt(this.$route.query.cityId, 10) : ''
-    ProjectService.types().then(res => {
-      this.selection.types = res.result.data
-    })
-    ProjectService.tree().then(res => {
-      this.selection.cities = res.result.data.citys
-      this.$forceUpdate()
-    })
-    CurrencyService.list().then(res => {
-      this.selection.currencies = res.result.data.items
-    })
-  },
-  watch: {
-    'form.cityID' (value) {
-      CompanyService.list(value).then(res => {
-        this.selection.companies = res.result.data
-        this.$forceUpdate()
-      })
-    }
-  },
-  computed: {
-    id () {
-      return this.$route.params.id
-    },
-    type () {
-      return this.$route.query.type
-    },
-    filteredOptions () {
-      return OPTIONS.filter(o => !this.selectedItems.includes(o))
-    }
-  },
-  methods: {
-    approve () {
-      console.log('approve')
-    },
-    save () {
-      ProjectService[this.type](this.form).then(res => {
-        console.log(res)
-      })
-    },
-    handleChange (selectedItems) {
-      this.selectedItems = selectedItems
-    },
-    loadCities (selectedOptions) {
-      const targetOption = selectedOptions[selectedOptions.length - 1]
-      targetOption.loading = true
-      CityService.list(targetOption.value).then(res => {
-        targetOption.loading = false
-        const items = []
-        res.result.data.items.forEach(item => {
-          items.push({
-            value: item.id,
-            label: item.nameCN
-          })
-        })
-        targetOption.children = items
-        this.regionalOffices = [...this.regionalOffices]
-      })
-    },
-    onChange (value, items) {
-      if (items) {
-        const city = items[1]
-        if (city) {
-          this.form.cityID = city.value
+    const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+    export default {
+        name: 'ProjectItem',
+        data () {
+            return {
+                regionalOffices: [],
+                loading: false,
+                value: '',
+                selection: {},
+                dataSource: [],
+                selectedItems: [],
+                data: null,
+                dto: {},
+                form: {}
+            }
+        },
+        created () {
+            console.log('create')
+            this.dto = SwaggerService.getDto('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'Input')
+            this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
+            if (this.id !== '0') {
+                ProjectService.item(this.id).then(res => {
+                    this.data = res.result.data
+                    this.form = SwaggerService.getValue(this.form, res.result.data)
+                })
+            }
+            this.form.currencyCode = 3
+            this.form.cityID = this.$route.query.cityId ? parseInt(this.$route.query.cityId, 10) : ''
+            ProjectService.types().then(res => {
+                this.selection.types = res.result.data
+            })
+            ProjectService.tree().then(res => {
+                this.selection.cities = res.result.data.citys
+                this.$forceUpdate()
+            })
+            CurrencyService.list().then(res => {
+                this.selection.currencies = res.result.data.items
+            })
+        },
+        watch: {
+            'form.cityID' (value) {
+                CompanyService.list(value).then(res => {
+                    this.selection.companies = res.result.data
+                    this.$forceUpdate()
+                })
+            }
+        },
+        computed: {
+            id () {
+                return this.$route.params.id
+            },
+            type () {
+                return this.$route.query.type
+            },
+            filteredOptions () {
+                return OPTIONS.filter(o => !this.selectedItems.includes(o))
+            }
+        },
+        methods: {
+            approve () {
+                console.log('approve')
+            },
+            save () {
+                ProjectService[this.type](this.form).then(res => {
+                    console.log(res)
+                })
+            },
+            handleChange (selectedItems) {
+                this.selectedItems = selectedItems
+            },
+            loadCities (selectedOptions) {
+                const targetOption = selectedOptions[selectedOptions.length - 1]
+                targetOption.loading = true
+                CityService.list(targetOption.value).then(res => {
+                    targetOption.loading = false
+                    const items = []
+                    res.result.data.items.forEach(item => {
+                        items.push({
+                            value: item.id,
+                            label: item.nameCN
+                        })
+                    })
+                    targetOption.children = items
+                    this.regionalOffices = [...this.regionalOffices]
+                })
+            },
+            onChange (value, items) {
+                if (items) {
+                    const city = items[1]
+                    if (city) {
+                        this.form.cityID = city.value
+                    }
+                } else {
+                    this.form.cityID = ''
+                }
+            },
+            back () {
+                console.log('back')
+                this.$router.push({ path: `/project/list` })
+            },
+            handleToEdit () {
+                console.log('handleToEdit')
+                this.$router.push({ path: `/project/item/${this.id}?type=edit` })
+            }
         }
-      } else {
-        this.form.cityID = ''
-      }
-    },
-    back () {
-      console.log('back')
-      this.$router.push({ path: `/project/list` })
-    },
-    handleToEdit () {
-      console.log('handleToEdit')
-      this.$router.push({ path: `/project/item/${this.id}?type=edit` })
     }
-  }
-}
 </script>
 <style>
-.ant-btn-group {
-  margin-right: 8px;
-}
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 </style>

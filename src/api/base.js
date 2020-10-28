@@ -5,7 +5,8 @@ const API = {
   unitTypes: '/api/services/app/GeneralType/GetUnitTypes',
   itemTypes: '/api/services/app/Contract/GetItemTypes',
   full: '/api/services/app/City/GetProvinceCityAreaTree',
-  cities: '/api/services/app/City/GetProvinceCityTree'
+  cities: '/api/services/app/City/GetProvinceCityTree',
+  retentionTypes: '/api/services/app/GeneralType/GetRetentionTermTypes'
 }
 
 const Base = {}
@@ -38,6 +39,14 @@ Base.itemTypes = function (sType) {
     url: API.itemTypes,
     method: 'GET',
     params: { sType }
+  })
+}
+
+Base.retentionTypes = function () {
+  return request({
+    url: API.retentionTypes,
+    method: 'GET',
+    params: { }
   })
 }
 
