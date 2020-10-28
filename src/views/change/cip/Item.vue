@@ -45,7 +45,7 @@
             </a-col>
           </a-row>
 
-          <a-tabs default-active-key="1">
+          <a-tabs default-active-key="1" :animated="false">
             <a-tab-pane key="1" tab="基本资料">
               <base-info title="基本资料" :data="form" :contract="contract" :type="type" :id="id"></base-info>
             </a-tab-pane>

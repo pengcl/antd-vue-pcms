@@ -97,11 +97,6 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
-            background-color: #f5f5f5;
-          }
-        }
         th {
           background-color: #06c;
           color: #fff;

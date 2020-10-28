@@ -415,6 +415,7 @@ export const asyncRouterMap = [
           {
             path: '/checkout/project/list',
             name: 'CheckoutProjectList',
+            hidden: true,
             component: () => import('@/views/checkout/project/List'),
             meta: { title: 'menu.checkout.project.list', keepAlive: true, permission: ['checkout'] }
           },
@@ -428,6 +429,7 @@ export const asyncRouterMap = [
           {
             path: '/checkout/finance/list',
             name: 'CheckoutFinanceList',
+            hidden: true,
             component: () => import('@/views/checkout/finance/List'),
             meta: { title: 'menu.checkout.finance.list', keepAlive: true, permission: ['checkout'] }
           },

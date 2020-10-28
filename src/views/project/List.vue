@@ -55,12 +55,13 @@
               title="编辑">
             </a-button>
             <a-button
+              v-if="!record.isEndNode"
               @click="handleToEdit(record,true)"
               type="primary"
               class="btn-info"
               icon="plus-square"
               style="margin-left: 4px"
-              title="新增分期">
+              :title="record.isRoot ? '新增分期' : '新增阶段'">
             </a-button>
           </template>
         </span>
@@ -82,7 +83,7 @@
         if (res.result.data) {
             result.totalPage = Math.ceil(res.result.data.projects.items.length / params.pageSize)
             result.totalCount = res.result.data.projects.items.length
-            result.data = formatList(res.result.data.projects.items)
+            result.data = formatList(res.result.data.projects.items, true)
         } else {
             result.totalPage = 0
             result.totalCount = 0
@@ -91,13 +92,15 @@
         return result
     }
 
-    function formatList (items) {
+    function formatList (items, isRoot) {
         const list = []
         items.forEach(item => {
+            item.isRoot = isRoot
             if (item.childs) {
-                item.children = formatList(item.childs.items)
+                item.children = formatList(item.childs.items, false)
             } else {
                 item.children = null
+                item.isEndNode = true
             }
             list.push(item)
         })

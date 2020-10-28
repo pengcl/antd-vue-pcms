@@ -1,7 +1,7 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <a-tabs default-active-key="1">
+      <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
           <base-info :bordered="true"></base-info>
         </a-tab-pane>
