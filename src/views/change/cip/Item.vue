@@ -50,7 +50,7 @@
               <base-info title="基本资料" :data="form" :contract="contract" :type="type" :id="id"></base-info>
             </a-tab-pane>
             <a-tab-pane key="2" tab="造价估算">
-              <cost-estimates title="造价估算" :data="form" :type="type" :id="id"></cost-estimates>
+              <cost-estimates title="造价估算" :data="form" :contract="contract" :project="project" :type="type" :id="id"></cost-estimates>
             </a-tab-pane>
             <a-tab-pane key="3" tab="预算调整">
               <budget-list title="预算调整" :data="form" :type="type" :id="id"></budget-list>
@@ -94,7 +94,8 @@
     import AttachmentList from '@/views/change/cip/components/AttachmentList'
     import Process from '@/views/change/cip/components/Process'
     import { ChangeService } from '@/views/change/change.service'
-import { SwaggerService } from '@/api/swagger.service'
+	import { ProjectService } from '@/views/project/project.service'
+	import { SwaggerService } from '@/api/swagger.service'
     export default {
     		name : 'ChangeItem',
         components: { Process, AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo },
@@ -104,15 +105,20 @@ import { SwaggerService } from '@/api/swagger.service'
 		      loading: false,
 		      contract: SwaggerService.getForm('ContractOutputDto'),
 		      form : SwaggerService.getForm('VOAllInfoDto'),
+		      project : null
 		    }
 		  },
 		  created () {
 	        ChangeService.changeItem({guid :this.contractGuid}).then(res => {
 	        		this.contract = res.result
+	        		ProjectService.view2(this.contract.projectID).then(res => {
+		          this.project = res.result.data
+		        })
 	        })
 		    if (this.id !== '0') {
 		      ChangeService.item(this.id).then(res => {
 		        this.form = res.result.data
+		        console.log('form',this.form)
 		        if(this.form.voMasterInfo == null){
 		        		this.form.voMasterInfo = {};
 		        }
