@@ -89,11 +89,11 @@ SignedService.vendorTypes = function (contractGid) {
   })
 }
 
-SignedService.viewInfo = function (GID) {
+SignedService.viewInfo = function (gid) {
   return request({
     url: API.viewInfo,
     method: 'get',
-    params: { GID }
+    params: { gid }
   })
 }
 
