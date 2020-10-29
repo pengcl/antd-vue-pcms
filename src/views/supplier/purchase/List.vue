@@ -39,7 +39,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="id"
+        rowKey="logGID"
         bordered
         :columns="columns"
         :data="loadData"
@@ -62,9 +62,9 @@
             @click="handleToEdit(record)"></a-button>
         </template>
         <template slot="vendorName" slot-scope="text">
-            <div class="vendor">
-              <span>{{text}}</span>
-            </div>
+          <div class="vendor">
+            <span>{{ text }}</span>
+          </div>
         </template>
         <template slot="detail" slot-scope="text, record">
           <p>{{ record.vendorAbbreviation }}</p>
