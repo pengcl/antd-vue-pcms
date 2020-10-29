@@ -88,7 +88,7 @@
 <script>
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
+    //import { getRoleList, getServiceList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
@@ -242,7 +242,7 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
+            //getRoleList({ t: new Date() })
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {
