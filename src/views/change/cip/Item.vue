@@ -111,6 +111,7 @@
 		  created () {
 	        ChangeService.changeItem({guid :this.contractGuid}).then(res => {
 	        		this.contract = res.result
+	        		console.log('change.item.cntract',this.contract)
 	        		ProjectService.view2(this.contract.projectID).then(res => {
 		          this.project = res.result.data
 		        })
@@ -118,7 +119,7 @@
 		    if (this.id !== '0') {
 		      ChangeService.item(this.id).then(res => {
 		        this.form = res.result.data
-		        console.log('form',this.form)
+	        		console.log('change.item.data',this.form)
 		        if(this.form.voMasterInfo == null){
 		        		this.form.voMasterInfo = {};
 		        }
