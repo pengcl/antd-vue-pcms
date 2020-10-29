@@ -188,6 +188,7 @@
           }
         ]
         validateForms.forEach((item, index) => {
+          console.log(this.$refs[item.key].$refs.form)
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
               isValid = false

@@ -6,11 +6,19 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
+                <a-tree-select
+                  v-model="value"
+                  style="width: 100%"
+                  :tree-data="cities"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  search-placeholder="请选择"
+                  @select="onSelect"
+                />
+                <!--<a-cascader
                   :options="cities"
                   placeholder="请选择"
                   @change="onChange"
-                />
+                />-->
               </a-form-item>
             </a-col>
           </a-row>
@@ -104,7 +112,6 @@
 
 <script>
   import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
 
   import { ContractService } from '@/views/contract/contract.service'
   import { fixedList } from '@/utils/util'
@@ -150,7 +157,7 @@
             title: '建立者',
             dataIndex: 'creatorUser',
             scopedSlots: { customRender: 'creatorUser' }
-        },
+        }
     ]
 
   export default {
@@ -165,6 +172,7 @@
         // create model
         cities: [],
         city: '',
+        value: '',
         show: false,
         // 查询参数
         queryParam: {},
@@ -178,12 +186,13 @@
       }
     },
     created () {
-      getRoleList({ t: new Date() })
+      // getRoleList({ t: new Date() })
       ProjectService.tree().then(res => {
         const cities = []
         res.result.data.citys.forEach(item => {
           const children = formatList(item.projects.items)
           cities.push({
+            selectable: false,
             label: item.city.nameCN,
             value: item.city.id,
             children: children
@@ -207,13 +216,12 @@
         this.show = !this.show
         this.$refs.table.refresh(true)
       },
-      onChange (value) {
-        if (value.length >= 2) {
-          this.queryParam.ProjectGUID = value[value.length - 1]
-          this.$refs.table.refresh(true)
-        } else {
+      onSelect (value) {
+        if (typeof value === 'number') {
           this.city = value
-          this.$refs.table.refresh(true)
+          this.queryParam.ProjectGUID = ''
+        } else {
+          this.queryParam.ProjectGUID = value
         }
         this.$forceUpdate()
       }

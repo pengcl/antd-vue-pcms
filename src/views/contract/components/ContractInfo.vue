@@ -14,7 +14,7 @@
           <a-select
             placeholder="请选择"
             v-model="data.contract.baseCurrencyID">
-            <a-select-option v-for="currency in selection.currencies" :key="currency.id" :value="currency.id">
+            <a-select-option v-for="(currency,index) in selection.currencies" :key="index" :value="currency.id">
               {{ currency.nameCN }}
             </a-select-option>
           </a-select>
@@ -28,7 +28,7 @@
           <a-select
             placeholder="请选择"
             v-model="data.contract.currencyID">
-            <a-select-option v-for="currency in selection.currencies" :key="currency.id" :value="currency.id">
+            <a-select-option v-for="(currency,index) in selection.currencies" :key="index" :value="currency.id">
               {{ currency.nameCN }}
             </a-select-option>
           </a-select>
@@ -85,12 +85,12 @@
           label="是否需出差"
           prop="isNeedTrip"
         >
-          <a-select
+          <!--<a-select
             placeholder="请选择"
             v-model="data.contract.isNeedTrip">
-            <a-select-option :value="1">是</a-select-option>
-            <a-select-option :value="0">否</a-select-option>
-          </a-select>
+            <a-select-option :value="true">是</a-select-option>
+            <a-select-option :value="false">否</a-select-option>
+          </a-select>-->
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
