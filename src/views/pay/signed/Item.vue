@@ -38,10 +38,17 @@
 <script>
     import BaseInfo from '@/views/pay/signed/components/BaseInfo'
     import PayDetail from './components/PayDetail'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { SignedService } from './signed.service'
 
     export default {
         name: 'Item',
-        components: { PayDetail, BaseInfo},
+        components: { PayDetail, BaseInfo },
+        data () {
+            return {
+                form: SwaggerService.getForm('ContractAllInfoDto')
+            }
+        },
         computed: {
             id () {
                 return this.$route.params.id
@@ -49,6 +56,19 @@
             type () {
                 return this.$route.query.type
             }
+        },
+        created () {
+            /*if (this.id !== '0') {
+                if (type === 'view') {
+                    SignedService.viewInfo(this.id).then(res => {
+                        this.form = res.result.data
+                    })
+                } else {
+                    SignedService.updateInfo(this.id).then(res => {
+                        this.form = res.result.data
+                    })
+                }
+            }*/
         }
 
     }

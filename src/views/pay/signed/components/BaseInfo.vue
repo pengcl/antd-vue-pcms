@@ -87,8 +87,7 @@
             <a-textarea></a-textarea>
           </a-form-item>
         </a-col>
-        <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;">支付明细</a-col>
-        <a-col :md="24" :sm="24" style="font-size: 16px;font-weight: bold;text-indent: 1em">原合同</a-col>
+        <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
         <a-col :md="24" :sm="24">
           <table>
             <tbody>
@@ -151,7 +150,7 @@
             </tbody>
           </table>
         </a-col>
-        <a-col :md="24" :sm="24">
+        <!--<a-col :md="24" :sm="24">
           <table>
             <thead>
             <tr>
@@ -186,23 +185,20 @@
               </td>
               <td>
                 <a-select
-                  v-model="item.moneyType"
                   placeholder="请选择"
-                  v-decorator="['item.moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
+                  v-decorator="['moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
                   <a-select-option v-for="type in moneyTypes" :value="type"
                                    :key="type">{{type}}
                   </a-select-option>
                 </a-select>
               </td>
               <td>
-                <a-input v-model="item.paymentPurpose"
-                         placeholder="请输入"
-                         v-decorator="['item.paymentPurpose', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
+                <a-input placeholder="请输入"
+                         v-decorator="['paymentPurpose', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
               </td>
               <td>
-                <a-input v-model="item.paymentAmount"
-                         placeholder="请输入"
-                         v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
+                <a-input placeholder="请输入"
+                         v-decorator="['paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
               </td>
               <td>
                 <a-select
@@ -229,13 +225,13 @@
               </td>
               <td>
                 <a-input :disabled="true"
-                         v-model="item.bankAccounts"
-                         v-decorator="['bankAccounts', { rules: [{required: true, message: '请选择收款单位'}] }]"></a-input>
+                         v-model="bankAccounts"></a-input>
               </td>
             </tr>
             </tbody>
           </table>
-        </a-col>
+        </a-col>-->
+        <base-info-payment :data="data" :type="type" :id="id"></base-info-payment>
         <a-col :md="24" :sm="24">
           <table>
             <thead>
@@ -323,7 +319,6 @@
             </tbody>
           </table>
         </a-col>
-        <a-col :md="24" :sm="24" style="font-size: 16px;font-weight: bold;text-indent: 1em">专业分包合同</a-col>
         <div v-for="item in baseInfo.contractNSCInfolst" :key="item.contractGID">
           <a-col :md="24" :sm="24">
             <table>
@@ -452,10 +447,11 @@
 
     import { SignedService } from '../signed.service'
     import CreateBankForm from '@/views/pay/signed/modules/CreateBankForm'
+    import BaseInfoPayment from '@/views/pay/signed/components/baseInfo/payment'
 
     export default {
         name: 'BaseInfo',
-        components: { CreateBankForm },
+        components: { BaseInfoPayment, CreateBankForm },
         data () {
             return {
                 selection: {},
@@ -465,11 +461,12 @@
                 certificateTypes: [],
                 visible: false,
                 model: null,
-                form: null,
+                form: this.$form.createForm(this),
                 items: [],
                 vendorTypes: [],
                 moneyTypes: [],
-                bankList: []
+                bankList: [],
+                bankAccounts: ''
             }
         },
         created () {
@@ -528,10 +525,10 @@
                 })
                 return bankName
             },
-            onChange (value, option) {
+            onChange (value) {
+                this.bankAccounts = ''
                 this.form.setFieldsValue({
                     bankName: '',
-                    bankAccounts: ''
                 })
                 this.vendorTypes.forEach(item => {
                     if (item.vendorGID === value) {
@@ -539,19 +536,18 @@
                     }
                 })
             },
-            bankChange (value, option) {
+            bankChange (value) {
                 this.bankList.forEach(item => {
                     if (item.gid === value) {
-                        this.form.setFieldsValue({
-                            bankAccounts: item.bankAccounts
-                        })
+                        console.log(item.bankAccounts)
+                        this.bankAccounts = item.bankAccounts
                     }
                 })
             },
             showForm (items) {
                 const obj = {}
                 items.push(obj)
-                this.model = items[items.length - 1]
+                // this.model = items[items.length - 1]
             },
             ok () {
                 const form = this.$refs.createModal.form
