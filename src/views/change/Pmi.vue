@@ -24,21 +24,21 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
-              <a-input></a-input>
+              <a-input v-model="queryParam.ContractName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
-              <a-input></a-input>
+              <a-input v-model="queryParam.ContractNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="乙方单位">
-              <a-input></a-input>
+              <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-button type="success">搜索</a-button>
+            <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>
         </a-row>
@@ -363,6 +363,10 @@
                     date: moment(new Date())
                 }
             },
+		      search () {
+		        this.show = !this.show
+		        this.$refs.table.refresh(true)
+		      },
             onChange (value) {
                 if (value.length >= 2) {
                     this.queryParam.ProjectGUID = value[value.length - 1]
