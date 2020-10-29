@@ -9,6 +9,8 @@ const API = {
   moneyTypes: '/api/services/app/Payment/GetPaymenTypeList',
   certificateTypes: '/api/services/app/Payment/GetExpenseAccountTypeList',
   vendorTypes: '/api/services/app/Payment/GetPaymentContractVendor',
+  viewInfo: '/api/services/app/Payment/GetPaymentViewInfo',
+  updateInfo: '/api/services/app/Payment/GetPaymentUpdateInfo',
   masters: '/api/services/app/Contract/GetMasterContractInfo',
   create: '/api/services/app/Contract/CreateContractAllInfo',
   update: '/api/services/app/Contract/UpdateContractAllInfo'
@@ -84,6 +86,22 @@ SignedService.vendorTypes = function (contractGid) {
     url: API.vendorTypes,
     method: 'get',
     params: { contractGid }
+  })
+}
+
+SignedService.viewInfo = function (GID) {
+  return request({
+    url: API.viewInfo,
+    method: 'get',
+    params: { GID }
+  })
+}
+
+SignedService.updateInfo = function (GID) {
+  return request({
+    url: API.updateInfo,
+    method: 'get',
+    params: { GID }
   })
 }
 

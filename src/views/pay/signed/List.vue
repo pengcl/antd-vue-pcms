@@ -69,11 +69,13 @@
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="累计批准金额">{{contractAmt.paymentRequestAmountTotal}} 占
-                  {{contractAmt.paymentRequestAmountTotalRatio || contractAmt.paymentRequestAmountTotalRatio === 0 ? contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}
+                  {{contractAmt.paymentRequestAmountTotalRatio || contractAmt.paymentRequestAmountTotalRatio === 0 ?
+                  contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="累计付款金额">{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio || contractAmt.paymentAmountTotalRatio === 0  ?
+                <a-form-item label="累计付款金额">{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio
+                  || contractAmt.paymentAmountTotalRatio === 0 ?
                   contractAmt.paymentAmountTotalRatio + '%' : ''}}
                 </a-form-item>
               </a-col>
@@ -336,10 +338,10 @@
                 })
             },
             handleToItem (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+                this.$router.push({ path: `/pay/signed/item/${record.paymentGID}?type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
+                this.$router.push({ path: `/pay/signed/item/${record.paymentGID}?type=update` })
             },
             handleToAdd () {
                 this.$router.push({ path: `/pay/signed/item/${this.id}?type=create` })

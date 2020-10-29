@@ -89,8 +89,7 @@
             <a-textarea></a-textarea>
           </a-form-item>
         </a-col>
-        <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;">支付明细</a-col>
-        <a-col :md="24" :sm="24" style="font-size: 16px;font-weight: bold;text-indent: 1em">原合同</a-col>
+        <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
         <a-col :md="24" :sm="24">
           <table>
             <tbody>
@@ -156,98 +155,92 @@
             </tbody>
           </table>
         </a-col>
-        <a-col :md="24" :sm="24">
+        <!--<a-col :md="24" :sm="24">
           <table>
             <thead>
-              <tr>
-                <th colspan="7">
-                  <a-button icon="plus" @click="showForm(items)">
-                    新增
-                  </a-button>
-                  <a-button>
-                    附件上传
-                  </a-button>
-                  <a-button>
-                    发票管理
-                  </a-button>
-                </th>
-              </tr>
-              <tr>
-                <th>操作</th>
-                <th>款项类型</th>
-                <th>款项用途</th>
-                <th>本期支付金额</th>
-                <th>收款单位</th>
-                <th>开户银行</th>
-                <th>账号</th>
-              </tr>
+            <tr>
+              <th colspan="7">
+                <a-button icon="plus" @click="showForm(items)">
+                  新增
+                </a-button>
+                <a-button>
+                  附件上传
+                </a-button>
+                <a-button>
+                  发票管理
+                </a-button>
+              </th>
+            </tr>
+            <tr>
+              <th>操作</th>
+              <th>款项类型</th>
+              <th>款项用途</th>
+              <th>本期支付金额</th>
+              <th>收款单位</th>
+              <th>开户银行</th>
+              <th>账号</th>
+            </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in items" :key="item.id">
-                <td>
-                  <a-button @click="del(index)" icon="close">
-                    删除
-                  </a-button>
-                </td>
-                <td>
-                  <a-select
-                    v-model="item.moneyType"
-                    placeholder="请选择"
-                    v-decorator="['item.moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
-                    <a-select-option
-                      v-for="type in moneyTypes"
-                      :value="type"
-                      :key="type">{{ type }}
-                    </a-select-option>
-                  </a-select>
-                </td>
-                <td>
-                  <a-input
-                    v-model="item.paymentPurpose"
-                    placeholder="请输入"
-                    v-decorator="['item.paymentPurpose', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
-                </td>
-                <td>
-                  <a-input
-                    v-model="item.paymentAmount"
-                    placeholder="请输入"
-                    v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
-                </td>
-                <td>
-                  <a-select
-                    @change="onChange"
-                    placeholder="请选择"
-                    v-decorator="['vendorType', { rules: [{required: true, message: '请选择收款单位'}] }]">
-                    <a-select-option
-                      v-for="type in vendorTypes"
-                      :value="type.vendorGID"
-                      :key="type.vendorGID">{{ type.vendorName }}
-                    </a-select-option>
-                  </a-select>
-                </td>
-                <td>
-                  <a-select
-                    :disabled="bankList.length < 1"
-                    @change="bankChange"
-                    placeholder="请选择"
-                    v-decorator="['bankName', { rules: [{required: true, message: '请选择收款单位'}] }]">
-                    <a-select-option
-                      v-for="type in bankList"
-                      :value="type.gid"
-                      :key="type.gid">{{ type.bankName }}
-                    </a-select-option>
-                  </a-select>
-                </td>
-                <td>
-                  <a-input
-                    :disabled="true"
-                    v-model="item.bankAccounts"
-                    v-decorator="['bankAccounts', { rules: [{required: true, message: '请选择收款单位'}] }]"></a-input>
-                </td>
-              </tr>
+            <tr v-for="(item, index) in items" :key="item.id">
+              <td>
+                <a-button @click="del(index)" icon="close">
+                  删除
+                </a-button>
+              </td>
+              <td>
+                <a-select
+                  v-model="item.moneyType"
+                  placeholder="请选择"
+                  v-decorator="['item.moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
+                  <a-select-option v-for="type in moneyTypes" :value="type"
+                                   :key="type">{{type}}
+                  </a-select-option>
+                </a-select>
+              </td>
+              <td>
+                <a-input v-model="item.paymentPurpose"
+                         placeholder="请输入"
+                         v-decorator="['item.paymentPurpose', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
+              </td>
+              <td>
+                <a-input v-model="item.paymentAmount"
+                         placeholder="请输入"
+                         v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
+              </td>
+              <td>
+                <a-select
+                  @change="onChange"
+                  placeholder="请选择"
+                  v-decorator="['vendorType', { rules: [{required: true, message: '请选择收款单位'}] }]">
+                  <a-select-option v-for="type in vendorTypes"
+                                   :value="type.vendorGID"
+                                   :key="type.vendorGID">{{type.vendorName}}
+                  </a-select-option>
+                </a-select>
+              </td>
+              <td>
+                <a-select
+                  :disabled="bankList.length < 1"
+                  @change="bankChange"
+                  placeholder="请选择"
+                  v-decorator="['bankName', { rules: [{required: true, message: '请选择收款单位'}] }]">
+                  <a-select-option v-for="type in bankList"
+                                   :value="type.gid"
+                                   :key="type.gid">{{type.bankName}}
+                  </a-select-option>
+                </a-select>
+              </td>
+              <td>
+                <a-input :disabled="true"
+                         v-model="item.bankAccounts"
+                         v-decorator="['bankAccounts', { rules: [{required: true, message: '请选择收款单位'}] }]"></a-input>
+              </td>
+            </tr>
             </tbody>
           </table>
-        </a-col>
+        </a-col>-->
+        <base-info-payment :data="data" :type="type" :id="id"></base-info-payment>
         <a-col :md="24" :sm="24">
           <table>
             <thead>
@@ -464,139 +457,141 @@
 
 <script>
 
-  import { SignedService } from '../signed.service'
-  import CreateBankForm from '@/views/pay/signed/modules/CreateBankForm'
 
-  export default {
-    name: 'BaseInfo',
-    components: { CreateBankForm },
-    data () {
-      return {
-        selection: {},
-        loading: false,
-        baseInfo: {},
-        paymentTypes: [],
-        certificateTypes: [],
-        visible: false,
-        model: null,
-        form: null,
-        items: [],
-        vendorTypes: [],
-        moneyTypes: [],
-        bankList: []
-      }
-    },
-    created () {
-      SignedService.getCreateData(this.id).then(res => {
-        this.baseInfo = res.result.data
-      })
-      SignedService.paymentTypes().then(res => {
-          this.paymentTypes = res.result.data
+    import { SignedService } from '../signed.service'
+    import CreateBankForm from '@/views/pay/signed/modules/CreateBankForm'
+    import BaseInfoPayment from '@/views/pay/signed/components/baseInfo/payment'
+
+    export default {
+        name: 'BaseInfo',
+        components: { BaseInfoPayment, CreateBankForm },
+        data () {
+            return {
+                selection: {},
+                loading: false,
+                baseInfo: {},
+                paymentTypes: [],
+                certificateTypes: [],
+                visible: false,
+                model: null,
+                form: this.$form.createForm(this),
+                items: [],
+                vendorTypes: [],
+                moneyTypes: [],
+                bankList: [],
+                bankAccounts: ''
+            }
+        },
+        created () {
+            SignedService.getCreateData(this.id).then(res => {
+                this.baseInfo = res.result.data
+            })
+            SignedService.paymentTypes().then(res => {
+                    this.paymentTypes = res.result.data
+                }
+            )
+            SignedService.moneyTypes().then(res => {
+                this.moneyTypes = res.result.data
+            })
+            SignedService.certificateTypes().then(res => {
+                this.certificateTypes = res.result.data
+            })
+            SignedService.vendorTypes(this.id).then(res => {
+                this.vendorTypes = res.result.data
+            })
+        },
+        props: {
+            data: {
+                type: Object,
+                default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
+            },
+            id: {
+                type: String,
+                default: '0'
+            }
+        },
+        watch: {},
+        methods: {
+            getVendorName (id) {
+                let vendorName = ''
+                this.vendorTypes.forEach(item => {
+                    if (item.vendorGID === id) {
+                        vendorName = item.vendorName
+                    }
+                })
+                return vendorName
+            },
+            getBankName (id, gid) {
+                let bankName = ''
+                this.vendorTypes.forEach(item => {
+                    if (item.vendorGID === id) {
+                        item.bankList.forEach(v => {
+                            if (v.gid === gid) {
+                                bankName = v.bankName
+                            }
+                        })
+                    }
+                })
+                return bankName
+            },
+            onChange (value) {
+                this.bankAccounts = ''
+                this.form.setFieldsValue({
+                    bankName: '',
+                })
+                this.vendorTypes.forEach(item => {
+                    if (item.vendorGID === value) {
+                        this.bankList = item.bankList
+                    }
+                })
+            },
+            bankChange (value) {
+                this.bankList.forEach(item => {
+                    if (item.gid === value) {
+                        console.log(item.bankAccounts)
+                        this.bankAccounts = item.bankAccounts
+                    }
+                })
+            },
+            showForm (items) {
+                const obj = {}
+                items.push(obj)
+                // this.model = items[items.length - 1]
+            },
+            ok () {
+                const form = this.$refs.createModal.form
+                this.confirmLoading = true
+                form.validateFields((errors, values) => {
+                    if (!errors) {
+                        this.items.push(values)
+                        console.log(this.items)
+                        this.visible = false
+                        this.confirmLoading = false
+                        // 重置表单数据
+                        form.resetFields()
+                        // 刷新表格
+                    } else {
+                        this.confirmLoading = false
+                    }
+                })
+            },
+            del (index) {
+                this.items.splice(index, 1)
+            },
+            clear () {
+                this.items = []
+            },
+            handleCancel () {
+                this.visible = false
+                const form = this.$refs.createModal.form
+                form.resetFields() // 清理表单数据（可不做）
+            }
         }
-      )
-      SignedService.moneyTypes().then(res => {
-        this.moneyTypes = res.result.data
-      })
-      SignedService.certificateTypes().then(res => {
-        this.certificateTypes = res.result.data
-      })
-      SignedService.vendorTypes(this.id).then(res => {
-        this.vendorTypes = res.result.data
-      })
-    },
-    props: {
-      data: {
-        type: Object,
-        default: null
-      },
-      type: {
-        type: String,
-        default: 'view'
-      },
-      id: {
-        type: String,
-        default: '0'
-      }
-    },
-    watch: {},
-    methods: {
-      getVendorName (id) {
-        let vendorName = ''
-        this.vendorTypes.forEach(item => {
-          if (item.vendorGID === id) {
-            vendorName = item.vendorName
-          }
-        })
-        return vendorName
-      },
-      getBankName (id, gid) {
-        let bankName = ''
-        this.vendorTypes.forEach(item => {
-          if (item.vendorGID === id) {
-            item.bankList.forEach(v => {
-              if (v.gid === gid) {
-                bankName = v.bankName
-              }
-            })
-          }
-        })
-        return bankName
-      },
-      onChange (value, option) {
-        this.form.setFieldsValue({
-          bankName: '',
-          bankAccounts: ''
-        })
-        this.vendorTypes.forEach(item => {
-          if (item.vendorGID === value) {
-            this.bankList = item.bankList
-          }
-        })
-      },
-      bankChange (value, option) {
-        this.bankList.forEach(item => {
-          if (item.gid === value) {
-            this.form.setFieldsValue({
-              bankAccounts: item.bankAccounts
-            })
-          }
-        })
-      },
-      showForm (items) {
-        const obj = {}
-        items.push(obj)
-        this.model = items[items.length - 1]
-      },
-      ok () {
-        const form = this.$refs.createModal.form
-        this.confirmLoading = true
-        form.validateFields((errors, values) => {
-          if (!errors) {
-            this.items.push(values)
-            console.log(this.items)
-            this.visible = false
-            this.confirmLoading = false
-            // 重置表单数据
-            form.resetFields()
-            // 刷新表格
-          } else {
-            this.confirmLoading = false
-          }
-        })
-      },
-      del (index) {
-        this.items.splice(index, 1)
-      },
-      clear () {
-        this.items = []
-      },
-      handleCancel () {
-        this.visible = false
-        const form = this.$refs.createModal.form
-        form.resetFields() // 清理表单数据（可不做）
-      }
     }
-  }
 </script>
 <style lang="less" scoped>
   table {
