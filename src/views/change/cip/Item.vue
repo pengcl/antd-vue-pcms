@@ -72,13 +72,13 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success">启动审批流程</a-button>
+            <a-button type="success" v-if="type != 'view'">启动审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success">储存</a-button>
-            <a-button type="danger">关闭</a-button>
+            <a-button type="success" v-if="type != 'view'" @click="save">储存</a-button>
+            <a-button type="danger"  @click="back">关闭</a-button>
           </a-col>
         </a-row>
       </div>
@@ -145,9 +145,15 @@
 		      console.log('approve')
 		    },
 		    save () {
-		      ContractService[this.type](this.contract).then(res => {
-		        console.log(res)
-		      })
+		    	  if(this.type == 'add'){
+			      /*ChangeService.create(this.form).then(res => {
+			        console.log(res)
+			      })*/
+		      }else if(this.type == 'update'){
+		      	  /*ChangeService.update(this.form).then(res => {
+			        console.log(res)
+			      })*/
+		      }
 		    },
 		    handleChange (selectedItems) {
 		      this.selectedItems = selectedItems

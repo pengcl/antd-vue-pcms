@@ -6,8 +6,8 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
+                <a-tree-select
+                  :treeData="cities"
                   placeholder="请选择"
                   @change="onChange"
                 />
@@ -115,7 +115,7 @@
 <script>
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
+    //import { getRoleList, getServiceList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
@@ -132,7 +132,7 @@
         },
         {
             title: '结算状态',
-            dataIndex: 'settlementStatus',
+            dataIndex: 'balanceStatus',
         },
         {
             title: '合同编号',
@@ -279,7 +279,7 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
+            //getRoleList({ t: new Date() })
             //加载项目查询条件选项
             ProjectService.tree().then(res => {
                 const cities = []
@@ -289,7 +289,8 @@
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,
-                        children: children
+                        children: children,
+                        selectable : false
                     })
                 })
                 this.cities = cities

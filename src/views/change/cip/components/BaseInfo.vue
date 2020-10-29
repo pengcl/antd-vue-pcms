@@ -394,10 +394,10 @@
 		    		})
 	    		}
     		},
-    		'data.voMasterInfo.voNo'(value){
+    		'data.voMasterInfo'(value){
     			//初始化reasonType值，转换为checkboxgroup认同的值
-    			if(this.voMasterInfo.reasonType){
-    				this.reasonType = this.splitVal(this.voMasterInfo.reasonType);
+    			if(this.data.voMasterInfo.reasonType){
+    				this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType);
     				this.$forceUpdate()
     			}
     		}
