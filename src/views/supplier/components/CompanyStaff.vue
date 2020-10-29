@@ -1,13 +1,13 @@
 <template>
-  <div>
-    <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-      <a-row :gutter="48">
-        <a-col :md="24" :sm="24">
+  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+    <a-row :gutter="48">
+      <a-col :md="24" :sm="24">
+        <div class="table-wrapper">
           <table>
             <thead>
               <tr>
                 <th colspan="12">
-                  <a-button @click="showForm()" icon="plus">
+                  <a-button @click="add()" icon="plus">
                     添加员工
                   </a-button>
                   <a-button @click="clear()" icon="stop">
@@ -34,46 +34,41 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in items" :key="item.id">
+              <tr v-if="!item.isDeleted" v-for="(item, index) in items" :key="index">
                 <td>
                   <a-button @click="del(index)" icon="close">
                     删除
                   </a-button>
                 </td>
-                <td>{{ item.employeeName }}</td>
-                <td>{{ item.jobPosition }}</td>
+                <td>
+                  <a-input v-model="item.employeeName"/>
+                </td>
+                <td><a-input v-model="item.jobPosition"/></td>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>{{ item.officePhone }}</td>
-                <td>{{ item.fox }}</td>
-                <td>{{ item.mobilePhone }}</td>
-                <td>{{ item.email }}</td>
-                <td>{{ item.isIncumbent }}</td>
-                <td>{{ item.remarks }}</td>
+                <td><a-input v-model="item.officePhone"/></td>
+                <td><a-input v-model="item.fox"/></td>
+                <td><a-input v-model="item.mobilePhone"/></td>
+                <td><a-input v-model="item.email"/></td>
+                <td><a-input v-model="item.isIncumbent"/></td>
+                <td><a-input v-model="item.remarks"/></td>
               </tr>
             </tbody>
           </table>
-        </a-col>
-      </a-row>
-    </a-form>
-    <create-employee-form
-      ref="createModal"
-      :visible="visible"
-      :model="model"
-      @cancel="handleCancel"
-      @ok="ok()">
-    </create-employee-form>
-  </div>
+        </div>
+      </a-col>
+    </a-row>
+  </a-form>
 </template>
 
 <script>
 
-import CreateEmployeeForm from '@/views/supplier/modules/CreateEmployeeForm'
+import { SwaggerService } from '@/api/swagger.service'
 
 export default {
   name: 'CompanyStaff',
-  components: { CreateEmployeeForm },
+  components: { },
   props: {
     vendor: {
       type: Object,
@@ -112,11 +107,30 @@ export default {
         }
       })
     },
+    add () {
+      const item = SwaggerService.getForm('ChangeVendorEditDto_Employee')
+      item.logGID = this.vendor.logGID ? this.vendor.logGID : ''
+      item.vendorGID = this.vendor.vendorGID ? this.vendor.vendorGID : ''
+      item.isDeleted = false
+      item.isTemp = false
+      this.items.push(item)
+    },
     del (index) {
-      this.items.splice(index, 1)
+      if (this.items[index].isTemp) {
+        this.items.splice(index, 1)
+      } else {
+        this.items[index].isDeleted = true
+      }
     },
     clear () {
-      this.items = []
+      const items = []
+      this.items.forEach(item => {
+        if (!item.isTemp) {
+          item.isDeleted = true
+          items.push(item)
+        }
+      })
+      this.items = items
     },
     handleCancel () {
       this.visible = false
@@ -138,11 +152,12 @@ export default {
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;
@@ -165,6 +180,10 @@ export default {
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+
+          .ant-input {
+            min-width: 100px;
+          }
 
           button {
             margin-right: 10px;

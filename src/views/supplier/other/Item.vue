@@ -190,7 +190,7 @@ export default {
       })
     }
     SupplierService.types().then(res => {
-      this.selection.types = formatTree([res.result], ['title:packageName', 'value:packageCode', 'key:gid'])
+      this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
       this.$forceUpdate()
     })
     CitySvc.cities().then(res => {
