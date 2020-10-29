@@ -23,7 +23,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.contractRetentionlst" :key="index">
+          <tr v-for="(item, index) in data.contractRetentionlst" :key="index" v-if="!item.isDeleted">
             <td>
               <a-button @click="del(item)" :disabled="type === 'view'" icon="close">
                 删除
@@ -76,9 +76,10 @@
           percentage: ''
         }
         this.data[target].push(item)
+
       },
       del (item) {
-        item.isDisabled = true
+        item.isDeleted = true
       },
       clear (target) {
         this.data[target].forEach(item => {

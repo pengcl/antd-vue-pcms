@@ -228,46 +228,6 @@
             })
           })
         }
-
-        /* setTimeout(() => {
-          ContractService[this.type](this.form).then((res, err) => {
-            console.log(res)
-            console.log(err)
-          }).catch(() => {
-            console.log(this.dialog)
-            this.dialog.show({
-              content: '创建失败，表单未填写完整',
-              title: '',
-              confirmText: '我知道了',
-              cancel: '返回上一页'
-            }, (state) => {
-              if (state) {
-
-              } else {
-              }
-            })
-          })
-        }, 400) */
-
-        /* for (let i = 0; i < validateForms.length; i++) {
-          const item = validateForms[i]
-          if (this.$refs[item]) {
-            this.$refs[item].$refs.form.validate(valid => {
-              if (!valid) {
-                isValid = false
-              }
-            })
-          } else {
-            this.activeKey = i + 1
-            setTimeout(() => {
-              this.$refs[item].$refs.form.validate(valid => {
-                if (!valid) {
-                  isValid = false
-                }
-              })
-            }, 300)
-          }
-        } */
       },
       handleChange (selectedItems) {
         this.selectedItems = selectedItems

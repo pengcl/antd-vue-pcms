@@ -30,9 +30,9 @@ const errorHandler = (error) => {
         description: 'Authorization verification failed'
       })
       if (token) {
-         store.dispatch('Logout').then(() => {
+        store.dispatch('Logout').then(() => {
           setTimeout(() => {
-             window.location.reload()
+            window.location.reload()
           }, 1500)
         })
       }
@@ -54,6 +54,15 @@ request.interceptors.request.use(config => {
 
 // response interceptor
 request.interceptors.response.use((response) => {
+  const result = response.data.result
+  if (result) {
+    if (result.statusCode !== 200) {
+      notification.error({
+        message: '接口错误',
+        description: result.msg
+      })
+    }
+  }
   return response.data
 }, errorHandler)
 

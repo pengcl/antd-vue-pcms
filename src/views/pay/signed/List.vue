@@ -200,17 +200,17 @@
         },
         {
             title: '付款单号',
-            dataIndex: 'creatorUser',
-            scopedSlots: { customRender: 'creatorUser' }
+            dataIndex: 'paymentCode',
+            scopedSlots: { customRender: 'paymentCode' }
         },
         {
             title: '申请批准金额',
-            dataIndex: 'currency',
+            dataIndex: 'paymentRequestAmount',
         },
         {
             title: '支付金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'paymentAmount',
+            scopedSlots: { customRender: 'paymentAmount' }
         },
         {
             title: '支付日期',
@@ -338,10 +338,10 @@
                 })
             },
             handleToItem (record) {
-                this.$router.push({ path: `/pay/signed/item/${record.paymentGID}?type=view` })
+                this.$router.push({ path: `/pay/signed/item/${record.gid}?type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/pay/signed/item/${record.paymentGID}?type=update` })
+                this.$router.push({ path: `/pay/signed/item/${record.gid}?type=update` })
             },
             handleToAdd () {
                 this.$router.push({ path: `/pay/signed/item/${this.id}?type=create` })

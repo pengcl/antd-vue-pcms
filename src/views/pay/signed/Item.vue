@@ -3,7 +3,7 @@
     <a-card :bordered="false">
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
-          <base-info :type="type" :id="id"></base-info>
+          <base-info :data="form" :type="type" :id="id"></base-info>
         </a-tab-pane>
         <a-tab-pane key="2" tab="进度款支付明细表">
           <pay-detail :type="type" :id="id"></pay-detail>
@@ -46,6 +46,7 @@
         components: { PayDetail, BaseInfo },
         data () {
             return {
+                baseInfo: null,
                 form: SwaggerService.getForm('ContractAllInfoDto')
             }
         },
@@ -58,17 +59,21 @@
             }
         },
         created () {
-            /*if (this.id !== '0') {
-                if (type === 'view') {
-                    SignedService.viewInfo(this.id).then(res => {
-                        this.form = res.result.data
-                    })
-                } else {
-                    SignedService.updateInfo(this.id).then(res => {
-                        this.form = res.result.data
-                    })
-                }
-            }*/
+            if (this.type === 'view') {
+                SignedService.viewInfo(this.id).then(res => {
+                    this.form = res.result.data
+                })
+            } else if (this.type === 'update') {
+                SignedService.updateInfo(this.id).then(res => {
+                    this.form = res.result.data
+                })
+            } else {
+                SignedService.getCreateData(this.id).then(res => {
+                    this.form = res.result.data
+                    this.form.contractMasterInfo.detailList = []
+                })
+            }
+
         }
 
     }

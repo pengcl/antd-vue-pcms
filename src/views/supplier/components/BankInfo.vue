@@ -7,7 +7,7 @@
             <thead>
               <tr>
                 <th colspan="4">
-                  <a-button @click="showForm()" icon="plus">
+                  <a-button @click="add()" icon="plus">
                     添加银行账号
                   </a-button>
                   <a-button @click="clear()" icon="stop">
@@ -26,35 +26,29 @@
               </tr>
             </thead>
             <tbody>
-            <tr v-for="(item, index) in items" :key="item.id">
+              <tr v-if="!item.isDeleted" v-for="(item, index) in items" :key="index">
                 <td>
                   <a-button @click="del(index)" type="danger" icon="delete"></a-button>
                 </td>
-                <td>{{item.bankName}}</td>
-                <td>{{item.bankAccounts}}</td>
-                <td>{{item.bankAddr}}</td>
+                <td>{{ item.bankName }}</td>
+                <td>{{ item.bankAccounts }}</td>
+                <td>{{ item.bankAddr }}</td>
               </tr>
             </tbody>
           </table>
         </a-col>
       </a-row>
     </a-form>
-    <create-bank-form
-      ref="createModal"
-      :visible="visible"
-      :model="model"
-      @cancel="handleCancel"
-      @ok="ok()">
-    </create-bank-form>
   </div>
 </template>
 
 <script>
-import CreateBankForm from '@/views/supplier/modules/CreateBankForm'
+
+import { SwaggerService } from '@/api/swagger.service'
 
 export default {
   name: 'BankInfo',
-  components: { CreateBankForm },
+  components: { },
   props: {
     vendor: {
       type: Object,
@@ -93,11 +87,28 @@ export default {
         }
       })
     },
+    add () {
+      const item = SwaggerService.getForm('ChangeVendorEditDto_Bank')
+      item.isDeleted = false
+      item.isTemp = false
+      this.items.push(item)
+    },
     del (index) {
-      this.items.splice(index, 1)
+      if (this.items[index].isTemp) {
+        this.items.splice(index, 1)
+      } else {
+        this.items[index].isDeleted = true
+      }
     },
     clear () {
-      this.items = []
+      const items = []
+      this.items.forEach(item => {
+        if (!item.isTemp) {
+          item.isDeleted = true
+          items.push(item)
+        }
+      })
+      this.items = items
     },
     handleCancel () {
       this.visible = false
