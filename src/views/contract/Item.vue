@@ -2,7 +2,9 @@
   <page-header-wrapper>
     <a-card v-if="form && project" :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form
+          :label-col="{ span: 8 }"
+          :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="24" :sm="24">
               <a-form-item label="项目编码">
@@ -49,23 +51,28 @@
         </a-form>
       </div>
 
-      <a-tabs default-active-key="1" :animated="false">
-        <a-tab-pane key="1" tab="基本资料">
-          <base-info :project="project" :data="form" :type="type" :id="id"/>
+      <a-tabs v-model="activeKey" :animated="false">
+        <a-tab-pane forceRender :key="1" tab="基本资料">
+          <base-info
+            ref="baseInfo"
+            :project="project"
+            :data="form"
+            :type="type"
+            :id="id"/>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="合同信息">
-          <contract-info :data="form" :type="type" :id="id"/>
+        <a-tab-pane forceRender :key="2" tab="合同信息">
+          <contract-info ref="contractInfo" :data="form" :type="type" :id="id"/>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="预算调整">
+        <a-tab-pane forceRender :key="3" tab="预算调整">
           <budget-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
-        <a-tab-pane key="4" tab="合同量清单">
-          <contract-list :project="project" :data="form" :type="type" :id="id"/>
+        <a-tab-pane forceRender :key="4" tab="合同量清单">
+          <contract-list ref="contractList" :project="project" :data="form" :type="type" :id="id"/>
         </a-tab-pane>
-        <a-tab-pane key="5" tab="付款条款">
+        <a-tab-pane forceRender :key="5" tab="付款条款">
           <pay-info :data="form" :type="type" :id="id"/>
         </a-tab-pane>
-        <a-tab-pane key="6" tab="附件">
+        <a-tab-pane forceRender :key="6" tab="附件">
           <attachment-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
       </a-tabs>
@@ -91,89 +98,194 @@
         </a-col>
       </a-row>
     </a-card>
-
+    <a-modal
+      v-if="dialog.visible"
+      :title="dialog.title"
+      :visible="dialog.visible"
+      @ok="dialog.confirm"
+      @cancel="dialog.cancel"
+    >
+      <p>{{ dialog.content }}</p>
+    </a-modal>
   </page-header-wrapper>
 </template>
 <script>
-import BaseInfo from '@/views/contract/components/BaseInfo'
-import ContractInfo from '@/views/contract/components/ContractInfo'
-import PayInfo from '@/views/contract/components/PayInfo'
-import ContractList from '@/views/contract/components/ContractList'
-import BudgetList from '@/views/contract/components/BudgetList'
-import AttachmentList from '@/views/contract/components/AttachmentList'
-import { ContractService } from '@/views/contract/contract.service'
-import { SwaggerService } from '@/api/swagger.service'
-import { ProjectService } from '@/views/project/project.service'
+  import BaseInfo from '@/views/contract/components/BaseInfo'
+  import ContractInfo from '@/views/contract/components/ContractInfo'
+  import PayInfo from '@/views/contract/components/PayInfo'
+  import ContractList from '@/views/contract/components/ContractList'
+  import BudgetList from '@/views/contract/components/BudgetList'
+  import AttachmentList from '@/views/contract/components/AttachmentList'
+  import { ContractService } from '@/views/contract/contract.service'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { ProjectService } from '@/views/project/project.service'
+  import { DIALOGCONFIG } from '@/api/base'
 
-export default {
-  name: 'ContractItem',
-  components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
-  data () {
-    return {
-      tabActiveKey: 1,
-      loading: false,
-      project: null,
-      form: SwaggerService.getForm('ContractAllInfoDto')
-    }
-  },
-  created () {
-    if (this.id !== '0') {
-      ContractService.item(this.id).then(res => {
-        this.form = res.result.data
-        this.form.master = {}
-        ProjectService.view2(this.form.contract.projectID).then(res => {
-          this.project = res.result.data
+  export default {
+    name: 'ContractItem',
+    components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
+    data () {
+      return {
+        activeKey: 1,
+        loading: false,
+        project: null,
+        dialog: DIALOGCONFIG,
+        form: SwaggerService.getForm('ContractAllInfoDto')
+      }
+    },
+    created () {
+      if (this.id !== '0') {
+        ContractService.item(this.id).then(res => {
+          this.form = res.result.data
+          this.form.master = {}
+          ProjectService.view2(this.form.contract.projectID).then(res => {
+            this.project = res.result.data
+          })
         })
-      })
-    } else {
-      this.form.contract.id = 0
-      this.form.contract.isDeleted = false
-      this.form.contract.currencyID = 3
-      this.form.master = {}
-      ProjectService.view(this.ProjectGUID).then(res => {
-        this.project = res.result.data
-        this.form.contract.projectID = this.project.projectCode
-      })
-    }
-  },
-  computed: {
-    id () {
-      return this.$route.params.id
+      } else {
+        this.form.contract.id = 0
+        this.form.contract.isDeleted = false
+        this.form.contract.currencyID = 3
+        this.form.contract.baseCurrencyID = 3
+        this.form.contract.subNo = 0
+        this.form.contract.serialNo = 0
+        this.form.master = {}
+        this.form.contract.tenderPackageItemID = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        ProjectService.view(this.ProjectGUID).then(res => {
+          this.project = res.result.data
+          this.form.contract.projectID = this.project.projectCode
+        })
+      }
     },
-    type () {
-      return this.$route.query.type
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      ProjectGUID () {
+        return this.$route.query.ProjectGUID
+      }
     },
-    ProjectGUID () {
-      return this.$route.query.ProjectGUID
-    }
-  },
-  watch: {},
-  methods: {
-    approve () {
-      console.log('approve')
-    },
-    save () {
-      ContractService[this.type](this.form).then(res => {
-        console.log(res)
-      })
-    },
-    handleChange (selectedItems) {
-      this.selectedItems = selectedItems
-    },
-    back () {
-      console.log('back')
-      this.$router.push({ path: `/contract/list` })
-    },
-    handleToEdit () {
-      console.log('handleToEdit')
-      this.$router.push({ path: `/contract/item/${this.id}?type=edit` })
+    watch: {},
+    methods: {
+      approve () {
+        console.log('approve')
+      },
+      save () {
+        let isValid = true
+        const validateForms = [
+          {
+            activeKey: 1,
+            key: 'baseInfo'
+          }, {
+            activeKey: 2,
+            key: 'contractInfo'
+          }, {
+            activeKey: 4,
+            key: 'contractList'
+          }
+        ]
+        validateForms.forEach((item, index) => {
+          this.$refs[item.key].$refs.form.validate(valid => {
+            if (!valid) {
+              isValid = false
+              this.activeKey = item.activeKey
+            }
+          })
+        })
+
+        for (let i = 0; i < validateForms.length; i++) {
+          const item = validateForms[i]
+          this.$refs[item.key].$refs.form.validate(valid => {
+            if (!valid) {
+              isValid = false
+              this.activeKey = item.activeKey
+            }
+          })
+          if (!isValid) {
+            break
+          }
+        }
+
+        if (isValid) {
+          ContractService[this.type](this.form).then((res, err) => {
+            console.log(res)
+            console.log(err)
+          }).catch(() => {
+            console.log(this.dialog)
+            this.dialog.show({
+              content: '创建失败，表单未填写完整',
+              title: '',
+              confirmText: '我知道了',
+              cancel: '返回上一页'
+            }, (state) => {
+              if (state) {
+
+              } else {
+              }
+            })
+          })
+        }
+
+        /* setTimeout(() => {
+          ContractService[this.type](this.form).then((res, err) => {
+            console.log(res)
+            console.log(err)
+          }).catch(() => {
+            console.log(this.dialog)
+            this.dialog.show({
+              content: '创建失败，表单未填写完整',
+              title: '',
+              confirmText: '我知道了',
+              cancel: '返回上一页'
+            }, (state) => {
+              if (state) {
+
+              } else {
+              }
+            })
+          })
+        }, 400) */
+
+        /* for (let i = 0; i < validateForms.length; i++) {
+          const item = validateForms[i]
+          if (this.$refs[item]) {
+            this.$refs[item].$refs.form.validate(valid => {
+              if (!valid) {
+                isValid = false
+              }
+            })
+          } else {
+            this.activeKey = i + 1
+            setTimeout(() => {
+              this.$refs[item].$refs.form.validate(valid => {
+                if (!valid) {
+                  isValid = false
+                }
+              })
+            }, 300)
+          }
+        } */
+      },
+      handleChange (selectedItems) {
+        this.selectedItems = selectedItems
+      },
+      back () {
+        console.log('back')
+        this.$router.push({ path: `/contract/list` })
+      },
+      handleToEdit () {
+        console.log('handleToEdit')
+        this.$router.push({ path: `/contract/item/${this.id}?type=edit` })
+      }
     }
   }
-}
 </script>
 
 <style lang="less" scoped>
-.ant-btn-group {
-  margin-right: 8px;
-}
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 </style>

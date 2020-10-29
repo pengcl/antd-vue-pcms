@@ -41,6 +41,8 @@
             <td>
             	   <a-select
                 placeholder="请选择"
+                v-model="to"
+                @change="toChange"
                >
                   <a-select-option v-for="option in selection.contractParties" :key="option.partID" :value="option.partID">
                     {{option.partName }}
@@ -62,7 +64,10 @@
           <tr>
             <td>
               <a-select
+				mode="multiple"
                 placeholder="请选择"
+                v-model="cc"
+                @change="ccChange"
               >
                  <a-select-option v-for="option in selection.sendCopyParties" :key="option.partID" :value="option.partID">
                     {{option.partName }}
@@ -141,7 +146,7 @@
             <a-col :span="8">
               <a-select
                 placeholder="请选择"
-                v-model="data.voMasterInfo.voHasEffect"
+                v-model="data.voMasterInfo.voHasEffect">
                 <a-select-option value="有影响">有影响</a-select-option>
                 <a-select-option value="无影响">无影响</a-select-option>
               </a-select>
@@ -149,7 +154,7 @@
             <a-col :span="8">
               <a-select
                 placeholder="请选择"
-                v-model="data.voMasterInfo.effectResult"
+                v-model="data.voMasterInfo.effectResult">
                 <a-select-option value="增加">增加</a-select-option>
                 <a-select-option value="减少">减少</a-select-option>
               </a-select>
@@ -165,8 +170,7 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="变更造价估算 (增加)">
           <a-input-number
-           :disabled="type === 'view'"
-           placeholder="请输入变更造价估算（增加）"
+           :disabled="true"
             v-model="data.voMasterInfo.voTotalAmountIncrease"
            ></a-input-number> 元
         </a-form-item>
@@ -174,8 +178,7 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="变更造价估算 (减少)">
           <a-input-number
-           :disabled="type === 'view'"
-           placeholder="请输入变更造价估算（减少）"
+           :disabled="true"
             v-model="data.voMasterInfo.voTotalAmountDecrease"
            ></a-input-number> 元
         </a-form-item>
@@ -184,12 +187,12 @@
         <a-form-item label="变更造价估算">
           <a-row>
             <a-col :span="2">
-              <a-input value="增加" :disabled="true"></a-input>
+              <a-input :value="data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease > 0 ? '增加' : '减少'" :disabled="true"></a-input>
             </a-col>
             <a-col :span="16">
               <a-input-number
               :disabled="true"
-              :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease-data.voMasterInfo.voTotalAmountDecrease)"
+              :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease)"
               ></a-input-number> 元
             </a-col>
           </a-row>
@@ -198,18 +201,18 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="人工/材料差价累计 (已提交)">
             <a-input-number
-           :disabled="type === 'view'"
-           placeholder="请输入人工/材料差价累计 (已提交)"
-            <!-- v-model="data.voMasterInfo.fluctuationSubmittedAccumulateAmountIncrease" -->
+           :disabled="true"
+           v-if="selection.accumulateAmount"
+           :value ="selection.accumulateAmount.fluctuationSubmittedAccumulateAmountIncrease"
             ></a-input-number> 元
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="人工/材料差价累计 (已审批)">
           <a-input-number
-           :disabled="type === 'view'"
-           placeholder="请输入人工/材料差价累计 (已审批)"
-            <!-- v-model="data.voMasterInfo.fluctuationSubmittedAccumulateAmountDecrease" -->
+           :disabled="true"
+           v-if="selection.accumulateAmount"
+           :value ="selection.accumulateAmount.fluctuationSubmittedAccumulateAmountDecrease"
             ></a-input-number> 元
         </a-form-item>
       </a-col>
@@ -217,23 +220,36 @@
         <a-form-item label="人工/材料差价累计">
           <a-input-number
           	:disabled="true"
-          	<!-- :value="Math.abs(data.voMasterInfo.fluctuationSubmittedAccumulateAmountIncrease-data.voMasterInfo.fluctuationSubmittedAccumulateAmountDecrease)" -->
+           	v-if="selection.accumulateAmount"
+          	:value="selection.accumulateAmount.fluctuationSubmittedAccumulateAmount" 
           ></a-input-number> 元
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务之累计费用 (已提交)">
-          <a-input-number></a-input-number> 元
+          <a-input-number
+           :disabled="true"
+           v-if="selection.accumulateAmount"
+           :value ="selection.accumulateAmount.extensionConsultancyServiceSubmittedAccumulateAmountIncrease"
+           ></a-input-number> 元
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务之累计费用 (已审批)">
-          <a-input-number></a-input-number> 元
+          <a-input-number
+           v-if="selection.accumulateAmount"
+           :disabled="true"
+           :value ="selection.accumulateAmount.extensionConsultancyServiceSubmittedAccumulateAmountDecrease"
+           ></a-input-number> 元
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务费用累计">
-          <a-input-number></a-input-number> 元
+          <a-input-number
+           v-if="selection.accumulateAmount"
+           :disabled="true"
+           :value ="selection.accumulateAmount.extensionConsultancyServiceSubmittedAccumulateAmount"
+           ></a-input-number> 元
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -306,6 +322,8 @@
     name: 'BaseInfo',
     data () {
       return {
+     	to : [],
+      	cc : [],
         selection: {},
         loading: false
       }
@@ -335,19 +353,46 @@
       }
     },
     watch: {
+    		'to'(value){
+    			console.log('toValue',value)
+    		},
     		'contract.contractGuid'(value){
     			const contractPartyParams = { contractGuid : this.contract.contractGuid , masterContractID : this.contract.masterContractID, contractCategory : this.contract.contractCategory }
 	    		ChangeService.contractParty(contractPartyParams).then(item=>{
 	    			this.selection.contractParties = item.result.data
-	    			console.log('this.selection.contractParties',item)
 	    			this.$forceUpdate()
+	    		})
+	    		
+	    		ChangeService.accumulateAmount(value).then(item=>{
+	    			if(item.result.statusCode == 200){
+	    				this.selection.accumulateAmount = item.result.data
+	    				this.$forceUpdate()
+	    			}else{
+	    				this.selection.accumulateAmount = {}
+	    			}
+	    		})
+	    		
+	    		this.data.voPartylst.forEach(item => {
+	    			if(!item.isSendCopy){
+	    				this.to.push(item.partID)
+	    			}
+	    		})
+	    		this.data.voPartyLst.forEach(item => {
+	    			if(item.isSendCopy){
+	    				this.cc.push(item.partID)
+	    			}
 	    		})
     		}
     },
     methods: {
-      partyChange (value, item) {
-        console.log(value, item.data.key)
+      toChange (value) {
         // item.partyID = ''
+        cnosole.log('toChange',value)
+        this.to = [value]
+      },
+      ccChange(value){
+      	console.log('ccChange',value)
+      	this.cc = value
       },
       splitVal (val){
       	return val ? val.split(';') : null;

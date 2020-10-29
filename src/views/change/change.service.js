@@ -8,7 +8,12 @@ const API = {
   create: '/api/services/app/VO/CreateAllVoInfo',
   update: '/api/services/app/VO/UpdateVOAllInfo',
   contractParty : '/api/services/app/VO/GetPartyByContract',
-  sendCopyParty : '/api/services/app/VO/GetSendCopyParty'
+  sendCopyParty : '/api/services/app/VO/GetSendCopyParty',
+  accumulateAmount : '/api/services/app/VO/GetAccumulateAmount',
+  bqAmount : '/api/services/app/VO/GetVOAmountByBQList',
+  retentions : '/api/services/app/Contract/GetContractRetentionlstByContractGuid',
+  releases : '/api/services/app/Contract/GetContractRetentionReleaselstByContractGuid',
+  bqList : '/api/services/app/Contract/GetContractBQByContractGuid'
 }
 
 const ChangeService = {}
@@ -105,6 +110,64 @@ ChangeService.sendCopyParty = function(parameter){
 	    url: API.sendCopyParty,
 	    method: 'get',
 	    params: parameter
+	  })
+}
+
+
+/**
+ * 获取合同变更相关累计金额信息
+ */
+ChangeService.accumulateAmount = function(contractGuid){
+	return request({
+	    url: API.accumulateAmount,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 计算造价估算金额
+ */
+ChangeService.bqAmount = function(parameter){
+	return request({
+	    url: API.bqAmount,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+/**
+ * 获取合同保修金/保留金列表
+ */
+ChangeService.retentions = function(contractGuid){
+	return request({
+	    url: API.retentions,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+
+/**
+ * 获取合同保修金/保留金返还列表
+ */
+ChangeService.releases = function(contractGuid){
+	return request({
+	    url: API.releases,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+
+/**
+ * 获取合同清单列表
+ */
+ChangeService.bqList = function(contractGuid){
+	return request({
+	    url: API.bqList,
+	    method: 'get',
+	    params: {contractGuid}
 	  })
 }
 

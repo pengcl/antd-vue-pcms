@@ -1,5 +1,45 @@
 <template>
-  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form-model
+    ref="form"
+    :model="data.contract"
+    :rules="rules"
+    :label-col="{ span: 8 }"
+    :wrapper-col="{ span: 16 }">
+    <a-row :gutter="48">
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="合同年份"
+          prop="contractYear"
+        >
+          <a-input
+            :disabled="true"
+            placeholder="请生成合同年份"
+            v-model="project.contractYear"/>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="合同金额"
+          prop="contractAmount"
+        >
+          <a-input
+            :disabled="true"
+            placeholder="请生成合同金额"
+            v-model="data.contract.contractAmount"/>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="有效合同金额"
+          prop="contractEffectAmount"
+        >
+          <a-input
+            :disabled="true"
+            placeholder="请生成有效合同金额"
+            v-model="data.contract.contractEffectAmount"/>
+        </a-form-model-item>
+      </a-col>
+    </a-row>
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
         <a-button type="success">按编码排序</a-button>
@@ -58,7 +98,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="!item.isDeleted" v-for="(item,index) in data.contractBQlst" :key="item.id">
+              <tr v-if="!item.isDeleted" v-for="(item,index) in data.contractBQlst" :key="index">
                 <td>
                   <div style="width: 220px;">
                     <a-button @click="add(item.srNo)" :disabled="type === 'view'" icon="plus">
@@ -71,7 +111,7 @@
                 </td>
                 <td>
                   <a-icon
-                    @click="item.isCarryData = !item.isCarryData"
+                    @click="checkCarry(item)"
                     :type="item.isCarryData ? 'check-square' : 'border'"/>
                 </td>
                 <td>
@@ -185,7 +225,7 @@
         </div>
       </a-col>
     </a-row>
-  </a-form>
+  </a-form-model>
 </template>
 
 <script>
@@ -235,10 +275,21 @@
       return {
         selection: {},
         form: this.$form.createForm(this),
-        loading: false
+        loading: false,
+        rules: {
+          contractYear: [
+            { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
+          ],
+          contractAmount: [{ required: true, message: '请选择招投标分判包', trigger: 'change' }],
+          contractEffectAmount: [{ required: true, message: '请选择合同类型', trigger: 'change' }]
+        }
       }
     },
     created () {
+      this.data.contractBQlst.sort((a, b) => {
+        return compare(a.srNo, b.srNo)
+      })
+      this.data.contract.contractYear = new Date().getFullYear()
       BaseService.itemTypes(contractTypes[this.data.contract.contractCategory + 1]).then(res => {
         console.log(res)
         this.selection.itemTypes = res.result.data
@@ -289,19 +340,26 @@
     methods: {
       add (stringNo) {
         const newSrNo = getNo(stringNo, 'srNo', this.data.contractBQlst)
-        const data = SwaggerService.getForm('ContractBQInputDto')
+        const data = SwaggerService.getForm('ContractBQDto')
+        data.id = 0
+        data.isDeleted = false
         data.isTemp = true
-        data.contractID = this.id
+        data.contractID = this.id === '0' ? '' : this.id
         data.srNo = newSrNo
         data.isCarryData = false
         this.data.contractBQlst.push(data)
       },
       del (index) {
-        if (this.data.contractBQlst[index].isTemp) {
-          this.data.contractBQlst.splice(index, 1)
-        } else {
-          this.data.contractBQlst[index].isDeleted = true
-        }
+        const str = this.data.contractBQlst[index].srNo
+        const items = this.data.contractBQlst.filter(item => item.srNo.indexOf(str) === 0)
+        console.log(items)
+        items.forEach(item => {
+          if (item.isTemp) {
+            this.data.contractBQlst.splice(index, 1)
+          } else {
+            item.isDeleted = true
+          }
+        })
         this.$forceUpdate()
       },
       clear () {
@@ -313,6 +371,15 @@
           }
           this.$forceUpdate()
         })
+      },
+      checkCarry (item) {
+        item.isCarryData = !item.isCarryData
+        if (typeof item.allAmount === 'number') {
+          ContractService.amount(this.data.contract.contractCategory, this.data.contractBQlst).then(res => {
+            this.data.contract.contractAmount = res.result.data
+            this.data.contract.contractEffectAmount = res.result.data
+          })
+        }
       },
       centerChange (values) {
         let ids = ''

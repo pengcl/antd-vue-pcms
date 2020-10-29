@@ -1,65 +1,72 @@
 <template>
-  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form-model
+    ref="form"
+    :model="data.contract"
+    :rules="rules"
+    :label-col="{ span: 8 }"
+    :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
+          required
           label="项目名称(中文)"
         >
           <a-input
             :disabled="true"
             placeholder="请选择项目名称(中文)"
-            v-model="project.projectName"
-            v-decorator="[data.contract.projectID, { rules: [{required: true, message: '请选择项目名称(中文)'}] }]"/>
-        </a-form-item>
+            v-model="project.projectName"/>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="招投标分判包编号"
+          prop="tenderPackageItemID"
         >
           <a-input
             :disabled="type === 'view'"
-            placeholder="请选择地区"
-            v-model="data.contract.tenderPackageItemID"
-            v-decorator="[data.contract.tenderPackageItemID, { rules: [{required: true, message: '请选择城市'}] }]"/>
-        </a-form-item>
+            placeholder="请选择招投标分判包"
+            v-model="data.contract.tenderPackageItemID"/>
+          <span ></span>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="合同类型"
+          prop="contractCategory"
         >
           <a-select
             :disabled="type === 'view'"
             placeholder="请选择合同类型"
-            v-model="data.contract.contractCategory"
-            v-decorator="[data.contract.contractCategory, { rules: [{required: true, message: '请选择合同类型'}] }]">
+            v-model="data.contract.contractCategory">
             <a-select-option
               v-for="type in selection.types"
               :value="type.id"
               :key="type.id">{{ type.nameCN }}
             </a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="密级"
+          prop="secretLevelID"
         >
           <a-select
             :disabled="type === 'view'"
             placeholder="请选择密级"
-            v-model="data.contract.secretLevelID"
-            v-decorator="['data.contract.secretLevelID', { rules: [{required: true, message: '请选择密级'}] }]">
+            v-model="data.contract.secretLevelID">
             <a-select-option
               v-for="item in selection.secrets"
               :key="item.id"
               :value="item.id">{{ item.nameCN }}
             </a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="选择原合同"
+          prop="masterContractID"
         >
           <a-auto-complete
             :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15"
@@ -75,8 +82,8 @@
             @select="select"
           >
             <template slot="dataSource">
-              <a-select-option v-for="item in selection.masters" :key="JSON.stringify(item)" :value="item.contractName">
-                <span>{{ item.contractName }}</span>
+              <a-select-option v-for="item in selection.masters" :key="JSON.stringify(item)" :value="item.contractNo">
+                <span>{{ item.contractNo }}</span>
                 <p class="certain-search-item-count">合同编号：{{ item.contractNo }}</p>
               </a-select-option>
             </template>
@@ -84,65 +91,41 @@
               <a-icon slot="suffix" type="search" class="certain-category-icon"/>
             </a-input>
           </a-auto-complete>
-          <!--<a-select
-            :disabled="type === 'view'"
-            placeholder="请选择合同类型"
-            v-model="data.contract.masterContractID"
-            @change="change()"
-            v-decorator="[data.contract.masterContractID, { rules: [{required: true, message: '请选择合同类型'}] }]">
-            <a-select-option
-              v-for="item in selection.masters"
-              :value="item.contractGuid"
-              :key="item.contractGuid">{{ item.contractName }}
-            </a-select-option>
-          </a-select>-->
-          <!--<a-select
-            :disabled="type === 'view'"
-            placeholder="请选择原合同"
-            v-model="data.orgContractGuid"
-            v-decorator="[data.orgContractGuid, { rules: [{required: true, message: '请选择原合同'}] }]">
-            <a-select-option
-              v-for="item in selection.masters"
-              :key="item[data.contract.contractGuid]"
-              :value="item[data.contract.contractGuid]">{{ item[data.contract.contractGuid] }}
-            </a-select-option>
-          </a-select>-->
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="本地合同编号"
         >
           <a-input
             :disabled="type === 'view'"
             placeholder="请填写本地合同编号"
-            v-model="data.contract.localContractNo"
-            v-decorator="[data.contract.localContractNo, { initialValue: '', rules: [{required: true, message: '请填写本地合同编号'}] }]"/>
-        </a-form-item>
+            v-model="data.contract.localContractNo"/>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="合同名称"
+          prop="contractName"
         >
           <a-input
             :disabled="type === 'view'"
             placeholder="请填写合同名称"
-            v-model="data.contract.contractName"
-            v-decorator="[data.contract.contractName, { initialValue: '', rules: [{required: true, message: '请填写合同名称'}] }]"/>
-        </a-form-item>
+            v-model="data.contract.contractName"/>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="成本预算分类"
+          prop="contractType"
         >
           <a-select
             :disabled="type === 'view'"
             placeholder="请选择成本预算分类"
-            v-model="data.contract.contractType"
-            v-decorator="[data.contract.contractType, { rules: [{required: true, message: '请选择成本预算分类'}] }]">
+            v-model="data.contract.contractType">
             <a-select-option value="1">工程</a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
         合同甲方：
@@ -314,7 +297,7 @@
         </a-form-item>
       </a-col>
     </a-row>
-  </a-form>
+  </a-form-model>
 </template>
 
 <script>
@@ -327,7 +310,20 @@
     data () {
       return {
         selection: {},
-        loading: false
+        loading: false,
+        rules: {
+          projectName: [
+            { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
+          ],
+          tenderPackageItemID: [{ required: true, message: '请选择招投标分判包', trigger: 'change' }],
+          contractCategory: [{ required: true, message: '请选择合同类型', trigger: 'change' }],
+          secretLevelID: [
+            { required: true, message: '请选择密级', trigger: 'change' }
+          ],
+          masterContractID: [{ required: true, message: '请选择原合同', trigger: 'blur' }],
+          contractType: [{ required: true, message: '请选择成本预算分类', trigger: 'blur' }],
+          contractName: [{ required: true, message: '请填写合同名称', trigger: 'blur' }]
+        }
       }
     },
     created () {
@@ -340,7 +336,6 @@
         this.$forceUpdate()
       })
       ContractService.vendors().then(res => {
-        console.log(res)
         this.selection.vendors = res.result.data
         this.$forceUpdate()
       })
@@ -350,7 +345,7 @@
         this.selection.companies = [company]
         if (companies.length < 1) {
           const party = {
-            contractID: this.id,
+            contractID: this.id === '0' ? '' : this.id,
             id: 0,
             partyID: company.id,
             partyName: company.nameCN,
@@ -377,6 +372,10 @@
         default: '0'
       },
       project: {
+        type: Object,
+        default: null
+      },
+      roles: {
         type: Object,
         default: null
       }
@@ -409,6 +408,7 @@
         )
       },
       select (value, item) {
+        console.log(item.data)
         this.data.master = JSON.parse(item.data.key)
         this.data.contract.masterContractID = this.data.master.contractGuid
       },

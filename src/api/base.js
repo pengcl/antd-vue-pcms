@@ -59,10 +59,10 @@ const DIALOGCONFIG = {
   show: (config, fn) => {
     console.log(config, DIALOGCONFIG)
     DIALOGCONFIG.visible = config.visible || true
-    DIALOGCONFIG.title = config.title || 'aa'
-    DIALOGCONFIG.content = config.content || 'aa'
-    DIALOGCONFIG.confirmText = config.confirmText || 'aa'
-    DIALOGCONFIG.cancelText = config.cancelText || 'aa'
+    DIALOGCONFIG.title = config.title || ''
+    DIALOGCONFIG.content = config.content || ''
+    DIALOGCONFIG.confirmText = config.confirmText || ''
+    DIALOGCONFIG.cancelText = config.cancelText || ''
     DIALOGCONFIG.fn = fn
   },
   content: '',

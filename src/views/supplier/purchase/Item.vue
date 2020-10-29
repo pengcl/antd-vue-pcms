@@ -168,17 +168,17 @@
 </template>
 
 <script>
-    import CompanyStaff from '../components/CompanyStaff'
-    import ChangeInfo from '../components/ChangeInfo'
-    import ContractInfo from '../components/ContractInfo'
-    import BankInfo from '../components/BankInfo'
-    import AttachmentInfo from '../components/AttachmentInfo'
-    import { SwaggerService } from '@/api/swagger.service'
-    import { SupplierService } from '@/views/supplier/supplier.service'
-    import { formatTree } from '@/utils/util'
-    import { TreeSelect } from 'ant-design-vue'
-    import { City as CitySvc, formatCities } from '@/api/city'
-    import { DIALOGCONFIG } from '@/api/base'
+  import CompanyStaff from '../components/CompanyStaff'
+  import ChangeInfo from '../components/ChangeInfo'
+  import ContractInfo from '../components/ContractInfo'
+  import BankInfo from '../components/BankInfo'
+  import AttachmentInfo from '../components/AttachmentInfo'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { SupplierService } from '@/views/supplier/supplier.service'
+  import { formatTree } from '@/utils/util'
+  import { TreeSelect } from 'ant-design-vue'
+  import { City as CitySvc, formatCities } from '@/api/city'
+  import { DIALOGCONFIG } from '@/api/base'
 
   const DTO = {
     create: 'ChangeVendorZRInputDto',
@@ -202,18 +202,6 @@
       }
     },
     created () {
-      /*this.dialog.show({
-        content: '添加成功',
-        title: '',
-        confirmText: '继续添加',
-        cancel: '返回上一页'
-      }, (state) => {
-        if (state) {
-
-        } else {
-          this.$router.push('/supplier/purchase/list')
-        }
-      })*/
       this.form.vendor = SwaggerService.getForm(DTO[this.type])
       if (this.id !== '0') {
         SupplierService[this.type + 'Entity'](this.id).then(res => {
@@ -273,8 +261,21 @@
           item.vendorGID = this.form.vendor.vendorGID
         })
         SupplierService[this.type](this.form).then(res => {
-          this.dialog.show({ title: '系统提示', content: '添加成功', confirmText: '继续添加', cancel: '返回上一页' }, (state) => {
-            console.log(state)
+          this.dialog.show({
+            content: '添加成功',
+            title: '',
+            confirmText: '继续添加',
+            cancel: '返回上一页'
+          }, (state) => {
+            if (state) {
+              this.form = {
+                vendor: SwaggerService.getForm(DTO[this.type]),
+                vendorBankList: [],
+                vendorEmployeeList: []
+              }
+            } else {
+              this.$router.push('/supplier/purchase/list')
+            }
           })
         })
       }
@@ -297,11 +298,12 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;
