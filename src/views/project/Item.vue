@@ -2,7 +2,12 @@
   <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增项目' : '编辑项目'">
     <a-card :bordered="false">
       <div v-if="id !== '0'" class="table-page-search-wrapper">
-        <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form-model
+          ref="form"
+          :model="form"
+          :rules="rules"
+          :label-col="{ span: 8 }"
+          :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目编码">
@@ -24,30 +29,31 @@
                 {{ form.projectEnName }}11
               </a-form-item>
             </a-col>
-            <a-col v-if="data" :md="12" :sm="24">
+            <a-col :md="12" :sm="24">
               <a-form-item label="审批状态">
-                {{ data.auditStatus }}
+                {{ form.auditStatus }}
               </a-form-item>
             </a-col>
           </a-row>
-        </a-form>
+        </a-form-model>
       </div>
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
-          <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+          <a-form-model
+            ref="form"
+            :model="form"
+            :rules="rules"
+            :label-col="{ span: 8 }"
+            :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="城市"
+                  prop="cityID"
                 >
-                  <!--<a-cascader
-                    :options="regionalOffices"
-                    :load-data="loadCities"
-                    placeholder="请选择"
-                    @change="onChange"
-                  />-->
                   <a-select
                     placeholder="请选择城市"
+                    :disabled="true"
                     v-model="form.cityID">
                     <a-select-option
                       v-for="city in selection.cities"
@@ -55,28 +61,24 @@
                       :value="city.city.id">{{ city.city.nameCN }}
                     </a-select-option>
                   </a-select>
-                  <!--<a-select
-                    :disabled="type === 'view'"
-                    placeholder="请选择地区"
-                    v-decorator="['paymentUser', { rules: [{required: true, message: '请选择城市'}] }]">
-                    <a-select-option value="1">ant-design@alipay.com</a-select-option>
-                  </a-select>-->
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="项目名称编码"
+                  prop="projectCode"
                 >
                   <a-input
                     :disabled="type === 'view'"
                     placeholder="请填写项目名称编码"
                     v-model="form.projectCode"
                     v-decorator="['form.projectCode', { initialValue: '', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="项目状态"
+                  prop="projStatus"
                 >
                   <a-select
                     :disabled="type === 'view'"
@@ -89,68 +91,49 @@
                       :value="state.nameCN">{{ state.nameCN }}
                     </a-select-option>
                   </a-select>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="房产项目名称(中文)"
+                  prop="projectName"
                 >
                   <a-input
                     :disabled="type === 'view'"
                     placeholder="请填写房产项目名称(中文)"
                     v-model="form.projectName"
                     v-decorator="['form.projectName', { initialValue: '', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="房产项目名称(英文)"
+                  prop="projectEnName"
                 >
                   <a-input
                     :disabled="type === 'view'"
                     placeholder="请填写房产项目名称(英文)"
                     v-model="form.projectEnName"
                     v-decorator="['form.projectEnName', { initialValue: '', rules: [{required: true, message: '收款人名称必须核对'}] }]"/>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
-              <!--<a-col :md="12" :sm="24">
-                <a-form-item
-                  label="所属项目"
-                >
-                  <a-select
-                    :disabled="type === 'view'"
-                    placeholder="请选择项目"
-                    v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                    <a-select-option value="1">ant-design@alipay.com</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="12" :sm="24">
-                <a-form-item
-                  label="所属分期"
-                >
-                  <a-select
-                    :disabled="type === 'view'"
-                    placeholder="请选择所属分期"
-                    v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                    <a-select-option value="1">ant-design@alipay.com</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>-->
               <a-col :md="24" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="项目地址"
+                  prop="projAddress"
                 >
                   <a-input
                     :disabled="type === 'view'"
                     placeholder="请填写项目地址"
                     v-model="form.projAddress"
                     v-decorator="['form.projAddress', { initialValue: '', rules: [{required: false, message: '收款人名称必须核对'}] }]"/>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
-                <a-form-item
-                  label="总体描述">
+                <a-form-model-item
+                  label="总体描述"
+                  prop="description"
+                >
                   <a-textarea
                     :disabled="type === 'view'"
                     rows="4"
@@ -160,18 +143,13 @@
                       'form.description',
                       {rules: [{ required: false, message: '请输入目标描述' }]}
                     ]"/>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="币种"
+                  prop="currencyCode"
                 >
-                  <!--<a-select
-                    :disabled="type === 'view'"
-                    placeholder="请选择币种"
-                    v-decorator="['paymentUser', { rules: [{required: true, message: '请选择币种'}] }]">
-                    <a-select-option value="1">ant-design@alipay.com</a-select-option>
-                  </a-select>-->
                   <a-select
                     placeholder="请选择币种"
                     v-model="form.currencyCode"
@@ -180,11 +158,12 @@
                       {{ currency.nameCN }}
                     </a-select-option>
                   </a-select>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="项目公司"
+                  prop="companyCode"
                 >
                   <a-select
                     :disabled="type === 'view'"
@@ -197,21 +176,22 @@
                       :value="company.code">{{ company.nameCN }}
                     </a-select-option>
                   </a-select>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="工地面积"
+                  prop="builtUpArea"
                 >
                   <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.builtUpArea"
                     placeholder="请填写工地面积"
                     v-decorator="['form.builtUpArea', { initialValue: '', rules: [{required: false, message: '请填写工地面积'}] }]"/>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
             </a-row>
-          </a-form>
+          </a-form-model>
         </a-tab-pane>
         <a-tab-pane key="2" tab="项目成员">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
@@ -455,119 +435,122 @@
   </page-header-wrapper>
 </template>
 <script>
-    import { SwaggerService } from '@/api/swagger.service'
-    import { ProjectService } from '@/views/project/project.service'
-    import { City as CityService } from '@/api/city'
-    import { Regional as RegionalService } from '@/api/regional'
-    import { Currency as CurrencyService } from '@/api/currency'
-    import { Company as CompanyService } from '@/api/company'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { ProjectService } from '@/views/project/project.service'
+  import { Currency as CurrencyService } from '@/api/currency'
+  import { Company as CompanyService } from '@/api/company'
+  import { DIALOGCONFIG } from '@/api/base'
 
-    const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
-    export default {
-        name: 'ProjectItem',
-        data () {
-            return {
-                regionalOffices: [],
-                loading: false,
-                value: '',
-                selection: {},
-                dataSource: [],
-                selectedItems: [],
-                data: null,
-                dto: {},
-                form: {}
-            }
-        },
-        created () {
-            console.log('create')
-            this.dto = SwaggerService.getDto('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'Input')
-            this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
-            if (this.id !== '0') {
-                ProjectService.item(this.id).then(res => {
-                    this.data = res.result.data
-                    this.form = SwaggerService.getValue(this.form, res.result.data)
-                })
-            }
-            this.form.currencyCode = 3
-            this.form.cityID = this.$route.query.cityId ? parseInt(this.$route.query.cityId, 10) : ''
-            ProjectService.types().then(res => {
-                this.selection.types = res.result.data
-            })
-            ProjectService.tree().then(res => {
-                this.selection.cities = res.result.data.citys
-                this.$forceUpdate()
-            })
-            CurrencyService.list().then(res => {
-                this.selection.currencies = res.result.data.items
-            })
-        },
-        watch: {
-            'form.cityID' (value) {
-                CompanyService.list(value).then(res => {
-                    this.selection.companies = res.result.data
-                    this.$forceUpdate()
-                })
-            }
-        },
-        computed: {
-            id () {
-                return this.$route.params.id
-            },
-            type () {
-                return this.$route.query.type
-            },
-            filteredOptions () {
-                return OPTIONS.filter(o => !this.selectedItems.includes(o))
-            }
-        },
-        methods: {
-            approve () {
-                console.log('approve')
-            },
-            save () {
-                ProjectService[this.type](this.form).then(res => {
-                    console.log(res)
-                })
-            },
-            handleChange (selectedItems) {
-                this.selectedItems = selectedItems
-            },
-            loadCities (selectedOptions) {
-                const targetOption = selectedOptions[selectedOptions.length - 1]
-                targetOption.loading = true
-                CityService.list(targetOption.value).then(res => {
-                    targetOption.loading = false
-                    const items = []
-                    res.result.data.items.forEach(item => {
-                        items.push({
-                            value: item.id,
-                            label: item.nameCN
-                        })
-                    })
-                    targetOption.children = items
-                    this.regionalOffices = [...this.regionalOffices]
-                })
-            },
-            onChange (value, items) {
-                if (items) {
-                    const city = items[1]
-                    if (city) {
-                        this.form.cityID = city.value
-                    }
-                } else {
-                    this.form.cityID = ''
-                }
-            },
-            back () {
-                console.log('back')
-                this.$router.push({ path: `/project/list` })
-            },
-            handleToEdit () {
-                console.log('handleToEdit')
-                this.$router.push({ path: `/project/item/${this.id}?type=edit` })
-            }
+  const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+  export default {
+    name: 'ProjectItem',
+    data () {
+      return {
+        dialog: DIALOGCONFIG,
+        selection: {},
+        selectedItems: [],
+        form: {},
+        rules: {
+          cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
+          projectCode: [{ required: true, message: '请填写项目名称编码', trigger: 'blur' }],
+          projStatus: [{ required: true, message: '请选择项目状态', trigger: 'change' }],
+          projectName: [{ required: true, message: '请填写房产项目名称(中文)', trigger: 'blur' }],
+          projectEnName: [{ required: true, message: '请填写房产项目名称(英文)', trigger: 'blur' }],
+          currencyCode: [{ required: true, message: '请选择币种', trigger: 'change' }]
         }
+      }
+    },
+    created () {
+      this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
+      if (this.id !== '0') {
+        ProjectService.item(this.id).then(res => {
+          this.form = SwaggerService.getValue(this.form, res.result.data)
+        })
+      }
+      this.form.currencyCode = 3
+      this.form.cityID = this.$route.query.cityId ? parseInt(this.$route.query.cityId, 10) : ''
+      ProjectService.types().then(res => {
+        this.selection.types = res.result.data
+      })
+      ProjectService.tree().then(res => {
+        this.selection.cities = res.result.data.citys
+        this.$forceUpdate()
+      })
+      CurrencyService.list().then(res => {
+        this.selection.currencies = res.result.data.items
+      })
+    },
+    watch: {
+      'form.cityID' (value) {
+        console.log(value)
+        CompanyService.list(value).then(res => {
+          this.selection.companies = res.result.data
+          this.$forceUpdate()
+        })
+      }
+    },
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      filteredOptions () {
+        return OPTIONS.filter(o => !this.selectedItems.includes(o))
+      }
+    },
+    methods: {
+      approve () {
+        console.log('approve')
+      },
+      save () {
+        if (!this.form.projectShortName) {
+          this.form.projectShortName = this.form.projectName
+        }
+        if (!this.form.projectShortCode) {
+          this.form.projectShortCode = this.form.projectCode
+        }
+        ProjectService[this.type](this.form).then(res => {
+          if (res.result.statusCode === 200) {
+            this.dialog.show({
+              content: this.type === 'update' ? '修改成功' : '添加成功',
+              title: '',
+              confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+              cancel: '返回上一页'
+            }, (state) => {
+              if (state) {
+                this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
+              } else {
+                this.$router.push('/project/list')
+              }
+            })
+          }
+        })
+      },
+      handleChange (selectedItems) {
+        this.selectedItems = selectedItems
+      },
+      onChange (value, items) {
+        if (items) {
+          const city = items[1]
+          if (city) {
+            this.form.cityID = city.value
+          }
+        } else {
+          this.form.cityID = ''
+        }
+      },
+      back () {
+        console.log('back')
+        this.$router.push({ path: `/project/list` })
+      },
+      handleToEdit () {
+        console.log('handleToEdit')
+        this.$router.push({ path: `/project/item/${this.id}?type=edit` })
+      }
     }
+  }
 </script>
 <style>
   .ant-btn-group {

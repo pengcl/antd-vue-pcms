@@ -6,7 +6,8 @@ const API = {
   itemTypes: '/api/services/app/Contract/GetItemTypes',
   full: '/api/services/app/City/GetProvinceCityAreaTree',
   cities: '/api/services/app/City/GetProvinceCityTree',
-  retentionTypes: '/api/services/app/GeneralType/GetRetentionTermTypes'
+  retentionTypes: '/api/services/app/GeneralType/GetRetentionTermTypes',
+  upload: '/api/services/app/UploadAppservice/CommonUpload'
 }
 
 const Base = {}
@@ -46,7 +47,16 @@ Base.retentionTypes = function () {
   return request({
     url: API.retentionTypes,
     method: 'GET',
-    params: { }
+    params: {}
+  })
+}
+
+Base.upload = function (formData) {
+  return request({
+    url: API.upload,
+    method: 'POST',
+    processData: false,
+    data: formData
   })
 }
 
