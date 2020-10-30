@@ -47,7 +47,7 @@
             {{ record.code }}
             <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
             </a-button>
-            <!--<a-button
+            <a-button
               @click="handleToEdit(record)"
               type="primary"
               icon="form"
@@ -60,7 +60,7 @@
               icon="plus-square"
               style="margin-left: 4px"
               title="审批记录">
-            </a-button>-->
+            </a-button>
           </template>
         </span>
       </s-table>
@@ -84,7 +84,7 @@
     {
       title: '科目代码',
       dataIndex: 'action',
-      width: '150px',
+      width: '180px',
       scopedSlots: { customRender: 'action' }
     },
     {
@@ -129,30 +129,38 @@
             const requestParameters2 = Object.assign({}, parameter, { Id: this.queryParam.ProjectGUID })
             return CostService.subjectItems(requestParameters2)
               .then(res2 => {
-                res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
-                  _columns.push(
-                    {
-                      title: subjectItem1.costCenterName,
-                      dataIndex: 'cost' + subjectItem1.costCenterId
-                    }
-                  )
-                })
+                if(res2.result.data!=null) {
+                  res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
+                    _columns.push(
+                      {
+                        title: subjectItem1.costCenterName,
+                        dataIndex: 'cost' + subjectItem1.costCenterId
+                      }
+                    )
+                  })
+                }
                 this.columns = _columns
                 this.$forceUpdate()
                 res.result.data.forEach(item => {
                   const obj = {}
-                  res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
-                    // 加载成本
-                    const costName = 'cost' + subjectItem2.costCenterId
-                    subjectItem2.mainElements.forEach(itemA => {
-                      if (item.id === itemA.elementTypeId) {
-                        obj['id'] = item.id
-                        obj['code'] = item.code
-                        obj['name'] = item.nameCN
-                        obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
-                      }
+                  if(res2.result.data!=null){
+                    res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
+                      // 加载成本
+                      const costName = 'cost' + subjectItem2.costCenterId
+                      subjectItem2.mainElements.forEach(itemA => {
+                        if (item.id === itemA.elementTypeId) {
+                          obj['id'] = item.id
+                          obj['code'] = item.code
+                          obj['name'] = item.nameCN
+                          obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
+                        }
+                      })
                     })
-                  })
+                  }else{
+                    obj['id'] = item.id
+                    obj['code'] = item.code
+                    obj['name'] = item.nameCN
+                  }
                   result.result.data.push(obj)
                 })
                 return fixedList(result, parameter)
@@ -191,10 +199,10 @@
     },
     methods: {
       handleToItem (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view` })
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
       handleToEdit (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit` })
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
       handleToAdd () {
         this.$router.push({ path: `/cost/enact/item/0?type=add` })

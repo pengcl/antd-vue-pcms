@@ -39,7 +39,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="logGID"
+        rowKey="gid"
         bordered
         :columns="columns"
         :data="loadData"

@@ -34,11 +34,12 @@
           <thead>
           <tr>
             <th>致：</th>
+            <th>百分比：</th>
           </tr>
           </thead>
           <tbody>
           <tr>
-            <td>
+            <td style="width : 50%">
             	   <a-select
                 placeholder="请选择"
                 v-model="to"
@@ -49,6 +50,17 @@
                     {{option.partName }}
                   </a-select-option>
                </a-select>
+            </td>
+            <td style="width : 50%">
+            	   <a-input-number
+            	   	style="width : 90%"
+                placeholder="请输入百分比"
+                v-model="toRate"
+                :max="100"
+                :precision = "2"
+                :disabled="type === 'view'"
+               >
+               </a-input-number>&nbsp;%
             </td>
           </tr>
           </tbody>
@@ -151,6 +163,7 @@
               <a-select
                 placeholder="请选择"
                 :disabled="type === 'view'"
+                style="width : 90%"
                 v-model="data.voMasterInfo.voHasEffect">
                 <a-select-option value="有影响">有影响</a-select-option>
                 <a-select-option value="无影响">无影响</a-select-option>
@@ -160,6 +173,7 @@
               <a-select
                 placeholder="请选择"
                 :disabled="type === 'view'"
+                 style="width : 90%"
                 v-model="data.voMasterInfo.effectResult">
                 <a-select-option value="增加">增加</a-select-option>
                 <a-select-option value="减少">减少</a-select-option>
@@ -326,6 +340,7 @@
       return {
      	to : [],
       	cc : [],
+      	toRate : 0,
       	reasonType : [],
         selection: {},
         loading: false
