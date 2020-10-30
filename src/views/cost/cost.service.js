@@ -2,10 +2,11 @@ import request from '@/utils/request'
 
 const API = {
   items: '/api/services/app/Element/GetMainElementList',
-  subjectItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanSubListToEditByGUID'
+  subjectItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanSubListToEditByGUID',
+  subjectViewItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanDetailTreeByProject',
   // item: '/api/services/app/Contract/GetAllContractInfo',
   // create: '/api/services/app/Contract/CreateContractAllInfo',
-  // update: '/api/services/app/Contract/UpdateContractAllInfo'6
+  update: '/api/services/app/BudgetSubPlan/CreateOrEditDetails'
 }
 
 const CostService = {}
@@ -33,6 +34,15 @@ CostService.subjectItems = function (parameter) {
   })
 }
 
+CostService.subjectViewItems = function (parameter) {
+  return request({
+    url: API.subjectViewItems,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 CostService.item = function (contractGuid) {
   return request({
     url: API.item,
@@ -50,9 +60,10 @@ CostService.create = function (parameter) {
 }
 
 CostService.update = function (parameter) {
+  console.log(parameter)
   return request({
     url: API.update,
-    method: 'PUT',
+    method: 'POST',
     data: parameter
   })
 }

@@ -2,47 +2,38 @@
   <page-header-wrapper :property="{}">
     <a-card :bordered="false">
 
-      <s-table
-        style="margin-top: 5px"
-        ref="table"
-        size="default"
-        rowKey="key"
-        bordered
-        :columns="columns"
-        :data="loadData"
-        :alert="false"
-        showPagination="auto"
-      >
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
-            </a-button>
-            <a-button
-              @click="handleToEdit(record)"
-              type="primary"
-              icon="form"
-              style="margin-left: 4px"
-              title="编辑">
-            </a-button>
-            <a-button
-              @click="handleToItem(record)"
-              type="primary"
-              icon="plus-square"
-              style="margin-left: 4px"
-              title="审批记录">
-            </a-button>
-          </template>
-        </span>
-      </s-table>
-
+      <a-row>
+        <a-col :md="24" :sm="24">
+          <table>
+            <thead>
+            <tr>
+              <th style="width: 30%">科目代码</th>
+              <th style="width: 40%">科目名称</th>
+              <th v-for="(item,index) in titels" :key="index">
+                {{item.costCenterName}}
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(item,index) in data" :key="index">
+              <td>
+                {{item.elementInfoCode}}
+              </td>
+              <td>
+                {{item.elementInfoNameCN}}
+              </td>
+              <td v-for="(costCenterItem,index) in item.costCenter" :key="index">
+                <a-input v-model="costCenterItem.amount"></a-input>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </a-col>
+      </a-row>
       <a-row>
         <a-col :md="12" :sm="24">
           <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
-          <a-button type="success">储存</a-button>
+          <a-button type="success" @click="handleToSave">储存</a-button>
           <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
@@ -57,122 +48,160 @@
 </template>
 
 <script>
-    import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
-
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
-
-    const columns = [
-        {
-            title: '科目代码',
-            dataIndex: 'action',
-            width: '150px',
-        },
-        {
-            title: '科目名称',
-            dataIndex: 'no'
-        },
-        {
-            title: '业态成本中心A',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
-        },
-        {
-            title: '业态成本中心B',
-            dataIndex: 'callNo',
-            scopedSlots: { customRender: 'callNo' }
-        },
-        {
-            title: '业态成本中心C',
-            dataIndex: 'city',
-            scopedSlots: { customRender: 'city' }
-        }
-    ]
-
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
-
+    import {CostService} from "@/views/cost/cost.service"
+    import {ContractService} from "@/views/contract/contract.service";
     export default {
         name: 'Item',
-        components: {
-            STable,
-            Ellipsis,
-            CreateForm,
-            StepByStepModal
-        },
         data () {
-            this.columns = columns
-            return {
-                // create model
-                visible: false,
-                confirmLoading: false,
-                mdl: null,
-                // 高级搜索 展开/关闭
-                advanced: false,
-                // 查询参数
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return getServiceList(requestParameters)
-                        .then(res => {
-                            return res.result
-                        })
-                },
-                selectedRowKeys: [],
-                selectedRows: []
-            }
+          return {
+            data:[],
+            titels:[],
+            loading: false
+          }
         },
         filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
-            }
+
         },
         created () {
-            getRoleList({ t: new Date() })
+            const requestParameters = {ProjectGUID:this.ProjectGUID,ElementTypeId:this.id}
+            CostService.subjectViewItems(requestParameters).then(res => {
+                this.titels = res.result.data
+                //创建行数据
+                const items = []
+                res.result.data.forEach(item => {
+                    item.elementItem.childs.forEach(childItem => {
+                        const len = items.length // this.list是要插入的数据列表，array
+                        if(len===0){
+                          items.push(childItem)
+                        }else{
+                          let flag = false // 定义一个标识符
+                          for (let i = 0; i < len; i++) {
+                            if(items[i].elementInfoCode===childItem.elementInfoCode){
+                              flag = true
+                              break
+                            }
+                          }
+                          if(!flag){
+                            items.push(childItem)
+                          }
+                        }
+                    })
+                })
+                //插入动态列数据
+                items.forEach(item =>{
+                  const costCenter = []
+                    res.result.data.forEach(costCenterItem => {
+                        costCenterItem.elementItem.childs.forEach(childItem => {
+                            const obj = {}
+                            if(item.elementInfoId === childItem.elementInfoId){
+                              obj['costCenterId'] = costCenterItem.costCenterId
+                              obj['costCenterCode'] = costCenterItem.costCenterCode
+                              obj['costCenterName'] = costCenterItem.costCenterName
+                              obj['elementInfoId'] = childItem.elementInfoId
+                              obj['elementInfoCode'] = childItem.elementInfoCode
+                              obj['elementInfoNameCN'] = childItem.elementInfoNameCN
+                              obj['amount'] = childItem.amount
+                              costCenter.push(obj)
+                            }
+                        })
+                      item['costCenter'] = costCenter
+                    })
+                })
+                this.data = items
+                // console.log(this.data)
+                this.$forceUpdate()
+            })
         },
         computed: {
-            rowSelection () {
-                return {
-                    selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
-                }
+            id () {
+              return this.$route.params.id
+            },
+            type () {
+              return this.$route.query.type
+            },
+            ProjectGUID () {
+              return this.$route.query.ProjectGUID
             }
         },
         methods: {
+            filterParties () {
+              const items = []
+              if (this.data.childs.forEach) {
+                this.data.childs.forEach(item => {
+                    items.push(item)
+                })
+              }
+              return items
+            },
             back () {
                 this.$router.push({ path: `/cost/enact/list` })
             },
-            handleToItem (record) {
-                this.$router.push({ path: `/project/item/${record.id}?type=view` })
-            },
-            handleToEdit (record) {
-                this.$router.push({ path: `/project/item/${record.id}?type=edit` })
-            },
-            handleToAdd () {
-                this.$router.push({ path: `/project/item/0?type=add` })
+            handleToSave () {
+              const result = {}
+              const items = []
+              //组装保存数据
+              result['ProjectGUID'] = this.ProjectGUID
+              result['budgetBaseTypeId'] = 83
+              result['elementTypeId'] = this.id
+              if (this.data.length>0) {
+                this.data.forEach(item => {
+                  item.costCenter.forEach(centerItem => {
+                    const obj = {}
+                    obj['costCenterId'] = centerItem.costCenterId
+                    obj['elementInfoId'] = centerItem.elementInfoId
+                    obj['amount'] = centerItem.amount
+                    items.push(obj)
+                  })
+                })
+              }
+              result['items'] = items
+              CostService.update(result).then(res => {
+                console.log(res)
+              })
             }
         }
     }
 </script>
+
+<style lang="less" scoped>
+  table {
+    margin: 15px 0;
+    width: 100%;
+    border-width: 1px 1px 0 0;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-color: #ccc;
+
+    thead {
+      tr {
+        th {
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          padding: 0.5em 0.6em 0.4em 0.6em !important;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+</style>
