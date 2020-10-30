@@ -27,15 +27,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(item, index) in data.detailList" :key="index" v-if="!isDeleted">
+        <tr v-if="!item.isDeleted" v-for="(item, index) in data.detailList" :key="index">
           <td>
-            <a-button @click="del(item)"  :disabled="type === 'view'" icon="close">
+            <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
               删除
             </a-button>
           </td>
           <td>
             <a-select
               placeholder="请选择"
+              @change="moneyTypeChange"
               v-model="item.paymentType"
               v-decorator="['item.moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
               <a-select-option v-for="type in moneyTypes" :value="type"
@@ -57,8 +58,7 @@
             <a-select
               @change="onChange"
               placeholder="请选择"
-              v-model="item.vendorName"
-              v-decorator="['vendorType', { rules: [{required: true, message: '请选择收款单位'}] }]">
+              v-model="item.vendorGID">
               <a-select-option v-for="type in vendorTypes"
                                :value="type.vendorGID"
                                :key="type.vendorGID">{{type.vendorName}}
@@ -67,12 +67,11 @@
           </td>
           <td>
             <a-select
-              :disabled="bankList.length < 1"
               @change="bankChange"
               placeholder="请选择"
-              v-model="item.vendorBankName"
+              v-model="item.vendorBankGID"
               v-decorator="['item.bankName', { rules: [{required: true, message: '请选择收款单位'}] }]">
-              <a-select-option v-for="type in bankList"
+              <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
                                :value="type.gid"
                                :key="type.gid">{{type.bankName}}
               </a-select-option>
@@ -80,8 +79,7 @@
           </td>
           <td>
             <a-input :disabled="true"
-                     v-model="item.vendorBankAccounts"
-                     v-decorator="['item.vendorBankAccounts', { rules: [{required: true, message: '请选择收款单位'}] }]"></a-input>
+                     v-model="item.vendorBankAccounts"></a-input>
           </td>
         </tr>
         </tbody>
@@ -105,7 +103,6 @@
                 bankList: [],
                 bankAccounts: '',
                 items: []
-
             }
         },
         props: {
@@ -122,19 +119,43 @@
                 default: '0'
             }
         },
+        watch: {
+            'data.mainContractGID' (value) {
+                this.getVendor(this.data['mainContractGID'])
+            },
+            /*'data.detailList' (value) {
+                value.forEach(v => {
+                    this.onChange(v.vendorGID)
+                })
+            }*/
+        },
         created () {
-            SignedService.vendorTypes(this.id).then(res => {
-                this.vendorTypes = res.result.data
-            })
             SignedService.moneyTypes().then(res => {
                 this.moneyTypes = res.result.data
+                this.$forceUpdate()
             })
         },
         methods: {
+            getBankList (vendorGID, vendorTypes) {
+                let bankList
+                vendorTypes.forEach(item => {
+                    if (item.vendorGID === vendorGID) {
+                        bankList = item.bankList
+                    }
+                })
+                return bankList
+            },
+            getVendor (id) {
+                SignedService.vendorTypes(id).then(res => {
+                    this.vendorTypes = res.result.data
+                    this.$forceUpdate()
+                })
+            },
             add (target) {
                 const item = {
                     id: 0,
                     isDeleted: false,
+                    isTemp: true,
                     paymentType: '',
                     paymentAmount: 0,
                     paymentUse: '',
@@ -147,32 +168,41 @@
                 this.data[target].push(item)
                 this.$forceUpdate()
             },
-            del (item) {
-                item.isDeleted = true
+            del (index) {
+                if (this.data.detailList[index].isTemp) {
+                    this.data.detailList.splice(index, 1)
+                } else {
+                    this.data.detailList[index].isDeleted = true
+                }
+                this.$forceUpdate()
             },
             clear (target) {
                 this.data[target].forEach(item => {
                     item.isDisabled = true
                 })
             },
-            onChange (value) {
-                this.bankAccounts = ''
-                this.form.setFieldsValue({
-                    bankName: '',
-                })
-                this.vendorTypes.forEach(item => {
-                    if (item.vendorGID === value) {
-                        this.bankList = item.bankList
-                    }
-                })
+            moneyTypeChange (value) {
+                this.$forceUpdate()
+            },
+            onChange (value, option) {
+                const index = this.data.detailList.findIndex(item => item.vendorGID === value)
+                this.data.detailList[index].vendorBankGID = ''
+                this.data.detailList[index].vendorBankAccounts = ''
+                this.$forceUpdate()
             },
             bankChange (value) {
-                this.bankList.forEach(item => {
-                    if (item.gid === value) {
-                        console.log(item.bankAccounts)
-                        this.bankAccounts = item.bankAccounts
+                const index = this.data.detailList.findIndex(item => item.vendorBankGID === value)
+                this.vendorTypes.forEach(item => {
+                    if (item.vendorGID === this.data.detailList[index].vendorGID) {
+                        const bankList = item.bankList
+                        bankList.forEach(v => {
+                            if (v.gid === value) {
+                                this.data.detailList[index].vendorBankAccounts = v.bankAccounts
+                            }
+                        })
                     }
                 })
+                this.$forceUpdate()
             },
             showForm (items) {
                 const obj = {}

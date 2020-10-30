@@ -47,7 +47,7 @@
         data () {
             return {
                 baseInfo: null,
-                form: SwaggerService.getForm('ContractAllInfoDto')
+                form: SwaggerService.getForm('PaymentViewDto')
             }
         },
         computed: {

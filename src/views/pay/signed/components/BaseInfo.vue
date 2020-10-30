@@ -415,9 +415,6 @@
             SignedService.certificateTypes().then(res => {
                 this.certificateTypes = res.result.data
             })
-            SignedService.vendorTypes(this.id).then(res => {
-                this.vendorTypes = res.result.data
-            })
         },
         props: {
             data: {

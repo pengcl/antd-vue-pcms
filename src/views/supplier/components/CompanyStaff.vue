@@ -112,7 +112,7 @@ export default {
       item.logGID = this.vendor.logGID ? this.vendor.logGID : ''
       item.vendorGID = this.vendor.vendorGID ? this.vendor.vendorGID : ''
       item.isDeleted = false
-      item.isTemp = false
+      item.isTemp = true
       this.items.push(item)
     },
     del (index) {
