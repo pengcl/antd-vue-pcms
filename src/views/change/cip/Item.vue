@@ -47,7 +47,7 @@
 
           <a-tabs default-active-key="1" :animated="false">
             <a-tab-pane key="1" tab="基本资料">
-              <base-info title="基本资料" :data="form" :contract="contract" :type="type" :id="id"></base-info>
+              <base-info title="基本资料" :data="form" :contract="contract" :type="type" :id="id" ref="baseInfo"></base-info>
             </a-tab-pane>
             <a-tab-pane key="2" tab="造价估算">
               <cost-estimates title="造价估算" :data="form" :contract="contract" :project="project" :type="type" :id="id"></cost-estimates>
@@ -145,6 +145,11 @@
 		      console.log('approve')
 		    },
 		    save () {
+		    	  const partyResult = this.$refs.baseInfo.getPartys()
+		    	  if(!partyResult){
+		    	  	return
+		    	  }
+		    	  console.log('saveData',this.form)
 		    	  if(this.type == 'add'){
 			      /*ChangeService.create(this.form).then(res => {
 			        console.log(res)

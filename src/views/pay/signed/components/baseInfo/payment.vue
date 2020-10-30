@@ -8,12 +8,6 @@
             <a-button icon="plus" @click="add('detailList')">
               新增
             </a-button>
-            <a-button>
-              附件上传
-            </a-button>
-            <a-button>
-              发票管理
-            </a-button>
           </th>
         </tr>
         <tr>
@@ -69,8 +63,7 @@
             <a-select
               @change="bankChange"
               placeholder="请选择"
-              v-model="item.vendorBankGID"
-              v-decorator="['item.bankName', { rules: [{required: true, message: '请选择收款单位'}] }]">
+              v-model="item.vendorBankGID">
               <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
                                :value="type.gid"
                                :key="type.gid">{{type.bankName}}
@@ -122,12 +115,7 @@
         watch: {
             'data.mainContractGID' (value) {
                 this.getVendor(this.data['mainContractGID'])
-            },
-            /*'data.detailList' (value) {
-                value.forEach(v => {
-                    this.onChange(v.vendorGID)
-                })
-            }*/
+            }
         },
         created () {
             SignedService.moneyTypes().then(res => {
@@ -165,7 +153,11 @@
                     vendorBankName: '',
                     vendorBankAccounts: ''
                 }
-                this.data[target].push(item)
+                if (this.data[target]) {
+                    this.data[target].push(item)
+                } else {
+                    this.data[target] = [item]
+                }
                 this.$forceUpdate()
             },
             del (index) {

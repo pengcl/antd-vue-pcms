@@ -1,89 +1,107 @@
 <template>
-  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form-model
+    ref="form"
+    :model="data"
+    :label-col="{ span: 8 }"
+    :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
-        <a-form-item label="合同名称">
-          <a-input></a-input>
-        </a-form-item>
+        <a-form-model-item label="合同名称">
+          <a-input v-model="payDetail.contractName" :disabled="true"></a-input>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item label="合同编号">
-          <a-input></a-input>
-        </a-form-item>
+        <a-form-model-item label="合同编号">
+          <a-input v-model="payDetail.contractNo" :disabled="true"></a-input>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item label="合约价">
-          <a-input></a-input>
-        </a-form-item>
+        <a-form-model-item label="合约价">
+          <a-input v-model="payDetail.contractAmount" :disabled="true"></a-input>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item label="同意更改后的合约价">
-          <a-input></a-input>
-        </a-form-item>
+        <a-form-model-item label="同意更改后的合约价">
+          <a-input v-model="payDetail.contractEffectAmount" :disabled="true"></a-input>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item label="预计结算金额">
-          <a-input></a-input>
-        </a-form-item>
-      </a-col>
-      <a-col :md="24" :sm="24">
-        <table>
-          <thead>
-            <tr>
-              <th colspan="8">已支付款项明细</th>
-            </tr>
-            <tr>
-              <th>期数</th>
-              <th>截至最后已批准银价</th>
-              <th>该次施工单位申请银价</th>
-              <th>该次批准银价</th>
-              <th>累计共批银价</th>
-              <th>共批准百分比(%)</th>
-              <th>累计共支付银价</th>
-              <th>共支付百分比(%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+        <a-form-model-item label="预计结算金额">
+          <a-input v-model="payDetail.contractEstimateAmount" :disabled="true"></a-input>
+        </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <table>
           <thead>
           <tr>
-            <th>承包单位送单时间</th>
-            <th>现场确认时间</th>
-            <th>出估值时间</th>
-            <th>项目审定时间</th>
+            <th colspan="8">已支付款项明细</th>
+          </tr>
+          <tr>
+            <th>期数</th>
+            <th>截至最后已批准银价</th>
+            <th>该次施工单位申请银价</th>
+            <th>该次批准银价</th>
+            <th>累计共批银价</th>
+            <th>共批准百分比(%)</th>
+            <th>累计共支付银价</th>
+            <th>共支付百分比(%)</th>
           </tr>
           </thead>
           <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+          <tr v-for="(item,index) in payDetail.itemList" :key="index">
+            <td>{{item.paymentPhase}}</td>
+            <td>{{item.paymentRequestAmountTotal_Before}}</td>
+            <td>{{item.progressRequestAmount}}</td>
+            <td>{{item.paymentRequestAmount}}</td>
+            <td>{{item.paymentRequestAmountTotal}}</td>
+            <td>{{item.paymentRequestAmountTotalRatio}}</td>
+            <td>{{item.paymentAmountTotal_Before}}</td>
+            <td>{{item.paymentAmountTotalRatio}}</td>
           </tr>
           </tbody>
         </table>
       </a-col>
     </a-row>
-  </a-form>
+  </a-form-model>
 </template>
 
 <script>
+    import { SignedService } from '../signed.service'
+
     export default {
-        name: 'PayDetail'
+        name: 'PayDetail',
+        data () {
+            return {
+                payDetail: {}
+            }
+        },
+        props: {
+            data: {
+                type: Object,
+                default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
+            },
+            id: {
+                type: String,
+                default: '0'
+            }
+        },
+        created () {
+            if (this.type === 'create') {
+                SignedService.progressByContract(this.data['contractGID'], this.data['paymentPhase']).then(res => {
+                    this.payDetail = res.result.data
+                })
+            } else {
+                SignedService.progressInfo(this.data['contractGID']).then(res => {
+                    console.log(res)
+                })
+            }
+
+        },
+        methods: {}
     }
 </script>
 
