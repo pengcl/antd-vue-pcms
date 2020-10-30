@@ -13,7 +13,7 @@ const API = {
   bqAmount : '/api/services/app/VO/GetVOAmountByBQList',
   retentions : '/api/services/app/Contract/GetContractRetentionlstByContractGuid',
   releases : '/api/services/app/Contract/GetContractRetentionReleaselstByContractGuid',
-  bqList : '/api/services/app/Contract/GetContractBQByContractGuid'
+  bqList : '/api/services/app/Contract/GetContractBQlstForVO'
 }
 
 const ChangeService = {}

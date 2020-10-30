@@ -298,15 +298,19 @@
       }
     },
     methods: {
-      add (stringNo) {
+      add (stringNo,addData) {
         const newSrNo = getNo(stringNo, 'srNo', this.data.vobQlst)
-        const data = SwaggerService.getForm('VOBQDto')
+        let data = SwaggerService.getForm('VOBQDto')
+        if(addData){
+        		data = addData;
+        }else{
+        		data.isCarryData = false;
+        }
         data.isTemp = true
-        data.contractID = this.id
         data.srNo = newSrNo
-        data.isCarryData = false
         data.id = 0
         data.isDeleted = false
+        console.log('myData',data)
         this.data.vobQlst.push(data)
       },
       del (index) {
@@ -373,7 +377,7 @@
         })
       },
       replaceByContract () {
-        this.$.refs.bqModal.show()
+        this.$refs.bqModal.showTable()
       }
     }
   }
