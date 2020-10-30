@@ -11,9 +11,12 @@ const API = {
   vendorTypes: '/api/services/app/Payment/GetPaymentContractVendor',
   viewInfo: '/api/services/app/Payment/GetPaymentViewInfo',
   updateInfo: '/api/services/app/Payment/GetPaymentUpdateInfo',
+  attachmentList: '/api/services/app/Payment/GetPaymentAttachmentList',
   masters: '/api/services/app/Contract/GetMasterContractInfo',
   create: '/api/services/app/Contract/CreateContractAllInfo',
-  update: '/api/services/app/Contract/UpdateContractAllInfo'
+  update: '/api/services/app/Contract/UpdateContractAllInfo',
+  progressByContract: '/api/services/app/Payment/GetPaymentProgressByContract',
+  progressInfo: '/api/services/app/Payment/GetPaymentProgress',
 }
 
 const SignedService = {}
@@ -102,6 +105,30 @@ SignedService.updateInfo = function (GID) {
     url: API.updateInfo,
     method: 'get',
     params: { GID }
+  })
+}
+
+SignedService.attachmentList = function (paymentGID, mainContractGID, secondaryContractGID) {
+  return request({
+    url: API.attachmentList,
+    method: 'get',
+    params: { paymentGID, mainContractGID, secondaryContractGID }
+  })
+}
+
+SignedService.progressInfo = function (paymentGID) {
+  return request({
+    url: API.progressInfo,
+    method: 'get',
+    params: { paymentGID }
+  })
+}
+
+SignedService.progressByContract = function (contractGID, progressNum) {
+  return request({
+    url: API.progressByContract,
+    method: 'get',
+    params: { contractGID, progressNum }
   })
 }
 

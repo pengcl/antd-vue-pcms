@@ -6,7 +6,7 @@
           <base-info :data="form" :type="type" :id="id"></base-info>
         </a-tab-pane>
         <a-tab-pane key="2" tab="进度款支付明细表">
-          <pay-detail :type="type" :id="id"></pay-detail>
+          <pay-detail :data="form" :type="type" :id="id"></pay-detail>
         </a-tab-pane>
       </a-tabs>
 
@@ -19,8 +19,8 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group>
-            <a-button :disabled="type === 'view'" @click="handleToEdit()" type="success">
+          <a-button-group v-if="type !== 'view'">
+            <a-button @click="handleToEdit()" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -71,6 +71,7 @@
                 SignedService.getCreateData(this.id).then(res => {
                     this.form = res.result.data
                     this.form.contractMasterInfo.detailList = []
+                    this.form.contractMasterInfo.billList = []
                 })
             }
 
