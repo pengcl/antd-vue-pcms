@@ -290,10 +290,14 @@
         return compare(a.srNo, b.srNo)
       })
       this.data.contract.contractYear = new Date().getFullYear()
-      BaseService.itemTypes(contractTypes[this.data.contract.contractCategory + 1]).then(res => {
-        console.log(res)
-        this.selection.itemTypes = res.result.data
-      })
+
+      // 获取主合同需要通过合同类别参数
+      const contractTypeKey = contractTypes[this.data.contract.contractCategory + 1]
+      if (contractTypeKey) {
+        BaseService.itemTypes(contractTypeKey).then(res => {
+          this.selection.itemTypes = res.result.data
+        })
+      }
       ContractService.centers(this.project.id).then(res => {
         console.log(res)
         this.selection.centers = res.result.data

@@ -6,8 +6,8 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
+                <a-tree-select
+                  :treeData="cities"
                   placeholder="请选择"
                   @change="onChange"
                 />
@@ -24,21 +24,21 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
-              <a-input></a-input>
+              <a-input v-model="queryParam.ContractName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
-              <a-input></a-input>
+              <a-input v-model="queryParam.ContractNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="乙方单位">
-              <a-input></a-input>
+              <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-button type="success">搜索</a-button>
+            <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>
         </a-row>
@@ -49,7 +49,7 @@
           合同列表
         </a-col>
       </a-row>
-      <s-table :columns="columns" :data="loadData" bordered :rowSelection="rowSelection">
+      <s-table :columns="columns" :data="loadData" bordered :rowSelection="rowSelection" ref="table">
         <template slot="footer" slot-scope="currentPageData">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
@@ -77,7 +77,7 @@
         </a-row>
       <s-table
         style="margin-top: 5px"
-        ref="table"
+        ref="table2"
         size="default"
         rowKey="key"
         bordered
@@ -115,7 +115,7 @@
 <script>
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
+    //import { getRoleList, getServiceList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
@@ -132,7 +132,7 @@
         },
         {
             title: '结算状态',
-            dataIndex: 'settlementStatus',
+            dataIndex: 'balanceStatus',
         },
         {
             title: '合同编号',
@@ -242,8 +242,9 @@
                 mdl: null,
                 // 高级搜索 展开/关闭
                 advanced: false,
-                // 查询参数
+                // 合同列表查询参数
                 queryParam: {},
+                // 变更列表查询参数
                 queryParam2 : {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
@@ -253,7 +254,7 @@
                             return fixedList(res,requestParameters);
                         })
                 },
-                // 加载数据方法 必须为 Promise 对象
+                // 变更列表加载数据方法 必须为 Promise 对象
                 loadData2: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam2)
                     return ChangeService.changeItems(requestParameters)
@@ -265,6 +266,7 @@
                 selectedRows: [],
                 totalChangeAmt : 0,
                 totalChangeRate : 0,
+                //记录变更列表选中行信息
                 tableSelected : {}
             }
         },
@@ -277,7 +279,8 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
+            //getRoleList({ t: new Date() })
+            //加载项目查询条件选项
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {
@@ -286,7 +289,8 @@
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,
-                        children: children
+                        children: children,
+                        selectable : false
                     })
                 })
                 this.cities = cities
@@ -294,6 +298,7 @@
             })
         },
         computed: {
+        		//合同列表行选中事件监听
             rowSelection () {
         			const that = this
                 return {
@@ -301,14 +306,19 @@
                     onChange: this.onSelectChange,
                     type : 'radio',
                     onSelect : function(record,selected,selectRows,nativeEvent){
+                    		//初始化变更列表查询条件
                     		that.queryParam2.contractGuid = record.contractGuid
+                    		//修改合同列表中‘累计变更金额’，‘变更比例’值
                     		that.totalChangeAmt = record.sumVOAmount
                     		that.totalChangeRate = record.voRate
-                    		that.$refs.table.refresh()
+                    		//刷新变更列表
+                    		that.$refs.table2.refresh()
+                    		//清空变更列表选中数据
                     		that.tableSelected = {}
                     }
                 }
             },
+            //变更列表行选中事件监听
             rowSelection2 () {
         			const that = this
                 return {
@@ -341,79 +351,23 @@
                 		this.$message.warn('请选择变更记录')
                 }
             },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading = false
-                    }
-                })
-            },
-            handleCancel () {
-                this.visible = false
-
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
+             //cip转vo 方法
+			handleCipToVo (){
+			
+			},
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
-            },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
             },
             resetSearchForm () {
                 this.queryParam = {
                     date: moment(new Date())
                 }
             },
+		      search () {
+		        this.show = !this.show
+		        this.$refs.table.refresh(true)
+		      },
             onChange (value) {
                 if (value.length >= 2) {
                     this.queryParam.ProjectGUID = value[value.length - 1]
@@ -422,7 +376,7 @@
                     this.queryParam.ProjectGUID = ''
                     this.$refs.table.refresh(true)
                 }
-            },
+            }
         }
     }
 </script>

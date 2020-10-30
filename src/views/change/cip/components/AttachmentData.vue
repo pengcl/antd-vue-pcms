@@ -3,7 +3,7 @@
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
         <a-form-item label="保修金/保固金/保留金比率上限">
-          <a-input-number></a-input-number>
+          <a-input-number v-model="data.voMasterInfo.retentionPercentage"></a-input-number>
           %
         </a-form-item>
       </a-col>
@@ -174,7 +174,6 @@
 
 <script>
 
-	
   import { compare } from '@/utils/util'
   import { Base as BaseService } from '@/api/base'
   import { SwaggerService } from '@/api/swagger.service'
@@ -190,7 +189,7 @@
 		  }
 		},
 		props: {
-		  data: {
+		  data: { 
 		    type: Object,
 		    default: null
 		  },
@@ -208,12 +207,19 @@
 		  }
 		},
 	    created () {
+	    	  console.log('change.AttachmentData.contract',this.contract)
+	    	  //若为新增模式，则取合同中的保修金/保留金/保固金比率覆盖到变更主类
+	    	  if(this.type == 'add'){
+	    	  	this.data.voMasterInfo.retentionPercentage = this.contract.retentionPercentage
+	    	  }
+	    	  //加载单位
 	      BaseService.unitTypes().then(res => {
 	        this.selection.unitTypes = res.result.data
 	        this.$forceUpdate()
 	      })
 	    },
 		methods: {
+		  //增加保修金/保留金/保固金 列表行
 		  addRetention () {
 		    const item = {
 		      id: 0,
@@ -226,15 +232,24 @@
 		    }
 		    this.data.voRetentionlst.push(item)
 		  },
+		  /**
+		  * 通用删除行方法
+		  * @item 要删除的数据
+		  * @index 要删除的数据下标
+		  * @target 要删除行数据的对象列表
+		  */
 		  del (item,index,target) {
-		  	console.log('item',item,index,target)
 		    item.isDeleted = true
 		    if(item.isTemp){
 		    		this.data[target].splice(index,1)
 		    }
-		    console.log(this.data[target])
 		    this.$forceUpdate()
 		  },
+		  /**
+		  * 通用清空行方法
+		
+		  * @target 要删除行数据的对象列表
+		  */
 		  clear (target) {
 		  	const list = []
 		    this.data[target].forEach(item => {
@@ -246,6 +261,7 @@
 		    this.data[target] = list
 		    this.$forceUpdate()
 		  },
+		  //增加保修金/保固金/保留金返还行
 		  addRelease () {
 	        const item = {
 	          id: 0,
@@ -259,6 +275,7 @@
 	        }
 	        this.data.voRetentionReleaselst.push(item)
 	      },
+	      //按原合同条款覆盖保修金/保固金/保留金列表
 	      replaceRetentionsByContract(){
 	      	this.clear('voRetentionlst')
 	      	ChangeService.retentions(this.contract.contractGuid).then(item=>{
@@ -279,6 +296,7 @@
 	      		}
 	      	})
 	      },
+	      //按原合同条款覆盖保修金/保固金/保留金返还列表
 	      replaceReleasesByContract(){
 	      	this.clear('voRetentionReleaselst')
 	      	ChangeService.releases(this.contract.contractGuid).then(item=>{
@@ -300,6 +318,7 @@
 	      		}
 	      	})
 	      },
+	      //全部按原合同条款按钮点击事件监听
 	      repleaceAll(){
 	      	this.replaceRetentionsByContract()
 	      	this.replaceReleasesByContract()

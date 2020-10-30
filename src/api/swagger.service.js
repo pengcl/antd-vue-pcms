@@ -39,7 +39,6 @@ SwaggerService.getDtoItem = function (name, key) {
 }
 
 SwaggerService.getForm = function (name) {
-  console.log(name)
   const obj = SwaggerService.CONFIG.components.schemas[name].properties
   const forItem = {}
   for (const key in obj) {

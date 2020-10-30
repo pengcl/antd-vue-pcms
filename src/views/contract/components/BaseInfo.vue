@@ -26,7 +26,7 @@
             :disabled="type === 'view'"
             placeholder="请选择招投标分判包"
             v-model="data.contract.tenderPackageItemID"/>
-          <span ></span>
+          <span></span>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -382,11 +382,14 @@
     },
     watch: {
       'data.contract.contractCategory' (val) {
+        console.log(val)
         this.selection.masters = []
-        ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
-          this.selection.masters = res.result.data
-          this.$forceUpdate()
-        })
+        if (val) {
+          ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
+            this.selection.masters = res.result.data
+            this.$forceUpdate()
+          })
+        }
       }
     },
     methods: {
@@ -402,13 +405,11 @@
         return items
       },
       filterMaster (input, option) {
-        console.log(option.componentOptions.propsData)
         return (
           option.componentOptions.propsData.value.indexOf(input.toUpperCase()) >= 0
         )
       },
       select (value, item) {
-        console.log(item.data)
         this.data.master = JSON.parse(item.data.key)
         this.data.contract.masterContractID = this.data.master.contractGuid
       },
@@ -446,7 +447,6 @@
         this.data.contractPartylst.forEach((item, i) => {
           const _id = item.partyID || item._id
           if (_id === id) {
-            console.log(item)
             item.isDeleted = true
           }
           this.$forceUpdate()
@@ -466,11 +466,12 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;
