@@ -13,7 +13,7 @@
               <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
                 重置
               </a-button>
-              <a-button :disabled="type === 'view'">
+              <a-button :disabled="type === 'view'" @click="replaceByContract">
                 按原合同条款
               </a-button>
                <a-button type="primary" :disabled="type === 'view'" @click="countAmount()">
@@ -185,10 +185,12 @@
       </a-col>
     </a-row>
   </a-form>
+  <contract-bq-modal ref="bqModal" :contract="contract" :data="data"></contract-bq-modal>
 </template>
 
 <script>
 
+  import ContractBqModal from '@/views/change/cip/components/modal/ContractBQModal'
   import { compare } from '@/utils/util'
   import { Base as BaseService } from '@/api/base'
   import { SwaggerService } from '@/api/swagger.service'
@@ -230,6 +232,7 @@
   }
     export default {
         name: 'CostEstimates',
+        components: { ContractBqModal },
         data () {
             return {
 		        selection: {},
@@ -356,7 +359,6 @@
 	        item.allAmount = item.subAmountMaterial + item.subAmountWork + item.subAmountWorkMat
 	      },
 	      countAmount(){
-	      
 	      	ChangeService.bqAmount(this.data.vobQlst).then(item=>{
 	      		if(item.result.statusCode == 200){
 	      			this.data.voMasterInfo.voTotalAmountDecrease = item.result.data.voTotalAmountDecrease
@@ -366,6 +368,9 @@
 	      		this.$message.info('计算金额完成')
 	      		console.log('bqAmount',item)
 	      	})
+	      },
+	      replaceByContract(){
+	      	this.$.refs.bqModal.show()
 	      }
 	    }
     }
