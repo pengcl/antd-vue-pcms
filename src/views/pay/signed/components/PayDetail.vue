@@ -95,8 +95,8 @@
                     this.payDetail = res.result.data
                 })
             } else {
-                SignedService.progressInfo(this.data['contractGID']).then(res => {
-                    console.log(res)
+                SignedService.progressById(this.data['id']).then(res => {
+                    this.payDetail = res.result.data
                 })
             }
 

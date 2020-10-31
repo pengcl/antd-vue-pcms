@@ -43,6 +43,7 @@
             return {
                 selection: {},
                 loading: false,
+                attachmentTypeList: []
             }
         },
         props: {
@@ -59,22 +60,13 @@
                 default: '0'
             }
         },
-        watch: {
-            /*'data.mainContractGID' (value) {
-                this.getAttachmentList(this.data['id'], this.data['mainContractGID'], this.data['secondaryContractGID'])
-            },*/
-        },
+        watch: {},
         created () {
-
+            SignedService.attachmentTypeList().then(res => {
+                this.attachmentTypeList = res.result.data
+            })
         },
-        methods: {
-            getAttachmentList (paymentGID, mainContractGID, secondaryContractGID) {
-                SignedService.attachmentList(paymentGID, mainContractGID, secondaryContractGID).then(res => {
-                        console.log(res)
-                    }
-                )
-            }
-        }
+        methods: {}
     }
 </script>
 

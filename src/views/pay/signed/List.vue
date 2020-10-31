@@ -191,12 +191,12 @@
         },
         {
             title: '期数',
-            dataIndex: 'contractNo'
+            dataIndex: 'paymentPhase'
         },
         {
             title: '申请日期',
-            dataIndex: 'signDate',
-            scopedSlots: { customRender: 'signDate' }
+            dataIndex: 'auditTime',
+            scopedSlots: { customRender: 'auditTime' }
         },
         {
             title: '付款单号',
@@ -214,7 +214,7 @@
         },
         {
             title: '支付日期',
-            dataIndex: 'creationTime'
+            dataIndex: 'paymentReceiveDate'
         },
         {
             title: '付款状态',
