@@ -7,10 +7,10 @@
             <thead>
               <tr>
                 <th colspan="12">
-                  <a-button @click="add()" icon="plus">
+                  <a-button :disabled="type === 'view'" @click="add()" icon="plus">
                     添加员工
                   </a-button>
-                  <a-button @click="clear()" icon="stop">
+                  <a-button :disabled="type === 'view'" @click="clear()" icon="stop">
                     重置
                   </a-button>
                 </th>
@@ -77,6 +77,14 @@ export default {
     items: {
       type: Array,
       default: null
+    },
+    type: {
+      type: String,
+      default: 'view'
+    },
+    id: {
+      type: String,
+      default: '0'
     }
   },
   data () {
@@ -109,6 +117,7 @@ export default {
     },
     add () {
       const item = SwaggerService.getForm('ChangeVendorEditDto_Employee')
+      item.id = 0
       item.logGID = this.vendor.logGID ? this.vendor.logGID : ''
       item.vendorGID = this.vendor.vendorGID ? this.vendor.vendorGID : ''
       item.isDeleted = false

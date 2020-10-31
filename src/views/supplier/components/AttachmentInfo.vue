@@ -7,6 +7,7 @@
             <tr>
               <th colspan="4">
                 <a-upload
+                  :disabled="type === 'view'"
                   :before-upload="beforeUpload"
                 >
                   <a-button>请选择</a-button>
