@@ -71,7 +71,7 @@
                 SignedService.getCreateData(this.id).then(res => {
                     this.form = res.result.data
                     this.form.contractMasterInfo.detailList = []
-                    this.form.contractMasterInfo.billList = []
+                    this.form.billList = []
                 })
             }
 

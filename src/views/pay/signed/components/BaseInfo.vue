@@ -137,7 +137,8 @@
           <tr>
             <td>顾问公司出估值时间</td>
             <td>
-              <a-date-picker v-model="data.contractMasterInfo.progressValuationDate" style="width: 100%"></a-date-picker>
+              <a-date-picker v-model="data.contractMasterInfo.progressValuationDate"
+                             style="width: 100%"></a-date-picker>
             </td>
             <td>申请批准日期</td>
             <td>
@@ -253,7 +254,7 @@
           <thead>
           <tr>
             <th colspan="9">
-              <a-button icon="plus">
+              <a-button icon="plus" @click="add('billList')">
                 新增发票
               </a-button>
             </th>
@@ -271,20 +272,48 @@
           </tr>
           </thead>
           <tbody>
-          <tr>
+          <tr v-if="!item.isDeleted" v-for="(item,index) in data.billList" :key="index">
             <td>
+              <a-upload>
+                <a-button>请选择</a-button>
+              </a-upload>
               <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>
+              <a-select
+                placeholder="请选择"
+                v-model="item.billType"
+                v-decorator="['item.billType', { rules: [{required: true, message: '请选择票据类型'}] }]">
+                <a-select-option
+                  v-for="type in billTypeList"
+                  :value="type"
+                  :key="type">{{ type }}
+                </a-select-option>
+              </a-select>
+            </td>
+            <td>
+              <a-input v-model="item.billNum"></a-input>
+            </td>
+            <td>
+              <a-input v-model="item.billAmount"></a-input>
+            </td>
+            <td>
+              <a-input v-model="item.taxRate"></a-input>
+            </td>
+            <td>
+              <a-input v-model="item.noTaxAmount"></a-input>
+            </td>
+            <td>
+              <a-date-picker v-model="item.billDate"></a-date-picker>
+            </td>
+            <td>
+
+            </td>
+            <td>
+              <a-input v-model="item.remark"></a-input>
+            </td>
           </tr>
           <tr>
             <td colspan="2">发票合计</td>
@@ -329,6 +358,7 @@
                 loading: false,
                 paymentTypes: [],
                 certificateTypes: [],
+                billTypeList: [],
                 visible: false,
                 model: null,
                 form: this.$form.createForm(this),
@@ -346,6 +376,11 @@
                 this.certificateTypes = res.result.data
             })
         },
+        watch: {
+            'data' (value) {
+                this.getBillList(this.data['contractGID'], this.data['gid'])
+            }
+        },
         props: {
             data: {
                 type: Object,
@@ -360,31 +395,40 @@
                 default: '0'
             }
         },
-        watch: {},
         methods: {
-            getVendorName (id) {
-                let vendorName = ''
-                this.vendorTypes.forEach(item => {
-                    if (item.vendorGID === id) {
-                        vendorName = item.vendorName
-                    }
+            getBillList (contractGID, gid) {
+                SignedService.billList(contractGID, gid).then(res => {
+                    this.billTypeList = res.result.data
                 })
-                return vendorName
             },
-            getBankName (id, gid) {
-                let bankName = ''
-                this.vendorTypes.forEach(item => {
-                    if (item.vendorGID === id) {
-                        item.bankList.forEach(v => {
-                            if (v.gid === gid) {
-                                bankName = v.bankName
-                            }
-                        })
-                    }
-                })
-                return bankName
+            add (target) {
+                const item = {
+                    id: 0,
+                    isDeleted: false,
+                    isTemp: true,
+                    billType: '',
+                    billNum: '',
+                    billAmount: '',
+                    taxRate: '',
+                    noTaxAmount: '',
+                    billDate: '',
+                    billFileID: '',
+                    billFileUrl: '',
+                    remark: ''
+                }
+                if (this.data[target]) {
+                    this.data[target].push(item)
+                } else {
+                    this.data[target] = [item]
+                }
             },
-
+            del (index) {
+                if (this.data.billList[index].isTemp) {
+                    this.data.billList.splice(index, 1)
+                } else {
+                    this.data.billList[index].isDeleted = true
+                }
+            },
             ok () {
                 const form = this.$refs.createModal.form
                 this.confirmLoading = true
@@ -401,9 +445,6 @@
                         this.confirmLoading = false
                     }
                 })
-            },
-            del (index) {
-                this.items.splice(index, 1)
             },
             clear () {
                 this.items = []

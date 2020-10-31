@@ -17,6 +17,9 @@ const API = {
   update: '/api/services/app/Contract/UpdateContractAllInfo',
   progressByContract: '/api/services/app/Payment/GetPaymentProgressByContract',
   progressInfo: '/api/services/app/Payment/GetPaymentProgress',
+  progressById: '/api/services/app/Payment/GetPaymentProgressByID',
+  billList: '/api/services/app/Payment/GetPaymentBillTypeList',
+  attachmentTypeList: '/api/services/app/Payment/GetPaymentAttachmentModuleTypeList',
 }
 
 const SignedService = {}
@@ -124,11 +127,35 @@ SignedService.progressInfo = function (paymentGID) {
   })
 }
 
+SignedService.progressById = function (id) {
+  return request({
+    url: API.progressById,
+    method: 'get',
+    params: { id }
+  })
+}
+
 SignedService.progressByContract = function (contractGID, progressNum) {
   return request({
     url: API.progressByContract,
     method: 'get',
     params: { contractGID, progressNum }
+  })
+}
+
+SignedService.billList = function (contractGID, paymentGID) {
+  return request({
+    url: API.billList,
+    method: 'get',
+    params: { contractGID, paymentGID }
+  })
+}
+
+SignedService.attachmentTypeList = function () {
+  return request({
+    url: API.attachmentTypeList,
+    method: 'get',
+    params: {}
   })
 }
 
