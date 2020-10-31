@@ -1,22 +1,22 @@
 <template>
   <a-modal
     :visible="visible"
+    :width="900"
+    title="请选择合同清单"
+    @cancel="handleCancel"
+    @ok="handleOk"
   >
-    <page-header-wrapper>
-      <a-card :bordered="false">
-        <a-row :gutter="48">
-          <a-col :md="24" :sm="24">
-            合同清单列表
-          </a-col>
-        </a-row>
-        <s-table :columns="columns" :data="loadData" bordered :rowSelection="rowSelection" ref="table">
-        </s-table>
-      </a-card>
-    </page-header-wrapper>
+    <div>
+	    <a-table :columns="columns" :data-source="tableData" :scroll="{ x : ' calc(1200px + 50%)' }" :rowSelection="rowSelection" bordered ref="table" :pagination="false">
+	    		<label slot="isCarryData" slot-scope="text">{{ text ? '是' : '否' }}</label>
+	    </a-table>
+    </div>
   </a-modal>
 </template>
 
 <script>
+  import moment from 'moment'
+  import { STable, Ellipsis } from '@/components'
   import { ChangeService } from '@/views/change/change.service'
   import { fixedList } from '@/utils/util'
 
@@ -24,55 +24,66 @@
     {
       title: '带数项目',
       dataIndex: 'isCarryData',
-      scopedSlots: { customRender: 'isCarryData' }
+      scopedSlots: { customRender: 'isCarryData' },
+      width : 50
     },
     {
       title: '标段',
-      dataIndex: 'section'
+      dataIndex: 'section',
+      width : 50
     },
     {
       title: '楼栋',
-      dataIndex: 'building'
+      dataIndex: 'building',
+      width : 50
     },
     {
       title: '预留字段0',
-      dataIndex: 'remark1'
-
+      dataIndex: 'remark1',
+      width : 50
     },
     {
       title: '预留字段1',
-      dataIndex: 'remark2'
+      dataIndex: 'remark2',
+      width : 50
     },
     {
       title: '清单描述',
-      dataIndex: 'description'
+      dataIndex: 'description',
+      width : 150
     },
     {
       title: '业态成本中心',
-      dataIndex: 'costCenterName'
+      dataIndex: 'costCenterName',
+      width : 250
     },
     {
       title: '清单项类别',
-      dataIndex: 'signDate'
+      dataIndex: 'signDate',
+      width : 150
     },
     {
       title: '供应',
       children: [
         {
           title: '单位',
-          dataIndx: 'unitMaterial'
+          dataIndex : 'unitMaterial',
+      	  width : 100
         },
         {
           title: '工程量',
-          dataIndx: 'quantityMaterial'
+          dataIndex: 'quantityMaterial',
+      	  width : 100
         },
         {
           title: '单价',
-          dataIndx: 'unitPriceMaterial'
+          dataIndex: 'unitPriceMaterial',
+      	  width : 100
         },
         {
           title: '小计',
-          dataIndx: 'subAmountMaterial'
+          dataIndex: 'subAmountMaterial',
+      	  width : 100
         }
       ]
     },
@@ -81,19 +92,23 @@
       children: [
         {
           title: '单位',
-          dataIndx: 'unitWork'
+          dataIndex: 'unitWork',
+      	  width : 100
         },
         {
           title: '工程量',
-          dataIndx: 'quantityWork'
+          dataIndex: 'quantityWork',
+      	  width : 100
         },
         {
           title: '单价',
-          dataIndx: 'unitPriceWork'
+          dataIndex: 'unitPriceWork',
+      	  width : 100
         },
         {
           title: '小计',
-          dataIndx: 'subAmountWork'
+          dataIndex: 'subAmountWork',
+      	  width : 100
         }
       ]
     },
@@ -102,52 +117,59 @@
       children: [
         {
           title: '单位',
-          dataIndx: 'unitWorkMat'
+          dataIndex: 'unitWorkMat',
+      	  width : 100
         },
         {
           title: '工程量',
-          dataIndx: 'quantityWorkMat'
+          dataIndex: 'quantityWorkMat',
+      	  width : 100
         },
         {
           title: '单价',
-          dataIndx: 'unitPriceWorkMat'
+          dataIndex: 'unitPriceWorkMat',
+      	  width : 100
         },
         {
           title: '小计',
-          dataIndx: 'allAmount'
+          dataIndex: 'subAmountWorkMat',
+      	  width : 100
         }
       ]
     },
     {
       title: '合计',
-      dataIndex: 'signDate'
+      dataIndex: 'allAmount',
+      width : 80
     }
 
   ]
 
   export default {
     name: 'ContractBQModal',
+    components: {
+        STable,
+        Ellipsis
+    },
     data () {
       this.columns = columns
       return {
         // create model
-        cities: [],
+        tableData: [],
         show: false,
         visible: false,
         confirmLoading: false,
         mdl: null,
         // 高级搜索 展开/关闭
         advanced: false,
-        // 合同列表查询参数
-        queryParam: { contractGuid: this.contract.contractGuid },
         // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return ChangeService.bqList(requestParameters)
+        /*loadData: parameter => {
+          return ChangeService.bqList(this.contract.contractGuid)
             .then(res => {
-              return fixedList(res, requestParameters)
+            	  console.log('myData',res)
+              return res.result.data
             })
-        },
+        },*/
         selectedRowKeys: [],
         selectedRows: []
       }
@@ -162,32 +184,47 @@
         default: null
       }
     },
+    computed: {
+    		//列表行选中事件监听
+        rowSelection () {
+            return {
+                selectedRowKeys: this.selectedRowKeys,
+                onChange: this.onSelectChange,
+                type : 'checkbox'
+            }
+        }
+    },
     created () {
     },
-    computed: {
-      // 合同列表行选中事件监听
-      rowSelection () {
-        const that = this
-        return {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange,
-          type: 'radio',
-          onSelect: function (record, selected, selectRows, nativeEvent) {
-            // 刷新变更列表
-            that.$refs.table2.refresh()
-            // 清空变更列表选中数据
-            that.tableSelected = {}
-          }
-        }
-      }
+    mounted(){
+    		this.loadData();
     },
     methods: {
       showTable () {
         this.visible = true
       },
+      handleCancel(){
+      	this.visible = false
+      },
       onSelectChange (selectedRowKeys, selectedRows) {
         this.selectedRowKeys = selectedRowKeys
         this.selectedRows = selectedRows
+      },
+      loadData(){
+      	return ChangeService.bqList(this.contract.contractGuid).then(res => {
+        	  console.log('myData',res)
+          this.tableData = res.result.data
+        })
+      },
+      handleOk(){
+      	if(this.selectedRows.length < 1){
+      		this.$message.warn(请选择合同造价数据);
+      	}else{
+      		this.selectedRows.forEach(item => {
+      			this.$parent.add(undefined,item)
+      		})
+      		this.visible = false
+      	}
       }
     }
   }

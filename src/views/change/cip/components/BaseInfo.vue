@@ -42,7 +42,7 @@
             <td style="width : 50%">
             	   <a-select
                 placeholder="请选择"
-                v-model="to"
+                v-model="to[0]"
                 :disabled="type === 'view'"
                 @change="toChange"
                >
@@ -81,7 +81,6 @@
                 placeholder="请选择"
                 :disabled="type === 'view'"
                 v-model="cc"
-                @change="ccChange"
               >
                  <a-select-option v-for="option in selection.sendCopyParties" :key="option.partID" :value="option.partID">
                     {{option.partName }}
@@ -400,10 +399,7 @@
 		    		this.contract.voPartylst.forEach(item => {
 		    			if(!item.isSendCopy){
 		    				this.to.push(item.partID)
-		    			}
-		    		})
-		    		this.contract.voPartyLst.forEach(item => {
-		    			if(item.isSendCopy){
+		    			}else{
 		    				this.cc.push(item.partID)
 		    			}
 		    		})
@@ -421,13 +417,7 @@
     	  // 接收公司下拉框值变更事件监听
       toChange (value) {
         // item.partyID = ''
-        cnosole.log('toChange',value)
         this.to = [value]
-      },
-      //抄送公司下拉框值变更事件监听
-      ccChange(value){
-      	console.log('ccChange',value)
-      	this.cc = value
       },
       splitVal (val){
       	return val ? val.split(';') : null
@@ -435,12 +425,10 @@
       //reasonType值变更事件监听
       //监听的同时转换checkboxgroup选中值为保存接口所需的以;号分隔的字符串
       changeReasonType(checkedValues){
-      	console.log('checked = ', checkedValues)
       	this.data.voMasterInfo.reasonType = checkedValues.join(';')
       },
       //变更类型change监听，变更后清空reasonType值
       changeVoType(value){
-      	console.log('voTypeValue',value)
       	this.reasonType = [] 
       	this.$forceUpdate()
       },
@@ -448,6 +436,84 @@
       mergeAccumulateAmount(accumulateAmount){
       	this.data.voMasterInfo = Object.assign(this.data.voMasterInfo,accumulateAmount)
       	this.$forceUpdate()
+      },
+      //整理承包/顾问单位公司信息(包括接收公司，抄送公司）
+      getPartys(){
+    		if(this.to.length < 1){
+    			this.$message.warn('请选择承包/顾问单位')
+    			return false
+    		}
+    		//整理承包公司
+    		this.selection.contractParties.forEach(item => { 
+    			if(item.partID == this.to[0]){
+    				const temp = Object.assign({},item)
+    				temp.id = 0
+    				temp.itemKey = ''
+    				temp.isDeleted = false
+    				temp.void = ''
+    				//获取承包/顾问单位公司百分比
+    				temp.percentage = this.toRate
+    				temp.isSendCopy = false
+    				let repeat = false
+    				this.data.voPartylst.forEach((party,index) => {
+    					if(!party.isSendCopy){
+    						if(party.partID != this.to[0]){
+	    						if(!party.isTemp){
+	    							party.isDeleted = true
+	    						}else{
+	    							this.data.voPartylst.splice(index,1)
+	    						}
+    						}else{
+    							party.isDeleted = false
+    							repeat = true
+    						}
+    					}
+    				})
+    				if(!repeat){
+    					this.data.voPartylst.push(temp)
+    				}
+    			}
+    		} )
+    		//整理抄送公司
+    		this.selection.sendCopyParties.forEach(item => {
+    			let result = false
+    			for(var i in this.cc){
+    				var tempC = this.cc[i];
+    				if(tempC == item.partID){
+    					result = true
+    					break;
+    				}
+    			}
+    			if(result){
+    				const temp = Object.assign({},item)
+    				temp.id = 0
+    				temp.itemKey = ''
+    				temp.isDeleted = false
+    				temp.void = ''
+    				//获取抄送公司百分比，暂时写死
+    				temp.percentage = 50
+    				temp.isSendCopy = true
+    				let repeat = false
+    				this.data.voPartylst.forEach((party,index) => {
+    					if(party.isSendCopy){
+    						if(party.partID != item.partID){
+	    						if(!party.isTemp){
+	    							party.isDeleted = true
+	    						}else{
+	    							this.data.voPartylst.splice(index,1)
+	    						}
+    						}else{
+    							party.isDeleted = false
+    							repeat = true
+    						}
+    					}
+    				})
+    				if(!repeat){
+    					this.data.voPartylst.push(temp)
+    				}
+    			}
+    		})
+    		return true
       }
     }
   }

@@ -50,6 +50,7 @@
 <script>
     import {CostService} from "@/views/cost/cost.service"
     import {ContractService} from "@/views/contract/contract.service";
+    import {SwaggerService} from "@/api/swagger.service";
     export default {
         name: 'Item',
         data () {
@@ -156,7 +157,21 @@
               }
               result['items'] = items
               CostService.update(result).then(res => {
-                console.log(res)
+                if (res.result.statusCode === 200) {
+                  // this.dialog.show({
+                  //   content: '修改成功',
+                  //   title: '',
+                  //   confirmText: '继续修改',
+                  //   cancel: '返回上一页'
+                  // }, (state) => {
+                  //   if (state) {
+                  //     this.data = result
+                  //   } else {
+                  //     this.$router.push('/cost/enact/list')
+                  //   }
+                  // })
+                  this.$message.info('修改成功')
+                }
               })
             }
         }
