@@ -247,6 +247,7 @@
           </table>
         </a-col>
         <base-info-payment :data="item" :type="type" :id="id"></base-info-payment>
+        <base-info-attachment :data="item" :type="type" :id="id"></base-info-attachment>
       </div>
       <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票信息</a-col>
       <a-col :md="24" :sm="24">
@@ -274,8 +275,10 @@
           <tbody>
           <tr v-if="!item.isDeleted" v-for="(item,index) in data.billList" :key="index">
             <td>
-              <a-upload>
-                <a-button>请选择</a-button>
+              <a-upload name="file"
+                        :multiple="false"
+                        :before-upload="beforeUpload">
+                <a-button @click="choose(index)">请选择</a-button>
               </a-upload>
               <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
@@ -284,6 +287,7 @@
             <td>
               <a-select
                 placeholder="请选择"
+                @change="onchange"
                 v-model="item.billType"
                 v-decorator="['item.billType', { rules: [{required: true, message: '请选择票据类型'}] }]">
                 <a-select-option
@@ -331,13 +335,6 @@
         </table>
       </a-col>
     </a-row>
-    <create-bank-form
-      ref="createModal"
-      :visible="visible"
-      :model="model"
-      @cancel="handleCancel"
-      @ok="ok()">
-    </create-bank-form>
   </a-form-model>
 </template>
 
@@ -362,12 +359,12 @@
                 visible: false,
                 model: null,
                 form: this.$form.createForm(this),
+                index: 0,
+                masterID: 0,
+                billType: ''
             }
         },
         created () {
-            /*SignedService.getCreateData(this.id).then(res => {
-                this.data = res.result.data
-            })*/
             SignedService.paymentTypes().then(res => {
                     this.paymentTypes = res.result.data
                 }
@@ -375,12 +372,14 @@
             SignedService.certificateTypes().then(res => {
                 this.certificateTypes = res.result.data
             })
+            SignedService.billList().then(res => {
+                this.billTypeList = res.result.data
+            })
+            SignedService.masterID(this.id).then(res => {
+                this.masterID = res.result.data
+            })
         },
-        watch: {
-            'data' (value) {
-                this.getBillList(this.data['contractGID'], this.data['gid'])
-            }
-        },
+        watch: {},
         props: {
             data: {
                 type: Object,
@@ -396,10 +395,11 @@
             }
         },
         methods: {
-            getBillList (contractGID, gid) {
-                SignedService.billList(contractGID, gid).then(res => {
-                    this.billTypeList = res.result.data
-                })
+            choose (index) {
+                this.index = index
+            },
+            onchange (value) {
+                this.billType = value
             },
             add (target) {
                 const item = {
@@ -421,6 +421,7 @@
                 } else {
                     this.data[target] = [item]
                 }
+                this.$forceUpdate()
             },
             del (index) {
                 if (this.data.billList[index].isTemp) {
@@ -428,32 +429,42 @@
                 } else {
                     this.data.billList[index].isDeleted = true
                 }
-            },
-            ok () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        this.items.push(values)
-                        console.log(this.items)
-                        this.visible = false
-                        this.confirmLoading = false
-                        // 重置表单数据
-                        form.resetFields()
-                        // 刷新表格
-                    } else {
-                        this.confirmLoading = false
-                    }
-                })
+                this.$forceUpdate()
             },
             clear () {
                 this.items = []
             },
-            handleCancel () {
-                this.visible = false
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            }
+            beforeUpload (file) {
+                this.handleUpload(file)
+                return false
+            },
+            handleUpload (file) {
+                const formData = new FormData()
+                formData.append('file', file)
+                formData.append('masterId', this.masterID)
+                formData.append('businessID', this.id)
+                formData.append('businessType', 'bill')
+                formData.append('subInfo1', this.billType) //文件类型
+                formData.append('subInfo2', file.name) // 文件名
+                formData.append('subInfo3', this.data['mainContractGID']) // 合同id
+                this.uploading = true
+                const _this = this
+                this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
+                    contentType: false,
+                    processData: false,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                })
+                    .then((response) => {
+                        console.log('upload response:', response)
+                        this.fileList[this.index].fileName = response.result.data.fileName
+                        this.fileList[this.index].creationTime = response.result.data.creationTime
+                        this.fileList[this.index].creatorUser = response.result.data.creatorUser
+                        this.fileList[this.index].fileUrl = response.result.data.fileUrl
+                        _this.$message.success('上传成功')
+                        _this.$emit('ok', response.url)
+                        _this.visible = false
+                    })
+            },
         }
     }
 </script>

@@ -20,6 +20,9 @@ const API = {
   progressById: '/api/services/app/Payment/GetPaymentProgressByID',
   billList: '/api/services/app/Payment/GetPaymentBillTypeList',
   attachmentTypeList: '/api/services/app/Payment/GetPaymentAttachmentModuleTypeList',
+  fileList: '/api/services/app/UploadAppservice/GetFileList',
+  upload: '/api/services/app/UploadAppservice/CommonUpload',
+  masterID: '/api/services/app/UploadAppservice/GetMasterIDByBusinessGuid',
 }
 
 const SignedService = {}
@@ -127,6 +130,14 @@ SignedService.progressInfo = function (paymentGID) {
   })
 }
 
+SignedService.masterID = function (gid) {
+  return request({
+    url: API.masterID,
+    method: 'get',
+    params: { gid }
+  })
+}
+
 SignedService.progressById = function (id) {
   return request({
     url: API.progressById,
@@ -143,11 +154,11 @@ SignedService.progressByContract = function (contractGID, progressNum) {
   })
 }
 
-SignedService.billList = function (contractGID, paymentGID) {
+SignedService.billList = function () {
   return request({
     url: API.billList,
     method: 'get',
-    params: { contractGID, paymentGID }
+    params: {}
   })
 }
 
@@ -159,9 +170,25 @@ SignedService.attachmentTypeList = function () {
   })
 }
 
+SignedService.fileList = function (masterID, businessID, sSubInfo1, sSubInfo2) {
+  return request({
+    url: API.fileList,
+    method: 'get',
+    params: { masterID, businessID, sSubInfo1, sSubInfo2 }
+  })
+}
+
 SignedService.create = function (parameter) {
   return request({
     url: API.create,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+SignedService.upload = function (parameter) {
+  return request({
+    url: API.upload,
     method: 'POST',
     data: parameter
   })
