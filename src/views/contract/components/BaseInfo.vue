@@ -387,14 +387,11 @@ export default {
       this.selection.masters = []
       if (val) {
         if (val === 15) {
-          console.log(true)
           this.rules.masterContractID = [{ required: false, message: '请选择原合同', trigger: 'blur' }]
           this.$forceUpdate()
         }
         ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
           this.selection.masters = res.result.data
-          console.log(res)
-          console.log(this.selection.masters)
           this.$forceUpdate()
         })
       }

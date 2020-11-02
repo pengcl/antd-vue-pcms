@@ -136,31 +136,7 @@
       }
     },
     created () {
-      if (this.id !== '0') {
-        ContractService.item(this.id).then(res => {
-          this.form = res.result.data
-          this.form.master = {}
-          ProjectService.view2(this.form.contract.projectID).then(res => {
-            this.project = res.result.data
-          })
-        })
-      } else {
-        this.form.fileMasterId = 0
-        this.form.contract.id = 0
-        this.form.contract.isDeleted = false
-        this.form.contract.currencyID = 3
-        this.form.contract.baseCurrencyID = 3
-        this.form.contract.subNo = 0
-        this.form.contract.serialNo = 0
-        this.form.master = {}
-        this.form.contract.tenderPackageItemID = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-        ProjectService.view(this.ProjectGUID).then(res => {
-          this.project = res.result.data
-          this.form.contract.projectID = this.project.projectCode
-          this.form.contract.companyID = this.project.companyCode
-          console.log(res)
-        })
-      }
+      this.getData()
     },
     computed: {
       id () {
@@ -175,6 +151,34 @@
     },
     watch: {},
     methods: {
+      getData () {
+        this.form = SwaggerService.getForm('ContractAllInfoDto')
+        if (this.id !== '0') {
+          ContractService.item(this.id).then(res => {
+            this.form = res.result.data
+            this.form.master = {}
+            ProjectService.view2(this.form.contract.projectID).then(res => {
+              this.project = res.result.data
+            })
+          })
+        } else {
+          this.form.fileMasterId = 0
+          this.form.contract.id = 0
+          this.form.contract.isDeleted = false
+          this.form.contract.currencyID = 3
+          this.form.contract.baseCurrencyID = 3
+          this.form.contract.subNo = 0
+          this.form.contract.serialNo = 0
+          this.form.master = {}
+          this.form.contract.tenderPackageItemID = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+          ProjectService.view(this.ProjectGUID).then(res => {
+            this.project = res.result.data
+            this.form.contract.projectID = this.project.projectCode
+            this.form.contract.companyID = this.project.companyCode
+            console.log(res)
+          })
+        }
+      },
       approve () {
         console.log('approve')
       },
@@ -217,8 +221,28 @@
 
         if (isValid) {
           ContractService[this.type](this.form).then((res, err) => {
-            console.log(res)
-            console.log(err)
+            if (res.result.statusCode === 200) {
+              this.dialog.show({
+                content: this.type === 'update' ? '修改成功' : '添加成功',
+                title: '',
+                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+                cancelText: '返回上一页'
+              }, (state) => {
+                if (state) {
+                  if (this.type === 'create') {
+                    this.getData()
+                    /* if (this.stage === 'Project') {
+                      this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
+                    } else {
+                      this.form.projectShortCode = ''
+                      this.form.projectShortName = ''
+                    } */
+                  }
+                } else {
+                  this.$router.push('/contract/list')
+                }
+              })
+            }
           }).catch(() => {
             console.log(this.dialog)
             this.dialog.show({
