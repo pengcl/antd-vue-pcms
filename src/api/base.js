@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { SignedService } from '@/views/pay/signed/signed.service'
 
 const API = {
   secretTypes: '/api/services/app/GeneralType/GetSecretLevelTypes',
@@ -7,7 +8,9 @@ const API = {
   full: '/api/services/app/City/GetProvinceCityAreaTree',
   cities: '/api/services/app/City/GetProvinceCityTree',
   retentionTypes: '/api/services/app/GeneralType/GetRetentionTermTypes',
-  upload: '/api/services/app/UploadAppservice/CommonUpload'
+  upload: '/api/services/app/UploadAppservice/CommonUpload',
+  masterID: '/api/services/app/UploadAppservice/GetMasterIDByBusinessGuid',
+  fileList: '/api/services/app/UploadAppservice/GetFileList'
 }
 
 const Base = {}
@@ -57,6 +60,22 @@ Base.upload = function (formData) {
     method: 'POST',
     processData: false,
     data: formData
+  })
+}
+
+Base.masterID = function (gid) {
+  return request({
+    url: API.masterID,
+    method: 'get',
+    params: { gid }
+  })
+}
+
+Base.fileList = function (masterID, businessID, sSubInfo1, sSubInfo2) {
+  return request({
+    url: API.fileList,
+    method: 'get',
+    params: { masterID, businessID, sSubInfo1, sSubInfo2 }
   })
 }
 

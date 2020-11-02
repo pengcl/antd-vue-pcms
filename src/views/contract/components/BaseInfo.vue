@@ -123,7 +123,7 @@
             :disabled="type === 'view'"
             placeholder="请选择成本预算分类"
             v-model="data.contract.contractType">
-            <a-select-option value="1">工程</a-select-option>
+            <a-select-option :value="1">工程</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-col>
