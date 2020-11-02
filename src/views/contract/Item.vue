@@ -55,6 +55,7 @@
         <a-tab-pane forceRender :key="1" tab="基本资料">
           <base-info
             ref="baseInfo"
+            :companies="selection.companies"
             :project="project"
             :data="form"
             :type="type"
@@ -63,11 +64,18 @@
         <a-tab-pane forceRender :key="2" tab="合同信息">
           <contract-info ref="contractInfo" :data="form" :type="type" :id="id"/>
         </a-tab-pane>
-        <a-tab-pane forceRender :key="3" tab="预算调整">
+        <a-tab-pane v-if="id !== '0'" forceRender :key="3" tab="预算调整">
           <budget-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane forceRender :key="4" tab="合同量清单">
-          <contract-list ref="contractList" :project="project" :data="form" :type="type" :id="id"/>
+          <contract-list
+            ref="contractList"
+            @validate-field="showValidate"
+            :activeKey="activeKey"
+            :project="project"
+            :data="form"
+            :type="type"
+            :id="id"/>
         </a-tab-pane>
         <a-tab-pane forceRender :key="5" tab="付款条款">
           <pay-info :data="form" :type="type" :id="id"/>
@@ -122,45 +130,24 @@
   import { SwaggerService } from '@/api/swagger.service'
   import { ProjectService } from '@/views/project/project.service'
   import { DIALOGCONFIG } from '@/api/base'
+  import { Company as CompanyService } from '@/api/company'
 
   export default {
     name: 'ContractItem',
     components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
     data () {
       return {
+        disabled: true,
         activeKey: 1,
         loading: false,
         project: null,
         dialog: DIALOGCONFIG,
+        selection: {},
         form: SwaggerService.getForm('ContractAllInfoDto')
       }
     },
     created () {
-      if (this.id !== '0') {
-        ContractService.item(this.id).then(res => {
-          this.form = res.result.data
-          this.form.master = {}
-          ProjectService.view2(this.form.contract.projectID).then(res => {
-            this.project = res.result.data
-          })
-        })
-      } else {
-        this.form.fileMasterId = 0
-        this.form.contract.id = 0
-        this.form.contract.isDeleted = false
-        this.form.contract.currencyID = 3
-        this.form.contract.baseCurrencyID = 3
-        this.form.contract.subNo = 0
-        this.form.contract.serialNo = 0
-        this.form.master = {}
-        this.form.contract.tenderPackageItemID = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-        ProjectService.view(this.ProjectGUID).then(res => {
-          this.project = res.result.data
-          this.form.contract.projectID = this.project.projectCode
-          this.form.contract.companyID = this.project.companyCode
-          console.log(res)
-        })
-      }
+      this.getData()
     },
     computed: {
       id () {
@@ -175,6 +162,61 @@
     },
     watch: {},
     methods: {
+      getCompanies () { // 获取甲方公司待选列表
+        const companies = ContractService.filterParties(18, this.form.contractPartylst)
+        CompanyService.item(this.project.companyCode).then(res => {
+          const company = res.result.data
+          this.selection.companies = [company]
+          if (companies.length < 1) {
+            const party = {
+              contractID: this.id === '0' ? '' : this.id,
+              id: 0,
+              partyID: company.id,
+              partyName: company.nameCN,
+              partyGuid: '',
+              partyType: 18,
+              percentage: 0
+            }
+            this.form.contractPartylst.push(party)
+          }
+          this.$forceUpdate()
+        })
+      },
+      showValidate (e) {
+        this.$refs[e.component].$refs.form.validateField(e.filed, valid => {
+          alert(valid)
+          this.activeKey = 1
+        })
+      },
+      getData () {
+        this.form = SwaggerService.getForm('ContractAllInfoDto')
+        if (this.id !== '0') {
+          ContractService.item(this.id).then(res => {
+            this.form = res.result.data
+            this.form.master = {}
+            ProjectService.view2(this.form.contract.projectID).then(res => {
+              this.project = res.result.data
+              this.getCompanies()
+            })
+          })
+        } else {
+          this.form.fileMasterId = 0
+          this.form.contract.id = 0
+          this.form.contract.isDeleted = false
+          this.form.contract.currencyID = 3
+          this.form.contract.baseCurrencyID = 3
+          this.form.contract.subNo = 0
+          this.form.contract.serialNo = 0
+          this.form.master = {}
+          this.form.contract.tenderPackageItemID = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+          ProjectService.view(this.ProjectGUID).then(res => {
+            this.project = res.result.data
+            this.form.contract.projectID = this.project.projectCode
+            this.form.contract.companyID = this.project.companyCode
+            this.getCompanies()
+          })
+        }
+      },
       approve () {
         console.log('approve')
       },
@@ -193,7 +235,6 @@
           }
         ]
         validateForms.forEach((item, index) => {
-          console.log(this.$refs[item.key].$refs.form)
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
               isValid = false
@@ -217,10 +258,23 @@
 
         if (isValid) {
           ContractService[this.type](this.form).then((res, err) => {
-            console.log(res)
-            console.log(err)
+            if (res.result.statusCode === 200) {
+              this.dialog.show({
+                content: this.type === 'update' ? '修改成功' : '添加成功',
+                title: '',
+                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+                cancelText: '返回上一页'
+              }, (state) => {
+                if (state) {
+                  if (this.type === 'create') {
+                    this.getData()
+                  }
+                } else {
+                  this.$router.push('/contract/list')
+                }
+              })
+            }
           }).catch(() => {
-            console.log(this.dialog)
             this.dialog.show({
               content: '创建失败，表单未填写完整',
               title: '',

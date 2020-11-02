@@ -123,7 +123,7 @@
             :disabled="type === 'view'"
             placeholder="请选择成本预算分类"
             v-model="data.contract.contractType">
-            <a-select-option value="1">工程</a-select-option>
+            <a-select-option :value="1">工程</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-col>
@@ -211,8 +211,7 @@
                   :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.partyID"
-                  @change="partyChange"
-                  v-decorator="['item.partyID', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                  @change="partyChange">
                   <a-select-option v-for="option in selection.vendors" :key="JSON.stringify(option)" :value="option.id">
                     {{ option.vendorName }}
                   </a-select-option>
@@ -302,223 +301,199 @@
 </template>
 
 <script>
-import { ContractService } from '@/views/contract/contract.service'
-import { Base as BaseService } from '@/api/base'
-import { Company as CompanyService } from '@/api/company'
+  import { ContractService } from '@/views/contract/contract.service'
+  import { Base as BaseService } from '@/api/base'
 
-export default {
-  name: 'BaseInfo',
-  data () {
-    return {
-      selection: {},
-      loading: false,
-      rules: {
-        projectName: [
-          { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
-        ],
-        tenderPackageItemID: [{ required: true, message: '请选择招投标分判包', trigger: 'change' }],
-        contractCategory: [{ required: true, message: '请选择合同类型', trigger: 'change' }],
-        secretLevelID: [
-          { required: true, message: '请选择密级', trigger: 'change' }
-        ],
-        masterContractID: [{ required: true, message: '请选择原合同', trigger: 'blur' }],
-        contractType: [{ required: true, message: '请选择成本预算分类', trigger: 'blur' }],
-        contractName: [{ required: true, message: '请填写合同名称', trigger: 'blur' }]
-      }
-    }
-  },
-  created () {
-    ContractService.types().then(res => {
-      this.selection.types = res.result.data
-      this.$forceUpdate()
-    })
-    BaseService.secretTypes().then(res => {
-      this.selection.secrets = res.result.data
-      this.$forceUpdate()
-    })
-    ContractService.vendors().then(res => {
-      this.selection.vendors = res.result.data
-      this.$forceUpdate()
-    })
-    const companies = this.filterParties(18)
-    CompanyService.item(this.project.companyCode).then(res => {
-      const company = res.result.data
-      this.selection.companies = [company]
-      if (companies.length < 1) {
-        const party = {
-          contractID: this.id === '0' ? '' : this.id,
-          id: 0,
-          partyID: company.id,
-          partyName: company.nameCN,
-          partyGuid: '',
-          partyType: 18,
-          percentage: 0
+  export default {
+    name: 'BaseInfo',
+    data () {
+      return {
+        selection: {},
+        loading: false,
+        rules: {
+          projectName: [
+            { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
+          ],
+          tenderPackageItemID: [{ required: true, message: '请选择招投标分判包', trigger: 'change' }],
+          contractCategory: [{ required: true, message: '请选择合同类型', trigger: 'change' }],
+          secretLevelID: [
+            { required: true, message: '请选择密级', trigger: 'change' }
+          ],
+          masterContractID: [{ required: true, message: '请选择原合同', trigger: 'blur' }],
+          contractType: [{ required: true, message: '请选择成本预算分类', trigger: 'blur' }],
+          contractName: [{ required: true, message: '请填写合同名称', trigger: 'blur' }]
         }
-        this.data.contractPartylst.push(party)
       }
-      this.$forceUpdate()
-    })
-  },
-  props: {
-    data: {
-      type: Object,
-      default: null
     },
-    type: {
-      type: String,
-      default: 'view'
-    },
-    id: {
-      type: String,
-      default: '0'
-    },
-    project: {
-      type: Object,
-      default: null
-    },
-    roles: {
-      type: Object,
-      default: null
-    }
-  },
-  watch: {
-    'data.contract.contractCategory' (val) {
-      console.log(val)
-      this.selection.masters = []
-      if (val) {
-        if (val === 15) {
-          console.log(true)
-          this.rules.masterContractID = [{ required: false, message: '请选择原合同', trigger: 'blur' }]
-          this.$forceUpdate()
-        }
-        ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
-          this.selection.masters = res.result.data
-          console.log(res)
-          console.log(this.selection.masters)
-          this.$forceUpdate()
-        })
-      }
-    }
-  },
-  methods: {
-    filterParties (partyType) {
-      const items = []
-      if (this.data.contractPartylst.forEach) {
-        this.data.contractPartylst.forEach(item => {
-          if (item.partyType === partyType) {
-            items.push(item)
-          }
-        })
-      }
-      return items
-    },
-    filterMaster (input, option) {
-      console.log(option.componentOptions.propsData)
-      return (
-        option.componentOptions.propsData.value.indexOf(input) >= 0
-      )
-    },
-    select (value, item) {
-      this.data.master = JSON.parse(item.data.key)
-      this.data.contract.masterContractID = this.data.master.contractGuid
-    },
-    partyChange (value, option) {
-      option = JSON.parse(option.data.key)
-      this.data.contractPartylst.forEach(item => {
-        if (value === item.partyGuid) {
-          item.partyID = option.id
-          item.partyName = option.vendorName
-        }
-      })
-      // item.partyID = ''
-    },
-    addParty (partyType) {
-      const party = {
-        _id: new Date().getTime(),
-        contractID: this.id === '0' ? '' : this.id,
-        id: 0,
-        partyID: 0,
-        partyName: '',
-        partyGuid: '',
-        partyType: partyType,
-        percentage: 0,
-        isTemp: true,
-        isDeleted: false
-      }
-      this.data.contractPartylst.push(party)
-    },
-    clear (partyType) {
-      this.data.contractPartylst.forEach((item, index) => {
-        if (item.partyType === partyType) {
-          if (item.isTemp) {
-            this.data.contractPartylst.splice(index, 1)
-          } else {
-            item.isDeleted = true
-          }
-        }
-      })
-    },
-    del (id) {
-      this.data.contractPartylst.forEach((item, i) => {
-        const _id = item.partyID || item._id
-        if (_id === id) {
-          if (item.isTemp) {
-            this.data.contractPartylst.splice(i, 1)
-          } else {
-            item.isDeleted = true
-          }
-        }
+    created () {
+      ContractService.types().then(res => {
+        this.selection.types = res.result.data
         this.$forceUpdate()
       })
+      BaseService.secretTypes().then(res => {
+        this.selection.secrets = res.result.data
+        this.$forceUpdate()
+      })
+      ContractService.vendors().then(res => {
+        this.selection.vendors = res.result.data
+        this.$forceUpdate()
+      })
+    },
+    props: {
+      data: {
+        type: Object,
+        default: null
+      },
+      type: {
+        type: String,
+        default: 'view'
+      },
+      id: {
+        type: String,
+        default: '0'
+      },
+      project: {
+        type: Object,
+        default: null
+      },
+      roles: {
+        type: Object,
+        default: null
+      },
+      companies: {
+        type: Array,
+        default: null
+      }
+    },
+    watch: {
+      'data.contract.contractCategory' (val) {
+        this.selection.masters = []
+        if (val) {
+          if (val === 15) {
+            this.rules.masterContractID = [{ required: false, message: '请选择原合同', trigger: 'blur' }]
+            this.$forceUpdate()
+          }
+          ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
+            this.selection.masters = res.result.data
+            this.$forceUpdate()
+          })
+        }
+      },
+      'companies' (val) {
+        this.selection.companies = val
+        this.$forceUpdate()
+      }
+    },
+    methods: {
+      filterParties (partyType) {
+        return ContractService.filterParties(partyType, this.data.contractPartylst)
+      },
+      filterMaster (input, option) {
+        return (
+          option.componentOptions.propsData.value.indexOf(input) >= 0
+        )
+      },
+      select (value, item) {
+        this.data.master = JSON.parse(item.data.key)
+        this.data.contract.masterContractID = this.data.master.contractGuid
+      },
+      partyChange (value, option) {
+        option = JSON.parse(option.data.key)
+        this.data.contractPartylst.forEach(item => {
+          if (value === item.partyGuid) {
+            item.partyID = option.id
+            item.partyName = option.vendorName
+          }
+        })
+        // item.partyID = ''
+      },
+      addParty (partyType) {
+        const party = {
+          _id: new Date().getTime(),
+          contractID: this.id === '0' ? '' : this.id,
+          id: 0,
+          partyID: 0,
+          partyName: '',
+          partyGuid: '',
+          partyType: partyType,
+          percentage: 0,
+          isTemp: true,
+          isDeleted: false
+        }
+        this.data.contractPartylst.push(party)
+      },
+      clear (partyType) {
+        this.data.contractPartylst.forEach((item, index) => {
+          if (item.partyType === partyType) {
+            if (item.isTemp) {
+              this.data.contractPartylst.splice(index, 1)
+            } else {
+              item.isDeleted = true
+            }
+          }
+        })
+      },
+      del (id) {
+        this.data.contractPartylst.forEach((item, i) => {
+          const _id = item.partyID || item._id
+          if (_id === id) {
+            if (item.isTemp) {
+              this.data.contractPartylst.splice(i, 1)
+            } else {
+              item.isDeleted = true
+            }
+          }
+          this.$forceUpdate()
+        })
+      }
     }
   }
-}
 </script>
 <style lang="less" scoped>
-table {
-  margin: 15px 0;
-  width: 100%;
-  border-width: 1px 1px 0 0;
-  border-radius: 3px 3px 0 0;
-  border-style: solid;
-  border-color: #ccc;
+  table {
+    margin: 15px 0;
+    width: 100%;
+    border-width: 1px 1px 0 0;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-color: #ccc;
 
-  thead {
-    tr {
-      &:first-child {
+    thead {
+      tr {
+        &:first-child {
+          th {
+            background-color: #f5f5f5;
+          }
+        }
+
         th {
-          background-color: #f5f5f5;
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
         }
       }
+    }
 
-      th {
-        background-color: #06c;
-        color: #fff;
-        font-weight: normal;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
+    tbody {
+      tr {
+        td {
+          padding: 0.5em 0.6em 0.4em 0.6em !important;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
 
-        button {
-          margin-right: 10px;
+          button {
+            margin-right: 10px;
+          }
         }
       }
     }
   }
-
-  tbody {
-    tr {
-      td {
-        padding: 0.5em 0.6em 0.4em 0.6em !important;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
-
-        button {
-          margin-right: 10px;
-        }
-      }
-    }
-  }
-}
 </style>

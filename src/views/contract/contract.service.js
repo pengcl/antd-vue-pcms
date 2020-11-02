@@ -94,6 +94,18 @@ ContractService.amount = function (contractCatrgory, params) {
   })
 }
 
+ContractService.filterParties = function (partyType, list) {
+  const items = []
+  if (list.forEach) {
+    list.forEach(item => {
+      if (item.partyType === partyType) {
+        items.push(item)
+      }
+    })
+  }
+  return items
+}
+
 /**
  * login func
  * parameter: {

@@ -67,54 +67,10 @@
         this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
           .then((response) => {
             console.log('upload response:', response)
-            // var res = response.data
-            // if (response.status === 'done') {
-            //   _this.imgFile = ''
-            //   _this.headImg = res.realPathList[0] // 完整路径
-            //   _this.uploadImgRelaPath = res.relaPathList[0] // 非完整路径
-            //   _this.$message.success('上传成功')
-            //   this.visible = false
-            // }
             _this.$message.success('上传成功')
             _this.$emit('ok', response.url)
             _this.visible = false
           })
-        /* request({
-          url: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-          method: 'post',
-          processData: false,
-          data: formData,
-          success: () => {
-            this.fileList = []
-            this.uploading = false
-            this.$message.success('upload successfully.')
-          },
-          error: () => {
-            this.uploading = false
-            this.$message.error('upload failed.')
-          }
-        }) */
-      },
-      upload (item) {
-        console.log(item)
-        /* const _this = this
-        const formData = new FormData() */
-        /* formData.append('file', data, this.fileName)
-        this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-          .then((response) => {
-            console.log('upload response:', response)
-            // var res = response.data
-            // if (response.status === 'done') {
-            //   _this.imgFile = ''
-            //   _this.headImg = res.realPathList[0] // 完整路径
-            //   _this.uploadImgRelaPath = res.relaPathList[0] // 非完整路径
-            //   _this.$message.success('上传成功')
-            //   this.visible = false
-            // }
-            _this.$message.success('上传成功')
-            _this.$emit('ok', response.url)
-            _this.visible = false
-          }) */
       }
     }
   }
