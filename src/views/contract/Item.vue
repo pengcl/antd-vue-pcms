@@ -55,6 +55,7 @@
         <a-tab-pane forceRender :key="1" tab="基本资料">
           <base-info
             ref="baseInfo"
+            :companies="selection.companies"
             :project="project"
             :data="form"
             :type="type"
@@ -63,11 +64,18 @@
         <a-tab-pane forceRender :key="2" tab="合同信息">
           <contract-info ref="contractInfo" :data="form" :type="type" :id="id"/>
         </a-tab-pane>
-        <a-tab-pane forceRender :key="3" tab="预算调整">
+        <a-tab-pane v-if="id !== '0'" forceRender :key="3" tab="预算调整">
           <budget-list :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane forceRender :key="4" tab="合同量清单">
-          <contract-list ref="contractList" :project="project" :data="form" :type="type" :id="id"/>
+          <contract-list
+            ref="contractList"
+            @validate-field="showValidate"
+            :activeKey="activeKey"
+            :project="project"
+            :data="form"
+            :type="type"
+            :id="id"/>
         </a-tab-pane>
         <a-tab-pane forceRender :key="5" tab="付款条款">
           <pay-info :data="form" :type="type" :id="id"/>
@@ -122,16 +130,19 @@
   import { SwaggerService } from '@/api/swagger.service'
   import { ProjectService } from '@/views/project/project.service'
   import { DIALOGCONFIG } from '@/api/base'
+  import { Company as CompanyService } from '@/api/company'
 
   export default {
     name: 'ContractItem',
     components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
     data () {
       return {
+        disabled: true,
         activeKey: 1,
         loading: false,
         project: null,
         dialog: DIALOGCONFIG,
+        selection: {},
         form: SwaggerService.getForm('ContractAllInfoDto')
       }
     },
@@ -151,6 +162,32 @@
     },
     watch: {},
     methods: {
+      getCompanies () { // 获取甲方公司待选列表
+        const companies = ContractService.filterParties(18, this.form.contractPartylst)
+        CompanyService.item(this.project.companyCode).then(res => {
+          const company = res.result.data
+          this.selection.companies = [company]
+          if (companies.length < 1) {
+            const party = {
+              contractID: this.id === '0' ? '' : this.id,
+              id: 0,
+              partyID: company.id,
+              partyName: company.nameCN,
+              partyGuid: '',
+              partyType: 18,
+              percentage: 0
+            }
+            this.form.contractPartylst.push(party)
+          }
+          this.$forceUpdate()
+        })
+      },
+      showValidate (e) {
+        this.$refs[e.component].$refs.form.validateField(e.filed, valid => {
+          alert(valid)
+          this.activeKey = 1
+        })
+      },
       getData () {
         this.form = SwaggerService.getForm('ContractAllInfoDto')
         if (this.id !== '0') {
@@ -159,6 +196,7 @@
             this.form.master = {}
             ProjectService.view2(this.form.contract.projectID).then(res => {
               this.project = res.result.data
+              this.getCompanies()
             })
           })
         } else {
@@ -175,7 +213,7 @@
             this.project = res.result.data
             this.form.contract.projectID = this.project.projectCode
             this.form.contract.companyID = this.project.companyCode
-            console.log(res)
+            this.getCompanies()
           })
         }
       },
@@ -197,7 +235,6 @@
           }
         ]
         validateForms.forEach((item, index) => {
-          console.log(this.$refs[item.key].$refs.form)
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
               isValid = false
@@ -231,12 +268,6 @@
                 if (state) {
                   if (this.type === 'create') {
                     this.getData()
-                    /* if (this.stage === 'Project') {
-                      this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
-                    } else {
-                      this.form.projectShortCode = ''
-                      this.form.projectShortName = ''
-                    } */
                   }
                 } else {
                   this.$router.push('/contract/list')
@@ -244,7 +275,6 @@
               })
             }
           }).catch(() => {
-            console.log(this.dialog)
             this.dialog.show({
               content: '创建失败，表单未填写完整',
               title: '',
