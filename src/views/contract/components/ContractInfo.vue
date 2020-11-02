@@ -85,12 +85,12 @@
           label="是否需出差"
           prop="isNeedTrip"
         >
-          <!--<a-select
+          <a-select
             placeholder="请选择"
             v-model="data.contract.isNeedTrip">
             <a-select-option :value="true">是</a-select-option>
             <a-select-option :value="false">否</a-select-option>
-          </a-select>-->
+          </a-select>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">

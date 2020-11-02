@@ -7,10 +7,10 @@
             <thead>
               <tr>
                 <th colspan="4">
-                  <a-button @click="add()" icon="plus">
+                  <a-button :disabled="type === 'view'" @click="add()" icon="plus">
                     添加银行账号
                   </a-button>
-                  <a-button @click="clear()" icon="stop">
+                  <a-button :disabled="type === 'view'" @click="clear()" icon="stop">
                     重置
                   </a-button>
                 </th>
@@ -57,6 +57,14 @@ export default {
     items: {
       type: Array,
       default: null
+    },
+    type: {
+      type: String,
+      default: 'view'
+    },
+    id: {
+      type: String,
+      default: '0'
     }
   },
   data () {

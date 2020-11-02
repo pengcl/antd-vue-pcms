@@ -102,6 +102,8 @@
       v-if="dialog.visible"
       :title="dialog.title"
       :visible="dialog.visible"
+      :okText="dialog.confirmText"
+      :cancelText="dialog.cancelText"
       @ok="dialog.confirm"
       @cancel="dialog.cancel"
     >
@@ -143,6 +145,7 @@
           })
         })
       } else {
+        this.form.fileMasterId = 0
         this.form.contract.id = 0
         this.form.contract.isDeleted = false
         this.form.contract.currencyID = 3
@@ -154,6 +157,8 @@
         ProjectService.view(this.ProjectGUID).then(res => {
           this.project = res.result.data
           this.form.contract.projectID = this.project.projectCode
+          this.form.contract.companyID = this.project.companyCode
+          console.log(res)
         })
       }
     },
@@ -220,7 +225,7 @@
               content: '创建失败，表单未填写完整',
               title: '',
               confirmText: '我知道了',
-              cancel: '返回上一页'
+              cancelText: '返回上一页'
             }, (state) => {
               if (state) {
 

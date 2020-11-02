@@ -86,6 +86,7 @@ ContractService.centers = function (Id) {
 }
 
 ContractService.amount = function (contractCatrgory, params) {
+  console.log(params)
   return request({
     url: API.amount + '?contractCatrgory=' + contractCatrgory,
     method: 'POST',

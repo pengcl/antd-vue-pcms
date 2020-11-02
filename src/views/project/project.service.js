@@ -1,7 +1,8 @@
 import request from '@/utils/request'
 
 const API = {
-  list: '/api/services/app/Project/GetCityProjectTree', // 项目列表
+  items: '/api/services/app/Project/GetCityProjectTree',
+  list: '/api/services/app/Project/GetProjects', // 项目列表
   tree: '/api/services/app/Project/GetUserProjectTree',
   item: '/api/services/app/Project/GetProjectEditById', // 项目详情forEdit
   view: '/api/services/app/Project/GetProjectByGUID',
@@ -18,9 +19,17 @@ const API = {
 
 const ProjectService = {}
 
-ProjectService.items = function list (parameter) {
+ProjectService.list = function list (parameter) {
   return request({
     url: API.list,
+    method: 'GET',
+    params: parameter
+  })
+}
+
+ProjectService.items = function list (parameter) {
+  return request({
+    url: API.items,
     method: 'GET',
     params: parameter
   })
@@ -66,7 +75,7 @@ ProjectService.types = function list () {
   })
 }
 
-ProjectService.create = function (parameter) {
+ProjectService.createProject = function (parameter) {
   return request({
     url: API.create,
     method: 'POST',
@@ -74,7 +83,7 @@ ProjectService.create = function (parameter) {
   })
 }
 
-ProjectService.update = function (parameter) {
+ProjectService.updateProject = function (parameter) {
   return request({
     url: API.update,
     method: 'PUT',
