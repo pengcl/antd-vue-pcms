@@ -55,7 +55,7 @@
               v-model="item.vendorGID">
               <a-select-option v-for="type in vendorTypes"
                                :value="type.vendorGID"
-                               :key="type.vendorGID">{{type.vendorName}}
+                               :key="index">{{type.vendorName}}
               </a-select-option>
             </a-select>
           </td>
@@ -66,7 +66,7 @@
               v-model="item.vendorBankGID">
               <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
                                :value="type.gid"
-                               :key="type.gid">{{type.bankName}}
+                               :key="index">{{type.bankName}}
               </a-select-option>
             </a-select>
           </td>
@@ -113,13 +113,17 @@
             }
         },
         watch: {
-            'data.mainContractGID' (value) {
-                this.getVendor(this.data['mainContractGID'])
+            'data' (value) {
+                this.getVendor(this.type === 'create' ? this.data['contractGID'] : this.data['mainContractGID'])
             }
         },
         created () {
             SignedService.moneyTypes().then(res => {
                 this.moneyTypes = res.result.data
+                this.$forceUpdate()
+            })
+            SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['mainContractGID']).then(res => {
+                this.vendorTypes = res.result.data
                 this.$forceUpdate()
             })
         },
@@ -177,13 +181,13 @@
                 this.$forceUpdate()
             },
             onChange (value, option) {
-                const index = this.data.detailList.findIndex(item => item.vendorGID === value)
+                const index = option.data.key
                 this.data.detailList[index].vendorBankGID = ''
                 this.data.detailList[index].vendorBankAccounts = ''
                 this.$forceUpdate()
             },
-            bankChange (value) {
-                const index = this.data.detailList.findIndex(item => item.vendorBankGID === value)
+            bankChange (value, option) {
+                const index = option.data.key
                 this.vendorTypes.forEach(item => {
                     if (item.vendorGID === this.data.detailList[index].vendorGID) {
                         const bankList = item.bankList
@@ -195,11 +199,6 @@
                     }
                 })
                 this.$forceUpdate()
-            },
-            showForm (items) {
-                const obj = {}
-                items.push(obj)
-                // this.model = items[items.length - 1]
             },
         }
     }

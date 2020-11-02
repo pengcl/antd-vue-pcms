@@ -277,6 +277,7 @@
             <td>
               <a-upload name="file"
                         :multiple="false"
+                        v-if="item.billType"
                         :before-upload="beforeUpload">
                 <a-button @click="choose(index)">请选择</a-button>
               </a-upload>
@@ -310,10 +311,10 @@
               <a-input v-model="item.noTaxAmount"></a-input>
             </td>
             <td>
-              <a-date-picker v-model="item.billDate"></a-date-picker>
+              <a-date-picker v-model="item.billDate" @change="dateChange"></a-date-picker>
             </td>
             <td>
-
+              <a :href="item.billFileUrl" target="_blank" v-if="item.billFileID">{{item.billFileID}}</a>
             </td>
             <td>
               <a-input v-model="item.remark"></a-input>
@@ -395,11 +396,15 @@
             }
         },
         methods: {
+            dateChange(value){
+                this.$forceUpdate()
+            },
             choose (index) {
                 this.index = index
             },
             onchange (value) {
                 this.billType = value
+                this.$forceUpdate()
             },
             add (target) {
                 const item = {
@@ -446,7 +451,7 @@
                 formData.append('businessType', 'bill')
                 formData.append('subInfo1', this.billType) //文件类型
                 formData.append('subInfo2', file.name) // 文件名
-                formData.append('subInfo3', this.data['mainContractGID']) // 合同id
+                formData.append('subInfo3', this.data['contractGID']) // 合同id
                 this.uploading = true
                 const _this = this
                 this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
@@ -456,10 +461,9 @@
                 })
                     .then((response) => {
                         console.log('upload response:', response)
-                        this.fileList[this.index].fileName = response.result.data.fileName
-                        this.fileList[this.index].creationTime = response.result.data.creationTime
-                        this.fileList[this.index].creatorUser = response.result.data.creatorUser
-                        this.fileList[this.index].fileUrl = response.result.data.fileUrl
+                        this.data.billList[this.index].billFileID = response.result.data.fileName
+                        this.data.billList[this.index].billFileUrl = response.result.data.fileUrl
+                        this.$forceUpdate()
                         _this.$message.success('上传成功')
                         _this.$emit('ok', response.url)
                         _this.visible = false
