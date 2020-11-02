@@ -1,5 +1,5 @@
 <template>
-  <page-header-wrapper>
+  <page-header-wrapper :title="type === 'view' ? '查看合同付款' : type === 'update' ? '编辑合同付款' : '新增合同付款'">
     <a-card :bordered="false">
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
