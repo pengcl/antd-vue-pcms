@@ -8,10 +8,10 @@
         <thead>
           <tr>
             <th colspan="5">
-              <a-button :disabled="type === 'view'" icon="plus">
+              <a-button @click="add()" :disabled="type === 'view'" icon="plus">
                 新增
               </a-button>
-              <a-button :disabled="type === 'view'" icon="stop">
+              <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
                 重置
               </a-button>
             </th>
@@ -25,23 +25,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.contractFluctuationClauselst" :key="index">
+          <tr v-if="!item.isDeleted" v-for="(item, index) in data.contractFluctuationClauselst" :key="index">
             <td>
-              <a-button :disabled="type === 'view'" icon="close">
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input v-model="item.fluctuationName"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.fluctuationName"></a-input>
             </td>
             <td>
-              <a-input v-model="item.adjustableRangeTerm"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.adjustableRangeTerm"></a-input>
             </td>
             <td>
-              <a-input-number v-model="item.adjustableRange"></a-input-number>
+              <a-input-number :disabled="type === 'view'" v-model="item.adjustableRange"></a-input-number>
             </td>
             <td>
-              <a-input-number v-model="item.adjustmentInterval"></a-input-number>
+              <a-input-number :disabled="type === 'view'" v-model="item.adjustmentInterval"></a-input-number>
             </td>
           </tr>
         </tbody>
@@ -50,6 +50,9 @@
   </div>
 </template>
 <script>
+  import { addItem, clearItems, removeItem } from '@/api/base'
+  import { SwaggerService } from '@/api/swagger.service'
+
   export default {
     name: 'ContractInfoPaymentTerms',
     data () {
@@ -74,24 +77,18 @@
       }
     },
     methods: {
-      add (target) {
-        const item = {
-          id: 0,
-          isDeleted: false,
-          retentionGuid: 0,
-          contractID: this.id,
-          description: '',
-          percentage: ''
-        }
-        this.data[target].push(item)
+      add () {
+        const item = SwaggerService.getForm('ContractFluctuationClauseDto')
+        item.id = 0
+        item.contractID = this.id === '0' ? '' : this.id
+        addItem(item, this.data.contractFluctuationClauselst)
       },
-      del (item) {
-        item.isDisabled = true
+      del (index) {
+        const items = this.data.contractFluctuationClauselst
+        removeItem(index, items)
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
-        })
+      clear () {
+        clearItems(this.data.contractFluctuationClauselst)
       }
     }
   }

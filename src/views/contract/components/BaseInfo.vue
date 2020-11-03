@@ -69,7 +69,7 @@
           prop="masterContractID"
         >
           <a-auto-complete
-            :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15"
+            :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15 || type === 'view'"
             class="certain-category-search"
             dropdown-class-name="certain-category-search-dropdown"
             :dropdown-match-select-width="false"
@@ -77,12 +77,13 @@
             size="large"
             style="width: 100%"
             placeholder="请选择原合同"
-            option-label-prop="value"
+            option-label-prop="label"
             :filter-option="filterMaster"
+            v-model="data.contract.masterContractID"
             @select="select"
           >
             <template slot="dataSource">
-              <a-select-option v-for="item in selection.masters" :key="JSON.stringify(item)" :value="item.contractNo">
+              <a-select-option v-for="item in selection.masters" :label="item.contractNo" :key="JSON.stringify(item)" :value="item.contractGuid">
                 <span>{{ item.contractNo }}</span>
                 <p class="certain-search-item-count">合同编号：{{ item.contractNo }}</p>
               </a-select-option>
@@ -269,8 +270,10 @@
         </table>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-item
-          label="合同主要内容">
+        <a-form-model-item
+          label="合同主要内容"
+          prop="contractDetails"
+        >
           <a-textarea
             :disabled="type === 'view'"
             rows="4"
@@ -280,11 +283,13 @@
               data.contract.contractDetails,
               {rules: [{ required: false, message: '请输入合同主要内容' }]}
             ]"/>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-item
-          label="备注">
+        <a-form-model-item
+          label="备注"
+          prop="remarks"
+        >
           <a-textarea
             :disabled="type === 'view'"
             rows="4"
@@ -294,7 +299,7 @@
               data.contract.remarks,
               {rules: [{ required: false, message: '请输入备注' }]}
             ]"/>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
     </a-row>
   </a-form-model>
@@ -321,7 +326,9 @@
           ],
           masterContractID: [{ required: true, message: '请选择原合同', trigger: 'blur' }],
           contractType: [{ required: true, message: '请选择成本预算分类', trigger: 'blur' }],
-          contractName: [{ required: true, message: '请填写合同名称', trigger: 'blur' }]
+          contractName: [{ required: true, message: '请填写合同名称', trigger: 'blur' }],
+          contractDetails: [{ required: false, message: '', trigger: 'blur' }, { max: 4000, message: '请不要超过4000个字符', trigger: 'blur' }],
+          remarks: [{ required: false, message: '', trigger: 'blur' }, { max: 4000, message: '请不要超过4000个字符', trigger: 'blur' }]
         }
       }
     },
@@ -338,6 +345,9 @@
         this.selection.vendors = res.result.data
         this.$forceUpdate()
       })
+      if (this.data.contract.contractCategory) {
+        this.getMasters(this.data.contract.contractCategory)
+      }
     },
     props: {
       data: {
@@ -367,6 +377,15 @@
     },
     watch: {
       'data.contract.contractCategory' (val) {
+        this.getMasters(val)
+      },
+      'companies' (val) {
+        this.selection.companies = val
+        this.$forceUpdate()
+      }
+    },
+    methods: {
+      getMasters (val) {
         this.selection.masters = []
         if (val) {
           if (val === 15) {
@@ -379,23 +398,16 @@
           })
         }
       },
-      'companies' (val) {
-        this.selection.companies = val
-        this.$forceUpdate()
-      }
-    },
-    methods: {
       filterParties (partyType) {
         return ContractService.filterParties(partyType, this.data.contractPartylst)
       },
       filterMaster (input, option) {
         return (
-          option.componentOptions.propsData.value.indexOf(input) >= 0
+          option.componentOptions.propsData.label.indexOf(input) >= 0
         )
       },
       select (value, item) {
         this.data.master = JSON.parse(item.data.key)
-        this.data.contract.masterContractID = this.data.master.contractGuid
       },
       partyChange (value, option) {
         option = JSON.parse(option.data.key)

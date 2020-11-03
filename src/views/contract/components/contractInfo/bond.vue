@@ -9,10 +9,10 @@
           <thead>
             <tr>
               <th colspan="14">
-                <a-button :disabled="type === 'view'" icon="plus">
+                <a-button @click="add()" :disabled="type === 'view'" icon="plus">
                   新增
                 </a-button>
-                <a-button :disabled="type === 'view'" icon="stop">
+                <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
                   重置
                 </a-button>
               </th>
@@ -35,14 +35,15 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in data.contractBondlst" :key="index">
+            <tr v-if="!item.isDeleted" v-for="(item, index) in data.contractBondlst" :key="index">
               <td>
-                <a-button :disabled="type === 'view'" icon="close">
+                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                   删除
                 </a-button>
               </td>
               <td>
                 <a-select
+                  :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.bondUnit"
                   v-decorator="['item.bondUnit', { rules: [{required: true, message: '请选择'}] }]">
@@ -51,22 +52,23 @@
                 </a-select>
               </td>
               <td>
-                <a-input-number v-model="item.bondQty" :min="0"></a-input-number>
+                <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.bondQty" :min="0"></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondUnitPrice"></a-input-number>
+                <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.bondUnitPrice" :min="0"></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondAmount"></a-input-number>
+                <a-input-number :disabled="true" @change="valueChange(item)" v-model="item.bondAmount" :min="0"></a-input-number>
               </td>
               <td>
-                <a-input v-model="item.bondAmountTerms"></a-input>
+                <a-input :disabled="type === 'view'" v-model="item.bondAmountTerms"></a-input>
               </td>
               <td>
-                <a-input v-model="item.description"></a-input>
+                <a-input :disabled="type === 'view'" v-model="item.description"></a-input>
               </td>
               <td>
                 <a-select
+                  :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.bondStatus"
                   v-decorator="['item.bondStatus', { rules: [{required: true, message: '请选择'}] }]">
@@ -75,22 +77,23 @@
                 </a-select>
               </td>
               <td>
-                <a-input-number v-model="item.bondGracePeriod"></a-input-number>
+                <a-input-number :disabled="type === 'view'" v-model="item.bondGracePeriod"></a-input-number>
               </td>
               <td>
-                <a-input v-model="item.bondGracePeriodTerms"></a-input>
+                <a-input :disabled="type === 'view'" v-model="item.bondGracePeriodTerms"></a-input>
               </td>
               <td>
-                <a-date-picker v-model="item.bondExpirationDate"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'" v-model="item.bondExpirationDate"></a-date-picker>
               </td>
               <td>
-                <a-date-picker v-model="item.bondExtendedExpirationDate"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'" v-model="item.bondExtendedExpirationDate"></a-date-picker>
               </td>
               <td>
-                <a-input v-model="item.bondExpirationDateTerms"></a-input>
+                <a-input :disabled="type === 'view'" v-model="item.bondExpirationDateTerms"></a-input>
               </td>
               <td>
                 <a-select
+                  :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.bondExtensionStatus"
                   v-decorator="['item.bondExtensionStatus', { rules: [{required: true, message: '请选择'}] }]">
@@ -112,7 +115,7 @@
   </div>
 </template>
 <script>
-  import { Base as BaseService } from '@/api/base'
+  import { addItem, Base as BaseService, clearItems, removeItem } from '@/api/base'
   export default {
     name: 'ContractInfoBond',
     data () {
@@ -141,31 +144,50 @@
         this.selection.unitTypes = res.result.data
         this.$forceUpdate()
       })
-      let total = 0
-      this.data.contractBondlst.forEach(item => {
-        total = total + (item.bondQty * item.bondUnitPrice)
-      })
-      this.total = total
+      this.getTotal()
     },
     methods: {
-      add (target) {
+      getTotal () {
+        let total = 0
+        this.data.contractBondlst.forEach(item => {
+          total = total + (item.bondQty * item.bondUnitPrice)
+        })
+        this.total = total
+        this.$forceUpdate()
+      },
+      valueChange (item) {
+        item.bondAmount = item.bondQty * item.bondUnitPrice
+        this.getTotal()
+      },
+      add () {
         const item = {
           id: 0,
-          isDeleted: false,
-          retentionGuid: 0,
-          contractID: this.id,
+          bondGuid:	'',
+          contractID: this.id === '0' ? '' : this.id,
           description: '',
-          percentage: ''
+          bondUnit: '',
+          bondQty: 0,
+          bondUnitPrice: 0,
+          bondAmountTerms: '',
+          bondAmount: 0,
+          bondStatus: '',
+          bondGracePeriodTerms: '',
+          bondGracePeriod: '',
+          bondExpirationDateTerms: '',
+          bondExpirationDate: '',
+          bondExtendedExpirationDate: '',
+          bondExtensionStatus: ''
         }
-        this.data[target].push(item)
+        addItem(item, this.data.contractBondlst)
       },
-      del (item) {
-        item.isDisabled = true
+      del (index) {
+        const items = this.data.contractBondlst
+        removeItem(index, items)
+        this.getTotal()
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
-        })
+      clear () {
+        clearItems(this.data.contractBondlst)
+        this.getTotal()
       }
     }
   }

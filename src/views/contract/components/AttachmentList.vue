@@ -22,13 +22,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="file in fileList" :key="file.id">
+            <tr v-if="!file.isDeleted" v-for="file in fileList" :key="file.id">
               <td>
-                <a-button type="danger" icon="delete"></a-button>
+                <a-button @click="del(file.id)" type="danger" icon="delete"></a-button>
               </td>
               <td>{{ file.name }}</td>
               <td>{{ file.creator }}</td>
-              <td>{{ file.date }}</td>
+              <td>{{ file.date | moment }}</td>
             </tr>
           </tbody>
         </table>
@@ -66,12 +66,32 @@
     created () {
       BaseService.masterID(this.data.contract.contractGuid).then(res => {
         this.data.fileMasterId = res.result.data
-        BaseService.fileList(this.data.fileMasterId, this.data.contract.contractGuid, '', '').then(_res => {
-          this.fileList = _res.result.data
-        })
+        this.getFiles()
       })
     },
     methods: {
+      getFiles () {
+        BaseService.fileList(this.data.fileMasterId, this.data.contract.contractGuid, '', '').then(_res => {
+          const data = _res.result.data
+          const fileList = []
+          data.forEach(item => {
+            fileList.push({
+              date: item.creationTime,
+              creator: item.creatorUser,
+              name: item.fileName,
+              file: item.fileUrl,
+              id: item.id,
+              masterID: item.masterID
+            })
+          })
+          this.fileList = fileList
+        })
+      },
+      del (id) {
+        BaseService.removeFile(id).then(res => {
+          console.log(res)
+        })
+      },
       beforeUpload (file) {
         console.log(file)
         this.handleUpload(file)

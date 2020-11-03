@@ -8,10 +8,10 @@
         <thead>
           <tr>
             <th colspan="3">
-              <a-button @click="add('contractRetentionlst')" :disabled="type === 'view'" icon="plus">
+              <a-button @click="add()" :disabled="type === 'view'" icon="plus">
                 新增
               </a-button>
-              <a-button @click="clear('contractRetentionlst')" :disabled="type === 'view'" icon="stop">
+              <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
                 重置
               </a-button>
             </th>
@@ -23,17 +23,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.contractRetentionlst" :key="index" v-if="!item.isDeleted">
+          <tr v-if="!item.isDeleted" v-for="(item, index) in data.contractRetentionlst" :key="index">
             <td>
-              <a-button @click="del(item)" :disabled="type === 'view'" icon="close">
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input v-model="item.description"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.description"></a-input>
             </td>
             <td>
-              <a-input-number v-model="item.percentage" :min="0"></a-input-number>
+              <a-input-number :disabled="type === 'view'" v-model="item.percentage" :min="0"></a-input-number>
             </td>
           </tr>
         </tbody>
@@ -42,6 +42,8 @@
   </div>
 </template>
 <script>
+  import { addItem, removeItem, clearItems } from '@/api/base'
+
   export default {
     name: 'ContractInfoRetention',
     data () {
@@ -66,25 +68,21 @@
       }
     },
     methods: {
-      add (target) {
+      add () {
         const item = {
           id: 0,
-          isDeleted: false,
-          retentionGuid: 0,
-          contractID: this.id,
+          retentionGuid: '',
+          contractID: this.id === '0' ? '' : this.id,
           description: '',
-          percentage: ''
-        }
-        this.data[target].push(item)
-
+          percentage: '' }
+          addItem(item, this.data.contractRetentionlst)
       },
-      del (item) {
-        item.isDeleted = true
+      del (index) {
+        const items = this.data.contractRetentionlst
+        removeItem(index, items)
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
-        })
+      clear () {
+        clearItems(this.data.contractRetentionlst)
       }
     }
   }
@@ -100,11 +98,12 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;

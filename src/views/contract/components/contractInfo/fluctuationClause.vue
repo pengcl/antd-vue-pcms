@@ -8,10 +8,10 @@
         <thead>
           <tr>
             <th colspan="6">
-              <a-button :disabled="type === 'view'" icon="plus">
+              <a-button @click="add()" :disabled="type === 'view'" icon="plus">
                 新增
               </a-button>
-              <a-button :disabled="type === 'view'" icon="stop">
+              <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
                 重置
               </a-button>
             </th>
@@ -26,27 +26,26 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.contractMaterialQualityGuaranteelst" :key="index">
+          <tr v-if="!item.isDeleted" v-for="(item, index) in data.contractMaterialQualityGuaranteelst" :key="index">
             <td>
-              <a-button :disabled="type === 'view'" icon="close">
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
             <td>
-              <a-input v-model="item.materialName"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.materialName"></a-input>
             </td>
             <td>
-              <a-input v-model="item.materialQualityWarrantyTerms"></a-input>
-            <!-- todo: 提交质量保证书日期条款 -->
+              <a-input :disabled="type === 'view'" v-model="item.materialQualityWarrantyTerms"></a-input>
             </td>
             <td>
-              <a-date-picker v-model="item.materialQualityGuaranteeSubmisisonDate"></a-date-picker>
+              <a-date-picker :disabled="type === 'view'" v-model="item.materialQualityGuaranteeSubmisisonDate"></a-date-picker>
             </td>
             <td>
-              <a-input v-model="item.materialQualityWarrantyExpirationTerms"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.materialQualityWarrantyExpirationTerms"></a-input>
             </td>
             <td>
-              <a-input-number v-model="item.materialQualityGuaranteeExpirationDay"></a-input-number>
+              <a-input-number :disabled="type === 'view'" v-model="item.materialQualityGuaranteeExpirationDay"></a-input-number>
             </td>
           </tr>
         </tbody>
@@ -55,6 +54,9 @@
   </div>
 </template>
 <script>
+  import { SwaggerService } from '@/api/swagger.service'
+  import { addItem, clearItems, removeItem } from '@/api/base'
+
   export default {
     name: 'ContractInfoFluctuationClause',
     data () {
@@ -79,24 +81,18 @@
       }
     },
     methods: {
-      add (target) {
-        const item = {
-          id: 0,
-          isDeleted: false,
-          retentionGuid: 0,
-          contractID: this.id,
-          description: '',
-          percentage: ''
-        }
-        this.data[target].push(item)
+      add () {
+        const item = SwaggerService.getForm('ContractMaterialQualityGuaranteeDto')
+        item.id = 0
+        item.contractID = this.id === '0' ? '' : this.id
+        addItem(item, this.data.contractMaterialQualityGuaranteelst)
       },
-      del (item) {
-        item.isDisabled = true
+      del (index) {
+        const items = this.data.contractMaterialQualityGuaranteelst
+        removeItem(index, items)
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
-        })
+      clear () {
+        clearItems(this.data.contractMaterialQualityGuaranteelst)
       }
     }
   }

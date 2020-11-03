@@ -24,9 +24,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item,index) in data.contractRetentionReleaselst" :key="index">
+          <tr v-if="!item.isDeleted" v-for="(item,index) in data.contractRetentionReleaselst" :key="index">
             <td>
-              <a-button @click="del(item)" :disabled="type === 'view'" icon="close">
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </td>
@@ -46,6 +46,7 @@
   </div>
 </template>
 <script>
+  import { addItem, removeItem, clearItems } from '@/api/base'
   export default {
     name: 'ContractInfoRetentionRelease',
     data () {
@@ -70,24 +71,22 @@
       }
     },
     methods: {
-      add (target) {
+      add () {
         const item = {
           id: 0,
-          isDeleted: false,
-          retentionGuid: 0,
-          contractID: this.id,
+          retentionGuid: '',
+          contractID: this.id === '0' ? '' : this.id,
           description: '',
           percentage: ''
         }
-        this.data[target].push(item)
+        addItem(item, this.data.contractRetentionReleaselst)
       },
-      del (item) {
-        item.isDisabled = true
+      del (index) {
+        const items = this.data.contractRetentionReleaselst
+        removeItem(index, items)
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
-        })
+      clear () {
+        clearItems(this.data.contractRetentionReleaselst)
       }
     }
   }

@@ -57,7 +57,8 @@
 </template>
 
 <script>
-  import { Base as BaseService } from '@/api/base'
+  import { addItem, Base as BaseService, clearItems, removeItem } from '@/api/base'
+  import { SwaggerService } from '@/api/swagger.service'
 
   export default {
     name: 'PayInfo',
@@ -81,36 +82,20 @@
             max = max - item.percentage
           }
         })
-        console.log(max)
         return max
       },
       add () {
-        const item = {
-          isTemp: true,
-          contractID: this.id,
-          description: '',
-          id: 0,
-          isDeleted: false,
-          paymentTermsGuid: '',
-          percentage: 0
-        }
-        this.data.contractPaymentTermslst.push(item)
-        this.$forceUpdate()
+        const item = SwaggerService.getForm('ContractPaymentTermsDto')
+        item.id = 0
+        item.contractID = this.id === '0' ? '' : this.id
+        addItem(item, this.data.contractPaymentTermslst)
       },
       del (index) {
-        const item = this.data.contractPaymentTermslst[index]
-        if (item.isTemp) {
-          this.data.contractPaymentTermslst.splice(index, 1)
-        } else {
-          item.isDeleted = true
-        }
-        this.$forceUpdate()
+        const items = this.data.contractPaymentTermslst
+        removeItem(index, items)
       },
-      clear (items) {
-        items.forEach(item => {
-          item.isDeleted = true
-        })
-        this.$forceUpdate()
+      clear () {
+        clearItems(this.data.contractPaymentTermslst)
       }
     },
     props: {

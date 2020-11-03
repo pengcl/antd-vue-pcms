@@ -37,22 +37,28 @@
               </a-button>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input-number></a-input-number>
-            </td>
-            <td>
-              否
+              <a-input-number :disabled="type === 'view'"></a-input-number>
             </td>
             <td>
               <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择">
+                <a-select-option :key="1" :value="1">是</a-select-option>
+                <a-select-option :key="0" :value="0">否</a-select-option>
+              </a-select>
+            </td>
+            <td>
+              <a-select
+                :disabled="type === 'view'"
                 placeholder="请选择"
                 v-decorator="['item.bondUnit', { rules: [{required: true, message: '请选择'}] }]">
                 <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.id">{{ item.nameCN }}
@@ -60,12 +66,14 @@
               </a-select>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number :disabled="type === 'view'"></a-input-number>
             </td>
             <td>
-              <a-input-number></a-input-number>
+              <a-input-number :disabled="type === 'view'"></a-input-number>
             </td>
-            <td></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"></a-input-number>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -73,7 +81,7 @@
     <a-col :md="24" :sm="24">
       <a-form-item
         label="预付款总额">
-        <a-input-number :min="0"></a-input-number>
+        <a-input-number :disabled="type === 'view'" :min="0"></a-input-number>
       </a-form-item>
     </a-col>
   </div>
