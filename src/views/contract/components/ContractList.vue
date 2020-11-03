@@ -108,7 +108,7 @@
                     mode="multiple"
                     @change="centerChange">
                     <a-select-option
-                      :value="index + ':' + center.id + ':' + center.costCenterName"
+                      :value="index + ';' + center.id + ';' + center.costCenterName"
                       :itemIndex="index"
                       v-for="center in selection.centers"
                       :key="JSON.stringify(center)">
@@ -300,10 +300,10 @@
       },
       getValue (item, index) {
         const values = []
-        const ids = item.costCenter ? item.costCenter.split(':') : []
-        const names = item.costCenterName ? item.costCenterName.split(':') : []
+        const ids = item.costCenter ? item.costCenter.split(';') : []
+        const names = item.costCenterName ? item.costCenterName.split(';') : []
         ids.forEach((id, idsIndex) => {
-          const value = index + ':' + id + ':' + names[idsIndex]
+          const value = index + ';' + id + ';' + names[idsIndex]
           values.push(value)
         })
         return values
@@ -405,12 +405,12 @@
           const id = arr[1]
           const name = arr[2]
           if (ids) {
-            ids = ids + ':' + id
+            ids = ids + ';' + id
           } else {
             ids = id
           }
           if (names) {
-            names = names + ':' + name
+            names = names + ';' + name
           } else {
             names = name
           }
