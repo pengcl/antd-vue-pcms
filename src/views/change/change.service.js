@@ -13,7 +13,13 @@ const API = {
   bqAmount : '/api/services/app/VO/GetVOAmountByBQList',
   retentions : '/api/services/app/Contract/GetContractRetentionlstByContractGuid',
   releases : '/api/services/app/Contract/GetContractRetentionReleaselstByContractGuid',
-  bqList : '/api/services/app/Contract/GetContractBQlstForVO'
+  bqList : '/api/services/app/Contract/GetContractBQlstForVO',
+  bondList : '/api/services/app/Contract/GetContractBondlstByContractGuid',
+  fluctuationClauseList : '/api/services/app/Contract/GetContractFluctuationClauselstByContractGuid',
+  insuaranceList : '/api/services/app/Contract/GetContractInsuarancelstByContractGuid',
+  materialQualityGuaranteeList : '/api/services/app/Contract/GetContractMaterialQualityGuaranteelstByContractGuid',
+  paymentTermsList : '/api/services/app/Contract/GetContractPaymentTermslstByContractGuid',
+  fileTypes : '/api/services/app/GeneralType/GetVOFileTypes'
 }
 
 const ChangeService = {}
@@ -147,7 +153,6 @@ ChangeService.retentions = function(contractGuid){
 	  })
 }
 
-
 /**
  * 获取合同保修金/保留金返还列表
  */
@@ -159,7 +164,6 @@ ChangeService.releases = function(contractGuid){
 	  })
 }
 
-
 /**
  * 获取合同清单列表
  */
@@ -168,6 +172,72 @@ ChangeService.bqList = function(contractGuid){
 	    url: API.bqList,
 	    method: 'get',
 	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 根据合同guid获取调差补偿列表
+ */
+ChangeService.fluctuationClauseList = function(contractGuid){
+	return request({
+	    url: API.fluctuationClauseList,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 根据合同guid获取履约保函列表
+ */
+ChangeService.bondList = function(contractGuid){
+	return request({
+	    url: API.bondList,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 根据合同guid获取履约保险列表
+ */
+ChangeService.insuaranceList = function(contractGuid){
+	return request({
+	    url: API.insuaranceList,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 根据合同guid获取质量保证列表
+ */
+ChangeService.materialQualityGuaranteeList = function(contractGuid){
+	return request({
+	    url: API.materialQualityGuaranteeList,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 根据合同guid获取付款条款列表
+ */
+ChangeService.paymentTermsList = function(contractGuid){
+	return request({
+	    url: API.paymentTermsList,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 获取变更附件类型
+ */
+ChangeService.fileTypes = function(){
+	return request({
+	    url: API.fileTypes,
+	    method: 'get',
+	    params: {}
 	  })
 }
 

@@ -1,6 +1,18 @@
 <template>
   <div>
     <a-col :md="24" :sm="24">
+      <a-form-item label="保修金/保固金/保留金条款类型">
+        <a-select 
+          v-model="data.voMasterInfo.retentionAndTermsType"
+          :disabled="type === 'view'"
+          >
+          <a-select-option v-for="option in selection.retentionTypes" :key="option.id" :value="option.id">{{
+            option.nameCN }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+    </a-col>
+    <a-col :md="24" :sm="24">
       付款条款：
     </a-col>
     <a-col :md="24" :sm="24">
@@ -8,11 +20,14 @@
         <thead>
           <tr>
             <th colspan="5">
-              <a-button :disabled="type === 'view'" icon="plus">
+              <a-button :disabled="type === 'view'" icon="plus" @click="add">
                 新增
               </a-button>
-              <a-button :disabled="type === 'view'" icon="stop">
+              <a-button :disabled="type === 'view'" icon="stop" @click="clear">
                 重置
+              </a-button>
+              <a-button @click="replaceByContract()" :disabled="type === 'view'" icon="block">
+                按原合同条款
               </a-button>
             </th>
           </tr>
@@ -23,9 +38,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.voPaymentTermslst" :key="index">
+          <tr v-if="!item.isDeleted" v-for="(item, index) in data.voPaymentTermslst" :key="index">
             <td>
-              <a-button :disabled="type === 'view'" icon="close">
+              <a-button :disabled="type === 'view'" icon="close" @click="del(item,index)">
                 删除
               </a-button>
             </td>
@@ -33,7 +48,7 @@
               <a-input v-model="item.description"></a-input>
             </td>
             <td>
-              <a-input v-model="item.description"></a-input>
+              <a-input v-model="item.percentage"></a-input>
             </td>
           </tr>
         </tbody>
@@ -42,6 +57,8 @@
   </div>
 </template>
 <script>
+  import { Base as BaseService } from '@/api/base'
+  import { ChangeService } from '@/views/change/change.service'
   export default {
     name: 'AttachmentInfoPaymentTerms',
     data () {
@@ -62,10 +79,24 @@
       id: {
         type: String,
         default: '0'
+      },
+      contract : {
+        type : Object,
+        default : null
+      }
+    },
+    created (){
+      BaseService.retentionTypes().then(res => {
+        this.selection.retentionTypes = res.result.data
+        this.$forceUpdate()
+      })
+
+      if(this.data.voPaymentTermslst == null){
+        this.data.voPaymentTermslst = []
       }
     },
     methods: {
-      add (target) {
+      add () {
         const item = {
           id: 0,
           isDeleted: false,
@@ -74,14 +105,41 @@
           description: '',
           percentage: ''
         }
-        this.data[target].push(item)
+        this.data.voPaymentTermslst.push(item)
       },
-      del (item) {
-        item.isDisabled = true
+      del (item,index) {
+        if(item.isTemp){
+          this.data.voPaymentTermslst.splice(index,1)
+        }else{
+          item.isDeleted = true
+        }
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
+      clear () {
+        this.data.voPaymentTermslst.forEach((item,index) => {
+          if(item.isTemp){
+            this.data.voPaymentTermslst.splice(index,1)
+          }else{
+            item.isDeleted = true
+          }
+        })
+      },
+      replaceByContract(){
+        this.clear()
+        ChangeService.paymentTermsList(this.contract.contractGuid).then(item => {
+          if (item.result.statusCode == 200) {
+            const items = item.result.data
+            items.forEach(item => {
+              const temp = Object.assign({},item)
+              temp.id = 0
+              temp.contractID = ''
+              temp.paymentTermsGuid = ''
+              temp.isDeleted = false
+              temp.isTemp = true
+              temp.void = ''
+              temp.itemKey = ''
+              this.data.voPaymentTermslst.push(temp)
+            })
+          }
         })
       }
     }

@@ -9,17 +9,20 @@
           <thead>
             <tr>
               <th colspan="14">
-                <a-button :disabled="type === 'view'" icon="plus">
+                <a-button :disabled="type === 'view'" icon="plus" @click="add">
                   新增
                 </a-button>
-                <a-button :disabled="type === 'view'" icon="stop">
+                <a-button :disabled="type === 'view'" icon="stop" @click="clear">
                   重置
+                </a-button>
+                <a-button @click="replaceByContract()" :disabled="type === 'view'" icon="block">
+                  按原合同条款
                 </a-button>
               </th>
             </tr>
             <tr>
               <th style="width: 5%">操作</th>
-              <th style="width: 5%">单位</th>
+              <th style="width: 10%">单位</th>
               <th style="width: 5%">数量</th>
               <th style="width: 5%">单价</th>
               <th style="width: 5%">履约保函金额</th>
@@ -35,9 +38,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in data.contractBondlst" :key="index">
+            <tr v-if="!item.isDeleted" v-for="(item, index) in data.voBondlst" :key="index">
               <td>
-                <a-button :disabled="type === 'view'" icon="close">
+                <a-button :disabled="type === 'view'" icon="close" @click="del(item,index)">
                   删除
                 </a-button>
               </td>
@@ -46,18 +49,18 @@
                   placeholder="请选择"
                   v-model="item.bondUnit"
                   v-decorator="['item.bondUnit', { rules: [{required: true, message: '请选择'}] }]">
-                  <a-select-option v-for="(item, index) in data.voBondlst" :key="index" :value="item.id">{{ item.nameCN }}
+                  <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.id">{{ item.nameCN }}
                   </a-select-option>
                 </a-select>
               </td>
               <td>
-                <a-input-number v-model="item.bondQty" :min="0"></a-input-number>
+                <a-input-number v-model="item.bondQty" :min="0" @change="valueChange(item)"></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondUnitPrice"></a-input-number>
+                <a-input-number v-model="item.bondUnitPrice" @change="valueChange(item)"></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondAmount"></a-input-number>
+                <a-input-number v-model="item.bondAmount" :disabled="true"></a-input-number>
               </td>
               <td>
                 <a-input v-model="item.bondAmountTerms"></a-input>
@@ -103,21 +106,15 @@
         </table>
       </div>
     </a-col>
-    <a-col :md="24" :sm="24">
-      <a-form-item
-        label="履约保函总额">
-        <a-input-number :disabled="true" :value="total"></a-input-number>
-      </a-form-item>
-    </a-col>
   </div>
 </template>
 <script>
   import { Base as BaseService } from '@/api/base'
+  import { ChangeService } from '@/views/change/change.service'
   export default {
     name: 'AttachmentInfoBond',
     data () {
       return {
-        total: 0,
         selection: {},
         loading: false
       }
@@ -134,6 +131,10 @@
       id: {
         type: String,
         default: '0'
+      },
+      contract : {
+        type : Object,
+        defalut : null
       }
     },
     created () {
@@ -141,14 +142,9 @@
         this.selection.unitTypes = res.result.data
         this.$forceUpdate()
       })
-      let total = 0
-      this.data.contractBondlst.forEach(item => {
-        total = total + (item.bondQty * item.bondUnitPrice)
-      })
-      this.total = total
     },
     methods: {
-      add (target) {
+      add () {
         const item = {
           id: 0,
           isDeleted: false,
@@ -168,15 +164,43 @@
           bondExtendedExpirationDate: '',
           bondExtensionStatus: 0
         }
-        this.data[target].push(item)
+        this.data.voBondlst.push(item)
       },
-      del (item) {
-        item.isDisabled = true
+      del (item,index) {
+        if(item.isTemp){
+          this.data.voBondlst.splice(index,1)
+        }else{
+          item.isDeleted = true
+        }
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
+      clear () {
+        this.data.voBondlst.forEach((item,index) => {
+          if(item.isTemp){
+            this.data.voBondlst.splice(index,1)
+          }else{
+            item.isDeleted = true
+          }
         })
+      },
+      replaceByContract(){
+        this.clear()
+        ChangeService.bondList(this.contract.contractGuid).then(item => {
+          if (item.result.statusCode == 200) {
+            const items = item.result.data
+            items.forEach(item => {
+              const temp = Object.assign({},item)
+              temp.id = 0
+              temp.isDeleted = false
+              temp.isTemp = true
+              temp.void = ''
+              temp.itemKey = ''
+              this.data.voBondlst.push(temp)
+            })
+          }
+        })
+      },
+      valueChange (item){
+        item.bondAmount = item.bondUnitPrice * item.bondQty
       }
     }
   }
@@ -223,7 +247,18 @@
           button {
             margin-right: 10px;
           }
+          input {
+            width: 60px;
+          }
+
+          .ant-select {
+            width: 120px;
+          }
+          .ant-calendar-picker {
+            width: 120px;
+          }
         }
+          
       }
     }
   }

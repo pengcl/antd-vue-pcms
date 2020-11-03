@@ -156,7 +156,7 @@
 		    	  	  	this.form.fileMasterId = 0
 		    	  	  }
 		    	  	  if(this.form.cipid == ''){
-		    	  	  	initCreateForm()
+		    	  	  	this.initCreateForm()
 		    	  	  }
 			      ChangeService.create(this.form).then(res => {
 			        console.log(res)
@@ -187,17 +187,18 @@
 		    },
 		    //初始化新增cip信息的voMasterInfo对象
 		    initCreateForm () {
-		    		this.form.cipid = 0
-	    	  	  	this.form.voMasterInfo.id = 0
-	    	  	  	this.form.voMasterInfo.isDeleted = false
-	    	  	  	this.form.voMasterInfo.contractID = this.contract.contractGuid
-	    	  	  	this.form.voMasterInfo.createMode = 'M'
-	    	  	  	this.form.voMasterInfo.stage = 'CIP' //为VO时则为cip转vo
-	    	  	  	this.form.voMasterInfo.verMajor = 0
-	    	  	  	this.form.voMasterInfo.verMinor = 0
-	    	  	  	this.form.voMasterInfo.codeNo = 0
-	    	  	  	this.form.voMasterInfo.codeNoIndependent = 0
-	    	  	  	this.form.voMasterInfo.retentionAndTermsType =0 //
+				this.form.cipid = 0
+				this.form.voMasterInfo.id = 0
+				this.form.voMasterInfo.isDeleted = false
+				this.form.voMasterInfo.contractID = this.contract.contractGuid
+				this.form.voMasterInfo.createMode = 'M'
+				this.form.voMasterInfo.stage = 'CIP' //为VO时则为cip转vo
+				this.form.voMasterInfo.verMajor = 0
+				this.form.voMasterInfo.verMinor = 0
+				this.form.voMasterInfo.codeNo = 0
+				this.form.voMasterInfo.codeNoIndependent = 0
+				this.form.voMasterInfo.retentionAndTermsType =0 //
+				this.form.voMasterInfo.contractAmount = 0
 		    }
 		  }
     }

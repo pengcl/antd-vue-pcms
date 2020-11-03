@@ -1,5 +1,4 @@
 <template>
-  <div>
     <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
@@ -167,18 +166,17 @@
             </tbody>
           </table>
         </a-col>
-
+        <attachment-info-bond :data="data" :type="type" :id="id" :contract="contract"></attachment-info-bond>
+        <attachment-info-insurance :data="data" :type="type" :id="id" :contract="contract"></attachment-info-insurance>
+        <attachment-info-fluctuation-clause :data="data" :type="type" :id="id" :contract="contract"></attachment-info-fluctuation-clause>
+        <attachment-info-payment-terms :data="data" :type="type" :id="id" :contract="contract"></attachment-info-payment-terms>
+        <attachment-info-material-quality-guarantee
+          :data="data"
+          :type="type"
+          :id="id" :contract="contract"></attachment-info-material-quality-guarantee>
       </a-row>
     </a-form>
-    <attachment-info-bond :data="data" :type="type" :id="id"></attachment-info-bond>
-    <attachment-info-insurance :data="data" :type="type" :id="id"></attachment-info-insurance>
-    <attachment-info-fluctuation-clause :data="data" :type="type" :id="id"></attachment-info-fluctuation-clause>
-    <attachment-info-payment-terms :data="data" :type="type" :id="id"></attachment-info-payment-terms>
-    <attachment-info-material-quality-guarantee
-      :data="data"
-      :type="type"
-      :id="id"></attachment-info-material-quality-guarantee>
-  </div>
+    
 </template>
 
 <script>
