@@ -75,14 +75,16 @@
           const data = _res.result.data
           const fileList = []
           data.forEach(item => {
-            fileList.push({
-              date: item.creationTime,
-              creator: item.creatorUser,
-              name: item.fileName,
-              file: item.fileUrl,
-              id: item.id,
-              masterID: item.masterID
-            })
+            if (item) {
+              fileList.push({
+                date: item.creationTime,
+                creator: item.creatorUser,
+                name: item.fileName,
+                file: item.fileUrl,
+                id: item.id,
+                masterID: item.masterID
+              })
+            }
           })
           this.fileList = fileList
         })
