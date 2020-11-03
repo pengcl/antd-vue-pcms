@@ -267,8 +267,8 @@
       },
       getValue (item, index) {
         const values = []
-        const ids = item.costCenter ? item.costCenter.split(':') : []
-        const names = item.costCenterName ? item.costCenterName.split(':') : []
+        const ids = item.costCenter ? item.costCenter.split(';') : []
+        const names = item.costCenterName ? item.costCenterName.split(';') : []
         ids.forEach((id, idsIndex) => {
           const value = index + ':' + id + ':' + names[idsIndex]
           values.push(value)
@@ -306,7 +306,7 @@
         if(addData){
         		data = Object.assign({},addData);
         		data.contractBQGuid = ''
-        		data.contractID = ''
+            data.contractID = ''
         }else{
         		data.isCarryData = false;
         }
@@ -379,7 +379,6 @@
             this.data.voMasterInfo.voAmount = item.result.data.voAmount
           }
           this.$message.info('计算金额完成')
-          console.log('bqAmount', item)
         })
       },
       replaceByContract () {

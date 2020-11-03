@@ -8,11 +8,14 @@
         <thead>
           <tr>
             <th colspan="5">
-              <a-button :disabled="type === 'view'" icon="plus">
+              <a-button :disabled="type === 'view'" icon="plus" @click="add">
                 新增
               </a-button>
-              <a-button :disabled="type === 'view'" icon="stop">
+              <a-button :disabled="type === 'view'" icon="stop" @click="clear">
                 重置
+              </a-button>
+              <a-button @click="replaceByContract()" :disabled="type === 'view'" icon="block">
+                按原合同条款
               </a-button>
             </th>
           </tr>
@@ -25,9 +28,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data.voFlucationClauselst" :key="index">
+          <tr v-if="!item.isDeleted" v-for="(item, index) in data.voFlucationClauselst" :key="index">
             <td>
-              <a-button :disabled="type === 'view'" icon="close">
+              <a-button :disabled="type === 'view'" icon="close" @click="del(item,index)">
                 删除
               </a-button>
             </td>
@@ -50,6 +53,7 @@
   </div>
 </template>
 <script>
+  import { ChangeService } from '@/views/change/change.service'
   export default {
     name: 'AttachmentInfoFluctuationClause',
     data () {
@@ -71,10 +75,14 @@
       id: {
         type: String,
         default: '0'
+      },
+      contract : {
+        type : Object,
+        defalut : null
       }
     },
     methods: {
-      add (target) {
+      add () {
         const item = {
           id: 0,
           isDeleted: false,
@@ -85,14 +93,41 @@
           adjustableRange : 0,
           adjustmentInterval : 0
         }
-        this.data[target].push(item)
+        this.data.voFlucationClauselst.push(item)
       },
-      del (item) {
-        item.isDisabled = true
+      del (item,index) {
+        if(item.isTemp){
+          this.data.voFlucationClauselst.splice(index,1)
+        }else{
+          item.isDeleted = true
+        }
       },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
+      clear () {
+        this.data.voFlucationClauselst.forEach((item,index) => {
+          if(item.isTemp){
+            this.data.voFlucationClauselst.splice(index,1)
+          }else{
+            item.isDeleted = true
+          }
+        })
+      },
+      replaceByContract(){
+        this.clear()
+        ChangeService.fluctuationClauseList(this.contract.contractGuid).then(item => {
+          if (item.result.statusCode == 200) {
+            const items = item.result.data
+            items.forEach(item => {
+              const temp = Object.assign({},item)
+              temp.id = 0
+              temp.contractID = ''
+              temp.fluctuationClauseGuid = ''
+              temp.isDeleted = false
+              temp.isTemp = true
+              temp.void = ''
+              temp.itemKey = ''
+              this.data.voFlucationClauselst.push(temp)
+            })
+          }
         })
       }
     }
