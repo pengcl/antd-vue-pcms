@@ -58,7 +58,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-if="!item.isDeleted" v-for="(item,index) in data.vobQlst" :key="item.id">
+                <tr v-if="!item.isDeleted" v-for="(item,index) in data.vobQlst" :key="item.srNo">
                   <td>
                     <div style="width: 220px;">
                       <a-button @click="add(item.srNo)" :disabled="type === 'view'" icon="plus">
@@ -248,7 +248,8 @@
         return compare(a.srNo, b.srNo)
       })
 
-      BaseService.itemTypes(contractTypes[this.contract.contractCategory + 1]).then(res => {
+	 console.log('costEstimates.this.contract.contractCategory',this.contract.contractCategory)
+      BaseService.itemTypes(contractTypes[this.contract.contractCategory+'']).then(res => {
         this.selection.itemTypes = res.result.data
       })
       ContractService.centers(this.project.id).then(res => {
@@ -299,10 +300,13 @@
     },
     methods: {
       add (stringNo,addData) {
+      	console.log('addData',addData)
         const newSrNo = getNo(stringNo, 'srNo', this.data.vobQlst)
         let data = SwaggerService.getForm('VOBQDto')
         if(addData){
-        		data = addData;
+        		data = Object.assign({},addData);
+        		data.contractBQGuid = ''
+        		data.contractID = ''
         }else{
         		data.isCarryData = false;
         }
@@ -310,6 +314,8 @@
         data.srNo = newSrNo
         data.id = 0
         data.isDeleted = false
+        data.vobqGuid = ''
+        data.void = ''
         console.log('myData',data)
         this.data.vobQlst.push(data)
       },
@@ -346,12 +352,12 @@
           const id = arr[1]
           const name = arr[2]
           if (ids) {
-            ids = ids + ':' + id
+            ids = ids + ';' + id
           } else {
             ids = id
           }
           if (names) {
-            names = names + ':' + name
+            names = names + ';' + name
           } else {
             names = name
           }

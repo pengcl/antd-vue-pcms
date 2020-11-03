@@ -72,7 +72,7 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" v-if="type != 'view'">启动审批流程</a-button>
+            <a-button type="success" v-if="type != 'view'" @click="startUp">启动审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
@@ -149,27 +149,55 @@
 		    	  if(!partyResult){
 		    	  	return
 		    	  }
+		    	  this.form.contractNo = this.contract.contractNo
 		    	  console.log('saveData',this.form)
 		    	  if(this.type == 'add'){
-			      /*ChangeService.create(this.form).then(res => {
+		    	  	  if(this.form.fileMasterId == undefined || this.form.fileMasterId == ''){
+		    	  	  	this.form.fileMasterId = 0
+		    	  	  }
+		    	  	  if(this.form.cipid == ''){
+		    	  	  	initCreateForm()
+		    	  	  }
+			      ChangeService.create(this.form).then(res => {
 			        console.log(res)
-			      })*/
-		      }else if(this.type == 'update'){
-		      	  /*ChangeService.update(this.form).then(res => {
+			        if(res.result.statusCode === 200){
+			        		this.$message.info('新增成功')
+			        		this.$router.push({ path: `/change/pmi` })
+			        }
+			      })
+		      }else if(this.type == 'edit'){
+		      	  ChangeService.update(this.form).then(res => {
 			        console.log(res)
-			      })*/
+			        if(res.result.statusCode === 200){
+			        		this.$message.info('修改成功')
+			        		this.$router.push({ path: `/change/pmi` })
+			        }
+			      }) 
+		      }else if(this.type == 'trans'){
+		      	//cip转vo
+		      	
 		      }
 		    },
-		    handleChange (selectedItems) {
-		      this.selectedItems = selectedItems
+		    startUp () {
+		    		this.$message.warn('功能尚未实现')
 		    },
 		    back () {
 		      console.log('back')
 		      this.$router.push({ path: `/change/pmi` })
 		    },
-		    handleToEdit () {
-		      console.log('handleToEdit')
-		      this.$router.push({ path: `/change/item/${this.id}?type=edit` })
+		    //初始化新增cip信息的voMasterInfo对象
+		    initCreateForm () {
+		    		this.form.cipid = 0
+	    	  	  	this.form.voMasterInfo.id = 0
+	    	  	  	this.form.voMasterInfo.isDeleted = false
+	    	  	  	this.form.voMasterInfo.contractID = this.contract.contractGuid
+	    	  	  	this.form.voMasterInfo.createMode = 'M'
+	    	  	  	this.form.voMasterInfo.stage = 'CIP' //为VO时则为cip转vo
+	    	  	  	this.form.voMasterInfo.verMajor = 0
+	    	  	  	this.form.voMasterInfo.verMinor = 0
+	    	  	  	this.form.voMasterInfo.codeNo = 0
+	    	  	  	this.form.voMasterInfo.codeNoIndependent = 0
+	    	  	  	this.form.voMasterInfo.retentionAndTermsType =0 //
 		    }
 		  }
     }

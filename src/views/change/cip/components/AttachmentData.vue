@@ -1,4 +1,5 @@
 <template>
+  <div>
   <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
@@ -166,10 +167,15 @@
           </tbody>
         </table>
       </a-col>
+     
     </a-row>
   </a-form>
-
-
+  <attachment-info-bond :data="data" :type="type" :id="id"></attachment-info-bond>
+  <attachment-info-insurance :data="data" :type="type" :id="id"></attachment-info-insurance>
+  <attachment-info-fluctuation-clause :data="data" :type="type" :id="id"></attachment-info-fluctuation-clause>
+  <attachment-info-matterial-quality-guarantee :data="data" :type="type" :id="id"></attachment-info-matterial-quality-guarantee>
+  <attachment-info-payment-terms :data="data" :type="type" :id="id"></attachment-info-payment-terms>
+  </div>
 </template>
 
 <script>
@@ -179,8 +185,15 @@
   import { SwaggerService } from '@/api/swagger.service'
   import { ChangeService } from '@/views/change/change.service'
   import { ContractService } from '@/views/contract/contract.service'
+  
+  import AttachmentInfoBond from '@/views/change/components/attachmentInfo/bond'
+  import AttachmentInfoInsurance from '@/views/change/components/attachmentInfo/insurance'
+  import AttachmentInfoFluctuationClause from '@/views/change/components/attachmentInfo/fluctuationClause'
+  import AttachmentInfoPaymentTerms from '@/views/change/components/attachmentInfo/paymentTerms'
+  import AttachmentInfomMterialQualityGuarantee from '@/views/change/components/attachmentInfo/materialQualityGuarantee'
     export default {
         name: 'AttachmentData',
+        components: { AttachmentInfoBond, AttachmentInfoInsurance, AttachmentInfoFluctuationClause, AttachmentInfoPaymentTerms, AttachmentInfomMterialQualityGuarantee },
 		data () {
 		  return {
 		    date: null,

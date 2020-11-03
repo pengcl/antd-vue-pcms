@@ -7,7 +7,7 @@
     @ok="handleOk"
   >
     <div>
-	    <a-table :columns="columns" :data-source="tableData" :scroll="{ x : ' calc(1200px + 50%)' }" :rowSelection="rowSelection" bordered ref="table" :pagination="false">
+	    <a-table :row-key="record => record.id" :columns="columns" :data-source="tableData" :scroll="{ x : ' calc(1200px + 50%)' }" :rowSelection="rowSelection" bordered ref="table" :pagination="false">
 	    		<label slot="isCarryData" slot-scope="text">{{ text ? '是' : '否' }}</label>
 	    </a-table>
     </div>
@@ -166,7 +166,7 @@
         /*loadData: parameter => {
           return ChangeService.bqList(this.contract.contractGuid)
             .then(res => {
-            	  console.log('myData',res)
+            	  console.log('contractBqmodal.datas',res)
               return res.result.data
             })
         },*/
