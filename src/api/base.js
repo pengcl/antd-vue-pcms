@@ -63,11 +63,11 @@ Base.upload = function (formData) {
   })
 }
 
-Base.masterID = function (gid) {
+Base.masterID = function (BusinessGuid) {
   return request({
     url: API.masterID,
     method: 'get',
-    params: { gid }
+    params: { BusinessGuid }
   })
 }
 
