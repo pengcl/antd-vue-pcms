@@ -42,9 +42,8 @@
             <td style="width : 50%">
             	   <a-select
                 placeholder="请选择"
-                v-model="to[0]"
+                v-model="to"
                 :disabled="type === 'view'"
-                @change="toChange"
                >
                   <a-select-option v-for="option in selection.contractParties" :key="option.partID" :value="option.partID">
                     {{option.partName }}
@@ -81,12 +80,41 @@
                 placeholder="请选择"
                 :disabled="type === 'view'"
                 v-model="cc"
+                @change="ccChange"
               >
                  <a-select-option v-for="option in selection.sendCopyParties" :key="option.partID" :value="option.partID">
                     {{option.partName }}
                   </a-select-option>
               </a-select>
             </td>
+          </tr>
+          <tr>
+          	<td>
+          		<table>
+		      		<thead>
+		      			<tr>
+		      				<th>单位名称</th>
+		      				<th>百分比</th>
+		      			</tr>
+		      		</thead>
+		      		<tbody>
+		      			<tr v-if="!item.isDeleted && item.isSendCopy" v-for="(item,index) in data.voPartylst" :key="item.id">
+		      				<td>{{ item.partName }}</td>
+		      				<td>
+		      					<a-input-number
+					            	   	style="width : 90%"
+					                placeholder="请输入百分比"
+					                v-model="item.percentage"
+					                :max="100"
+					                :precision = "2"
+					                :disabled="type === 'view'"
+					               >
+				               </a-input-number>&nbsp;%
+				             </td>
+		      			</tr>
+		      		</tbody>
+		      	</table>
+          	</td>
           </tr>
           </tbody>
         </table>
@@ -164,8 +192,8 @@
                 :disabled="type === 'view'"
                 style="width : 90%"
                 v-model="data.voMasterInfo.voHasEffect">
-                <a-select-option value="有影响">有影响</a-select-option>
-                <a-select-option value="无影响">无影响</a-select-option>
+                <a-select-option :value="true">有影响</a-select-option>
+                <a-select-option :value="false">无影响</a-select-option>
               </a-select>
             </a-col>
             <a-col :span="8">
@@ -320,8 +348,8 @@
         <a-form-item label="本次申请出差">
           <a-radio-group v-model="data.voMasterInfo.isTrip"
            :disabled="type === 'view'">
-            <a-radio value="1">是</a-radio>
-            <a-radio value="2">否</a-radio>
+            <a-radio :value="true">是</a-radio>
+            <a-radio :value="false">否</a-radio>
           </a-radio-group>
         </a-form-item>
       </a-col>
@@ -337,7 +365,7 @@
     name: 'BaseInfo',
     data () {
       return {
-     	to : [],
+     	to : '',
       	cc : [],
       	toRate : 0,
       	reasonType : [],
@@ -394,16 +422,6 @@
 		    		})
 	    		}
 	    		
-	    		//转换接收公司，抄送公司选中信息为下拉框识别的值
-	    		if(this.contract.voPartylst){
-		    		this.contract.voPartylst.forEach(item => {
-		    			if(!item.isSendCopy){
-		    				this.to.push(item.partID)
-		    			}else{
-		    				this.cc.push(item.partID)
-		    			}
-		    		})
-	    		}
     		},
     		'data.voMasterInfo'(value){
     			//初始化reasonType值，转换为checkboxgroup认同的值
@@ -411,16 +429,79 @@
     				this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType);
     				this.$forceUpdate()
     			}
+    			//转换接收公司，抄送公司选中信息为下拉框识别的值
+	    		if(this.data.voPartylst){
+	    			this.data.voPartylst.forEach(item => {
+		    			if(!item.isSendCopy){
+		    				this.to = item.partID
+		    			}else{
+		    				if(this.cc.indexOf(item.partID) < 0){
+		    					this.cc.push(item.partID)
+		    				}
+		    			}
+		    		})
+		    		this.$forceUpdate()
+	    		}
     		}
     },
     methods: {
-    	  // 接收公司下拉框值变更事件监听
-      toChange (value) {
-        // item.partyID = ''
-        this.to = [value]
-      },
       splitVal (val){
       	return val ? val.split(';') : null
+      },
+      //抄送公司变更监听
+      ccChange(vals){
+      	var that = this
+      	//整理抄送公司
+    		//将抄送下拉框信息放入到voPartyLst中
+    		vals.forEach(item =>{
+    			const copySendParty = getCopyPartyByID(item)
+    			if(copySendParty){
+    				var repeatData = getPartyByID(item,true)
+    				if(repeatData === undefined){
+    					const temp = Object.assign({},copySendParty)
+	    				temp.id = 0
+	    				temp.itemKey = ''
+	    				temp.isDeleted = false
+	    				temp.void = ''
+	    				//获取抄送公司百分比，暂时写死
+	    				temp.percentage = 0
+	    				temp.isSendCopy = true
+	    				temp.isTemp = true
+	    				this.data.voPartylst.push(temp)
+    				}else{
+    					repeatData.isDeleted = false
+    				}
+    			}
+    		})
+    		//清理vopartyLst中比cc多出的公司信息
+    		this.data.voPartylst.forEach((party,index) => {
+			if(party.isSendCopy){
+				if(vals.indexOf(party.partID) < 0){
+					if(party.isTemp){
+						this.data.voPartylst.splice(index,1)
+					}else{
+						party.isDeleted = true
+					}
+				}
+			}
+		})
+    		
+    		//根据partID及抄送与否 获取修改voPartyLst对象中的对应公司信息
+    		function getPartyByID(partID,isSendCopy){
+    			var party = that.data.voPartylst.filter(item =>   item.partID === partID && item.isSendCopy === isSendCopy)
+    			if(party.length > 0){
+    				return party[0]
+    			}
+    		}
+		//根据partID 获取抄送公司列表中的公司信息    		
+    		function getCopyPartyByID(partID){
+    			const party = that.selection.sendCopyParties.filter(item => item.partID === partID)
+    			if(party.length > 0){
+    				return party[0]
+    			}
+    		}
+    		console.log('cc',vals,'partylst',this.data.voPartylst)
+    		this.$forceUpdate()
       },
       //reasonType值变更事件监听
       //监听的同时转换checkboxgroup选中值为保存接口所需的以;号分隔的字符串
@@ -439,13 +520,14 @@
       },
       //整理承包/顾问单位公司信息(包括接收公司，抄送公司）
       getPartys(){
+      	const that = this
     		if(this.to.length < 1){
     			this.$message.warn('请选择承包/顾问单位')
     			return false
     		}
     		//整理承包公司
     		this.selection.contractParties.forEach(item => { 
-    			if(item.partID == this.to[0]){
+    			if(item.partID === this.to){
     				const temp = Object.assign({},item)
     				temp.id = 0
     				temp.itemKey = ''
@@ -457,7 +539,7 @@
     				let repeat = false
     				this.data.voPartylst.forEach((party,index) => {
     					if(!party.isSendCopy){
-    						if(party.partID != this.to[0]){
+    						if(party.partID != this.to){
 	    						if(!party.isTemp){
 	    							party.isDeleted = true
 	    						}else{
@@ -474,45 +556,7 @@
     				}
     			}
     		} )
-    		//整理抄送公司
-    		this.selection.sendCopyParties.forEach(item => {
-    			let result = false
-    			for(var i in this.cc){
-    				var tempC = this.cc[i];
-    				if(tempC == item.partID){
-    					result = true
-    					break;
-    				}
-    			}
-    			if(result){
-    				const temp = Object.assign({},item)
-    				temp.id = 0
-    				temp.itemKey = ''
-    				temp.isDeleted = false
-    				temp.void = ''
-    				//获取抄送公司百分比，暂时写死
-    				temp.percentage = 50
-    				temp.isSendCopy = true
-    				let repeat = false
-    				this.data.voPartylst.forEach((party,index) => {
-    					if(party.isSendCopy){
-    						if(party.partID != item.partID){
-	    						if(!party.isTemp){
-	    							party.isDeleted = true
-	    						}else{
-	    							this.data.voPartylst.splice(index,1)
-	    						}
-    						}else{
-    							party.isDeleted = false
-    							repeat = true
-    						}
-    					}
-    				})
-    				if(!repeat){
-    					this.data.voPartylst.push(temp)
-    				}
-    			}
-    		})
+    		
     		return true
       }
     }

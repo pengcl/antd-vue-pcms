@@ -9,17 +9,20 @@
           <thead>
             <tr>
               <th colspan="14">
-                <a-button @click="add()" :disabled="type === 'view'" icon="plus">
+                <a-button :disabled="type === 'view'" icon="plus" @click="add">
                   新增
                 </a-button>
-                <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
+                <a-button :disabled="type === 'view'" icon="stop" @click="clear">
                   重置
+                </a-button>
+                <a-button @click="replaceByContract()" :disabled="type === 'view'" icon="block">
+                  按原合同条款
                 </a-button>
               </th>
             </tr>
             <tr>
               <th style="width: 5%">操作</th>
-              <th style="width: 5%">单位</th>
+              <th style="width: 10%">单位</th>
               <th style="width: 5%">数量</th>
               <th style="width: 5%">单价</th>
               <th style="width: 5%">履约保函金额</th>
@@ -35,67 +38,66 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="!item.isDeleted" v-for="(item, index) in data.contractBondlst" :key="index">
+            <tr v-if="!item.isDeleted" v-for="(item, index) in data.voBondlst" :key="index">
               <td>
-                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                <a-button :disabled="type === 'view'" icon="close" @click="del(item,index)">
                   删除
                 </a-button>
               </td>
               <td>
                 <a-select
-                  :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.bondUnit"
+                  :disabled="type === 'view'"
                   v-decorator="['item.bondUnit', { rules: [{required: true, message: '请选择'}] }]">
                   <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.id">{{ item.nameCN }}
                   </a-select-option>
                 </a-select>
               </td>
               <td>
-                <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.bondQty" :min="0"></a-input-number>
+                <a-input-number v-model="item.bondQty" :min="0" @change="valueChange(item)" :disabled="type === 'view'"></a-input-number>
               </td>
               <td>
-                <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.bondUnitPrice" :min="0"></a-input-number>
+                <a-input-number v-model="item.bondUnitPrice" @change="valueChange(item)" :disabled="type === 'view'"></a-input-number>
               </td>
               <td>
-                <a-input-number :disabled="true" @change="valueChange(item)" v-model="item.bondAmount" :min="0"></a-input-number>
+                <a-input-number v-model="item.bondAmount" :disabled="true" ></a-input-number>
               </td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.bondAmountTerms"></a-input>
+                <a-input v-model="item.bondAmountTerms" :disabled="type === 'view'"></a-input>
               </td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.description"></a-input>
+                <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
               </td>
               <td>
                 <a-select
-                  :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.bondStatus"
-                  v-decorator="['item.bondStatus', { rules: [{required: true, message: '请选择'}] }]">
+                  v-decorator="['item.bondStatus', { rules: [{required: true, message: '请选择'}] }]" :disabled="type === 'view'">
                   <a-select-option :value="1">已提交</a-select-option>
                   <a-select-option :value="0">未提交</a-select-option>
                 </a-select>
               </td>
               <td>
-                <a-input-number :disabled="type === 'view'" v-model="item.bondGracePeriod"></a-input-number>
+                <a-input-number v-model="item.bondGracePeriod" :disabled="type === 'view'"></a-input-number>
               </td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.bondGracePeriodTerms"></a-input>
+                <a-input v-model="item.bondGracePeriodTerms" :disabled="type === 'view'"></a-input>
               </td>
               <td>
-                <a-date-picker :disabled="type === 'view'" v-model="item.bondExpirationDate"></a-date-picker>
+                <a-date-picker v-model="item.bondExpirationDate" :disabled="type === 'view'"></a-date-picker>
               </td>
               <td>
-                <a-date-picker :disabled="type === 'view'" v-model="item.bondExtendedExpirationDate"></a-date-picker>
+                <a-date-picker v-model="item.bondExtendedExpirationDate" :disabled="type === 'view'"></a-date-picker>
               </td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.bondExpirationDateTerms"></a-input>
+                <a-input v-model="item.bondExpirationDateTerms" :disabled="type === 'view'"></a-input>
               </td>
               <td>
                 <a-select
-                  :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.bondExtensionStatus"
+                  :disabled="type === 'view'"
                   v-decorator="['item.bondExtensionStatus', { rules: [{required: true, message: '请选择'}] }]">
                   <a-select-option :value="1">已审批</a-select-option>
                   <a-select-option :value="0">已拒绝</a-select-option>
@@ -106,21 +108,15 @@
         </table>
       </div>
     </a-col>
-    <a-col :md="24" :sm="24">
-      <a-form-item
-        label="履约保函总额">
-        <a-input-number :disabled="true" :value="total"></a-input-number>
-      </a-form-item>
-    </a-col>
   </div>
 </template>
 <script>
-  import { addItem, Base as BaseService, clearItems, removeItem } from '@/api/base'
+  import { Base as BaseService } from '@/api/base'
+  import { ChangeService } from '@/views/change/change.service'
   export default {
-    name: 'ContractInfoBond',
+    name: 'AttachmentInfoBond',
     data () {
       return {
-        total: 0,
         selection: {},
         loading: false
       }
@@ -137,6 +133,10 @@
       id: {
         type: String,
         default: '0'
+      },
+      contract : {
+        type : Object,
+        defalut : null
       }
     },
     created () {
@@ -144,50 +144,65 @@
         this.selection.unitTypes = res.result.data
         this.$forceUpdate()
       })
-      this.getTotal()
     },
     methods: {
-      getTotal () {
-        let total = 0
-        this.data.contractBondlst.forEach(item => {
-          total = total + (item.bondQty * item.bondUnitPrice)
-        })
-        this.total = total
-        this.$forceUpdate()
-      },
-      valueChange (item) {
-        item.bondAmount = item.bondQty * item.bondUnitPrice
-        this.getTotal()
-      },
       add () {
         const item = {
           id: 0,
-          bondGuid:	'',
-          contractID: this.id === '0' ? '' : this.id,
+          isDeleted: false,
+          itemKey: '',
+          void: '',
           description: '',
-          bondUnit: '',
-          bondQty: 0,
-          bondUnitPrice: 0,
           bondAmountTerms: '',
-          bondAmount: 0,
-          bondStatus: '',
+          bondUnit: 0,
+          bondQty: 0.00,
+          bondUnitPrice: 0.00,
+          bondAmount: 0.00,
+          bondStatus: 0,
           bondGracePeriodTerms: '',
-          bondGracePeriod: '',
+          bondGracePeriod: 0,
           bondExpirationDateTerms: '',
           bondExpirationDate: '',
           bondExtendedExpirationDate: '',
-          bondExtensionStatus: ''
+          bondExtensionStatus: 0
         }
-        addItem(item, this.data.contractBondlst)
+        this.data.voBondlst.push(item)
       },
-      del (index) {
-        const items = this.data.contractBondlst
-        removeItem(index, items)
-        this.getTotal()
+      del (item,index) {
+        if(item.isTemp){
+          this.data.voBondlst.splice(index,1)
+        }else{
+          item.isDeleted = true
+        }
       },
       clear () {
-        clearItems(this.data.contractBondlst)
-        this.getTotal()
+        this.data.voBondlst.forEach((item,index) => {
+          if(item.isTemp){
+            this.data.voBondlst.splice(index,1)
+          }else{
+            item.isDeleted = true
+          }
+        })
+      },
+      replaceByContract(){
+        this.clear()
+        ChangeService.bondList(this.contract.contractGuid).then(item => {
+          if (item.result.statusCode == 200) {
+            const items = item.result.data
+            items.forEach(item => {
+              const temp = Object.assign({},item)
+              temp.id = 0
+              temp.isDeleted = false
+              temp.isTemp = true
+              temp.void = ''
+              temp.itemKey = ''
+              this.data.voBondlst.push(temp)
+            })
+          }
+        })
+      },
+      valueChange (item){
+        item.bondAmount = item.bondUnitPrice * item.bondQty
       }
     }
   }
@@ -234,7 +249,18 @@
           button {
             margin-right: 10px;
           }
+          input {
+            width: 60px;
+          }
+
+          .ant-select {
+            width: 120px;
+          }
+          .ant-calendar-picker {
+            width: 120px;
+          }
         }
+          
       }
     }
   }

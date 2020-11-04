@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import { SignedService } from '@/views/pay/signed/signed.service'
 
 const API = {
   secretTypes: '/api/services/app/GeneralType/GetSecretLevelTypes',
@@ -10,7 +9,8 @@ const API = {
   retentionTypes: '/api/services/app/GeneralType/GetRetentionTermTypes',
   upload: '/api/services/app/UploadAppservice/CommonUpload',
   masterID: '/api/services/app/UploadAppservice/GetMasterIDByBusinessGuid',
-  fileList: '/api/services/app/UploadAppservice/GetFileList'
+  fileList: '/api/services/app/UploadAppservice/GetFileList',
+  removeFile: '/api/services/app/UploadAppservice/FileDeleteByID'
 }
 
 const Base = {}
@@ -63,11 +63,11 @@ Base.upload = function (formData) {
   })
 }
 
-Base.masterID = function (gid) {
+Base.masterID = function (BusinessGuid) {
   return request({
     url: API.masterID,
     method: 'get',
-    params: { gid }
+    params: { BusinessGuid }
   })
 }
 
@@ -77,6 +77,37 @@ Base.fileList = function (masterID, businessID, sSubInfo1, sSubInfo2) {
     method: 'get',
     params: { masterID, businessID, sSubInfo1, sSubInfo2 }
   })
+}
+
+Base.removeFile = function (ifileDetialID) {
+  return request({
+    url: API.removeFile,
+    method: 'POST',
+    params: { ifileDetialID }
+  })
+}
+
+function addItem (obj, items) {
+  items.push(Object.assign(obj, { isTemp: true, isDeleted: false }))
+}
+
+function removeItem (index, items) {
+  if (items[index].isTemp) {
+    items.splice(index, 1)
+  } else {
+    items[index].isDeleted = true
+  }
+}
+
+function clearItems (items) {
+  const list = []
+  items.forEach(item => {
+    if (!item.isTemp) {
+      item.isDeleted = true
+      list.push(item)
+    }
+  })
+  items = list
 }
 
 const dateFormat = ''
@@ -126,4 +157,4 @@ const numberFilter = (value) => {
   }
 }
 
-export { Base, dateFormat, datetimeFormat, DIALOGCONFIG, numberFilter }
+export { Base, dateFormat, datetimeFormat, DIALOGCONFIG, numberFilter, addItem, removeItem, clearItems }

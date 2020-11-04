@@ -7,41 +7,6 @@
     :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="合同年份"
-          prop="contractYear"
-        >
-          <a-input
-            :disabled="true"
-            placeholder="请生成合同年份"
-            v-model="data.contract.contractYear"/>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="合同金额"
-          prop="contractAmount"
-        >
-          <a-input
-            :disabled="true"
-            placeholder="请生成合同金额"
-            v-model="data.contract.contractAmount"/>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="有效合同金额"
-          prop="contractEffectAmount"
-        >
-          <a-input
-            :disabled="true"
-            placeholder="请生成有效合同金额"
-            v-model="data.contract.contractEffectAmount"/>
-        </a-form-model-item>
-      </a-col>
-    </a-row>
-    <a-row :gutter="48">
-      <a-col :md="12" :sm="24">
         <a-button type="success">按编码排序</a-button>
         <a-button type="success" style="margin-left: 5px">恢复原来排序</a-button>
       </a-col>
@@ -111,37 +76,39 @@
                 </td>
                 <td>
                   <a-icon
-                    @click="checkCarry(item)"
+                    :disabled="type === 'view'"
+                    @click="checkCarry(item,type === 'view')"
                     :type="item.isCarryData ? 'check-square' : 'border'"/>
                 </td>
                 <td>
                   <a-input style="width:100px" :disabled="true" :value="item.srNo"></a-input>
                 </td>
                 <td>
-                  <a-input v-model="item.section"></a-input>
+                  <a-input :disabled="type === 'view'" v-model="item.section"></a-input>
                 </td>
                 <td>
-                  <a-input v-model="item.building"></a-input>
+                  <a-input :disabled="type === 'view'" v-model="item.building"></a-input>
                 </td>
                 <td></td>
                 <td></td>
                 <td>
-                  <a-input v-model="item.remark1"></a-input>
+                  <a-input :disabled="type === 'view'" v-model="item.remark1"></a-input>
                 </td>
                 <td>
-                  <a-input v-model="item.remark2"></a-input>
+                  <a-input :disabled="type === 'view'" v-model="item.remark2"></a-input>
                 </td>
                 <td>
-                  <a-input v-model="item.description"></a-input>
+                  <a-input :disabled="type === 'view'" v-model="item.description"></a-input>
                 </td>
-                <td><!--{{ item.costCenter }}-->
+                <td>
                   <a-select
+                    :disabled="type === 'view'"
                     :default-value="item | getValue(index)"
                     style="width: 200px"
                     mode="multiple"
                     @change="centerChange">
                     <a-select-option
-                      :value="index + ':' + center.id + ':' + center.costCenterName"
+                      :value="index + ';' + center.id + ';' + center.costCenterName"
                       :itemIndex="index"
                       v-for="center in selection.centers"
                       :key="JSON.stringify(center)">
@@ -151,6 +118,7 @@
                 </td>
                 <td>
                   <a-select
+                    :disabled="type === 'view'"
                     placeholder="请选择"
                     v-model="item.itemType"
                     v-decorator="['item.itemType', { rules: [{required: true, message: '请选择'}] }]">
@@ -162,6 +130,7 @@
                 </td>
                 <td>
                   <a-select
+                    :disabled="type === 'view'"
                     placeholder="请选择"
                     v-model="item.unitMaterial"
                     v-decorator="['item.unitMaterial', { rules: [{required: true, message: '请选择'}] }]">
@@ -172,16 +141,17 @@
                   </a-select>
                 </td>
                 <td>
-                  <a-input @change="valueChange(item)" v-model="item.quantityMaterial"></a-input>
+                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityMaterial"></a-input>
                 </td>
                 <td>
-                  <a-input @change="valueChange(item)" v-model="item.unitPriceMaterial"></a-input>
+                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.unitPriceMaterial"></a-input>
                 </td>
                 <td>
                   <a-input :disabled="true" v-model="item.subAmountMaterial"></a-input>
                 </td>
                 <td>
                   <a-select
+                    :disabled="type === 'view'"
                     placeholder="请选择"
                     v-model="item.unitWork"
                     v-decorator="['item.unitWork', { rules: [{required: true, message: '请选择'}] }]">
@@ -192,16 +162,17 @@
                   </a-select>
                 </td>
                 <td>
-                  <a-input @change="valueChange(item)" v-model="item.quantityWork"></a-input>
+                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityWork"></a-input>
                 </td>
                 <td>
-                  <a-input @change="valueChange(item)" v-model="item.unitPriceWork"></a-input>
+                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.unitPriceWork"></a-input>
                 </td>
                 <td>
                   <a-input :disabled="true" v-model="item.subAmountWork"></a-input>
                 </td>
                 <td>
                   <a-select
+                    :disabled="type === 'view'"
                     placeholder="请选择"
                     v-model="item.unitWorkMat"
                     v-decorator="['item.unitWorkMat', { rules: [{required: true, message: '请选择'}] }]">
@@ -212,10 +183,10 @@
                   </a-select>
                 </td>
                 <td>
-                  <a-input @change="valueChange(item)" v-model="item.quantityWorkMat"></a-input>
+                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityWorkMat"></a-input>
                 </td>
                 <td>
-                  <a-input @change="valueChange(item)" v-model="item.unitPriceWorkMat"></a-input>
+                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.unitPriceWorkMat"></a-input>
                 </td>
                 <td>
                   <a-input :disabled="true" v-model="item.subAmountWorkMat"></a-input>
@@ -329,10 +300,10 @@
       },
       getValue (item, index) {
         const values = []
-        const ids = item.costCenter ? item.costCenter.split(':') : []
-        const names = item.costCenterName ? item.costCenterName.split(':') : []
+        const ids = item.costCenter ? item.costCenter.split(';') : []
+        const names = item.costCenterName ? item.costCenterName.split(';') : []
         ids.forEach((id, idsIndex) => {
-          const value = index + ':' + id + ':' + names[idsIndex]
+          const value = index + ';' + id + ';' + names[idsIndex]
           values.push(value)
         })
         return values
@@ -410,8 +381,8 @@
           this.data.contract.contractEffectAmount = res.result.data
         })
       },
-      checkCarry (item) {
-        if (typeof item.allAmount === 'number') {
+      checkCarry (item, isDisabled) {
+        if (typeof item.allAmount === 'number' && !isDisabled) {
           if (this.data.contract.contractCategory) {
             item.isCarryData = !item.isCarryData
             this.getContractAmount()
@@ -434,12 +405,12 @@
           const id = arr[1]
           const name = arr[2]
           if (ids) {
-            ids = ids + ':' + id
+            ids = ids + ';' + id
           } else {
             ids = id
           }
           if (names) {
-            names = names + ':' + name
+            names = names + ';' + name
           } else {
             names = name
           }

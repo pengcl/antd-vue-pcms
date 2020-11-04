@@ -16,35 +16,20 @@
                 {{ project.projectName }}
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col :md="12" :sm="24">
               <a-form-item label="中央合同编号">
                 {{ form.contract.contractNo }}
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col :md="12" :sm="24">
               <a-form-item label="合同名称">
                 {{ form.contract.contractName }}
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24"></a-col>
+            <a-col :md="12" :sm="24"></a-col>
             <a-col :md="24" :sm="24">
               <a-form-item label="审批状态">
                 草拟中 (1.6)
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="CIP 总金额">
-                $0
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="VO 总金额">
-                $0
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="VOA 总金额">
-                $0
               </a-form-item>
             </a-col>
           </a-row>

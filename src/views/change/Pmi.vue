@@ -78,25 +78,11 @@
       <s-table
         style="margin-top: 5px"
         ref="table2"
-        size="default"
-        rowKey="key"
         bordered
         :columns="_columns"
         :data="loadData2"
-        :alert="false"
-        showPagination="auto"
         :rowSelection="rowSelection2"
       >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
-
         <span slot="action" slot-scope="text,record">
           <template>
             <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
@@ -202,25 +188,6 @@
         }
     ]
 
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
-
     export default {
         name: 'ChangePmiList',
         components: {
@@ -256,9 +223,9 @@
                 },
                 // 变更列表加载数据方法 必须为 Promise 对象
                 loadData2: parameter => {
+                		console.log('查询变更列表')
                     const requestParameters = Object.assign({}, parameter, this.queryParam2)
-                    return ChangeService.changeItems(requestParameters)
-                        .then(res => {
+                    return ChangeService.changeItems(requestParameters).then(res => {
                             return fixedList(res,requestParameters);
                         })
                 },
@@ -353,7 +320,7 @@
             },
              //cip转vo 方法
 			handleCipToVo (){
-			
+				
 			},
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
