@@ -55,10 +55,24 @@
                 <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.bondQty" :min="0"></a-input-number>
               </td>
               <td>
-                <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.bondUnitPrice" :min="0"></a-input-number>
+                <a-input-number
+                  :disabled="type === 'view'"
+                  @change="valueChange(item)"
+                  v-model="item.bondUnitPrice"
+                  :min="0"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"></a-input-number>
               </td>
               <td>
-                <a-input-number :disabled="true" @change="valueChange(item)" v-model="item.bondAmount" :min="0"></a-input-number>
+                <a-input-number
+                  :disabled="true"
+                  @change="valueChange(item)"
+                  v-model="item.bondAmount"
+                  :min="0"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"></a-input-number>
               </td>
               <td>
                 <a-input :disabled="type === 'view'" v-model="item.bondAmountTerms"></a-input>
@@ -109,7 +123,13 @@
     <a-col :md="24" :sm="24">
       <a-form-item
         label="履约保函总额">
-        <a-input-number :disabled="true" :value="total"></a-input-number>
+        <a-input-number
+          :disabled="true"
+          :value="total"
+          :min="0"
+          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+          :precision="2"></a-input-number>
       </a-form-item>
     </a-col>
   </div>

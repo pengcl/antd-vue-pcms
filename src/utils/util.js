@@ -140,3 +140,6 @@ export function compare (a, b) {
     }
   });
 } */
+
+export const currencyFormat = "value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+export const currencyParser = "value => value.replace(/\$\s?|(,*)/g, '')"

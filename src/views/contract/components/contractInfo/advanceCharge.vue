@@ -46,7 +46,12 @@
               <a-input :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input-number :disabled="type === 'view'"></a-input-number>
+              <a-input-number
+                :disabled="type === 'view'"
+                :min="0"
+                :max="100"
+                :formatter="value => `${value}%`"
+                :parser="value => value.replace('%', '')"></a-input-number>
             </td>
             <td>
               <a-select
@@ -69,10 +74,18 @@
               <a-input-number :disabled="type === 'view'"></a-input-number>
             </td>
             <td>
-              <a-input-number :disabled="type === 'view'"></a-input-number>
+              <a-input-number
+                :disabled="type === 'view'"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
             </td>
             <td>
-              <a-input-number :disabled="type === 'view'"></a-input-number>
+              <a-input-number
+                :disabled="type === 'view'"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
             </td>
           </tr>
         </tbody>
@@ -81,7 +94,12 @@
     <a-col :md="24" :sm="24">
       <a-form-item
         label="预付款总额">
-        <a-input-number :disabled="type === 'view'" :min="0"></a-input-number>
+        <a-input-number
+          :disabled="type === 'view'"
+          :min="0"
+          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+          :precision="2"></a-input-number>
       </a-form-item>
     </a-col>
   </div>
