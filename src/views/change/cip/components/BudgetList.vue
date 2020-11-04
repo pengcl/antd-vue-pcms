@@ -35,7 +35,7 @@
           </tr>
           </tbody>
         </table>
-        <table v-if="budgetType==2">
+        <table v-if="budgetType==3">
           <thead>
           <tr>
             <th style="width: 25%">业态</th>
@@ -53,7 +53,7 @@
           </tr>
           </tbody>
         </table>
-        <table v-if="budgetType==3">
+        <table v-if="budgetType==2">
           <thead>
           <tr>
             <th style="width: 20%">业态</th>

@@ -222,12 +222,16 @@
       contract: {
         type: Object,
         default: null
+      },
+      stage : {
+        type : String,
+        default : 'CIP'
       }
     },
     created () {
       console.log('change.AttachmentData.contract', this.contract)
       // 若为新增模式，则取合同中的保修金/保留金/保固金比率覆盖到变更主类
-      if (this.type == 'add') {
+      if (this.type === 'add' && this.stage == 'CIP') {
         this.data.voMasterInfo.retentionPercentage = this.contract.retentionPercentage
       }
       // 加载单位
