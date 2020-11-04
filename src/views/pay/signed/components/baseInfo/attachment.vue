@@ -71,7 +71,6 @@
                 loading: false,
                 attachmentTypeList: [],
                 fileList: [],
-                masterID: 0,
                 attachmentType: '',
                 index: 0
             }
@@ -89,14 +88,15 @@
                 type: String,
                 default: '0'
             },
+            masterId: {
+                type: Number,
+                default: null
+            }
         },
         watch: {},
         created () {
             SignedService.attachmentTypeList().then(res => {
                 this.attachmentTypeList = res.result.data
-            })
-            SignedService.masterID(this.id).then(res => {
-                this.masterID = res.result.data
             })
             /*SignedService.fileList(this.data['masterID'], this.data['mainContractGID'], '附件').then(res => {
                 this.fillList = res.result.data
@@ -145,7 +145,7 @@
             handleUpload (file) {
                 const formData = new FormData()
                 formData.append('file', file)
-                formData.append('masterId', this.masterID)
+                formData.append('masterId', this.masterId)
                 formData.append('businessID', this.id)
                 formData.append('businessType', 'payment')
                 formData.append('subInfo1', this.attachmentType) //文件类型
@@ -159,7 +159,7 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 })
                     .then((response) => {
-                        console.log('upload response:', response)
+                        this.$emit('on-change-masterId', response.result.data.masterID)
                         this.fileList[this.index].fileName = response.result.data.fileName
                         this.fileList[this.index].creationTime = response.result.data.creationTime
                         this.fileList[this.index].creatorUser = response.result.data.creatorUser
