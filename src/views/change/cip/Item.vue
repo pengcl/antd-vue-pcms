@@ -155,9 +155,7 @@
 		    	  	  if(this.form.fileMasterId == undefined || this.form.fileMasterId == ''){
 		    	  	  	this.form.fileMasterId = 0
 		    	  	  }
-		    	  	  if(this.form.cipid == ''){
-		    	  	  	this.initCreateForm()
-		    	  	  }
+					this.initCreateForm()
 			      ChangeService.create(this.form).then(res => {
 			        console.log(res)
 			        if(res.result.statusCode === 200){
@@ -199,6 +197,10 @@
 				this.form.voMasterInfo.codeNoIndependent = 0
 				this.form.voMasterInfo.retentionAndTermsType =0 //
 				this.form.voMasterInfo.contractAmount = 0
+				this.form.voMasterInfo.voAmountAccumulate = 0
+				this.form.voMasterInfo.voAmount = 0
+				this.form.voMasterInfo.voTotalAmountDecrease = this.form.voMasterInfo.voTotalAmountDecrease || 0
+				this.form.voMasterInfo.voTotalAmountIncrease = this.form.voMasterInfo.voTotalAmountIncrease || 0
 		    }
 		  }
     }

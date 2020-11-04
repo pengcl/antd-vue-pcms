@@ -36,20 +36,20 @@
               </a-button>
             </td>
             <td>
-              <a-input v-model="item.materialName"></a-input>
+              <a-input v-model="item.materialName" :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input v-model="item.materialQualityWarrantyTerms"></a-input>
+              <a-input v-model="item.materialQualityWarrantyTerms" :disabled="type === 'view'"></a-input>
             <!-- todo: 提交质量保证书日期条款 -->
             </td>
             <td>
-              <a-date-picker v-model="item.materialQualityGuaranteeSubmissionDate"></a-date-picker>
+              <a-date-picker v-model="item.materialQualityGuaranteeSubmissionDate" :disabled="type === 'view'"></a-date-picker>
             </td>
             <td>
-              <a-input v-model="item.materialQualityWarrantyExpirationTerms"></a-input>
+              <a-input v-model="item.materialQualityWarrantyExpirationTerms" :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input-number v-model="item.materialQualityGuaranteeExpirationDay"></a-input-number>
+              <a-input-number v-model="item.materialQualityGuaranteeExpirationDay" :disabled="type === 'view'"></a-input-number>
             </td>
           </tr>
         </tbody>

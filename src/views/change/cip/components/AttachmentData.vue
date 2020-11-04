@@ -3,7 +3,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
           <a-form-item label="保修金/保固金/保留金比率上限">
-            <a-input-number v-model="data.voMasterInfo.retentionPercentage"></a-input-number>
+            <a-input-number v-model="data.voMasterInfo.retentionPercentage" :disabled="type === 'view'"></a-input-number>
             %
           </a-form-item>
         </a-col>
@@ -43,10 +43,10 @@
                   </a-button>
                 </td>
                 <td>
-                  <a-input v-model="item.description"></a-input>
+                  <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
                 </td>
                 <td>
-                  <a-input-number v-model="item.percentage" :min="0"></a-input-number>
+                  <a-input-number v-model="item.percentage" :min="0" :disabled="type === 'view'"></a-input-number>
                 </td>
               </tr>
             </tbody>
@@ -137,43 +137,43 @@
                   </a-button>
                 </td>
                 <td>
-                  <a-input></a-input>
+                  <a-input :disabled="type === 'view'"></a-input>
                 </td>
                 <td>
-                  <a-input></a-input>
+                  <a-input :disabled="type === 'view'"></a-input>
                 </td>
                 <td>
-                  <a-input></a-input>
+                  <a-input :disabled="type === 'view'"></a-input>
                 </td>
                 <td>
-                  <a-input-number></a-input-number>
+                  <a-input-number :disabled="type === 'view'"></a-input-number>
                 </td>
                 <td>
                   <a-select
                     placeholder="请选择"
-                    v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]">
+                    v-decorator="['paymentUser', { rules: [{required: true, message: '请选择'}] }]" :disabled="type === 'view'">
                     <a-select-option value="1">包(bag)</a-select-option>
                   </a-select>
                 </td>
                 <td>
-                  <a-input-number></a-input-number>
+                  <a-input-number :disabled="type === 'view'"></a-input-number>
                 </td>
                 <td>
-                  <a-input-number></a-input-number>
+                  <a-input-number :disabled="type === 'view'"></a-input-number>
                 </td>
-                <td></td>
+                <td><a-input-number :disabled="true"></a-input-number></td>
               </tr>
             </tbody>
           </table>
         </a-col>
-        <attachment-info-bond :data="data" :type="type" :id="id" :contract="contract"></attachment-info-bond>
-        <attachment-info-insurance :data="data" :type="type" :id="id" :contract="contract"></attachment-info-insurance>
-        <attachment-info-fluctuation-clause :data="data" :type="type" :id="id" :contract="contract"></attachment-info-fluctuation-clause>
-        <attachment-info-payment-terms :data="data" :type="type" :id="id" :contract="contract"></attachment-info-payment-terms>
+        <attachment-info-bond :data="data" :type="type" :id="id" :contract="contract" ref="attachmentInfoBond"></attachment-info-bond>
+        <attachment-info-insurance :data="data" :type="type" :id="id" :contract="contract" ref="attachmentInfoInsurance"></attachment-info-insurance>
+        <attachment-info-fluctuation-clause :data="data" :type="type" :id="id" :contract="contract" ref="attachmentInfoFluctuationClause"></attachment-info-fluctuation-clause>
+        <attachment-info-payment-terms :data="data" :type="type" :id="id" :contract="contract" ref="attachmentInfoPaymentTerms"></attachment-info-payment-terms>
         <attachment-info-material-quality-guarantee
           :data="data"
           :type="type"
-          :id="id" :contract="contract"></attachment-info-material-quality-guarantee>
+          :id="id" :contract="contract" ref="attachmentInfoMaterialQualityGuarantee"></attachment-info-material-quality-guarantee>
       </a-row>
     </a-form>
     
@@ -340,6 +340,11 @@
       repleaceAll () {
         this.replaceRetentionsByContract()
         this.replaceReleasesByContract()
+        this.$refs.attachmentInfoBond.replaceByContract()
+        this.$refs.attachmentInfoInsurance.replaceByContract()
+        this.$refs.attachmentInfoFluctuationClause.replaceByContract()
+        this.$refs.attachmentInfoPaymentTerms.replaceByContract()
+        this.$refs.attachmentInfoMaterialQualityGuarantee.replaceByContract()
       }
     }
   }

@@ -72,36 +72,37 @@
                   <td>
                     <a-icon
                       @click="item.isCarryData = !item.isCarryData"
-                      :type="item.isCarryData ? 'check-square' : 'border'"/>
+                      :type="item.isCarryData ? 'check-square' : 'border'" :disabled="type === 'view'" />
                   </td>
                   <td>
                     <a-input style="width:100px" :disabled="true" :value="item.srNo"></a-input>
                   </td>
                   <td>
-                    <a-input v-model="item.section"></a-input>
+                    <a-input v-model="item.section" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
-                    <a-input v-model="item.building"></a-input>
+                    <a-input v-model="item.building" :disabled="type === 'view'"></a-input>
                   </td>
                   <td></td>
                   <td></td>
                   <td>
-                    <a-input v-model="item.remark1"></a-input>
+                    <a-input v-model="item.remark1" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
-                    <a-input v-model="item.remark2"></a-input>
+                    <a-input v-model="item.remark2" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
-                    <a-input v-model="item.description"></a-input>
+                    <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
                   </td>
                   <td><!--{{ item.costCenter }}-->
                     <a-select
                       :default-value="item | getValue(index)"
                       style="width: 200px"
                       mode="multiple"
+                      :disabled="type === 'view'"
                       @change="centerChange">
                       <a-select-option
-                        :value="index + ':' + center.id + ':' + center.costCenterName"
+                        :value="index + ':' + center.id "
                         :itemIndex="index"
                         v-for="center in selection.centers"
                         :key="JSON.stringify(center)">
@@ -113,6 +114,7 @@
                     <a-select
                       placeholder="请选择"
                       v-model="item.itemType"
+                      :disabled="type === 'view'"
                       v-decorator="['item.itemType', { rules: [{required: true, message: '请选择'}] }]">
                       <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">{{
                         item.nameCN }}
@@ -123,6 +125,7 @@
                     <a-select
                       placeholder="请选择"
                       v-model="item.unitMaterial"
+                      :disabled="type === 'view'"
                       v-decorator="['item.unitMaterial', { rules: [{required: true, message: '请选择'}] }]">
                       <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
                         item.nameCN }}
@@ -130,18 +133,19 @@
                     </a-select>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.quantityMaterial"></a-input>
+                    <a-input @change="valueChange(item)" v-model="item.quantityMaterial" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.unitPriceMaterial"></a-input>
+                    <a-input @change="valueChange(item)" v-model="item.unitPriceMaterial" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
-                    <a-input :disabled="true" v-model="item.subAmountMaterial"></a-input>
+                    <a-input :disabled="true" v-model="item.subAmountMaterial" ></a-input>
                   </td>
                   <td>
                     <a-select
                       placeholder="请选择"
                       v-model="item.unitWork"
+                      :disabled="type === 'view'"
                       v-decorator="['item.unitWork', { rules: [{required: true, message: '请选择'}] }]">
                       <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
                         item.nameCN }}
@@ -149,10 +153,10 @@
                     </a-select>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.quantityWork"></a-input>
+                    <a-input @change="valueChange(item)" v-model="item.quantityWork" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.unitPriceWork"></a-input>
+                    <a-input @change="valueChange(item)" v-model="item.unitPriceWork" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
                     <a-input :disabled="true" v-model="item.subAmountWork"></a-input>
@@ -161,6 +165,7 @@
                     <a-select
                       placeholder="请选择"
                       v-model="item.unitWorkMat"
+                      :disabled="type === 'view'"
                       v-decorator="['item.unitWorkMat', { rules: [{required: true, message: '请选择'}] }]">
                       <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
                         item.nameCN }}
@@ -168,10 +173,10 @@
                     </a-select>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.quantityWorkMat"></a-input>
+                    <a-input @change="valueChange(item)" v-model="item.quantityWorkMat" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.unitPriceWorkMat"></a-input>
+                    <a-input @change="valueChange(item)" v-model="item.unitPriceWorkMat" :disabled="type === 'view'"></a-input>
                   </td>
                   <td>
                     <a-input :disabled="true" v-model="item.subAmountWorkMat"></a-input>
@@ -268,9 +273,8 @@
       getValue (item, index) {
         const values = []
         const ids = item.costCenter ? item.costCenter.split(';') : []
-        const names = item.costCenterName ? item.costCenterName.split(';') : []
         ids.forEach((id, idsIndex) => {
-          const value = index + ':' + id + ':' + names[idsIndex]
+          const value = index + ':' + id 
           values.push(value)
         })
         return values
@@ -344,26 +348,18 @@
       },
       centerChange (values) {
         let ids = ''
-        let names = ''
         let item
         values.forEach(value => {
           const arr = value.split(':')
           item = this.data.vobQlst[arr[0]]
           const id = arr[1]
-          const name = arr[2]
           if (ids) {
             ids = ids + ';' + id
           } else {
             ids = id
           }
-          if (names) {
-            names = names + ';' + name
-          } else {
-            names = name
-          }
         })
         item.costCenter = ids
-        item.costCenterName = names
       },
       valueChange (item) {
         item.subAmountMaterial = item.quantityMaterial * item.unitPriceMaterial
