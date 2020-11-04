@@ -2,7 +2,7 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
@@ -18,7 +18,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success" @click="handleToAdd">新增</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -91,25 +91,23 @@
               title="删除"></a-button>
           </template>
         </span>
+
+        <span slot="dateAction" slot-scope="text, record">
+          {{record.packageDate | date}}
+        </span>
+
+        <span slot="tradePackageCode" slot-scope="text, record">
+            <a @click="getBudgetAmt(record)">{{text}}</a>
+        </span>
       </s-table>
 
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
-
-      <a-row>
+      <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button type="success">新增预算</a-button>
           <a-button type="danger" style="margin-left: 10px">删除预算</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
-          <a-form :form="form" :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
+          <a-form :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
             <a-row>
               <a-col :md="12" :sm="24">
                 <a-form-item label="招标盈余">
@@ -127,12 +125,12 @@
       </a-row>
       <s-table
         style="margin-top: 5px"
-        ref="table"
+        ref="table2"
         size="default"
         rowKey="key"
         bordered
         :columns="_columns"
-        :data="loadData"
+        :data="loadData2"
         :alert="false"
         showPagination="auto"
       ></s-table>
@@ -149,6 +147,9 @@
     import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
+    import {CostService} from "@/views/cost/cost.service";
+    import {fixedList} from "@/utils/util";
+    import {SignedService} from "@/views/pay/signed/signed.service";
 
     const columns = [
         {
@@ -159,26 +160,25 @@
         },
         {
             title: '分判包编号',
-            dataIndex: 'no'
+            dataIndex: 'tradePackageCode',
+            scopedSlots: { customRender: 'tradePackageCode' }
         },
         {
             title: '分判包描述',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
+            dataIndex: 'packageTitle'
         },
         {
             title: '预算金额',
-            dataIndex: 'callNo',
-            scopedSlots: { customRender: 'callNo' }
+            dataIndex: 'budgetAmount'
         },
         {
             title: '日期',
-            dataIndex: 'createAt',
+            dataIndex: 'packageDate',
+          scopedSlots: { customRender: 'dateAction'}
         },
         {
             title: '状态',
-            dataIndex: 'approvalStatus',
-            scopedSlots: { customRender: 'approvalStatus' }
+            dataIndex: 'auditStatus'
         }
     ]
 
@@ -241,7 +241,6 @@
             this.columns = columns
             this._columns = _columns
             return {
-                // create model
                 cities: [],
                 show: false,
                 visible: false,
@@ -250,15 +249,50 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: {},
+                queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return getServiceList(requestParameters)
+                    const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
+                    if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID!='') {
+                      return CostService.industryItems(requestParameters)
                         .then(res => {
-                            return res.result
+                          if(res.result.data!=null) {
+                            console.log(fixedList(res, requestParameters))
+                            return fixedList(res, requestParameters)
+                          }
                         })
+                    } else {
+                      const res = {
+                        'result': {
+                          'data': {
+                            'totalCount': 0,
+                            'items': []
+                          }
+                        }
+                      }
+                      return fixedList(res, requestParameters)
+                    }
+                },
+                loadData2: parameter => {
+                  const requestParameters = Object.assign({}, parameter, this.queryParam)
+                  if (this.id){
+                    return CostService.industryItems(requestParameters)
+                      .then(res => {
+                        if(res.result.data!=null) {
+                          return fixedList(res, requestParameters)
+                        }
+                      })
+                  }else{
+                    const res = {
+                      'result': {
+                        'data': {
+                          'totalCount': 0,
+                          'items': []
+                        }
+                      }
+                    }
+                    return fixedList(res, requestParameters)
+                  }
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -274,11 +308,11 @@
         },
         created () {
             getRoleList({ t: new Date() })
+            this.queryParam.ProjectGUID = this.$route.query.ProjectGUID
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {
                     const children = formatList(item.projects.items)
-                    console.log(children)
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,
@@ -289,23 +323,43 @@
                 this.$forceUpdate()
             })
         },
+        props: {
+          type: {
+            type: String,
+          default: 'view'
+          }
+        },
         computed: {
-            rowSelection () {
-                return {
-                    selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
-                }
-            }
+          ProjectGUID(){
+            return this.$route.query.ProjectGUID
+          },
+          rowSelection () {
+              return {
+                  selectedRowKeys: this.selectedRowKeys,
+                  onChange: this.onSelectChange
+              }
+          }
         },
         methods: {
+            getBudgetAmt (record) {
+              this.id = record.contractGuid
+              this.$refs.table.refresh(true)
+              CostService.contractAmt(record.contractGuid).then(res => {
+                this.contractAmt = res.result.data
+              })
+            },
             handleToItem (record) {
-                this.$router.push({ path: `/cost/industry/item/${record.id}?type=view` })
+                this.$router.push({ path: `/cost/industry/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/cost/industry/item/${record.id}?type=edit` })
+                this.$router.push({ path: `/cost/industry/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
             },
-            handleToAdd () {
-                this.$router.push({ path: '/cost/industry/edit' })
+            handleToAdd (record) {
+                if (this.queryParam.ProjectGUID === '') {
+                  this.$message.error(`请选择项目`)
+                } else {
+                  this.$router.push({ path: `/cost/industry/edit?ProjectGUID=${this.queryParam.ProjectGUID}` })
+                }
             },
             handleAdd () {
                 this.mdl = null
@@ -320,7 +374,6 @@
                 this.confirmLoading = true
                 form.validateFields((errors, values) => {
                     if (!errors) {
-                        console.log('values', values)
                         if (values.id > 0) {
                             // 修改 e.g.
                             new Promise((resolve, reject) => {
@@ -385,14 +438,14 @@
                 }
             },
             onChange (value) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
+            if (value.length >= 2) {
+              this.queryParam.ProjectGUID = value[value.length - 1]
+              this.$refs.table.refresh(true)
+            } else {
+              this.queryParam.ProjectGUID = ''
+              this.$refs.table.refresh(true)
             }
+          }
         }
     }
 </script>

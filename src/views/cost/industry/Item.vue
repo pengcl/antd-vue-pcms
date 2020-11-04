@@ -1,29 +1,41 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="分判包编号">
-              <a-input></a-input>
+              <a-input :disabled="type!='view'" v-model="form.tradePackageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="日期">
-              <a-date-picker></a-date-picker>
+              <a-date-picker
+                :format="dateFormat"
+                v-model="form.packageDate"></a-date-picker>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="分判包描述">
-              <a-input></a-input>
+              <a-input
+                v-model="form.packageTitle"
+              >
+              </a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="范围">
-              <a-checkbox-group>
-                <a-checkbox>分期</a-checkbox>
-                <a-checkbox>阶段</a-checkbox>
-              </a-checkbox-group>
+              <a-select
+                :default-value="form | getValue"
+                mode="multiple"
+                size="default"
+                placeholder="请选择"
+                @change="onChange"
+              >
+                <a-select-option v-for="option in costCenters" :key="JSON.stringify(option)" :value="option.id">
+                  {{ option.costCenterName }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -31,92 +43,168 @@
               <a-select
                 :disabled="type === 'view'"
                 placeholder="请选择"
-                v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                <a-select-option value="1">建安</a-select-option>
-                <a-select-option value="2">顾问</a-select-option>
-                <a-select-option value="3">大市政配套</a-select-option>
-                <a-select-option value="4">项目公司营运费、工程管理费</a-select-option>
+                v-model="form.itemTypeId"
+              >
+                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">
+                  {{ option.nameCN }}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="金额">
-              <a-input placeholder="汇总明细项金额"></a-input>
+              <a-input :disabled="type!='view'" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="6">
-                  <a-button :disabled="type === 'view'">
-                    新增行业预算
-                  </a-button>
-                </th>
-              </tr>
-              <tr>
-                <th style="width: 10%">操作</th>
-                <th style="width: 18%">科目</th>
-                <th style="width: 18%">行业</th>
-                <th style="width: 18%">子行业</th>
-                <th style="width: 18%">金额</th>
-                <th style="width: 18%">成本中心</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>
-                  <a-button :disabled="type === 'view'" icon="delete" type="danger"></a-button>
-                </td>
-                <td>
-                  <a-select
-                    :disabled="type === 'view'"
-                    placeholder="请选择"
-                    v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">
-                    <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>
-                  </a-select>
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
+          <!--          <a-col :md="24" :sm="24">-->
+          <!--            <table>-->
+          <!--              <thead>-->
+          <!--                <tr>-->
+          <!--                  <th colspan="6">-->
+          <!--                    <a-button :disabled="type === 'view'">-->
+          <!--                      新增行业预算-->
+          <!--                    </a-button>-->
+          <!--                  </th>-->
+          <!--                </tr>-->
+          <!--                <tr>-->
+          <!--                  <th style="width: 10%">操作</th>-->
+          <!--                  <th style="width: 18%">科目</th>-->
+          <!--                  <th style="width: 18%">行业</th>-->
+          <!--                  <th style="width: 18%">子行业</th>-->
+          <!--                  <th style="width: 18%">金额</th>-->
+          <!--                  <th style="width: 18%">成本中心</th>-->
+          <!--                </tr>-->
+          <!--              </thead>-->
+          <!--              <tbody>-->
+          <!--                <tr>-->
+          <!--                  <td>-->
+          <!--                    <a-button :disabled="type === 'view'" icon="delete" type="danger"></a-button>-->
+          <!--                  </td>-->
+          <!--                  <td>-->
+          <!--                    <a-select-->
+          <!--                      :disabled="type === 'view'"-->
+          <!--                      placeholder="请选择"-->
+          <!--                    >-->
+          <!--                      <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>-->
+          <!--                    </a-select>-->
+          <!--                  </td>-->
+          <!--                  <td></td>-->
+          <!--                  <td></td>-->
+          <!--                  <td></td>-->
+          <!--                  <td></td>-->
+          <!--                </tr>-->
+          <!--              </tbody>-->
+          <!--            </table>-->
+          <!--          </a-col>-->
         </a-row>
       </a-form>
+      <a-row>
+        <a-col :md="12" :sm="24">
+          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
 
-      <a-row :gutter="48">
-        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
-            <a-button  @click="approve()" type="success">
-              启动审批流程
-            </a-button>
-          </a-button-group>
         </a-col>
-        <a-col :md="24" :sm="24">
-          <a-button-group>
-            <a-button :disabled="type === 'view'" @click="save" type="success">
-              储存
-            </a-button>
-          </a-button-group>
-          <a-button-group>
-            <a-button @click="back" type="danger">
-              关闭
-            </a-button>
+        <a-col :md="12" :sm="24">
+          <a-button-group style="float: right">
+            <a-button type="success" @click="handleToSave">储存</a-button>
+            <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
       </a-row>
+
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
+  import { CostService } from '@/views/cost/cost.service'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { getRoleList } from '@/api/manage'
+  import { ProjectService } from '@/views/project/project.service'
+  import { formatList } from '@/mock/util'
+  import { compare } from '@/utils/util'
 
-    export default {
-        name: 'Item',
+  export default {
+    name: 'Edit',
+    data () {
+      return {
+        costCenters: [],
+        budgetTypeItems: [],
+        form: SwaggerService.getForm('TenderPackageCreateInputDto')
+      }
+    },
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      ProjectGUID () {
+        return this.$route.query.ProjectGUID
+      }
+    },
+    filters: {
+      getValue (form, index) {
+        const values = [1,2]
+        const centers = form.costCenters ? form.costCenters : []
+        console.log('form.costCenters',form.costCenters)
+        centers.forEach((item, idsIndex) => {
+          console.log(item.costCenterId)
+          values.push(item.costCenterId)
+        })
+        console.log('values',values)
+        return values
+      }
+    },
+    created () {
+      CostService.budgetTypeItems().then(res => {
+        this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
+        this.$forceUpdate()
+      })
+      if (this.type !== 'view') {
+        CostService.industryItem({ Id: this.id }).then(res => {
+          console.log(res)
+          this.form = res.result.data
+          this.getCenters()
+        })
+      }else{
+        this.getCenters()
+      }
+    },
+    methods: {
+      getCenters () {
+        const requestParameters = Object.assign({ Id: this.ProjectGUID })
+        CostService.centers(requestParameters).then(res => {
+          this.costCenters = JSON.parse(JSON.stringify(res.result.data))
+          console.log('costCenters',this.costCenters)
+          this.$forceUpdate()
+        })
+      },
+      onChange (value, option) {
+        this.form.costCenters = []
+        option.forEach(item => {
+          // const obj = {}
+          // obj['costCenterId'] = JSON.parse(item.data.key).id
+          // obj['costCenterCode'] = JSON.parse(item.data.key).costCenterCode
+          // obj['costCenterName'] = JSON.parse(item.data.key).costCenterName
+          this.form.costCenters.push(JSON.parse(item.data.key).id)
+        })
+      },
+      handleToSave () {
+        console.log(this.form)
+        this.form.projectGUID = this.ProjectGUID
+        CostService.createIndustry(this.form).then(res => {
+          if (res.result.statusCode === 200) {
+            this.$message.info('修改成功')
+          }
+        })
+      },
+      back () {
+        this.$router.push({ path: `/cost/industry/list?ProjectGUID=${this.ProjectGUID}`})
+      }
     }
+  }
+
 </script>
 
 <style lang="less" scoped>

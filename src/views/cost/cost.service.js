@@ -1,12 +1,15 @@
 import request from '@/utils/request'
 
 const API = {
-  items: '/api/services/app/Element/GetMainElementList',
-  subjectItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanSubListToEditByGUID',
-  subjectViewItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanDetailTreeByProject',
-  // item: '/api/services/app/Contract/GetAllContractInfo',
-  // create: '/api/services/app/Contract/CreateContractAllInfo',
-  update: '/api/services/app/BudgetSubPlan/CreateOrEditDetails'
+  items: '/api/services/app/Element/GetMainElementList', //成本预算制定列表
+  subjectItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanSubListToEditByGUID', //成本预算制定获取成本中心数据接口
+  subjectViewItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanDetailTreeByProject',//成本预算制定详情接口
+  update: '/api/services/app/BudgetSubPlan/CreateOrEditDetails', //更新成本预算制定接口
+  centers: '/api/services/app/ProjectCostCenter/GetProjectCostCentersByGuid' ,//根据项目GUID获取成本中心集合
+  industryItems: '/api/services/app/TenderPackage/GetPaged' ,//行业分判包列表
+  createIndustry: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加行业分判包
+  industryItem: '/api/services/app/TenderPackage/GetTenderPackageById',//通过主键获取行业分判包数据
+  budgetTypeItems: '/api/services/app/GeneralType/GetBudgetItemTypeTypes'//获取科目类型集合
 }
 
 const CostService = {}
@@ -42,6 +45,22 @@ CostService.subjectViewItems = function (parameter) {
   })
 }
 
+CostService.industryItems = function (parameter) {
+  return request({
+    url: API.industryItems,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.industryItem = function (parameter) {
+  return request({
+    url: API.industryItem,
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 CostService.item = function (contractGuid) {
   return request({
@@ -51,9 +70,9 @@ CostService.item = function (contractGuid) {
   })
 }
 
-CostService.create = function (parameter) {
+CostService.createIndustry = function (parameter) {
   return request({
-    url: API.create,
+    url: API.createIndustry,
     method: 'POST',
     data: parameter
   })
@@ -64,6 +83,22 @@ CostService.update = function (parameter) {
   return request({
     url: API.update,
     method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.centers = function (parameter) {
+  return request({
+    url: API.centers,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.budgetTypeItems = function (parameter) {
+  return request({
+    url: API.budgetTypeItems,
+    method: 'get',
     data: parameter
   })
 }
