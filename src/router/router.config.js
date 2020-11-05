@@ -344,7 +344,7 @@ export const asyncRouterMap = [
             path: '/pay/unsigned/item/:id',
             name: 'PayUnsignedItem',
             hidden: true,
-            component: () => import('@/views/contract/Edit'),
+            component: () => import('@/views/pay/unsigned/Item'),
             meta: { title: 'menu.pay.unsigned.item', keepAlive: true, permission: ['pay'] }
           },
           {

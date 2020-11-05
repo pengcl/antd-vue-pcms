@@ -30,7 +30,7 @@
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="收到请款单日期">
-          <a-date-picker v-model="data.paymentReceiveDate" style="width: 100%"
+          <a-date-picker :disabled="type === 'view'" v-model="data.paymentReceiveDate" style="width: 100%"
                          @change="receiveDateChange"></a-date-picker>
         </a-form-model-item>
       </a-col>
@@ -67,14 +67,14 @@
         <a-form-model-item
           label="申请批准金额"
         >
-          <a-input v-model="data.paymentRequestAmount"></a-input>
+          <a-input :disabled="type === 'view'" v-model="data.paymentRequestAmount"></a-input>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="本期支付金额"
         >
-          <a-input v-model="data.paymentAmount"></a-input>
+          <a-input :disabled="type === 'view'" v-model="data.paymentAmount"></a-input>
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -82,6 +82,7 @@
           label="付款凭证"
         >
           <a-select
+            :disabled="type === 'view'"
             placeholder="请选择"
             v-model="data.expenseAccountType"
             v-decorator="['data.expenseAccountType', { rules: [{required: true, message: '请选择付款凭证'}] }]">
@@ -97,7 +98,7 @@
         <a-form-model-item
           label="付款说明"
         >
-          <a-textarea v-model="data.paymentContent"></a-textarea>
+          <a-textarea :disabled="type === 'view'" v-model="data.paymentContent"></a-textarea>
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
@@ -124,36 +125,37 @@
           <tr>
             <td>承包单位送单时间</td>
             <td>
-              <a-date-picker v-model="data.contractMasterInfo.progressSendDate" style="width: 100%"></a-date-picker>
+              <a-date-picker :disabled="type === 'view'" v-model="data.contractMasterInfo.progressSendDate" style="width: 100%"></a-date-picker>
             </td>
             <td>单位承包上报金额</td>
             <td>
-              <a-input v-model="data.contractMasterInfo.progressRequestAmount"></a-input>
+              <a-input :disabled="type === 'view'" v-model="data.contractMasterInfo.progressRequestAmount"></a-input>
             </td>
             <td>现场确认时间</td>
             <td>
-              <a-date-picker v-model="data.contractMasterInfo.progressConfirmDate" style="width: 100%"></a-date-picker>
+              <a-date-picker :disabled="type === 'view'" v-model="data.contractMasterInfo.progressConfirmDate" style="width: 100%"></a-date-picker>
             </td>
           </tr>
           <tr>
             <td>顾问公司出估值时间</td>
             <td>
-              <a-date-picker v-model="data.contractMasterInfo.progressValuationDate"
+              <a-date-picker :disabled="type === 'view'" v-model="data.contractMasterInfo.progressValuationDate"
                              style="width: 100%"></a-date-picker>
             </td>
             <td>申请批准日期</td>
             <td>
-              <a-date-picker v-model="data.contractMasterInfo.progressApproveDate" style="width: 100%"></a-date-picker>
+              <a-date-picker :disabled="type === 'view'" v-model="data.contractMasterInfo.progressApproveDate" style="width: 100%"></a-date-picker>
             </td>
             <td>申请批准金额</td>
             <td>
-              <a-input v-model="data.contractMasterInfo.paymentRequestAmount"></a-input>
+              <a-input :disabled="type === 'view'" v-model="data.contractMasterInfo.paymentRequestAmount"></a-input>
             </td>
           </tr>
           <tr>
             <td>付款类型</td>
             <td colspan="5">
               <a-select
+                :disabled="type === 'view'"
                 placeholder="请选择"
                 v-model="data.contractMasterInfo.paymentBusinessType"
                 v-decorator="['paymentTypes', { rules: [{required: true, message: '付款账户必须填写'}] }]">
@@ -208,35 +210,36 @@
             <tr>
               <td>承包单位送单时间</td>
               <td>
-                <a-date-picker v-model="item.progressSendDate" style="width: 100%"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'" v-model="item.progressSendDate" style="width: 100%"></a-date-picker>
               </td>
               <td>单位承包上报金额</td>
               <td>
-                <a-input v-model="item.progressRequestAmount"></a-input>
+                <a-input :disabled="type === 'view'" v-model="item.progressRequestAmount"></a-input>
               </td>
               <td>现场确认时间</td>
               <td>
-                <a-date-picker v-model="item.progressConfirmDate" style="width: 100%"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'" v-model="item.progressConfirmDate" style="width: 100%"></a-date-picker>
               </td>
             </tr>
             <tr>
               <td>顾问公司出估值时间</td>
               <td>
-                <a-date-picker v-model="item.progressValuationDate" style="width: 100%"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'" v-model="item.progressValuationDate" style="width: 100%"></a-date-picker>
               </td>
               <td>申请批准日期</td>
               <td>
-                <a-date-picker v-model="item.progressApproveDate" style="width: 100%"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'" v-model="item.progressApproveDate" style="width: 100%"></a-date-picker>
               </td>
               <td>申请批准金额</td>
               <td>
-                <a-input v-model="item.paymentRequestAmount"></a-input>
+                <a-input :disabled="type === 'view'" v-model="item.paymentRequestAmount"></a-input>
               </td>
             </tr>
             <tr>
               <td>付款类型</td>
               <td colspan="5">
                 <a-select
+                  :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.paymentBusinessType"
                   v-decorator="['paymentTypes', { rules: [{required: true, message: '付款账户必须填写'}] }]">
@@ -260,7 +263,7 @@
           <thead>
           <tr>
             <th colspan="9">
-              <a-button icon="plus" @click="add('billList')">
+              <a-button icon="plus" @click="add('billList')" :disabled="type === 'view'">
                 新增发票
               </a-button>
             </th>
@@ -281,6 +284,7 @@
           <tr v-if="!item.isDeleted" v-for="(item,index) in data.billList" :key="index">
             <td>
               <a-upload name="file"
+                        :disabled="type === 'view'"
                         :multiple="false"
                         v-if="item.billType"
                         :before-upload="beforeUpload">
@@ -292,6 +296,7 @@
             </td>
             <td>
               <a-select
+                :disabled="type === 'view'"
                 placeholder="请选择"
                 @change="onchange"
                 v-model="item.billType"
@@ -304,25 +309,25 @@
               </a-select>
             </td>
             <td>
-              <a-input v-model="item.billNum"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.billNum"></a-input>
             </td>
             <td>
-              <a-input v-model="item.billAmount"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.billAmount"></a-input>
             </td>
             <td>
-              <a-input v-model="item.taxRate"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.taxRate"></a-input>
             </td>
             <td>
-              <a-input v-model="item.noTaxAmount"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.noTaxAmount"></a-input>
             </td>
             <td>
-              <a-date-picker v-model="item.billDate" @change="dateChange"></a-date-picker>
+              <a-date-picker :disabled="type === 'view'" v-model="item.billDate" @change="dateChange"></a-date-picker>
             </td>
             <td>
               <a :href="item.billFileUrl" target="_blank" v-if="item.billFileName">{{item.billFileName}}</a>
             </td>
             <td>
-              <a-input v-model="item.remark"></a-input>
+              <a-input :disabled="type === 'view'" v-model="item.remark"></a-input>
             </td>
           </tr>
           <tr>
@@ -427,7 +432,6 @@
             },
             add (target) {
                 const item = {
-                    id: 0,
                     isDeleted: false,
                     isTemp: true,
                     billType: '',

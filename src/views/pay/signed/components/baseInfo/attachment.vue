@@ -5,7 +5,7 @@
         <thead>
         <tr>
           <th colspan="5">
-            <a-button icon="plus" @click="add">
+            <a-button icon="plus" @click="add" :disabled="type === 'view'">
               新增
             </a-button>
           </th>
@@ -22,6 +22,7 @@
         <tr v-for="(item,index) in fileList" :key="index">
           <td>
             <a-upload name="file"
+                      :disabled="type === 'view'"
                       v-if="item.fileType"
                       :multiple="false"
                       :before-upload="beforeUpload">
@@ -33,6 +34,7 @@
           </td>
           <td>
             <a-select
+              :disabled="type === 'view'"
               placeholder="请选择"
               v-model="item.fileType"
               @change="onChange"
@@ -62,6 +64,7 @@
 
 <script>
     import { SignedService } from '../../signed.service'
+    import { Base as BaseService } from '@/api/base'
 
     export default {
         name: 'BaseInfoAttachment',
@@ -93,16 +96,52 @@
                 default: null
             }
         },
-        watch: {},
+        watch: {
+            'data.mainContractGID' (value) {
+                if (this.type !== 'create') {
+                    SignedService.masterID(this.id).then(_res => {
+                        this.masterID = _res.result.data
+                        this.getFileList(this.masterID, this.data['mainContractGID'])
+                    })
+                }
+            }
+        },
         created () {
             SignedService.attachmentTypeList().then(res => {
                 this.attachmentTypeList = res.result.data
             })
-            /*SignedService.fileList(this.data['masterID'], this.data['mainContractGID'], '附件').then(res => {
-                this.fillList = res.result.data
-            })*/
+            if (this.type !== 'create') {
+                SignedService.masterID(this.id).then(_res => {
+                    this.masterID = _res.result.data
+                    if (this.data['mainContractGID']){
+                        this.getFileList(this.masterID, this.data['mainContractGID'])
+                    }
+
+                })
+            }
         },
         methods: {
+            getFileList (id, value) {
+                BaseService.fileList(id, this.id, 'payment', value).then(res => {
+                    const fileList = []
+                    if (res.result.data.length > 0) {
+                        res.result.data.forEach(item => {
+                            fileList.push({
+                                isDeleted: false,
+                                isTemp: false,
+                                fileType: item.fileType,
+                                fileName: item.fileName,
+                                fileUrl: item.fileUrl,
+                                fileId: item.id,
+                                creationTime: item.creationTime,
+                                creatorUser: item.creatorUser
+                            })
+                        })
+                        this.fileList = fileList
+                        this.$forceUpdate()
+                    }
+                })
+            },
             choose (index) {
                 this.index = index
             },
@@ -111,12 +150,12 @@
             },
             add () {
                 const item = {
-                    id: 0,
                     isDeleted: false,
                     isTemp: true,
                     fileType: '',
                     fileName: '',
                     fileUrl: '',
+                    fileId: '',
                     creationTime: '',
                     creatorUser: ''
                 }
@@ -132,11 +171,20 @@
             },
             del (index) {
                 if (this.fileList[index].isTemp) {
+                    if (this.fileList[index].fileId) {
+                        this.removeFile(this.fileList[index].fileId)
+                    }
                     this.fileList.splice(index, 1)
                 } else {
+                    this.removeFile(this.fileList[index].fileId)
                     this.fileList[index].isDeleted = true
                 }
                 this.$forceUpdate()
+            },
+            removeFile (id) {
+                BaseService.removeFile(id).then(res => {
+                    console.log(res)
+                })
             },
             beforeUpload (file) {
                 this.handleUpload(file)
@@ -150,7 +198,7 @@
                 formData.append('businessType', 'payment')
                 formData.append('subInfo1', this.attachmentType) //文件类型
                 formData.append('subInfo2', file.name) // 文件名
-                formData.append('subInfo3', this.data['mainContractGID']) // 合同id
+                formData.append('subInfo3', this.type === 'update' ? this.data['mainContractGID'] : this.data['contractGID']) // 合同id
                 this.uploading = true
                 const _this = this
                 this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
@@ -161,6 +209,7 @@
                     .then((response) => {
                         this.$emit('on-change-masterId', response.result.data.masterID)
                         this.fileList[this.index].fileName = response.result.data.fileName
+                        this.fileList[this.index].fileId = response.result.data.id
                         this.fileList[this.index].creationTime = response.result.data.creationTime
                         this.fileList[this.index].creatorUser = response.result.data.creatorUser
                         this.fileList[this.index].fileUrl = response.result.data.fileUrl
