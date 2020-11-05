@@ -1,87 +1,89 @@
 <template>
   <div>
     <a-col :md="24" :sm="24">
-      <table>
-        <thead>
-        <tr>
-          <th colspan="7">
-            <a-button icon="plus" @click="add('detailList')" :disabled="type === 'view'">
-              新增
-            </a-button>
-          </th>
-        </tr>
-        <tr>
-          <th>操作</th>
-          <th>款项类型</th>
-          <th>款项用途</th>
-          <th>本期支付金额</th>
-          <th>收款单位</th>
-          <th>开户银行</th>
-          <th>账号</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-if="!item.isDeleted" v-for="(item, index) in data.detailList" :key="index">
-          <td>
-            <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
-              删除
-            </a-button>
-          </td>
-          <td>
-            <a-select
-              :disabled="type === 'view'"
-              placeholder="请选择"
-              @change="moneyTypeChange"
-              v-model="item.paymentType"
-              v-decorator="['item.moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
-              <a-select-option v-for="type in moneyTypes" :value="type"
-                               :key="type">{{type}}
-              </a-select-option>
-            </a-select>
-          </td>
-          <td>
-            <a-input placeholder="请输入"
-                     :disabled="type === 'view'"
-                     v-model="item.paymentUse"
-                     v-decorator="['item.paymentUse', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
-          </td>
-          <td>
-            <a-input placeholder="请输入"
-                     :disabled="type === 'view'"
-                     v-model="item.paymentAmount"
-                     v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
-          </td>
-          <td>
-            <a-select
-              @change="onChange"
-              :disabled="type === 'view'"
-              placeholder="请选择"
-              v-model="item.vendorGID">
-              <a-select-option v-for="type in vendorTypes"
-                               :value="type.vendorGID"
-                               :key="index">{{type.vendorName}}
-              </a-select-option>
-            </a-select>
-          </td>
-          <td>
-            <a-select
-              @change="bankChange"
-              placeholder="请选择"
-              :disabled="type === 'view'"
-              v-model="item.vendorBankGID">
-              <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
-                               :value="type.gid"
-                               :key="index">{{type.bankName}}
-              </a-select-option>
-            </a-select>
-          </td>
-          <td>
-            <a-input :disabled="true"
-                     v-model="item.vendorBankAccounts"></a-input>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th colspan="7">
+              <a-button icon="plus" @click="add('detailList')" :disabled="type === 'view'">
+                新增
+              </a-button>
+            </th>
+          </tr>
+          <tr>
+            <th>操作</th>
+            <th>款项类型</th>
+            <th>款项用途</th>
+            <th>本期支付金额</th>
+            <th>收款单位</th>
+            <th>开户银行</th>
+            <th>账号</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-if="!item.isDeleted" v-for="(item, index) in data.detailList" :key="index">
+            <td>
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                删除
+              </a-button>
+            </td>
+            <td>
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                @change="moneyTypeChange"
+                v-model="item.paymentType"
+                v-decorator="['item.moneyType', { rules: [{required: true, message: '请选择款项类型'}] }]">
+                <a-select-option v-for="type in moneyTypes" :value="type"
+                                 :key="type">{{type}}
+                </a-select-option>
+              </a-select>
+            </td>
+            <td>
+              <a-input placeholder="请输入"
+                       :disabled="type === 'view'"
+                       v-model="item.paymentUse"
+                       v-decorator="['item.paymentUse', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
+            </td>
+            <td>
+              <a-input placeholder="请输入"
+                       :disabled="type === 'view'"
+                       v-model="item.paymentAmount"
+                       v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
+            </td>
+            <td>
+              <a-select
+                @change="onChange"
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="item.vendorGID">
+                <a-select-option v-for="type in vendorTypes"
+                                 :value="type.vendorGID"
+                                 :key="index">{{type.vendorName}}
+                </a-select-option>
+              </a-select>
+            </td>
+            <td>
+              <a-select
+                @change="bankChange"
+                placeholder="请选择"
+                :disabled="type === 'view'"
+                v-model="item.vendorBankGID">
+                <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
+                                 :value="type.gid"
+                                 :key="index">{{type.bankName}}
+                </a-select-option>
+              </a-select>
+            </td>
+            <td>
+              <a-input :disabled="true"
+                       v-model="item.vendorBankAccounts"></a-input>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </a-col>
   </div>
 </template>

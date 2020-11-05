@@ -277,7 +277,6 @@
                 },
                 loadData2: parameter => {
                   const requestParameters = Object.assign({}, parameter, this.queryParam)
-                  console.log("id: ",this.pid)
                   if (this.pid){
                     return CostService.budgetItems(this.pid)
                       .then(res => {

@@ -1,63 +1,65 @@
 <template>
   <div>
     <a-col :md="24" :sm="24">
-      <table>
-        <thead>
-        <tr>
-          <th colspan="5">
-            <a-button icon="plus" @click="add" :disabled="type === 'view'">
-              新增
-            </a-button>
-          </th>
-        </tr>
-        <tr>
-          <th>操作</th>
-          <th>文件名称</th>
-          <th>附件名称</th>
-          <th>上传时间</th>
-          <th>上传人</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(item,index) in fileList" :key="index">
-          <td>
-            <a-upload name="file"
-                      :disabled="type === 'view'"
-                      v-if="item.fileType"
-                      :multiple="false"
-                      :before-upload="beforeUpload">
-              <a-button @click="choose(index)">请选择</a-button>
-            </a-upload>
-            <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
-              删除
-            </a-button>
-          </td>
-          <td>
-            <a-select
-              :disabled="type === 'view'"
-              placeholder="请选择"
-              v-model="item.fileType"
-              @change="onChange"
-              v-decorator="['item.attachmentType', { rules: [{required: true, message: '请选择文件类型'}] }]">
-              <a-select-option
-                v-for="type in attachmentTypeList"
-                :value="type"
-                :key="type">{{ type }}
-              </a-select-option>
-            </a-select>
-          </td>
-          <td>
-            <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
-          </td>
-          <td>
-            <a-input v-model="item.creationTime" :disabled="true"></a-input>
-          </td>
-          <td>
-            <a-input v-model="item.creatorUser" :disabled="true"></a-input>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th colspan="5">
+              <a-button icon="plus" @click="add" :disabled="type === 'view'">
+                新增
+              </a-button>
+            </th>
+          </tr>
+          <tr>
+            <th>操作</th>
+            <th>文件名称</th>
+            <th>附件名称</th>
+            <th>上传时间</th>
+            <th>上传人</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(item,index) in fileList" :key="index">
+            <td>
+              <a-upload name="file"
+                        :disabled="type === 'view'"
+                        v-if="item.fileType"
+                        :multiple="false"
+                        :before-upload="beforeUpload">
+                <a-button @click="choose(index)">请选择</a-button>
+              </a-upload>
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                删除
+              </a-button>
+            </td>
+            <td>
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="item.fileType"
+                @change="onChange"
+                v-decorator="['item.attachmentType', { rules: [{required: true, message: '请选择文件类型'}] }]">
+                <a-select-option
+                  v-for="type in attachmentTypeList"
+                  :value="type"
+                  :key="type">{{ type }}
+                </a-select-option>
+              </a-select>
+            </td>
+            <td>
+              <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
+            </td>
+            <td>
+              <a-input v-model="item.creationTime" :disabled="true"></a-input>
+            </td>
+            <td>
+              <a-input v-model="item.creatorUser" :disabled="true"></a-input>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </a-col>
   </div>
 </template>
@@ -113,7 +115,7 @@
             if (this.type !== 'create') {
                 SignedService.masterID(this.id).then(_res => {
                     this.masterID = _res.result.data
-                    if (this.data['mainContractGID']){
+                    if (this.data['mainContractGID']) {
                         this.getFileList(this.masterID, this.data['mainContractGID'])
                     }
 

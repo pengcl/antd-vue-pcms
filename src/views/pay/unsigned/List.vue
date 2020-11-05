@@ -136,21 +136,21 @@
         },
         {
             title: '付款单号',
-            dataIndex: 'contractNo'
+            dataIndex: 'paymentOtherCode'
         },
         {
             title: '收款单位',
-            dataIndex: 'signDate',
-            scopedSlots: { customRender: 'signDate' }
+            dataIndex: 'sponsorDeptName',
+            scopedSlots: { customRender: 'sponsorDeptName' }
         },
         {
             title: '款项类型',
-            dataIndex: 'creatorUser',
-            scopedSlots: { customRender: 'creatorUser' }
+            dataIndex: 'paymentBusinessType',
+            scopedSlots: { customRender: 'paymentBusinessType' }
         },
         {
             title: '金额',
-            dataIndex: 'currency',
+            dataIndex: 'paymentAmount',
         },
         {
             title: '审批状态',
@@ -159,12 +159,12 @@
         },
         {
             title: '建立日期',
-            dataIndex: 'creationTime'
+            dataIndex: 'requestDate'
         },
         {
             title: '建立人',
-            dataIndex: 'creatorUser',
-            scopedSlots: { customRender: 'creatorUser' }
+            dataIndex: 'requestUserName',
+            scopedSlots: { customRender: 'requestUserName' }
         },
     ]
 
@@ -211,7 +211,6 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
                     return UnSignedService.items(requestParameters).then(res => {
                         return fixedList(res, requestParameters)
                     })
@@ -234,7 +233,6 @@
                 const cities = []
                 res.result.data.citys.forEach(item => {
                     const children = formatList(item.projects.items)
-                    console.log(children)
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,

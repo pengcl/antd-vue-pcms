@@ -23,6 +23,7 @@ const API = {
   fileList: '/api/services/app/UploadAppservice/GetFileList',
   upload: '/api/services/app/UploadAppservice/CommonUpload',
   masterID: '/api/services/app/UploadAppservice/GetMasterIDByBusinessGuid',
+  approve: '/api/services/app/Payment/StartBPM',
 }
 
 const SignedService = {}
@@ -194,11 +195,11 @@ SignedService.upload = function (parameter) {
   })
 }
 
-SignedService.update = function (parameter) {
+SignedService.approve = function (gid) {
   return request({
-    url: API.update,
-    method: 'PUT',
-    data: parameter
+    url: API.approve,
+    method: 'POST',
+    params: { gid }
   })
 }
 
