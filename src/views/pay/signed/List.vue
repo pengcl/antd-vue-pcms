@@ -359,10 +359,10 @@
             onChange (value) {
                 if (value.length >= 2) {
                     this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
+                    this.$refs.contractTable.refresh(true)
                 } else {
                     this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
+                    this.$refs.contractTable.refresh(true)
                 }
             },
             handleOk () {

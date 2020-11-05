@@ -158,10 +158,22 @@
                         billList: this.form.billList
                     }
                     SignedService.create(body).then(res => {
-                        console.log(res)
+                        if (res.result.data){
+                            this.$message.success('创建成功')
+                            this.$router.push({
+                                path: '/pay/signed/list'
+                            })
+                        }
                     })
                 } else {
-
+                    SignedService.update(this.form).then(res => {
+                        if (res.result.data){
+                            this.$message.success('修改成功')
+                            this.$router.push({
+                                path: '/pay/signed/list'
+                            })
+                        }
+                    })
                 }
             },
             back () {

@@ -68,7 +68,7 @@ const locale = {
   'menu.pay.signed.upcoming.item': '资金计划列详情',
   'menu.pay.unsigned.list': '非合同付款申请',
   'menu.pay.unsigned.edit': '非合同付款申请新增',
-  'menu.pay.unsigned.item': '非合同付款详情',
+  'menu.pay.unsigned.item': '非合同付款申请新增',
   'menu.pay.unsigned.approval': '非合同付款审批',
   'menu.pay.signed.apply': '付款申请',
   'menu.pay.account.list': '付款台账',
