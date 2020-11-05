@@ -133,13 +133,26 @@
                     </a-select>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.quantityMaterial" :disabled="type === 'view'"></a-input>
+                    <a-input-number @change="valueChange(item)" v-model="item.quantityMaterial" :disabled="type === 'view'"></a-input-number>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.unitPriceMaterial" :disabled="type === 'view'"></a-input>
+                    <a-input-number 
+                      @change="valueChange(item)" 
+                      v-model="item.unitPriceMaterial" 
+                      :disabled="type === 'view'"
+                      :min="0"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :precision="2"></a-input-number>
                   </td>
                   <td>
-                    <a-input :disabled="true" v-model="item.subAmountMaterial" ></a-input>
+                    <a-input-number 
+                      :disabled="true" 
+                      v-model="item.subAmountMaterial" 
+                      :min="0"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :precision="2"></a-input-number>
                   </td>
                   <td>
                     <a-select
@@ -153,13 +166,26 @@
                     </a-select>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.quantityWork" :disabled="type === 'view'"></a-input>
+                    <a-input-number @change="valueChange(item)" v-model="item.quantityWork" :disabled="type === 'view'"></a-input-number>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.unitPriceWork" :disabled="type === 'view'"></a-input>
+                    <a-input-number 
+                      @change="valueChange(item)" 
+                      v-model="item.unitPriceWork" 
+                      :disabled="type === 'view'"
+                      :min="0"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :precision="2"></a-input-number>
                   </td>
                   <td>
-                    <a-input :disabled="true" v-model="item.subAmountWork"></a-input>
+                    <a-input 
+                      :disabled="true" 
+                      v-model="item.subAmountWork"
+                      :min="0"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :precision="2"></a-input>
                   </td>
                   <td>
                     <a-select
@@ -173,16 +199,34 @@
                     </a-select>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.quantityWorkMat" :disabled="type === 'view'"></a-input>
+                    <a-input-number @change="valueChange(item)" v-model="item.quantityWorkMat" :disabled="type === 'view'"></a-input-number>
                   </td>
                   <td>
-                    <a-input @change="valueChange(item)" v-model="item.unitPriceWorkMat" :disabled="type === 'view'"></a-input>
+                    <a-input-number 
+                      @change="valueChange(item)" 
+                      v-model="item.unitPriceWorkMat" 
+                      :disabled="type === 'view'"
+                      :min="0"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :precision="2"></a-input-number>
                   </td>
                   <td>
-                    <a-input :disabled="true" v-model="item.subAmountWorkMat"></a-input>
+                    <a-input-number 
+                      :disabled="true" 
+                      v-model="item.subAmountWorkMat"
+                      :min="0"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :precision="2"></a-input-number>
                   </td>
                   <td>
-                    <a-input :disabled="true" v-model="item.allAmount"></a-input>
+                    <a-input-number 
+                      :disabled="true" 
+                      v-model="item.allAmount"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :precision="2"></a-input-number>
                   </td>
                 </tr>
               </tbody>
@@ -312,7 +356,17 @@
         		data.contractBQGuid = ''
             data.contractID = ''
         }else{
-        		data.isCarryData = false;
+            data.isCarryData = false
+            data.quantityMaterial = 0
+            data.unitPriceMaterial = 0
+            data.subAmountMaterial = 0
+            data.quantityWork = 0
+            data.unitPriceWork = 0
+            data.subAmountWork = 0
+            data.quantityWorkMat = 0
+            data.unitPriceWorkMat = 0
+            data.subAmountWorkMat = 0
+            data.allAmount = 0
         }
         data.isTemp = true
         data.srNo = newSrNo

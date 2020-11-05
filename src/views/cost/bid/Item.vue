@@ -5,30 +5,51 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="招投标包编号">
-              <a-input></a-input>
+              <a-input :disabled="true" v-model="form.tradePackageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="日期">
-              <a-date-picker></a-date-picker>
+              <a-date-picker
+                :disabled="type === 'view'"
+                :format="dateFormat"
+                v-model="form.packageDate"></a-date-picker>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="工程名称">
-              <a-input></a-input>
+              <a-input
+                :disabled="type === 'view'"
+                v-model="form.packageTitle"
+              >
+              </a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="说明">
-              <a-checkbox-group>
-                <a-checkbox>分期</a-checkbox>
-                <a-checkbox>阶段</a-checkbox>
-              </a-checkbox-group>
+              <a-input
+                :disabled="type === 'view'"
+                v-model="form.description"
+              >
+              </a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-item label="招投标包类型">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="form.itemTypeId"
+              >
+                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">
+                  {{ option.nameCN }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="金额">
-              <a-input placeholder="汇总明细项金额"></a-input>
+              <a-input :disabled="true" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -110,24 +131,15 @@
         </a-row>
       </a-form>
 
-      <a-row :gutter="48">
-        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
-            <a-button  @click="approve()" type="success">
-              启动审批流程
-            </a-button>
-          </a-button-group>
+      <a-row>
+        <a-col :md="12" :sm="24">
+          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
+
         </a-col>
-        <a-col :md="24" :sm="24">
-          <a-button-group>
-            <a-button :disabled="type === 'view'" @click="save" type="success">
-              储存
-            </a-button>
-          </a-button-group>
-          <a-button-group>
-            <a-button @click="back" type="danger">
-              关闭
-            </a-button>
+        <a-col :md="12" :sm="24">
+          <a-button-group style="float: right">
+            <a-button :disabled="type === 'view'" type="success" @click="handleToSave">储存</a-button>
+            <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
       </a-row>
@@ -136,10 +148,78 @@
 </template>
 
 <script>
+  import { CostService } from '@/views/cost/cost.service'
+  import { SwaggerService } from '@/api/swagger.service'
 
-    export default {
-        name: 'Item',
+  export default {
+    name: 'Edit',
+    data () {
+      return {
+        centers: [],
+        costCenters: [],
+        budgetTypeItems: [],
+        form: SwaggerService.getForm('TenderPackageCreateInputDto')
+      }
+    },
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      ProjectGUID () {
+        return this.$route.query.ProjectGUID
+      }
+    },
+    filters: {
+    },
+    created () {
+      CostService.budgetTypeItems().then(res => {
+        this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
+        this.$forceUpdate()
+      })
+      if (this.type !== 'add') {
+        CostService.industryItem({ Id: this.id }).then(res => {
+          this.form = res.result.data
+          const values = []
+          const centers = this.form.costCenters ? this.form.costCenters : []
+          centers.forEach((item, idsIndex) => {
+            values.push(item.costCenterId)
+          })
+          this.form.costCenters = values
+          this.centers = values
+        })
+      }
+    },
+    methods: {
+      handleToSave () {
+        this.form.projectGUID = this.ProjectGUID
+        CostService.industryCreate(this.form).then(res => {
+          if (res.result.statusCode === 200) {
+            const that = this
+            this.$confirm({
+              title : that.type === 'edit' ? '修改提示' : '添加提示',
+              content : that.type === 'edit' ? '继续修改' : '继续添加',
+              onOk () {
+                if ( that.type === 'add' ) {
+                  that.form = SwaggerService.getForm('TenderPackageCreateInputDto')
+                  that.$forceUpdate()
+                }
+              },
+              onCancel(){
+                that.$router.push({ path: `/cost/industry/list?ProjectGUID=${that.ProjectGUID}`})
+              }
+            })
+          }
+        })
+      },
+      back () {
+        this.$router.push({ path: `/cost/industry/list?ProjectGUID=${this.ProjectGUID}`})
+      }
     }
+  }
+
 </script>
 
 <style lang="less" scoped>
