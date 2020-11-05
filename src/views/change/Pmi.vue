@@ -68,38 +68,43 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button type="success" @click="handleToAdd">新增CIP</a-button>
-          <a-button type="success" style="margin-left: 20px">CIP转VO</a-button>
+          <a-button type="success" @click="handleToAdd" :disabled="queryParam2.contractGuid==undefined">新增CIP</a-button>
+          <a-button type="success" style="margin-left: 20px" @click="handleCipToVo" :disabled="tableSelected.auditStatus != '已审批'">CIP转VO</a-button>
           <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
         </a-col>
-        <a-col :md="24" :sm="24">
-          变更列表
-        </a-col>
+        <a-col :md="24" :sm="24"> 变更列表 </a-col>
       </a-row>
-      <s-table
-        style="margin-top: 5px"
-        ref="table2"
-        bordered
-        :columns="_columns"
-        :data="loadData2"
-        :rowSelection="rowSelection2"
-      >
-        <span slot="action" slot-scope="text,record">
-          <template>
-            <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
-            </a-button>
-            <a-button
-              class="btn-info"
-              type="primary"
-              icon="form"
-              style="margin-left: 4px"
-              title="编辑"
-              @click="handleToEdit(record)">
-            </a-button>
-          </template>
-        </span>
-      </s-table>
+      <div>
+        <s-table
+          style="margin-top: 5px"
+          ref="table2"
+          bordered
+          :columns="_columns"
+          :data="loadData2"
+          :rowSelection="rowSelection2"
+        >
+        <div slot="voStatus"  slot-scope="text, record" >
+          <a v-if="text !== '待确认'" @click="showVO(record)">{{ text }}</a>
+          <span v-if="text === '待确认'">{{ text }}</span>
+        </div>
 
+          <span slot="action" slot-scope="text, record">
+            <template>
+              <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
+              </a-button>
+              <a-button
+                class="btn-info"
+                type="primary"
+                icon="form"
+                style="margin-left: 4px"
+                title="编辑"
+                @click="handleToEdit(record)"
+              >
+              </a-button>
+            </template>
+          </span>
+        </s-table>
+      </div>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -250,7 +255,6 @@
         const cities = []
         res.result.data.citys.forEach(item => {
           const children = formatList(item.projects.items)
-          console.log(children)
           cities.push({
             label: item.city.nameCN,
             value: item.city.id,
@@ -294,71 +298,81 @@
         }
       }
     },
-    methods: {
-      handleToItem (record) {
-        this.$router.push({ path: `/change/cip/item/${record.cipGuid}?type=view&contractGuid=${this.queryParam2.contractGuid}` })
-      },
-      handleToEdit (record) {
-        this.$router.push({ path: `/change/cip/item/${record.cipGuid}?type=edit&contractGuid=${this.queryParam2.contractGuid}` })
-      },
-      handleToAdd () {
-        if (this.queryParam2.contractGuid != undefined) {
-          this.$router.push({ path: `/change/cip/item/0?type=add&contractGuid=${this.queryParam2.contractGuid}` })
-        } else {
-          this.$message.warn('请先选择合同')
-        }
-      },
-      handleToCertificate () {
-        if (this.tableSelected.voGuid != undefined) {
-          console.log('url', `/change/certificate/${this.tableSelected.cipGuid}`)
-          this.$router.push({ path: `/change/certificate/${this.tableSelected.cipGuid}` })
-        } else {
-          this.$message.warn('请选择变更记录')
-        }
-      },
-      // cip转vo 方法
-      handleCipToVo () {
-
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
-      },
-      resetSearchForm () {
-        this.queryParam = {
-          date: moment(new Date())
-        }
-      },
-      search () {
-        this.show = !this.show
-        this.$refs.table.refresh(true)
-      },
-      onChange (value) {
-        if (value.length >= 2) {
-          this.queryParam.ProjectGUID = value[value.length - 1]
-          this.$refs.table.refresh(true)
-        } else {
-          this.queryParam.ProjectGUID = ''
-          this.$refs.table.refresh(true)
-        }
+  },
+  methods: {
+    handleToItem(record) {
+      this.$router.push({
+        path: `/change/cip/item/${record.cipGuid}?type=view&contractGuid=${this.queryParam2.contractGuid}&stage=CIP`,
+      })
+    },
+    handleToEdit(record) {
+      this.$router.push({
+        path: `/change/cip/item/${record.cipGuid}?type=edit&contractGuid=${this.queryParam2.contractGuid}&stage=CIP`,
+      })
+    },
+    handleToAdd() {
+      if (this.queryParam2.contractGuid != undefined) {
+        this.$router.push({ path: `/change/cip/item/0?type=add&contractGuid=${this.queryParam2.contractGuid}&stage=CIP` })
+      } else {
+        this.$message.warn('请先选择合同')
       }
+    },
+    handleToCertificate() {
+      if (this.tableSelected.voGuid != undefined) {
+        console.log('url', `/change/certificate/${this.tableSelected.cipGuid}`)
+        this.$router.push({ path: `/change/certificate/${this.tableSelected.cipGuid}` })
+      } else {
+        this.$message.warn('请选择变更记录')
+      }
+    },
+    //cip转vo 方法
+    handleCipToVo() {
+      if(this.tableSelected.voGuid != undefined){
+        this.$router.push({ path: `/change/cip/item/${this.tableSelected.cipGuid}?type=add&contractGuid=${this.queryParam2.contractGuid}&stage=VO` })
+      }
+    },
+    onSelectChange(selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
+    resetSearchForm() {
+      this.queryParam = {
+        date: moment(new Date()),
+      }
+    },
+    search() {
+      this.show = !this.show
+      this.$refs.table.refresh(true)
+    },
+    onChange(value) {
+      if (value.length >= 2) {
+        this.queryParam.ProjectGUID = value[value.length - 1]
+        this.$refs.table.refresh(true)
+      } else {
+        this.queryParam.ProjectGUID = ''
+        this.$refs.table.refresh(true)
+      }
+    },
+    showVO (record) {
+      this.$router.push({
+        path: `/change/cip/item/${record.voGuid}?type=edit&contractGuid=${this.queryParam2.contractGuid}&stage=VO`,
+      })
     }
   }
+}
 </script>
 
 <style lang="less" scoped>
-  .search-form {
-    background-color: #1E9FF2;
-    padding: 20px;
-    border-radius: 0.35rem;
+.search-form {
+  background-color: #1e9ff2;
+  padding: 20px;
+  border-radius: 0.35rem;
 
-    /deep/ .ant-form-item-label label {
-      color: #fff;
-    }
+  /deep/ .ant-form-item-label label {
+    color: #fff;
   }
-
-  /deep/ .ant-table-footer {
-    padding-bottom: 0;
-  }
-
+}
+/deep/ .ant-table-footer {
+  padding-bottom: 0;
+}
 </style>
