@@ -191,6 +191,7 @@
                 placeholder="请选择"
                 :disabled="type === 'view'"
                 style="width : 90%"
+                @change="effecChange"
                 v-model="data.voMasterInfo.voHasEffect">
                 <a-select-option :value="true">有影响</a-select-option>
                 <a-select-option :value="false">无影响</a-select-option>
@@ -199,7 +200,7 @@
             <a-col :span="8">
               <a-select
                 placeholder="请选择"
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
                  style="width : 90%"
                 v-model="data.voMasterInfo.effectResult">
                 <a-select-option value="增加">增加</a-select-option>
@@ -208,7 +209,7 @@
             </a-col>
             <a-col :span="8">
               <a-input-number
-              :disabled="type === 'view'"
+              :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
                 v-model="data.voMasterInfo.effectDay"
               ></a-input-number> 日
             </a-col>
@@ -433,7 +434,8 @@
 	    		if(this.data.voPartylst){
 	    			this.data.voPartylst.forEach(item => {
 		    			if(!item.isSendCopy){
-		    				this.to = item.partID
+                this.to = item.partID
+                this.toRate = item.percentage
 		    			}else{
 		    				if(this.cc.indexOf(item.partID) < 0){
 		    					this.cc.push(item.partID)
@@ -558,6 +560,12 @@
     		} )
     		
     		return true
+      },
+      effecChange(value){
+        if(!value){
+          this.data.voMasterInfo.effectResult = ''
+          this.data.voMasterInfo.effectDay = ''
+        }
       }
     }
   }
