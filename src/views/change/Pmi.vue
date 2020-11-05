@@ -50,8 +50,14 @@
           合同列表
         </a-col>
       </a-row>
-      <s-table :columns="columns" :data="loadData" bordered :rowSelection="rowSelection" ref="table">
-        <template slot="footer" slot-scope="currentPageData">
+      <s-table
+        :columns="columns"
+        rowKey="contractGuid"
+        :data="loadData"
+        bordered
+        :rowSelection="rowSelection"
+        ref="table">
+        <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
@@ -83,6 +89,7 @@
         <s-table
           style="margin-top: 5px"
           ref="table2"
+          rowKey="cipGuid"
           bordered
           :columns="_columns"
           :data="loadData2"
@@ -234,15 +241,14 @@
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return ChangeService.items(requestParameters)
             .then(res => {
-              return fixedList(res, requestParameters)
+              return fixedList(res, parameter)
             })
         },
         // 变更列表加载数据方法 必须为 Promise 对象
         loadData2: parameter => {
-          console.log('查询变更列表')
           const requestParameters = Object.assign({}, parameter, this.queryParam2)
           return ChangeService.changeItems(requestParameters).then(res => {
-            return fixedList(res, requestParameters)
+            return fixedList(res, parameter)
           })
         },
         selectedRowKeys: [],
@@ -323,7 +329,6 @@
       },
       handleToCertificate () {
         if (this.tableSelected.voGuid != undefined) {
-          console.log('url', `/change/certificate/${this.tableSelected.cipGuid}`)
           this.$router.push({ path: `/change/certificate/${this.tableSelected.cipGuid}` })
         } else {
           this.$message.warn('请选择变更记录')
