@@ -5,12 +5,13 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="分判包编号">
-              <a-input :disabled="type!='view'" v-model="form.tradePackageCode"></a-input>
+              <a-input :disabled="true" v-model="form.tradePackageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="日期">
               <a-date-picker
+                :disabled="type === 'view'"
                 :format="dateFormat"
                 v-model="form.packageDate"></a-date-picker>
             </a-form-item>
@@ -18,6 +19,7 @@
           <a-col :md="24" :sm="24">
             <a-form-item label="分判包描述">
               <a-input
+                :disabled="type === 'view'"
                 v-model="form.packageTitle"
               >
               </a-input>
@@ -26,11 +28,12 @@
           <a-col :md="24" :sm="24">
             <a-form-item label="范围">
               <a-select
-                :default-value="form | getValue"
+                :disabled="type === 'view'"
                 mode="multiple"
                 size="default"
                 placeholder="请选择"
                 @change="onChange"
+                v-model="centers"
               >
                 <a-select-option v-for="option in costCenters" :key="JSON.stringify(option)" :value="option.id">
                   {{ option.costCenterName }}
@@ -53,7 +56,7 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="金额">
-              <a-input :disabled="type!='view'" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
+              <a-input :disabled="true" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
             </a-form-item>
           </a-col>
           <!--          <a-col :md="24" :sm="24">-->
@@ -105,7 +108,7 @@
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button type="success" @click="handleToSave">储存</a-button>
+            <a-button :disabled="type === 'view'" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -122,11 +125,13 @@
   import { ProjectService } from '@/views/project/project.service'
   import { formatList } from '@/mock/util'
   import { compare } from '@/utils/util'
+  import {DIALOGCONFIG} from "@/api/base";
 
   export default {
     name: 'Edit',
     data () {
       return {
+        centers: [],
         costCenters: [],
         budgetTypeItems: [],
         form: SwaggerService.getForm('TenderPackageCreateInputDto')
@@ -145,14 +150,11 @@
     },
     filters: {
       getValue (form, index) {
-        const values = [1,2]
+        const values = []
         const centers = form.costCenters ? form.costCenters : []
-        console.log('form.costCenters',form.costCenters)
         centers.forEach((item, idsIndex) => {
-          console.log(item.costCenterId)
           values.push(item.costCenterId)
         })
-        console.log('values',values)
         return values
       }
     },
@@ -161,41 +163,49 @@
         this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
       })
-      if (this.type !== 'view') {
+      const requestParameters = Object.assign({ Id: this.ProjectGUID })
+      CostService.centers(requestParameters).then(res => {
+        this.costCenters = JSON.parse(JSON.stringify(res.result.data))
+        this.$forceUpdate()
+      })
+      if (this.type !== 'add') {
         CostService.industryItem({ Id: this.id }).then(res => {
-          console.log(res)
           this.form = res.result.data
-          this.getCenters()
+          const values = []
+          const centers = this.form.costCenters ? this.form.costCenters : []
+          centers.forEach((item, idsIndex) => {
+            values.push(item.costCenterId)
+          })
+          this.form.costCenters = values
+          this.centers = values
         })
-      }else{
-        this.getCenters()
       }
     },
     methods: {
-      getCenters () {
-        const requestParameters = Object.assign({ Id: this.ProjectGUID })
-        CostService.centers(requestParameters).then(res => {
-          this.costCenters = JSON.parse(JSON.stringify(res.result.data))
-          console.log('costCenters',this.costCenters)
-          this.$forceUpdate()
-        })
-      },
       onChange (value, option) {
         this.form.costCenters = []
         option.forEach(item => {
-          // const obj = {}
-          // obj['costCenterId'] = JSON.parse(item.data.key).id
-          // obj['costCenterCode'] = JSON.parse(item.data.key).costCenterCode
-          // obj['costCenterName'] = JSON.parse(item.data.key).costCenterName
           this.form.costCenters.push(JSON.parse(item.data.key).id)
         })
       },
       handleToSave () {
-        console.log(this.form)
         this.form.projectGUID = this.ProjectGUID
-        CostService.createIndustry(this.form).then(res => {
+        CostService.industryCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
-            this.$message.info('修改成功')
+            const that = this
+            this.$confirm({
+              title : that.type === 'edit' ? '修改提示' : '添加提示',
+              content : that.type === 'edit' ? '继续修改' : '继续添加',
+              onOk () {
+                if ( that.type === 'add' ) {
+                  that.form = SwaggerService.getForm('TenderPackageCreateInputDto')
+                  that.$forceUpdate()
+                }
+              },
+              onCancel(){
+                that.$router.push({ path: `/cost/industry/list?ProjectGUID=${that.ProjectGUID}`})
+              }
+            })
           }
         })
       },

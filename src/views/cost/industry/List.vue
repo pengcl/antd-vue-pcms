@@ -103,7 +103,7 @@
 
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success">新增预算</a-button>
+          <a-button type="success"  v-if="pid">新增预算</a-button>
           <a-button type="danger" style="margin-left: 10px">删除预算</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
@@ -147,9 +147,9 @@
     import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
-    import {CostService} from "@/views/cost/cost.service";
-    import {fixedList} from "@/utils/util";
-    import {SignedService} from "@/views/pay/signed/signed.service";
+    import {CostService} from "@/views/cost/cost.service"
+    import {fixedList} from "@/utils/util"
+    import {SignedService} from "@/views/pay/signed/signed.service"
 
     const columns = [
         {
@@ -241,6 +241,8 @@
             this.columns = columns
             this._columns = _columns
             return {
+                pid: '',
+                budgetItems: {},
                 cities: [],
                 show: false,
                 visible: false,
@@ -275,8 +277,9 @@
                 },
                 loadData2: parameter => {
                   const requestParameters = Object.assign({}, parameter, this.queryParam)
-                  if (this.id){
-                    return CostService.industryItems(requestParameters)
+                  console.log("id: ",this.pid)
+                  if (this.pid){
+                    return CostService.budgetItems(this.pid)
                       .then(res => {
                         if(res.result.data!=null) {
                           return fixedList(res, requestParameters)
@@ -342,11 +345,11 @@
         },
         methods: {
             getBudgetAmt (record) {
-              this.id = record.contractGuid
-              this.$refs.table.refresh(true)
-              CostService.contractAmt(record.contractGuid).then(res => {
-                this.contractAmt = res.result.data
-              })
+              this.pid = record.id
+              this.$refs.table2.refresh(true)
+              // CostService.budgetItems({ Id: this.pid }).then(res => {
+              //   this.budgetItems = res.result.data
+              // })
             },
             handleToItem (record) {
                 this.$router.push({ path: `/cost/industry/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
@@ -358,7 +361,7 @@
                 if (this.queryParam.ProjectGUID === '') {
                   this.$message.error(`请选择项目`)
                 } else {
-                  this.$router.push({ path: `/cost/industry/edit?ProjectGUID=${this.queryParam.ProjectGUID}` })
+                  this.$router.push({ path: `/cost/industry/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
                 }
             },
             handleAdd () {

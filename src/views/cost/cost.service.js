@@ -6,9 +6,11 @@ const API = {
   subjectViewItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanDetailTreeByProject',//成本预算制定详情接口
   update: '/api/services/app/BudgetSubPlan/CreateOrEditDetails', //更新成本预算制定接口
   centers: '/api/services/app/ProjectCostCenter/GetProjectCostCentersByGuid' ,//根据项目GUID获取成本中心集合
+  //行业分判包
   industryItems: '/api/services/app/TenderPackage/GetPaged' ,//行业分判包列表
-  createIndustry: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加行业分判包
+  industryCreate: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加行业分判包
   industryItem: '/api/services/app/TenderPackage/GetTenderPackageById',//通过主键获取行业分判包数据
+  budgetItems: '/api/services/app/TenderPackage/GetTenderPackageBudgetItemsById',//行业分判包预算列表
   budgetTypeItems: '/api/services/app/GeneralType/GetBudgetItemTypeTypes'//获取科目类型集合
 }
 
@@ -61,18 +63,17 @@ CostService.industryItem = function (parameter) {
   })
 }
 
-
-CostService.item = function (contractGuid) {
+CostService.item = function (industryId) {
   return request({
     url: API.item,
     method: 'get',
-    params: { contractGuid }
+    params: { industryId }
   })
 }
 
 CostService.createIndustry = function (parameter) {
   return request({
-    url: API.createIndustry,
+    url: API.industryCreate,
     method: 'POST',
     data: parameter
   })
@@ -100,6 +101,14 @@ CostService.budgetTypeItems = function (parameter) {
     url: API.budgetTypeItems,
     method: 'get',
     data: parameter
+  })
+}
+
+CostService.budgetItems = function (id) {
+  return request({
+    url: API.budgetItems,
+    method: 'get',
+    data: {id}
   })
 }
 
