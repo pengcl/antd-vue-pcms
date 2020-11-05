@@ -109,7 +109,6 @@
         return list
     }
 
-
     const columns = [
         {
             title: '操作',
@@ -194,10 +193,10 @@
                 this.$router.push({ path: `/project/cost/item/${record.id}?type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/project/cost/item/${record.id}?type=edit` })
+                this.$router.push({ path: `/project/cost/item/${record.id}?type=update` })
             },
             handleToAdd () {
-                this.$router.push({ path: `/project/cost/item/0?type=add` })
+                this.$router.push({ path: `/project/cost/item/0?type=create` })
             },
             onChange (value) {
                 if (value.length >= 2) {
@@ -222,6 +221,5 @@
       color: #fff;
     }
   }
-
 
 </style>

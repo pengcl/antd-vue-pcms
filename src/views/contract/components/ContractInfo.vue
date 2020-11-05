@@ -47,21 +47,37 @@
         <a-form-item
           label="等值金额"
         >
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.equivalentAmount" :min="0"></a-input-number>
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.equivalentAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item label="原合同金额">
-          <a-input-number :disabled="true" :value="data.master.contractAmount"></a-input-number>
-          元
+          <a-input-number
+            :disabled="true"
+            :value="data.master.contractAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="适用增值税率"
         >
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.taxRate" :min="0"></a-input-number>
-          %
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.taxRate"
+            :min="0"
+            :max="100"
+            :formatter="value => `${value}%`"
+            :parser="value => value.replace('%', '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -78,8 +94,12 @@
         <a-form-item
           label="缺陷责任期"
         >
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.defectLiabilitiesPeriod" :min="0"></a-input-number>
-          年
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.defectLiabilitiesPeriod"
+            :min="0"
+            :formatter="value => `${value}年`"
+            :parser="value => value.replace('年', '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -100,16 +120,25 @@
         <a-form-item
           label="保修金/保固金/保留金比率上限"
         >
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.retentionPercentage" :min="0"></a-input-number>
-          %
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.retentionPercentage"
+            :min="0"
+            :max="100"
+            :formatter="value => `${value}%`"
+            :parser="value => value.replace('%', '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="出差次数"
         >
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.tripTimes" :min="0"></a-input-number>
-          次
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.tripTimes"
+            :min="0"
+            :formatter="value => `${value}次`"
+            :parser="value => value.replace('次', '')"></a-input-number>
         </a-form-item>
       </a-col>
       <contract-info-retention :data="data" :type="type" :id="id"></contract-info-retention>
@@ -118,15 +147,25 @@
       <a-col :md="12" :sm="24">
         <a-form-item
           label="工程延误赔偿">
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.liquidatedDamagesDailyAmount" :min="0"></a-input-number>
-          元 / 日
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.liquidatedDamagesDailyAmount"
+            :min="0"
+            :formatter="value => `${value}元/日`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\/日\s?|(,*)/g, '')"
+            :precision="2"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
           label="工程延误赔偿上限">
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.liquidatedDamagesMaxAmount" :min="0"></a-input-number>
-          元
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.liquidatedDamagesMaxAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -231,7 +270,7 @@
   import ContractInfoInsurance from '@/views/contract/components/contractInfo/insurance'
   import ContractInfoFluctuationClause from '@/views/contract/components/contractInfo/fluctuationClause'
   import ContractInfoPaymentTerms from '@/views/contract/components/contractInfo/paymentTerms'
-
+  import { currencyFormat, currencyParser } from '@/utils/util'
   export default {
     name: 'ContractInfo',
     components: { ContractInfoPaymentTerms, ContractInfoFluctuationClause, ContractInfoInsurance, ContractInfoBond, ContractInfoAdvanceCharge, ContractInfoRetentionRelease, ContractInfoRetention },

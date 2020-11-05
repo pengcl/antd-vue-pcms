@@ -7,10 +7,11 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  :treeData="cities"
-                  placeholder="请选择"
-                  @change="onChange"
-                />
+                 :treeData="cities"
+                 placeholder="请选择"
+                 style="width: 100%"
+                 :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                 @change="onChange" />
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">

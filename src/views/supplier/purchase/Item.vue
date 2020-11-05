@@ -110,8 +110,8 @@
         <a-tab-pane key="4" tab="银行信息">
           <bank-info ref="bank" :vendor="form.vendor" :items="form.vendorBankList" :type="type" :id="id"></bank-info>
         </a-tab-pane>
-        <a-tab-pane key="5" tab="附件信息">
-          <attachment-info></attachment-info>
+        <a-tab-pane  key="5" tab="附件信息">
+          <attachment-info :data="form" :type="type" :id="id"></attachment-info>
         </a-tab-pane>
       </a-tabs>
       <a-modal

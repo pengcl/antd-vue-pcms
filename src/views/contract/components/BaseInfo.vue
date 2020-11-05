@@ -170,7 +170,14 @@
                 </a-select>
               </td>
               <td>
-                <a-input-number placeholder="请填写" v-model="item.percentage" :disabled="type === 'view'"></a-input-number>
+                <a-input-number
+                  placeholder="请填写"
+                  v-model="item.percentage"
+                  :disabled="type === 'view'"
+                  :min="0"
+                  :max="100"
+                  :formatter="value => `${value}%`"
+                  :parser="value => value.replace('%', '')"></a-input-number>
               </td>
             </tr>
           </tbody>
