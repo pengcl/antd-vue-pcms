@@ -2,7 +2,7 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
@@ -28,12 +28,12 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="编号">
-              <a-input v-model="queryParam.ContractNo"></a-input>
+              <a-input v-model="queryParam.tradePackageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="规划名称">
-              <a-input v-model="queryParam.ContractName"></a-input>
+              <a-input v-model="queryParam.packageTitle"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -104,7 +104,7 @@
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button type="success"  v-if="pid">新增预算</a-button>
-          <a-button type="danger" style="margin-left: 10px">删除预算</a-button>
+          <a-button type="danger" style="margin-left: 10px" v-if="pid">删除预算</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
           <a-form :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
@@ -133,7 +133,23 @@
         :data="loadData2"
         :alert="false"
         showPagination="auto"
-      ></s-table>
+      >
+        <span slot="itemAction" slot-scope="text, record">
+          <template>
+            <a-button
+              type="primary"
+              icon="form"
+              style="margin-left: 4px"
+              title="保存"
+              @click="handleToEdit(record)"></a-button>
+            <a-button
+              type="danger"
+              icon="delete"
+              style="margin-left: 4px"
+              title="删除"></a-button>
+          </template>
+        </span>
+      </s-table>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -147,9 +163,8 @@
     import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
-    import {CostService} from "@/views/cost/cost.service"
-    import {fixedList} from "@/utils/util"
-    import {SignedService} from "@/views/pay/signed/signed.service"
+    import {CostService} from "@/views/cost/cost.service";
+    import {fixedList} from "@/utils/util";
 
     const columns = [
         {
@@ -183,6 +198,12 @@
     ]
 
     const _columns = [
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '150px',
+          scopedSlots: { customRender: 'itemAction' }
+        },
         {
             title: '业态成本中心',
             dataIndex: 'action',
@@ -277,9 +298,8 @@
                 },
                 loadData2: parameter => {
                   const requestParameters = Object.assign({}, parameter, this.queryParam)
-                  console.log("id: ",this.pid)
                   if (this.pid){
-                    return CostService.budgetItems(this.pid)
+                    return CostService.budgetItems({ Id: this.pid })
                       .then(res => {
                         if(res.result.data!=null) {
                           return fixedList(res, requestParameters)
@@ -365,8 +385,11 @@
                 }
             },
             handleAdd () {
-                this.mdl = null
-                this.visible = true
+              if (this.pid === '') {
+                this.$message.error(`请选择分判包记录`)
+              } else {
+                this.$router.push({ path: `/cost/industry/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
+              }
             },
             handleEdit (record) {
                 this.visible = true
@@ -441,14 +464,18 @@
                 }
             },
             onChange (value) {
-            if (value.length >= 2) {
-              this.queryParam.ProjectGUID = value[value.length - 1]
-              this.$refs.table.refresh(true)
-            } else {
-              this.queryParam.ProjectGUID = ''
+              if (value.length >= 2) {
+                this.queryParam.ProjectGUID = value[value.length - 1]
+                this.$refs.table.refresh(true)
+              } else {
+                this.queryParam.ProjectGUID = ''
+                this.$refs.table.refresh(true)
+              }
+            },
+            search () {
+              this.show = !this.show
               this.$refs.table.refresh(true)
             }
-          }
         }
     }
 </script>

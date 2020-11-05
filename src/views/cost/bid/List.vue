@@ -33,7 +33,7 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="工程名称">
-              <a-input v-model="queryParam.ContractName"></a-input>
+              <a-input v-model="queryParam.PackageTitle"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -115,6 +115,8 @@
     import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
+    import {CostService} from "@/views/cost/cost.service";
+    import {fixedList} from "@/utils/util";
 
     const columns = [
         {
@@ -125,7 +127,7 @@
         },
         {
             title: '编号',
-            dataIndex: 'no'
+            dataIndex: 'tradePackageCode'
         },
         {
             title: '工程名称',
@@ -134,12 +136,11 @@
         },
         {
             title: '预算金额',
-            dataIndex: 'callNo',
-            scopedSlots: { customRender: 'callNo' }
+            dataIndex: 'budgetAmount'
         },
         {
             title: '经办人',
-            dataIndex: 'creator',
+            dataIndex: 'creatorUser',
         },
         {
             title: '状态',
@@ -187,15 +188,28 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: {},
+                queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return getServiceList(requestParameters)
-                        .then(res => {
-                            return res.result
-                        })
+                  const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
+                  if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID!='') {
+                    return CostService.bidItems(requestParameters)
+                      .then(res => {
+                        if(res.result.data.item) {
+                          return fixedList(res, requestParameters)
+                        }
+                      })
+                  } else {
+                    const res = {
+                      'result': {
+                        'data': {
+                          'totalCount': 0,
+                          'items': []
+                        }
+                      }
+                    }
+                    return fixedList(res, requestParameters)
+                  }
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -215,7 +229,6 @@
                 const cities = []
                 res.result.data.citys.forEach(item => {
                     const children = formatList(item.projects.items)
-                    console.log(children)
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,
@@ -225,6 +238,12 @@
                 this.cities = cities
                 this.$forceUpdate()
             })
+        },
+        props: {
+          type: {
+            type: String,
+            default: 'view'
+          }
         },
         computed: {
             rowSelection () {
@@ -236,13 +255,17 @@
         },
         methods: {
             handleToItem (record) {
-                this.$router.push({ path: `/cost/bid/item/${record.id}?type=view` })
+              this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/cost/bid/item/${record.id}?type=edit` })
+              this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
             },
-            handleToAdd () {
-                this.$router.push({ path: '/cost/bid/edit' })
+            handleToAdd (record) {
+              if (this.queryParam.ProjectGUID === '') {
+                this.$message.error(`请选择项目`)
+              } else {
+                this.$router.push({ path: `/cost/bid/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
+              }
             },
             handleAdd () {
                 this.mdl = null
@@ -323,11 +346,11 @@
             },
             onChange (value) {
                 if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
+                  this.queryParam.ProjectGUID = value[value.length - 1]
+                  this.$refs.table.refresh(true)
                 } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
+                  this.queryParam.ProjectGUID = ''
+                  this.$refs.table.refresh(true)
                 }
             }
         }
