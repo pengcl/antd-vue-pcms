@@ -1,7 +1,11 @@
 import request from '@/utils/request'
 
 const API = {
-  list: '/api/services/app/ProjectCostCenter/GetPaged'
+  list: '/api/services/app/ProjectCostCenter/GetPaged',
+  item: '/api/services/app/ProjectCostCenter/GetById',
+  create: '/api/services/app/ProjectCostCenter/Create',
+  update: '/api/services/app/ProjectCostCenter/Update',
+  delete: '/api/services/app/ProjectCostCenter/Delete'
 }
 
 const CostService = {}
@@ -13,10 +17,42 @@ const CostService = {}
  * @returns {*}
  */
 
-CostService.list = function list (parameter) {
+CostService.list = function (parameter) {
   return request({
     url: API.list,
     method: 'GET',
+    params: parameter
+  })
+}
+
+CostService.item = function (Id) {
+  return request({
+    url: API.item,
+    method: 'GET',
+    params: { Id }
+  })
+}
+
+CostService.update = function (parameter) {
+  return request({
+    url: API.update,
+    method: 'PUT',
+    params: parameter
+  })
+}
+
+CostService.create = function (parameter) {
+  return request({
+    url: API.create,
+    method: 'POST',
+    params: parameter
+  })
+}
+
+CostService.delete = function (parameter) {
+  return request({
+    url: API.delete,
+    method: 'DELETE',
     params: parameter
   })
 }

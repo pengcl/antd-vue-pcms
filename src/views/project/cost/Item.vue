@@ -2,11 +2,11 @@
   <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增业态成本中心' : '编辑业态成本中心'">
     <a-card :bordered="false">
       <div v-if="id !== '0'" class="table-page-search-wrapper">
-        <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+        <a-form-model :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="成本中心编码">
-                HZO-HZ4
+                {{ form.costCenterCode }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -16,7 +16,7 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="成本中心名称">
-                杭州望江新城項目 (Testing)
+                {{ form.costCenterName }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -26,15 +26,15 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="成本中心描述">
-                草拟中 (1.6)
+                {{ form.description }}
               </a-form-item>
             </a-col>
           </a-row>
-        </a-form>
+        </a-form-model>
       </div>
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="业态指标">
-          <a-form :form="baseForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+          <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
                 <a-form-item
@@ -79,16 +79,19 @@
                 </a-form-item>
               </a-col>
               <a-col :md="12" :sm="24">
-                <a-form-item
+                <a-form-model-item
                   label="产品业态属性"
+                  prop="propertyTypeID"
                 >
                   <a-select
                     :disabled="type === 'view'"
                     placeholder="请选择产品业态属性"
-                    v-decorator="['paymentUser', { rules: [{required: true, message: '请选择产品业态属性'}] }]">
-                    <a-select-option value="1">ant-design@alipay.com</a-select-option>
+                    v-model="form.propertyTypeID"
+                    v-decorator="['propertyTypeID', { rules: [{required: true, message: '请选择产品业态属性'}] }]">
+                    <a-select-option v-for="(type,index) in selection.types" :key="index" :value="type.id">
+                      {{ type.nameCN }}</a-select-option>
                   </a-select>
-                </a-form-item>
+                </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-item
@@ -320,7 +323,7 @@
           </a-form>
         </a-tab-pane>
         <a-tab-pane key="2" tab="CDRD信息">
-          <a-form :form="memberForm" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+          <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
                 <a-form-item label="类别/品牌">
@@ -519,21 +522,38 @@
   </page-header-wrapper>
 </template>
 <script>
+  import { SwaggerService } from '@/api/swagger.service'
+  import { CostService } from '@/views/project/cost/cost.service'
+  import { Base as BaseService } from '@/api/base'
 
   const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+  const DTO = {
+    create: 'ProjectCostCenterCreateInputDto',
+    update: 'ProjectCostCenterEditInputDto'
+  }
   export default {
     name: 'ProjectItem',
     data () {
       return {
-        baseForm: this.$form.createForm(this),
-        memberForm: this.$form.createForm(this),
         loading: false,
-        value: '',
-        dataSource: [],
-        selectedItems: []
+        selection: {},
+        form: null
       }
     },
     created () {
+      this.form = SwaggerService.getForm(DTO[this.type])
+      CostService.item(this.id).then(res => {
+        this.form = SwaggerService.getValue(this.form, res.result.data)
+      })
+      BaseService.centerTags().then(res => {
+        this.selection.tagTree = res.result.data
+        console.log(this.selection)
+        this.$forceUpdate()
+      })
+      BaseService.centerTypes().then(res => {
+        this.selection.types = res.result.data
+        this.$forceUpdate()
+      })
     },
     computed: {
       id () {

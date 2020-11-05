@@ -10,7 +10,9 @@ const API = {
   upload: '/api/services/app/UploadAppservice/CommonUpload',
   masterID: '/api/services/app/UploadAppservice/GetMasterIDByBusinessGuid',
   fileList: '/api/services/app/UploadAppservice/GetFileList',
-  removeFile: '/api/services/app/UploadAppservice/FileDeleteByID'
+  removeFile: '/api/services/app/UploadAppservice/FileDeleteByID',
+  centerTags: '/api/services/app/PropertyType/GetPropertyTypeTree',
+  centerTypes: '/api/services/app/GeneralType/GetDevPurposeGeneralTypes'
 }
 
 const Base = {}
@@ -49,6 +51,22 @@ Base.itemTypes = function (sType) {
 Base.retentionTypes = function () {
   return request({
     url: API.retentionTypes,
+    method: 'GET',
+    params: {}
+  })
+}
+
+Base.centerTags = function () {
+  return request({
+    url: API.centerTags,
+    method: 'GET',
+    params: {}
+  })
+}
+
+Base.centerTypes = function () {
+  return request({
+    url: API.centerTypes,
     method: 'GET',
     params: {}
   })
