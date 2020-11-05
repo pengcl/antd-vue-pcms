@@ -7,6 +7,38 @@
     :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="合同金额"
+          prop="contractAmount"
+        >
+          <a-input-number
+            :disabled="true"
+            placeholder="请生成合同金额"
+            v-model="data.contract.contractAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"/>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="有效合同金额"
+          prop="contractEffectAmount"
+        >
+          <a-input-number
+            :disabled="true"
+            placeholder="请生成有效合同金额"
+            v-model="data.contract.contractEffectAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"/>
+        </a-form-model-item>
+      </a-col>
+    </a-row>
+    <a-row :gutter="48">
+      <a-col :md="12" :sm="24">
         <a-button type="success">按编码排序</a-button>
         <a-button type="success" style="margin-left: 5px">恢复原来排序</a-button>
       </a-col>
@@ -144,10 +176,23 @@
                   <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityMaterial"></a-input>
                 </td>
                 <td>
-                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.unitPriceMaterial"></a-input>
+                  <a-input-number
+                    :disabled="type === 'view'"
+                    @change="valueChange(item)"
+                    v-model="item.unitPriceMaterial"
+                    :min="0"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"></a-input-number>
                 </td>
                 <td>
-                  <a-input :disabled="true" v-model="item.subAmountMaterial"></a-input>
+                  <a-input-number
+                    :disabled="true"
+                    v-model="item.subAmountMaterial"
+                    :min="0"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"></a-input-number>
                 </td>
                 <td>
                   <a-select
@@ -162,13 +207,26 @@
                   </a-select>
                 </td>
                 <td>
-                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityWork"></a-input>
+                  <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityWork"></a-input-number>
                 </td>
                 <td>
-                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.unitPriceWork"></a-input>
+                  <a-input-number
+                    :disabled="type === 'view'"
+                    @change="valueChange(item)"
+                    v-model="item.unitPriceWork"
+                    :min="0"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"></a-input-number>
                 </td>
                 <td>
-                  <a-input :disabled="true" v-model="item.subAmountWork"></a-input>
+                  <a-input-number
+                    :disabled="true"
+                    v-model="item.subAmountWork"
+                    :min="0"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"></a-input-number>
                 </td>
                 <td>
                   <a-select
@@ -183,16 +241,35 @@
                   </a-select>
                 </td>
                 <td>
-                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityWorkMat"></a-input>
+                  <a-input-number :disabled="type === 'view'" @change="valueChange(item)" v-model="item.quantityWorkMat"></a-input-number>
                 </td>
                 <td>
-                  <a-input :disabled="type === 'view'" @change="valueChange(item)" v-model="item.unitPriceWorkMat"></a-input>
+                  <a-input-number
+                    :disabled="type === 'view'"
+                    @change="valueChange(item)"
+                    v-model="item.unitPriceWorkMat"
+                    :min="0"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"></a-input-number>
                 </td>
                 <td>
-                  <a-input :disabled="true" v-model="item.subAmountWorkMat"></a-input>
+                  <a-input-number
+                    :disabled="true"
+                    v-model="item.subAmountWorkMat"
+                    :min="0"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"></a-input-number>
                 </td>
                 <td>
-                  <a-input :disabled="true" v-model="item.allAmount"></a-input>
+                  <a-input-number
+                    :disabled="true"
+                    v-model="item.allAmount"
+                    :min="0"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"></a-input-number>
                 </td>
               </tr>
             </tbody>
@@ -251,11 +328,8 @@
         form: this.$form.createForm(this),
         loading: false,
         rules: {
-          contractYear: [
-            { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
-          ],
-          contractAmount: [{ required: true, message: '请选择招投标分判包', trigger: 'change' }],
-          contractEffectAmount: [{ required: true, message: '请选择合同类型', trigger: 'change' }]
+          contractAmount: [{ required: true, message: '请选择带数项生成合同金额', trigger: 'change' }],
+          contractEffectAmount: [{ required: true, message: '请选择带数项生成合同有效金额', trigger: 'change' }]
         }
       }
     },

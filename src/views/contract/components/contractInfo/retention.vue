@@ -33,7 +33,13 @@
               <a-input :disabled="type === 'view'" v-model="item.description"></a-input>
             </td>
             <td>
-              <a-input-number :disabled="type === 'view'" v-model="item.percentage" :min="0"></a-input-number>
+              <a-input-number
+                :disabled="type === 'view'"
+                v-model="item.percentage"
+                :min="0"
+                :max="100"
+                :formatter="value => `${value}%`"
+                :parser="value => value.replace('%', '')"></a-input-number>
             </td>
           </tr>
         </tbody>

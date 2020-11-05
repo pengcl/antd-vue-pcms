@@ -109,7 +109,7 @@
 
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="公司员工">
-          <company-staff :items="form.vendorEmployeeList"></company-staff>
+          <company-staff ref="staff" :vendor="form" :items="form.vendorEmployeeList" :type="type" :id="id"></company-staff>
         </a-tab-pane>
         <a-tab-pane key="2" tab="变更信息">
           <change-info></change-info>
@@ -118,10 +118,10 @@
           <contract-info></contract-info>
         </a-tab-pane>
         <a-tab-pane key="4" tab="银行信息">
-          <bank-info></bank-info>
+          <bank-info ref="bank" :vendor="form.vendor" :items="form.vendorBankList" :type="type" :id="id"></bank-info>
         </a-tab-pane>
         <a-tab-pane key="5" tab="附件信息">
-          <attachment-info></attachment-info>
+          <attachment-info :data="form" :type="type" :id="id"></attachment-info>
         </a-tab-pane>
       </a-tabs>
 

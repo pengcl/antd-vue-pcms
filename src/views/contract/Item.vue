@@ -79,7 +79,7 @@
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group>
-            <a-button :disabled="type === 'view'" @click="save" type="success">
+            <a-button :loading="loading" :disabled="type === 'view'" @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -242,7 +242,9 @@
         }
 
         if (isValid) {
+          this.loading = true
           ContractService[this.type](this.form).then((res, err) => {
+            this.loading = false
             if (res.result.statusCode === 200) {
               this.dialog.show({
                 content: this.type === 'update' ? '修改成功' : '添加成功',
