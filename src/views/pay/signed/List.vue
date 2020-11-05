@@ -65,19 +65,17 @@
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="8" :sm="24">
-                <a-form-item label="预计结算金额">{{contractAmt.contractEstimateAmount}}</a-form-item>
+                <span>预计结算金额：{{contractAmt.contractEstimateAmount}}</span>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="累计批准金额">{{contractAmt.paymentRequestAmountTotal}} 占
+                <span>累计批准金额：{{contractAmt.paymentRequestAmountTotal}} 占
                   {{contractAmt.paymentRequestAmountTotalRatio || contractAmt.paymentRequestAmountTotalRatio === 0 ?
-                  contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}
-                </a-form-item>
+                  contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}</span>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="累计付款金额">{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio
+                <span>累计付款金额：{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio
                   || contractAmt.paymentAmountTotalRatio === 0 ?
-                  contractAmt.paymentAmountTotalRatio + '%' : ''}}
-                </a-form-item>
+                  contractAmt.paymentAmountTotalRatio + '%' : ''}}</span>
               </a-col>
             </a-row>
           </a-form>
@@ -450,8 +448,5 @@
     }
   }
 
-  /deep/ .ant-table-footer {
-    padding-bottom: 0;
-  }
 
 </style>

@@ -30,9 +30,9 @@
                 <td>
                   <a-button @click="del(index)" type="danger" icon="delete"></a-button>
                 </td>
-                <td>{{ item.bankName }}</td>
-                <td>{{ item.bankAccounts }}</td>
-                <td>{{ item.bankAddr }}</td>
+                <td><a-input v-model="item.bankName "/></td>
+                <td><a-input v-model="item.bankAccounts "/></td>
+                <td><a-input v-model="item.bankAddr "/></td>
               </tr>
             </tbody>
           </table>

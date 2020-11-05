@@ -35,16 +35,16 @@
               </a-button>
             </td>
             <td>
-              <a-input v-model="item.fluctuationName"></a-input>
+              <a-input v-model="item.fluctuationName" :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input v-model="item.adjustableRangeTerm"></a-input>
+              <a-input v-model="item.adjustableRangeTerm" :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input-number v-model="item.adjustableRange"></a-input-number>
+              <a-input-number v-model="item.adjustableRange" :disabled="type === 'view'"></a-input-number>
             </td>
             <td>
-              <a-input-number v-model="item.adjustmentInterval"></a-input-number>
+              <a-input-number v-model="item.adjustmentInterval" :disabled="type === 'view'"></a-input-number>
             </td>
           </tr>
         </tbody>

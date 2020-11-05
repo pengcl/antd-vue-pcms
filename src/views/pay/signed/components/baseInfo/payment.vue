@@ -184,6 +184,8 @@
                 const index = option.data.key
                 this.data.detailList[index].vendorBankGID = ''
                 this.data.detailList[index].vendorBankAccounts = ''
+                const i = this.vendorTypes.findIndex(item => item.vendorGID === value)
+                this.data.detailList[index].vendorName = this.vendorTypes[i].vendorName
                 this.$forceUpdate()
             },
             bankChange (value, option) {
@@ -193,6 +195,7 @@
                         const bankList = item.bankList
                         bankList.forEach(v => {
                             if (v.gid === value) {
+                                this.data.detailList[index].vendorBankName = v.bankName
                                 this.data.detailList[index].vendorBankAccounts = v.bankAccounts
                             }
                         })

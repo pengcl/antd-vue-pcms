@@ -30,7 +30,8 @@
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="收到请款单日期">
-          <a-date-picker v-model="data.paymentReceiveDate" style="width: 100%"></a-date-picker>
+          <a-date-picker v-model="data.paymentReceiveDate" style="width: 100%"
+                         @change="receiveDateChange"></a-date-picker>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -51,7 +52,7 @@
         <a-form-model-item
           label="合同到期付款日期"
         >
-          <a-date-picker v-model="data.paymentDeadline" style="width: 100%"></a-date-picker>
+          <a-date-picker :disabled="true" v-model="data.paymentDeadline" style="width: 100%"></a-date-picker>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -168,7 +169,11 @@
         </table>
       </a-col>
       <base-info-payment :data="data.contractMasterInfo" :type="type" :id="id"></base-info-payment>
-      <base-info-attachment :data="data.contractMasterInfo" :type="type" :id="id"></base-info-attachment>
+      <base-info-attachment :master-id="data.masterID"
+                            :data="data.contractMasterInfo"
+                            :type="type"
+                            :id="id"
+                            @on-change-masterId="changeMasterId"></base-info-attachment>
       <div v-for="(item,index) in data.contractNSCInfoList" :key="index">
         <a-col :md="24" :sm="24">
           <table>
@@ -247,7 +252,7 @@
           </table>
         </a-col>
         <base-info-payment :data="item" :type="type" :id="id"></base-info-payment>
-        <base-info-attachment :data="item" :type="type" :id="id"></base-info-attachment>
+        <base-info-attachment :master-id="data.masterID" :data="item" :type="type" :id="id"></base-info-attachment>
       </div>
       <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票信息</a-col>
       <a-col :md="24" :sm="24">
@@ -314,7 +319,7 @@
               <a-date-picker v-model="item.billDate" @change="dateChange"></a-date-picker>
             </td>
             <td>
-              <a :href="item.billFileUrl" target="_blank" v-if="item.billFileID">{{item.billFileID}}</a>
+              <a :href="item.billFileUrl" target="_blank" v-if="item.billFileName">{{item.billFileName}}</a>
             </td>
             <td>
               <a-input v-model="item.remark"></a-input>
@@ -361,9 +366,13 @@
                 model: null,
                 form: this.$form.createForm(this),
                 index: 0,
-                masterID: 0,
                 billType: ''
             }
+        },
+        watch: {
+            /*'data.masterID' (value) {
+                console.log(value)
+            }*/
         },
         created () {
             SignedService.paymentTypes().then(res => {
@@ -376,11 +385,7 @@
             SignedService.billList().then(res => {
                 this.billTypeList = res.result.data
             })
-            SignedService.masterID(this.id).then(res => {
-                this.masterID = res.result.data
-            })
         },
-        watch: {},
         props: {
             data: {
                 type: Object,
@@ -396,7 +401,21 @@
             }
         },
         methods: {
-            dateChange(value){
+            receiveDateChange (date, dateString) {
+                var receiveDate = new Date(dateString)
+                var startDate = new Date(receiveDate.getFullYear(), receiveDate.getMonth(), receiveDate.getDate())
+                var intValue = 0
+                var endDate = null
+                intValue = startDate.getTime()
+                intValue += this.data.paymentDeadlineDay * (24 * 3600 * 1000)
+                endDate = new Date(intValue)
+                this.data.paymentDeadline = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate()
+            },
+            changeMasterId (val) {
+                this.data.masterID = val
+                this.$forceUpdate()
+            },
+            dateChange (value) {
                 this.$forceUpdate()
             },
             choose (index) {
@@ -418,6 +437,7 @@
                     noTaxAmount: '',
                     billDate: '',
                     billFileID: '',
+                    billFileName: '',
                     billFileUrl: '',
                     remark: ''
                 }
@@ -446,7 +466,7 @@
             handleUpload (file) {
                 const formData = new FormData()
                 formData.append('file', file)
-                formData.append('masterId', this.masterID)
+                formData.append('masterId', this.data['masterID'])
                 formData.append('businessID', this.id)
                 formData.append('businessType', 'bill')
                 formData.append('subInfo1', this.billType) //文件类型
@@ -460,9 +480,10 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 })
                     .then((response) => {
-                        console.log('upload response:', response)
-                        this.data.billList[this.index].billFileID = response.result.data.fileName
+                        this.data.billList[this.index].billFileID = response.result.data.id
+                        this.data.billList[this.index].billFileName = response.result.data.fileName
                         this.data.billList[this.index].billFileUrl = response.result.data.fileUrl
+                        this.masterID = response.result.data.masterID
                         this.$forceUpdate()
                         _this.$message.success('上传成功')
                         _this.$emit('ok', response.url)

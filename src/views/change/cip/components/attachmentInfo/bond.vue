@@ -48,54 +48,56 @@
                 <a-select
                   placeholder="请选择"
                   v-model="item.bondUnit"
+                  :disabled="type === 'view'"
                   v-decorator="['item.bondUnit', { rules: [{required: true, message: '请选择'}] }]">
                   <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.id">{{ item.nameCN }}
                   </a-select-option>
                 </a-select>
               </td>
               <td>
-                <a-input-number v-model="item.bondQty" :min="0" @change="valueChange(item)"></a-input-number>
+                <a-input-number v-model="item.bondQty" :min="0" @change="valueChange(item)" :disabled="type === 'view'"></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondUnitPrice" @change="valueChange(item)"></a-input-number>
+                <a-input-number v-model="item.bondUnitPrice" @change="valueChange(item)" :disabled="type === 'view'"></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondAmount" :disabled="true"></a-input-number>
+                <a-input-number v-model="item.bondAmount" :disabled="true" ></a-input-number>
               </td>
               <td>
-                <a-input v-model="item.bondAmountTerms"></a-input>
+                <a-input v-model="item.bondAmountTerms" :disabled="type === 'view'"></a-input>
               </td>
               <td>
-                <a-input v-model="item.description"></a-input>
+                <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
               </td>
               <td>
                 <a-select
                   placeholder="请选择"
                   v-model="item.bondStatus"
-                  v-decorator="['item.bondStatus', { rules: [{required: true, message: '请选择'}] }]">
+                  v-decorator="['item.bondStatus', { rules: [{required: true, message: '请选择'}] }]" :disabled="type === 'view'">
                   <a-select-option :value="1">已提交</a-select-option>
                   <a-select-option :value="0">未提交</a-select-option>
                 </a-select>
               </td>
               <td>
-                <a-input-number v-model="item.bondGracePeriod"></a-input-number>
+                <a-input-number v-model="item.bondGracePeriod" :disabled="type === 'view'"></a-input-number>
               </td>
               <td>
-                <a-input v-model="item.bondGracePeriodTerms"></a-input>
+                <a-input v-model="item.bondGracePeriodTerms" :disabled="type === 'view'"></a-input>
               </td>
               <td>
-                <a-date-picker v-model="item.bondExpirationDate"></a-date-picker>
+                <a-date-picker v-model="item.bondExpirationDate" :disabled="type === 'view'"></a-date-picker>
               </td>
               <td>
-                <a-date-picker v-model="item.bondExtendedExpirationDate"></a-date-picker>
+                <a-date-picker v-model="item.bondExtendedExpirationDate" :disabled="type === 'view'"></a-date-picker>
               </td>
               <td>
-                <a-input v-model="item.bondExpirationDateTerms"></a-input>
+                <a-input v-model="item.bondExpirationDateTerms" :disabled="type === 'view'"></a-input>
               </td>
               <td>
                 <a-select
                   placeholder="请选择"
                   v-model="item.bondExtensionStatus"
+                  :disabled="type === 'view'"
                   v-decorator="['item.bondExtensionStatus', { rules: [{required: true, message: '请选择'}] }]">
                   <a-select-option :value="1">已审批</a-select-option>
                   <a-select-option :value="0">已拒绝</a-select-option>

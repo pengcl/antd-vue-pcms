@@ -45,10 +45,10 @@
               </a-button>
             </td>
             <td>
-              <a-input v-model="item.description"></a-input>
+              <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input v-model="item.percentage"></a-input>
+              <a-input v-model="item.percentage" :disabled="type === 'view'"></a-input>
             </td>
           </tr>
         </tbody>
