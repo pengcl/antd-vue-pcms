@@ -88,6 +88,7 @@ SupplierService.bank = function (GID) {
   })
 }
 
+
 SupplierService.types = function list () {
   return request({
     url: API.types,

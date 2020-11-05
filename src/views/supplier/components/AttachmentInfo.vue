@@ -25,13 +25,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+          <tr v-if="!file.isDeleted" v-for="(file, index) in fileList" :key="index">
               <td>
-                <a-button type="danger" icon="delete"></a-button>
+                <a-button @click="del(file.id,index)" type="danger" icon="delete"></a-button>
               </td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{ file.name }}</td>
+              <td>{{ file.creator }}</td>
+              <td>{{ file.date }}</td>
             </tr>
           </tbody>
         </table>
@@ -41,35 +41,108 @@
 </template>
 
 <script>
+  import { Base as BaseService } from '@/api/base'
+
   export default {
     name: 'AttachmentInfo',
     data () {
       return {
         fileList: [],
-        uploading: false
+        form: this.$form.createForm(this),
+        loading: false
       }
     },
+    props: {
+      data: {
+        type: Object,
+        default: null
+      },
+      type: {
+        type: String,
+        default: 'view'
+      },
+      id: {
+        type: String,
+        default: '0'
+      }
+    },
+    created () {
+      BaseService.masterID(this.data.vendor.vendorGID).then(res => {
+        this.data.fileMasterId = res.result.data
+        this.getFiles()
+      })
+    },
     methods: {
+      getFiles () {
+        BaseService.fileList(this.data.fileMasterId, this.data.vendor.vendorGID, '', '').then(_res => {
+          const data = _res.result.data
+          const fileList = []
+          data.forEach(item => {
+            if (item) {
+              fileList.push({
+                date: item.creationTime,
+                creator: item.creatorUser,
+                name: item.fileName,
+                file: item.fileUrl,
+                id: item.id,
+                masterID: item.masterID
+              })
+            }
+          })
+          this.fileList = fileList
+        })
+      },
+      del (id, index) {
+        BaseService.removeFile(id).then(res => {
+          console.log(res)
+          this.fileList.splice(index, 1)
+          this.$message.success('删除成功')
+        })
+      },
       beforeUpload (file) {
         console.log(file)
         this.handleUpload(file)
         return false
       },
       handleUpload (file) {
-        console.log(file)
         const formData = new FormData()
         formData.append('file', file)
-        formData.append('BusinessType', 'Project')
+        formData.append('masterId', this.data.fileMasterId)
+        // 对创建类型进行判断
+        if (this.type === 'create' || this.type === 'add') {
+          formData.append('businessID', '')
+        } else {
+          formData.append('businessID', this.id)
+        }
+        formData.append('businessType', 'Vendor')
+        formData.append('subInfo1', '') // 文件类型
+        formData.append('subInfo2', file.name) // 文件名
+        formData.append('subInfo3', this.data.vendor.vendorGID) // 供应商id
         this.uploading = true
 
         // You can use any AJAX library you like
         const _this = this
-        this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-          .then((response) => {
-            console.log('upload response:', response)
+        this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
+          contentType: false,
+          processData: false,
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        })
+          .then((res) => {
+            console.log('upload response:', res)
+            const data = res.result.data
+            _this.fileList.push({
+              date: data.creationTime,
+              creator: data.creatorUser,
+              name: data.fileName,
+              file: data.fileUrl,
+              id: data.id,
+              masterID: data.masterID
+            })
+            _this.data.fileMasterId = data.masterID
             _this.$message.success('上传成功')
-            _this.$emit('ok', response.url)
+            _this.$emit('ok', res.url)
             _this.visible = false
+            console.log(_this)
           })
       }
     }
