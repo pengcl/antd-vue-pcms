@@ -4,8 +4,8 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="项目管理指令编码">
           <a-input
-           :disabled="true"
-           placeholder="请输入项目管理指令编码"
+            :disabled="true"
+            placeholder="请输入项目管理指令编码"
             :value="data.voMasterInfo.voNo"
           ></a-input>
         </a-form-item>
@@ -13,17 +13,17 @@
       <a-col :md="12" :sm="24">
         <a-form-item label="项目管理指令发出日期">
           <a-input
-           :disabled="true"
-           :value="data.voMasterInfo.creationTime"
+            :disabled="true"
+            :value="data.voMasterInfo.creationTime | moment"
           ></a-input>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item label="项目管理指令最后更新日期">
           <a-input
-           :disabled="true"
-           :value="data.voMasterInfo.lastModificationTime"
-           ></a-input>
+            :disabled="true"
+            :value="data.voMasterInfo.lastModificationTime | moment"
+          ></a-input>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -32,98 +32,108 @@
       <a-col :md="24" :sm="24">
         <table>
           <thead>
-          <tr>
-            <th>致：</th>
-            <th>百分比：</th>
-          </tr>
+            <tr>
+              <th>致：</th>
+              <th>百分比：</th>
+            </tr>
           </thead>
           <tbody>
-          <tr>
-            <td style="width : 50%">
-            	   <a-select
-                placeholder="请选择"
-                v-model="to"
-                :disabled="type === 'view'"
-               >
-                  <a-select-option v-for="option in selection.contractParties" :key="option.partID" :value="option.partID">
-                    {{option.partName }}
+            <tr>
+              <td style="width : 50%">
+                <a-select
+                  placeholder="请选择"
+                  v-model="to"
+                  :disabled="type === 'view'"
+                >
+                  <a-select-option
+                    v-for="option in selection.contractParties"
+                    :key="option.partID"
+                    :value="option.partID">
+                    {{ option.partName }}
                   </a-select-option>
-               </a-select>
-            </td>
-            <td style="width : 50%">
-            	   <a-input-number
-            	   	style="width : 90%"
-                placeholder="请输入百分比"
-                v-model="toRate"
-                :max="100"
-                :precision = "2"
-                :disabled="type === 'view'"
-               >
-               </a-input-number>&nbsp;%
-            </td>
-          </tr>
+                </a-select>
+              </td>
+              <td style="width : 50%">
+                <a-input-number
+                  style="width : 90%"
+                  placeholder="请输入百分比"
+                  v-model="toRate"
+                  :disabled="type === 'view'"
+                  :min="0"
+                  :max="100"
+                  :formatter="value => `${value}%`"
+                  :parser="value => value.replace('%', '')"
+                >
+                </a-input-number>
+              </td>
+            </tr>
           </tbody>
         </table>
       </a-col>
       <a-col :md="24" :sm="24">
         <table>
           <thead>
-          <tr>
-            <th>抄送：</th>
-          </tr>
+            <tr>
+              <th>抄送：</th>
+            </tr>
           </thead>
           <tbody>
-          <tr>
-            <td>
-              <a-select
-				mode="multiple"
-                placeholder="请选择"
-                :disabled="type === 'view'"
-                v-model="cc"
-                @change="ccChange"
-              >
-                 <a-select-option v-for="option in selection.sendCopyParties" :key="option.partID" :value="option.partID">
-                    {{option.partName }}
+            <tr>
+              <td>
+                <a-select
+                  mode="multiple"
+                  placeholder="请选择"
+                  :disabled="type === 'view'"
+                  v-model="cc"
+                  @change="ccChange"
+                >
+                  <a-select-option
+                    v-for="option in selection.sendCopyParties"
+                    :key="option.partID"
+                    :value="option.partID">
+                    {{ option.partName }}
                   </a-select-option>
-              </a-select>
-            </td>
-          </tr>
-          <tr>
-          	<td>
-          		<table>
-		      		<thead>
-		      			<tr>
-		      				<th>单位名称</th>
-		      				<th>百分比</th>
-		      			</tr>
-		      		</thead>
-		      		<tbody>
-		      			<tr v-if="!item.isDeleted && item.isSendCopy" v-for="(item,index) in data.voPartylst" :key="item.id">
-		      				<td>{{ item.partName }}</td>
-		      				<td>
-		      					<a-input-number
-					            	   	style="width : 90%"
-					                placeholder="请输入百分比"
-					                v-model="item.percentage"
-					                :max="100"
-					                :precision = "2"
-					                :disabled="type === 'view'"
-					               >
-				               </a-input-number>&nbsp;%
-				             </td>
-		      			</tr>
-		      		</tbody>
-		      	</table>
-          	</td>
-          </tr>
+                </a-select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>单位名称</th>
+                      <th>百分比</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-if="!item.isDeleted && item.isSendCopy" v-for="(item,index) in data.voPartylst" :key="item.id">
+                      <td>{{ item.partName }}</td>
+                      <td>
+                        <a-input-number
+                          style="width : 90%"
+                          placeholder="请输入百分比"
+                          v-model="item.percentage"
+                          :disabled="type === 'view'"
+                          :min="0"
+                          :max="100"
+                          :formatter="value => `${value}%`"
+                          :parser="value => value.replace('%', '')"
+                        >
+                        </a-input-number>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
           </tbody>
         </table>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="变更原因详细">
           <a-textarea
-           :disabled="type === 'view'"
-           placeholder="请输入变更原因"
+            :disabled="type === 'view'"
+            placeholder="请输入变更原因"
             v-model="data.voMasterInfo.reason"
           ></a-textarea>
         </a-form-item>
@@ -131,17 +141,17 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="变更内容">
           <a-textarea
-           :disabled="type === 'view'"
-           placeholder="请输入变更内容"
-           v-model="data.voMasterInfo.voContent"
-           ></a-textarea>
+            :disabled="type === 'view'"
+            placeholder="请输入变更内容"
+            v-model="data.voMasterInfo.voContent"
+          ></a-textarea>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item label="变更类型">
           <a-select
             placeholder="请选择"
-           :disabled="type === 'view'"
+            :disabled="type === 'view'"
             v-model="data.voMasterInfo.voType"
             @change="changeVoType"
             v-decorator="['paymentUser', { rules: [{required: true, message: '请选择变更类型'}] }]">
@@ -154,26 +164,42 @@
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="此工作指令按下述理由发出">
-        	  
-          <a-checkbox-group v-model="reasonType" v-if="data.voMasterInfo.voType==='现场管理'" :disabled="type === 'view'" @change="changeReasonType">
+
+          <a-checkbox-group
+            v-model="reasonType"
+            v-if="data.voMasterInfo.voType==='现场管理'"
+            :disabled="type === 'view'"
+            @change="changeReasonType">
             <a-checkbox value="紧急工程(安全)">紧急工程(安全)</a-checkbox>
             <a-checkbox value="索偿">索偿</a-checkbox>
             <a-checkbox value="其他">其他</a-checkbox>
           </a-checkbox-group>
-          
-          <a-checkbox-group v-model="reasonType" v-if="data.voMasterInfo.voType==='设计变更'" :disabled="type === 'view'" @change="changeReasonType">
+
+          <a-checkbox-group
+            v-model="reasonType"
+            v-if="data.voMasterInfo.voType==='设计变更'"
+            :disabled="type === 'view'"
+            @change="changeReasonType">
             <a-checkbox value="设计要求">设计要求</a-checkbox>
             <a-checkbox value="其他">其他</a-checkbox>
           </a-checkbox-group>
-          
-          <a-checkbox-group v-model="reasonType"  v-if="data.voMasterInfo.voType==='其他变更'" :disabled="type === 'view'" @change="changeReasonType">
+
+          <a-checkbox-group
+            v-model="reasonType"
+            v-if="data.voMasterInfo.voType==='其他变更'"
+            :disabled="type === 'view'"
+            @change="changeReasonType">
             <a-checkbox value="法规要求">法规要求</a-checkbox>
             <a-checkbox value="人工/材料差价">人工/材料差价</a-checkbox>
             <a-checkbox value="延长顾问服务期之费用">延长顾问服务期之费用</a-checkbox>
             <a-checkbox value="其他">其他</a-checkbox>
           </a-checkbox-group>
-          
-          <a-checkbox-group v-model="reasonType" v-if="data.voMasterInfo.voType==='暂转固'" :disabled="type === 'view'" @change="changeReasonType">
+
+          <a-checkbox-group
+            v-model="reasonType"
+            v-if="data.voMasterInfo.voType==='暂转固'"
+            :disabled="type === 'view'"
+            @change="changeReasonType">
             <a-checkbox value="定款使用">暂定款使用</a-checkbox>
             <a-checkbox value="选择項目使用">选择項目使用</a-checkbox>
             <a-checkbox value="暂定料价及单价调整">暂定料价及单价调整</a-checkbox>
@@ -201,7 +227,7 @@
               <a-select
                 placeholder="请选择"
                 :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
-                 style="width : 90%"
+                style="width : 90%"
                 v-model="data.voMasterInfo.effectResult">
                 <a-select-option value="增加">增加</a-select-option>
                 <a-select-option value="减少">减少</a-select-option>
@@ -209,9 +235,12 @@
             </a-col>
             <a-col :span="8">
               <a-input-number
-              :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
+                :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
                 v-model="data.voMasterInfo.effectDay"
-              ></a-input-number> 日
+                :min="0"
+                :formatter="value => `${value}日`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\日\s?|(,*)/g, '')"
+              ></a-input-number>
             </a-col>
           </a-row>
         </a-form-item>
@@ -219,136 +248,191 @@
       <a-col :md="24" :sm="24">
         <a-form-item label="变更造价估算 (增加)">
           <a-input-number
-           :disabled="true"
+            :disabled="true"
             v-model="data.voMasterInfo.voTotalAmountIncrease"
-           ></a-input-number> 元
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="变更造价估算 (减少)">
           <a-input-number
-           :disabled="true"
+            :disabled="true"
             v-model="data.voMasterInfo.voTotalAmountDecrease"
-           ></a-input-number> 元
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="变更造价估算">
           <a-row>
             <a-col :span="2">
-              <a-input :value="data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease > 0 ? '增加' : '减少'" :disabled="true"></a-input>
+              <a-input
+                :value="data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease > 0 ? '增加' : '减少'"
+                :disabled="true"></a-input>
             </a-col>
             <a-col :span="16">
               <a-input-number
-              :disabled="true"
-              :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease)"
-              ></a-input-number> 元
+                :disabled="true"
+                :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease)"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
             </a-col>
           </a-row>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="人工/材料差价累计 (已提交)">
-            <a-input-number
-           :disabled="true"
-           :value ="data.voMasterInfo.fluctuationSubmittedAccumulateAmountIncrease"
-            ></a-input-number> 元
+          <a-input-number
+            :disabled="true"
+            :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountIncrease"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="人工/材料差价累计 (已审批)">
           <a-input-number
-           :disabled="true"
-           :value ="data.voMasterInfo.fluctuationSubmittedAccumulateAmountDecrease"
-            ></a-input-number> 元
+            :disabled="true"
+            :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountDecrease"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="人工/材料差价累计">
           <a-input-number
-          	:disabled="true"
-          	:value="data.voMasterInfo.fluctuationSubmittedAccumulateAmount" 
-          ></a-input-number> 元
+            :disabled="true"
+            :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务之累计费用 (已提交)">
           <a-input-number
-           :disabled="true"
-           :value ="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountIncrease"
-           ></a-input-number> 元
+            :disabled="true"
+            :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountIncrease"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务之累计费用 (已审批)">
           <a-input-number
-           :disabled="true"
-           :value ="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountDecrease"
-           ></a-input-number> 元
+            :disabled="true"
+            :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountDecrease"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="延长顾问服务费用累计">
           <a-input-number
-           :disabled="true"
-           :value ="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmount"
-           ></a-input-number> 元
+            :disabled="true"
+            :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="承包商报价">
           <a-input-number
-           :disabled="type === 'view'"
-           :precision="2"
-           placeholder="请输入变更造价估算（增加）"
+            :disabled="type === 'view'"
+            placeholder="请输入变更造价估算（增加）"
             v-model="data.voMasterInfo.packageContractorQuotation"
-          ></a-input-number> 元
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
-      <a-form-item label="顾问估算金额">
-        <a-input-number
-           :disabled="type === 'view'"
-           :precision="2"
-           placeholder="请输入顾问估算金额"
-            v-model="data.voMasterInfo.consultantEstimatedAmount"></a-input-number> 元
-      </a-form-item>
-    </a-col>
+        <a-form-item label="顾问估算金额">
+          <a-input-number
+            :disabled="type === 'view'"
+            placeholder="请输入顾问估算金额"
+            v-model="data.voMasterInfo.consultantEstimatedAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+          ></a-input-number>
+        </a-form-item>
+      </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="汇率">
           <a-input-number
-           :disabled="type === 'view'"
-           :precision="2"
-           placeholder="请输入汇率"
-            v-model="data.voMasterInfo.currencyExchangeRate"></a-input-number> 元
+            :disabled="type === 'view'"
+            placeholder="请输入汇率"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"
+            v-model="data.voMasterInfo.currencyExchangeRate"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item label="顾问评估日期">
           <a-date-picker
-           :disabled="type === 'view'"
-           placeholder="请选择顾问评估日期"
+            :disabled="type === 'view'"
+            placeholder="请选择顾问评估日期"
             v-model="data.voMasterInfo.qsAssessmentDate"></a-date-picker>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item label="合同约定出差次数">
           <a-input-number
-          :disabled="true"
-          :value="contract.tripTimes"></a-input-number> 次
+            :disabled="true"
+            :value="contract.tripTimes"
+            :min="0"
+            :formatter="value => `${value}次`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\次\s?|(,*)/g, '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item label="已出差">
           <a-input-number
-          :disabled="true"
-          :value="contract.hasBeenTripTimes"></a-input-number> 次
+            :disabled="true"
+            :value="contract.hasBeenTripTimes"
+            :min="0"
+            :formatter="value => `${value}次`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\次\s?|(,*)/g, '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item label="本次申请出差">
-          <a-radio-group v-model="data.voMasterInfo.isTrip"
-           :disabled="type === 'view'">
+          <a-radio-group
+            v-model="data.voMasterInfo.isTrip"
+            :disabled="type === 'view'">
             <a-radio :value="true">是</a-radio>
             <a-radio :value="false">否</a-radio>
           </a-radio-group>
@@ -359,26 +443,26 @@
 </template>
 
 <script>
-	
+
   import { ChangeService } from '@/views/change/change.service'
-  import { Base as BaseService } from '@/api/base'
+
   export default {
     name: 'BaseInfo',
     data () {
       return {
-     	to : '',
-      	cc : [],
-      	toRate : 0,
-      	reasonType : [],
+        to: '',
+        cc: [],
+        toRate: 0,
+        reasonType: [],
         selection: {},
         loading: false
       }
     },
     created () {
-    		//获取可选抄送单位
-    		ChangeService.sendCopyParty({}).then(item=>{
-    			this.selection.sendCopyParties = item.result.data
-    		})
+      // 获取可选抄送单位
+      ChangeService.sendCopyParty({}).then(item => {
+        this.selection.sendCopyParties = item.result.data
+      })
     },
     props: {
       data: {
@@ -393,176 +477,181 @@
         type: String,
         default: '0'
       },
-      contract : {
-      	type : Object,
-      	default : {}
+      contract: {
+        type: Object,
+        default: {}
       }
     },
     watch: {
-    		//接收单位变更事件监听
-    		'to'(value){
-    			console.log('toValue',value)
-    		},
-    		//监听合同信息赋值
-    		//因为baseinfo为第一个tab,界面加载后默认先打开了baseinfo，因为在item.created异步加载的数据无法在本界面created中获取到数据
-    		//所以使用对象监听的方式来获取item界面获取到的对象信息
-    		'contract.contractGuid'(value){
-    			const contractPartyParams = { contractGuid : this.contract.contractGuid , masterContractID : this.contract.masterContractID, contractCategory : this.contract.contractCategory }
-    			//获取接收人下拉框选项值
-	    		ChangeService.contractParty(contractPartyParams).then(item=>{
-	    			this.selection.contractParties = item.result.data
-	    			this.$forceUpdate()
-	    		})
-	    		//若为新增模式，则调用接口获取变更金额信息覆盖data.voMasterInfo中对应值
-	    		if(this.type == 'add'){
-		    		ChangeService.accumulateAmount(value).then(item=>{
-		    			if(item.result.statusCode == 200){
-		    				const accumulateAmount = item.result.data
-	    					this.mergeAccumulateAmount(accumulateAmount)
-		    			}
-		    		})
-	    		}
-	    		
-    		},
-    		'data.voMasterInfo'(value){
-    			//初始化reasonType值，转换为checkboxgroup认同的值
-    			if(this.data.voMasterInfo.reasonType){
-    				this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType);
-    				this.$forceUpdate()
-    			}
-    			//转换接收公司，抄送公司选中信息为下拉框识别的值
-	    		if(this.data.voPartylst){
-	    			this.data.voPartylst.forEach(item => {
-		    			if(!item.isSendCopy){
-                this.to = item.partID
-                this.toRate = item.percentage
-		    			}else{
-		    				if(this.cc.indexOf(item.partID) < 0){
-		    					this.cc.push(item.partID)
-		    				}
-		    			}
-		    		})
-		    		this.$forceUpdate()
-	    		}
-    		}
+      // 接收单位变更事件监听
+      'to' (value) {
+        console.log('toValue', value)
+      },
+      // 监听合同信息赋值
+      // 因为baseinfo为第一个tab,界面加载后默认先打开了baseinfo，因为在item.created异步加载的数据无法在本界面created中获取到数据
+      // 所以使用对象监听的方式来获取item界面获取到的对象信息
+      'contract.contractGuid' (value) {
+        const contractPartyParams = {
+          contractGuid: this.contract.contractGuid,
+          masterContractID: this.contract.masterContractID,
+          contractCategory: this.contract.contractCategory
+        }
+        // 获取接收人下拉框选项值
+        ChangeService.contractParty(contractPartyParams).then(item => {
+          this.selection.contractParties = item.result.data
+          this.$forceUpdate()
+        })
+        // 若为新增模式，则调用接口获取变更金额信息覆盖data.voMasterInfo中对应值
+        if (this.type == 'add') {
+          ChangeService.accumulateAmount(value).then(item => {
+            if (item.result.statusCode == 200) {
+              const accumulateAmount = item.result.data
+              this.mergeAccumulateAmount(accumulateAmount)
+            }
+          })
+        }
+      },
+      'data.voMasterInfo' (value) {
+        // 初始化reasonType值，转换为checkboxgroup认同的值
+        if (this.data.voMasterInfo.reasonType) {
+          this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType)
+          this.$forceUpdate()
+        }
+        // 转换接收公司，抄送公司选中信息为下拉框识别的值
+        if (this.data.voPartylst) {
+          this.data.voPartylst.forEach(item => {
+            if (!item.isSendCopy) {
+              this.to = item.partID
+              this.toRate = item.percentage
+            } else {
+              if (this.cc.indexOf(item.partID) < 0) {
+                this.cc.push(item.partID)
+              }
+            }
+          })
+          this.$forceUpdate()
+        }
+      }
     },
     methods: {
-      splitVal (val){
-      	return val ? val.split(';') : null
+      splitVal (val) {
+        return val ? val.split(';') : null
       },
-      //抄送公司变更监听
-      ccChange(vals){
-      	var that = this
-      	//整理抄送公司
-    		//将抄送下拉框信息放入到voPartyLst中
-    		vals.forEach(item =>{
-    			const copySendParty = getCopyPartyByID(item)
-    			if(copySendParty){
-    				var repeatData = getPartyByID(item,true)
-    				if(repeatData === undefined){
-    					const temp = Object.assign({},copySendParty)
-	    				temp.id = 0
-	    				temp.itemKey = ''
-	    				temp.isDeleted = false
-	    				temp.void = ''
-	    				//获取抄送公司百分比，暂时写死
-	    				temp.percentage = 0
-	    				temp.isSendCopy = true
-	    				temp.isTemp = true
-	    				this.data.voPartylst.push(temp)
-    				}else{
-    					repeatData.isDeleted = false
-    				}
-    			}
-    		})
-    		//清理vopartyLst中比cc多出的公司信息
-    		this.data.voPartylst.forEach((party,index) => {
-			if(party.isSendCopy){
-				if(vals.indexOf(party.partID) < 0){
-					if(party.isTemp){
-						this.data.voPartylst.splice(index,1)
-					}else{
-						party.isDeleted = true
-					}
-				}
-			}
-		})
-    		
-    		//根据partID及抄送与否 获取修改voPartyLst对象中的对应公司信息
-    		function getPartyByID(partID,isSendCopy){
-    			var party = that.data.voPartylst.filter(item =>   item.partID === partID && item.isSendCopy === isSendCopy)
-    			if(party.length > 0){
-    				return party[0]
-    			}
-    		}
-		//根据partID 获取抄送公司列表中的公司信息    		
-    		function getCopyPartyByID(partID){
-    			const party = that.selection.sendCopyParties.filter(item => item.partID === partID)
-    			if(party.length > 0){
-    				return party[0]
-    			}
-    		}
-    		console.log('cc',vals,'partylst',this.data.voPartylst)
-    		this.$forceUpdate()
+      // 抄送公司变更监听
+      ccChange (vals) {
+        var that = this
+        // 整理抄送公司
+        // 将抄送下拉框信息放入到voPartyLst中
+        vals.forEach(item => {
+          const copySendParty = getCopyPartyByID(item)
+          if (copySendParty) {
+            var repeatData = getPartyByID(item, true)
+            if (repeatData === undefined) {
+              const temp = Object.assign({}, copySendParty)
+              temp.id = 0
+              temp.itemKey = ''
+              temp.isDeleted = false
+              temp.void = ''
+              // 获取抄送公司百分比，暂时写死
+              temp.percentage = 0
+              temp.isSendCopy = true
+              temp.isTemp = true
+              this.data.voPartylst.push(temp)
+            } else {
+              repeatData.isDeleted = false
+            }
+          }
+        })
+        // 清理vopartyLst中比cc多出的公司信息
+        this.data.voPartylst.forEach((party, index) => {
+          if (party.isSendCopy) {
+            if (vals.indexOf(party.partID) < 0) {
+              if (party.isTemp) {
+                this.data.voPartylst.splice(index, 1)
+              } else {
+                party.isDeleted = true
+              }
+            }
+          }
+        })
+
+        // 根据partID及抄送与否 获取修改voPartyLst对象中的对应公司信息
+        function getPartyByID (partID, isSendCopy) {
+          var party = that.data.voPartylst.filter(item => item.partID === partID && item.isSendCopy === isSendCopy)
+          if (party.length > 0) {
+            return party[0]
+          }
+        }
+
+        // 根据partID 获取抄送公司列表中的公司信息
+        function getCopyPartyByID (partID) {
+          const party = that.selection.sendCopyParties.filter(item => item.partID === partID)
+          if (party.length > 0) {
+            return party[0]
+          }
+        }
+
+        console.log('cc', vals, 'partylst', this.data.voPartylst)
+        this.$forceUpdate()
       },
-      //reasonType值变更事件监听
-      //监听的同时转换checkboxgroup选中值为保存接口所需的以;号分隔的字符串
-      changeReasonType(checkedValues){
-      	this.data.voMasterInfo.reasonType = checkedValues.join(';')
+      // reasonType值变更事件监听
+      // 监听的同时转换checkboxgroup选中值为保存接口所需的以;号分隔的字符串
+      changeReasonType (checkedValues) {
+        this.data.voMasterInfo.reasonType = checkedValues.join(';')
       },
-      //变更类型change监听，变更后清空reasonType值
-      changeVoType(value){
-      	this.reasonType = [] 
-      	this.$forceUpdate()
+      // 变更类型change监听，变更后清空reasonType值
+      changeVoType (value) {
+        this.reasonType = []
+        this.$forceUpdate()
       },
-      //合并接口差异金额数据
-      mergeAccumulateAmount(accumulateAmount){
-      	this.data.voMasterInfo = Object.assign(this.data.voMasterInfo,accumulateAmount)
-      	this.$forceUpdate()
+      // 合并接口差异金额数据
+      mergeAccumulateAmount (accumulateAmount) {
+        this.data.voMasterInfo = Object.assign(this.data.voMasterInfo, accumulateAmount)
+        this.$forceUpdate()
       },
-      //整理承包/顾问单位公司信息(包括接收公司，抄送公司）
-      getPartys(){
-      	const that = this
-    		if(this.to.length < 1){
-    			this.$message.warn('请选择承包/顾问单位')
-    			return false
-    		}
-    		//整理承包公司
-    		this.selection.contractParties.forEach(item => { 
-    			if(item.partID === this.to){
-    				const temp = Object.assign({},item)
-    				temp.id = 0
-    				temp.itemKey = ''
-    				temp.isDeleted = false
-    				temp.void = ''
-    				//获取承包/顾问单位公司百分比
-    				temp.percentage = this.toRate
-    				temp.isSendCopy = false
-    				let repeat = false
-    				this.data.voPartylst.forEach((party,index) => {
-    					if(!party.isSendCopy){
-    						if(party.partID != this.to){
-	    						if(!party.isTemp){
-	    							party.isDeleted = true
-	    						}else{
-	    							this.data.voPartylst.splice(index,1)
-	    						}
-    						}else{
-    							party.isDeleted = false
-    							repeat = true
-    						}
-    					}
-    				})
-    				if(!repeat){
-    					this.data.voPartylst.push(temp)
-    				}
-    			}
-    		} )
-    		
-    		return true
+      // 整理承包/顾问单位公司信息(包括接收公司，抄送公司）
+      getPartys () {
+        const that = this
+        if (this.to.length < 1) {
+          this.$message.warn('请选择承包/顾问单位')
+          return false
+        }
+        // 整理承包公司
+        this.selection.contractParties.forEach(item => {
+          if (item.partID === this.to) {
+            const temp = Object.assign({}, item)
+            temp.id = 0
+            temp.itemKey = ''
+            temp.isDeleted = false
+            temp.void = ''
+            // 获取承包/顾问单位公司百分比
+            temp.percentage = this.toRate
+            temp.isSendCopy = false
+            let repeat = false
+            this.data.voPartylst.forEach((party, index) => {
+              if (!party.isSendCopy) {
+                if (party.partID != this.to) {
+                  if (!party.isTemp) {
+                    party.isDeleted = true
+                  } else {
+                    this.data.voPartylst.splice(index, 1)
+                  }
+                } else {
+                  party.isDeleted = false
+                  repeat = true
+                }
+              }
+            })
+            if (!repeat) {
+              this.data.voPartylst.push(temp)
+            }
+          }
+        })
+
+        return true
       },
-      effecChange(value){
-        if(!value){
+      effecChange (value) {
+        if (!value) {
           this.data.voMasterInfo.effectResult = ''
           this.data.voMasterInfo.effectDay = ''
         }
