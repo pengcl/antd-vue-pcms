@@ -38,7 +38,13 @@
               </a-button>
             </td>
             <td>
-              <a-input-number v-model="item.insuranceAmount" :disabled="type === 'view'"></a-input-number>
+              <a-input-number 
+                v-model="item.insuranceAmount" 
+                :disabled="type === 'view'"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+                ></a-input-number>
             </td>
             <td>
               <a-select
@@ -123,7 +129,9 @@
           id: 0,
           isDeleted: false,
           itemKey : '',
-          void : ''
+          void : '',
+          insuranceAmount : 0
+
         }
         this.data.voInsurancelst.push(item)
       },

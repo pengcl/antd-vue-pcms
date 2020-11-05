@@ -175,34 +175,72 @@ export default {
       console.log('approve')
     },
     save() {
-      const partyResult = this.$refs.baseInfo.getPartys()
+      let isValid = true
+      const validateForms = [
+        {
+          activeKey: 1,
+          key: 'baseInfo'
+        }
+      ]
+      validateForms.forEach((item, index) => {
+        this.$refs[item.key].$refs.form.validate(valid => {
+          if (!valid) {
+            isValid = false
+            this.tabActiveKey = item.activeKey
+          }
+        })
+      })
+
+      for (let i = 0; i < validateForms.length; i++) {
+        const item = validateForms[i]
+        this.$refs[item.key].$refs.form.validate(valid => {
+          if (!valid) {
+            isValid = false
+            this.tabActiveKey = item.activeKey
+          }
+        })
+        if (!isValid) {
+          break
+        }
+      }
+
+      /*const partyResult = this.$refs.baseInfo.getPartys()
       if (!partyResult) {
         return
-      }
-      this.form.contractNo = this.contract.contractNo
-      console.log('saveData', this.form)
-      if (this.type == 'add') {
-        if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
-          this.form.fileMasterId = 0
+      }*/
+      if(isValid){
+        this.form.contractNo = this.contract.contractNo
+        console.log('saveData', this.form)
+        if (this.type == 'add') {
+          if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
+            this.form.fileMasterId = 0
+          }
+          this.initCreateForm()
+
+          this.loading = true
+          ChangeService.create(this.form).then((res) => {
+            this.loading = false
+            console.log(res)
+            if (res.result.statusCode === 200) {
+              this.$message.info('创建成功')
+              this.$router.push({ path: `/change/pmi` })
+            }
+          }).catch(() => {
+            this.$message.error('创建失败，表单未填写完整')
+          })
+        } else if (this.type == 'edit') {
+          this.loading = true
+          ChangeService.update(this.form).then((res) => {
+            this.loading = false
+            console.log(res)
+            if (res.result.statusCode === 200) {
+              this.$message.info('修改成功')
+              this.$router.push({ path: `/change/pmi` })
+            }
+          }).catch(() => {
+            this.$message.error('修改失败，表单未填写完整')
+          })
         }
-        this.initCreateForm()
-        ChangeService.create(this.form).then((res) => {
-          console.log(res)
-          if (res.result.statusCode === 200) {
-            this.$message.info('新增成功')
-            this.$router.push({ path: `/change/pmi` })
-          }
-        })
-      } else if (this.type == 'edit') {
-        ChangeService.update(this.form).then((res) => {
-          console.log(res)
-          if (res.result.statusCode === 200) {
-            this.$message.info('修改成功')
-            this.$router.push({ path: `/change/pmi` })
-          }
-        })
-      } else if (this.type == 'trans') {
-        //cip转vo
       }
     },
     startUp() {
