@@ -49,7 +49,11 @@
               <a-input v-model="item.materialQualityWarrantyExpirationTerms" :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input-number v-model="item.materialQualityGuaranteeExpirationDay" :disabled="type === 'view'"></a-input-number>
+              <a-input-number 
+                v-model="item.materialQualityGuaranteeExpirationDay" 
+                :disabled="type === 'view'"
+                :min="0"
+                ></a-input-number>
             </td>
           </tr>
         </tbody>
@@ -97,7 +101,7 @@
           materialQualityWarrantyTerms : '',
           materialQualityGuaranteeSubmissionDate : '',
           materialQualityWarrantyExpirationTerms : '',
-          materialQualityGuaranteeExpirationDay : ''
+          materialQualityGuaranteeExpirationDay : 0
         }
         this.data.voMaterialQualityGuaranteelst.push(item)
       },

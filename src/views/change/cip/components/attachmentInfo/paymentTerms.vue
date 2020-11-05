@@ -48,7 +48,14 @@
               <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
             </td>
             <td>
-              <a-input v-model="item.percentage" :disabled="type === 'view'"></a-input>
+              <a-input-number 
+                v-model="item.percentage" 
+                :disabled="type === 'view'"
+                :min="0"
+                :max="100"
+                :formatter="value => `${value}%`"
+                :parser="value => value.replace('%', '')"
+                ></a-input-number>
             </td>
           </tr>
         </tbody>
@@ -103,7 +110,7 @@
           itemKey : '',
           void : '',
           description: '',
-          percentage: ''
+          percentage: 0
         }
         this.data.voPaymentTermslst.push(item)
       },

@@ -5,7 +5,7 @@
         <thead>
         <tr>
           <th colspan="7">
-            <a-button icon="plus" @click="add('detailList')">
+            <a-button icon="plus" @click="add('detailList')" :disabled="type === 'view'">
               新增
             </a-button>
           </th>
@@ -29,6 +29,7 @@
           </td>
           <td>
             <a-select
+              :disabled="type === 'view'"
               placeholder="请选择"
               @change="moneyTypeChange"
               v-model="item.paymentType"
@@ -40,17 +41,20 @@
           </td>
           <td>
             <a-input placeholder="请输入"
+                     :disabled="type === 'view'"
                      v-model="item.paymentUse"
                      v-decorator="['item.paymentUse', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
           </td>
           <td>
             <a-input placeholder="请输入"
+                     :disabled="type === 'view'"
                      v-model="item.paymentAmount"
                      v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
           </td>
           <td>
             <a-select
               @change="onChange"
+              :disabled="type === 'view'"
               placeholder="请选择"
               v-model="item.vendorGID">
               <a-select-option v-for="type in vendorTypes"
@@ -63,6 +67,7 @@
             <a-select
               @change="bankChange"
               placeholder="请选择"
+              :disabled="type === 'view'"
               v-model="item.vendorBankGID">
               <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
                                :value="type.gid"
@@ -122,10 +127,12 @@
                 this.moneyTypes = res.result.data
                 this.$forceUpdate()
             })
-            SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['mainContractGID']).then(res => {
-                this.vendorTypes = res.result.data
-                this.$forceUpdate()
-            })
+            if (this.data['contractGID'] || this.data['mainContractGID']) {
+                SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['mainContractGID']).then(res => {
+                    this.vendorTypes = res.result.data
+                    this.$forceUpdate()
+                })
+            }
         },
         methods: {
             getBankList (vendorGID, vendorTypes) {

@@ -122,10 +122,10 @@
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { ContractService } from '@/views/contract/contract.service'
     import { fixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
+    import { UnSignedService } from './unsigned.service'
 
 
     const columns = [
@@ -212,7 +212,7 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     console.log('loadData request parameters:', requestParameters)
-                    return ContractService.items(requestParameters).then(res => {
+                    return UnSignedService.items(requestParameters).then(res => {
                         return fixedList(res, requestParameters)
                     })
                 },

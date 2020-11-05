@@ -3,8 +3,14 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
           <a-form-item label="保修金/保固金/保留金比率上限">
-            <a-input-number v-model="data.voMasterInfo.retentionPercentage" :disabled="type === 'view'"></a-input-number>
-            %
+            <a-input-number 
+              v-model="data.voMasterInfo.retentionPercentage" 
+              :disabled="type === 'view'"
+              :min="0"
+              :max="100"
+              :formatter="value => `${value}%`"
+              :parser="value => value.replace('%', '')"
+              ></a-input-number>
           </a-form-item>
         </a-col>
         <a-col :md="24" :sm="24">
@@ -46,7 +52,14 @@
                   <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
                 </td>
                 <td>
-                  <a-input-number v-model="item.percentage" :min="0" :disabled="type === 'view'"></a-input-number>
+                  <a-input-number 
+                    v-model="item.percentage" 
+                    :disabled="type === 'view'"
+                    :min="0"
+                    :max="100"
+                    :formatter="value => `${value}%`"
+                    :parser="value => value.replace('%', '')"
+                    ></a-input-number>
                 </td>
               </tr>
             </tbody>
@@ -92,7 +105,14 @@
                   <a-input :disabled="type === 'view'" v-model="item.releaseTerms"></a-input>
                 </td>
                 <td>
-                  <a-input-number :disabled="type === 'view'" v-model="item.percentage" :min="0"></a-input-number>
+                  <a-input-number 
+                    :disabled="type === 'view'" 
+                    v-model="item.percentage" 
+                    :min="0"
+                    :max="100"
+                    :formatter="value => `${value}%`"
+                    :parser="value => value.replace('%', '')"
+                    ></a-input-number>
                 </td>
               </tr>
             </tbody>
@@ -146,7 +166,13 @@
                   <a-input :disabled="type === 'view'"></a-input>
                 </td>
                 <td>
-                  <a-input-number :disabled="type === 'view'"></a-input-number>
+                  <a-input-number 
+                    :disabled="type === 'view'"
+                    :min="0"
+                    :max="100"
+                    :formatter="value => `${value}%`"
+                    :parser="value => value.replace('%', '')"
+                    ></a-input-number>
                 </td>
                 <td>
                   <a-select
@@ -159,9 +185,19 @@
                   <a-input-number :disabled="type === 'view'"></a-input-number>
                 </td>
                 <td>
-                  <a-input-number :disabled="type === 'view'"></a-input-number>
+                  <a-input-number 
+                    :disabled="type === 'view'"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"
+                    ></a-input-number>
                 </td>
-                <td><a-input-number :disabled="true"></a-input-number></td>
+                <td><a-input-number 
+                  :disabled="true"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"
+                  ></a-input-number></td>
               </tr>
             </tbody>
           </table>
@@ -250,7 +286,7 @@
           itemKey: '',
           void: '',
           description: '',
-          percentage: ''
+          percentage: 0
         }
         this.data.voRetentionlst.push(item)
       },
@@ -292,7 +328,7 @@
           itemKey: '',
           void: '',
           description: '',
-          percentage: '',
+          percentage: 0,
           releaseTerms: ''
         }
         this.data.voRetentionReleaselst.push(item)

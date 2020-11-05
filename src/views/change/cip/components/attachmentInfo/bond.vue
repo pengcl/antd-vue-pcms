@@ -58,10 +58,23 @@
                 <a-input-number v-model="item.bondQty" :min="0" @change="valueChange(item)" :disabled="type === 'view'"></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondUnitPrice" @change="valueChange(item)" :disabled="type === 'view'"></a-input-number>
+                <a-input-number 
+                  v-model="item.bondUnitPrice" 
+                  @change="valueChange(item)" 
+                  :disabled="type === 'view'"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"
+                  ></a-input-number>
               </td>
               <td>
-                <a-input-number v-model="item.bondAmount" :disabled="true" ></a-input-number>
+                <a-input-number 
+                  v-model="item.bondAmount" 
+                  :disabled="true" 
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"
+                  ></a-input-number>
               </td>
               <td>
                 <a-input v-model="item.bondAmountTerms" :disabled="type === 'view'"></a-input>
@@ -154,7 +167,7 @@
           void: '',
           description: '',
           bondAmountTerms: '',
-          bondUnit: 0,
+          bondUnit: '',
           bondQty: 0.00,
           bondUnitPrice: 0.00,
           bondAmount: 0.00,
