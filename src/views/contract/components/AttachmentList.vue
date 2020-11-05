@@ -24,7 +24,7 @@
           <tbody>
             <tr v-if="!file.isDeleted" v-for="file in fileList" :key="file.id">
               <td>
-                <a-button @click="del(file.id)" type="danger" icon="delete"></a-button>
+                <a-button :loadding="loading" @click="del(file.id)" type="danger" icon="delete"></a-button>
               </td>
               <td>{{ file.name }}</td>
               <td>{{ file.creator }}</td>
@@ -90,12 +90,18 @@
         })
       },
       del (id) {
+        const hide = this.$message.loading('删除中..', 0)
         BaseService.removeFile(id).then(res => {
-          console.log(res)
+          hide()
+          if (res.result.statusCode === 200) {
+            this.$message.success('删除成功')
+            this.getFiles()
+          } else {
+            this.$message.error('删除失败')
+          }
         })
       },
       beforeUpload (file) {
-        console.log(file)
         this.handleUpload(file)
         return false
       },
@@ -112,27 +118,29 @@
 
         // You can use any AJAX library you like
         const _this = this
+        const hide = _this.$message.loading('上传中', 0)
         this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
           contentType: false,
           processData: false,
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
           .then((res) => {
-            console.log('upload response:', res)
-            const data = res.result.data
-            _this.fileList.push({
-              date: data.creationTime,
-              creator: data.creatorUser,
-              name: data.fileName,
-              file: data.fileUrl,
-              id: data.id,
-              masterID: data.masterID
-            })
-            _this.data.fileMasterId = data.masterID
-            _this.$message.success('上传成功')
-            _this.$emit('ok', res.url)
-            _this.visible = false
-            console.log(_this)
+            hide()
+            if (res.result.statusCode === 200) {
+              const data = res.result.data
+              _this.fileList.push({
+                date: data.creationTime,
+                creator: data.creatorUser,
+                name: data.fileName,
+                file: data.fileUrl,
+                id: data.id,
+                masterID: data.masterID
+              })
+              _this.data.fileMasterId = data.masterID
+              _this.$message.success('上传成功')
+              _this.$emit('ok', res.url)
+              _this.visible = false
+            }
           })
       }
     }

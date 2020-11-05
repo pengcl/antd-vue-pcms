@@ -5,6 +5,7 @@ const API = {
   changeItems : '/api/services/app/VO/GetVOListByContractGuid',
   changeItem : '/api/services/app/Contract/GetContractByGuid',
   item: '/api/services/app/VO/GetVOAllInfoByGuid',
+  voItem : '/api/services/app/VO/GetVOAllInfoByGuidForVIPToVO',
   create: '/api/services/app/VO/CreateAllVoInfo',
   update: '/api/services/app/VO/UpdateVOAllInfo',
   contractParty : '/api/services/app/VO/GetPartyByContract',
@@ -74,6 +75,19 @@ ChangeService.item = function (voGuid) {
     params: { voGuid }
   })
 }
+
+
+/**
+ * 获取变更VO信息详情
+ * 对应swagger VOAllInfoDto
+ */
+ChangeService.voItem = function (voGuid) { 
+	return request({
+	  url: API.voItem,
+	  method: 'get',
+	  params: { voGuid }
+	})
+  }
 
 /**
  * 创建合同变更信息
