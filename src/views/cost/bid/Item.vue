@@ -261,6 +261,8 @@
               onOk () {
                 if ( that.type === 'add' ) {
                   that.form = SwaggerService.getForm('ProjectTenderPackageCreateInputDto')
+                  that.tenderPackages = []
+                  that.plans = []
                   that.$forceUpdate()
                 }
               },
