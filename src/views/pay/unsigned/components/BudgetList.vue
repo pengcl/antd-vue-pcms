@@ -50,7 +50,21 @@
 
 <script>
     export default {
-        name: 'BudgetList'
+        name: 'BudgetList',
+        props: {
+            data: {
+                type: Object,
+                default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
+            },
+            id: {
+                type: String,
+                default: '0'
+            }
+        },
     }
 </script>
 

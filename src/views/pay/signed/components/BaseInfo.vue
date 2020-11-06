@@ -410,6 +410,7 @@
     import CreateBankForm from '@/views/pay/signed/modules/CreateBankForm'
     import BaseInfoPayment from '@/views/pay/signed/components/baseInfo/payment'
     import BaseInfoAttachment from '@/views/pay/signed/components/baseInfo/attachment'
+    import { Base as BaseService } from '@/api/base'
 
     export default {
         name: 'BaseInfo',
@@ -515,8 +516,12 @@
             },
             del (index) {
                 if (this.data.billList[index].isTemp) {
+                    if (this.data.billList[index].billFileID) {
+                        this.removeFile(this.data.billList[index].billFileID)
+                    }
                     this.data.billList.splice(index, 1)
                 } else {
+                    this.removeFile(this.data.billList[index].billFileID)
                     this.data.billList[index].isDeleted = true
                 }
                 this.$forceUpdate()
@@ -554,6 +559,11 @@
                         _this.$emit('ok', response.url)
                         _this.visible = false
                     })
+            },
+            removeFile (id) {
+                BaseService.removeFile(id).then(res => {
+                    console.log(res)
+                })
             },
         }
     }

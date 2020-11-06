@@ -14,54 +14,12 @@
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
-              <a-button type="primary" style="margin-left: 5px" @click="show = !show">
-                <a-icon type="search"></a-icon>
-              </a-button>
+
             </a-col>
           </a-row>
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
-        <a-row :gutter="48">
-          <a-col :md="12" :sm="24">
-            <a-form-item label="收款单号">
-              <a-input v-model="queryParam.ContractNo"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="收款单位">
-              <a-input v-model="queryParam.ContractName"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="款项类型">
-              <a-input v-model="queryParam.VendorName"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="审批状态">
-              <a-select
-                placeholder="请选择"
-                v-model="queryParam.AuditStatus"
-                v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-button type="success" @click="search()">搜索</a-button>
-            <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
-          </a-col>
-        </a-row>
-      </a-form>
-
-      <a-row :gutter="48" style="margin-top: 10px">
-        <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd">新增付款</a-button>
-        </a-col>
-      </a-row>
       <s-table
         style="margin-top: 5px"
         ref="table"
@@ -125,7 +83,7 @@
     import { fixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
-    import { UnSignedService } from './unsigned.service'
+    import { UnSignedService } from '@/views/pay/unsigned/unsigned.service'
 
     const columns = [
         {
@@ -134,34 +92,19 @@
             scopedSlots: { customRender: 'action' }
         },
         {
-            title: '付款单号',
+            title: '科目名称',
             dataIndex: 'paymentOtherCode'
-        },
-        {
-            title: '收款单位',
-            dataIndex: 'payeePartyNameList',
-            scopedSlots: { customRender: 'payeePartyNameList' }
-        },
-        {
-            title: '款项类型',
-            dataIndex: 'paymentBusinessType',
-            scopedSlots: { customRender: 'paymentBusinessType' }
         },
         {
             title: '金额',
             dataIndex: 'paymentAmount',
         },
         {
-            title: '审批状态',
-            dataIndex: 'auditStatus',
-            scopedSlots: { customRender: 'auditStatus' }
-        },
-        {
-            title: '建立日期',
+            title: '最后修改时间',
             dataIndex: 'requestDate'
         },
         {
-            title: '建立人',
+            title: '最后修改人',
             dataIndex: 'requestUserName',
             scopedSlots: { customRender: 'requestUserName' }
         },
@@ -199,7 +142,6 @@
             return {
                 // create model
                 cities: [],
-                show: false,
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
