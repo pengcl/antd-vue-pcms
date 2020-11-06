@@ -348,24 +348,17 @@ export const asyncRouterMap = [
             meta: { title: 'menu.pay.unsigned.item', keepAlive: true, permission: ['pay'] }
           },
           {
-            path: '/pay/unsigned/approval/:id',
-            name: 'PayUnsignedApprovalList',
-            hidden: true,
-            component: () => import('@/views/contract/Edit'),
-            meta: { title: 'menu.pay.unsigned.approval', keepAlive: true, permission: ['pay'] }
+            path: '/pay/fundplan/list',
+            name: 'PayFundPlanList',
+            component: () => import('@/views/pay/fundplan/List'),
+            meta: { title: 'menu.pay.fundplan.list', keepAlive: true, permission: ['pay'] }
           },
           {
-            path: '/pay/account/list',
-            name: 'PayAccountList',
-            component: () => import('@/views/contract/Edit'),
-            meta: { title: 'menu.pay.account.list', keepAlive: true, permission: ['pay'] }
-          },
-          {
-            path: '/pay/account/item/:id',
-            name: 'PayAccountItem',
+            path: '/pay/fundplan/item/:id',
+            name: 'PayFundPlanItem',
             hidden: true,
-            component: () => import('@/views/contract/Edit'),
-            meta: { title: 'menu.pay.account.item', keepAlive: true, permission: ['pay'] }
+            component: () => import('@/views/pay/fundplan/Item'),
+            meta: { title: 'menu.pay.fundplan.item', keepAlive: true, permission: ['pay'] }
           }
         ]
       },

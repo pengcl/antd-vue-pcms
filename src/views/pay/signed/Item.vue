@@ -13,7 +13,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group>
-            <a-button :disabled="type === 'view'" @click="approve()" type="success">
+            <a-button :disabled="type === 'create'" @click="approve" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
@@ -158,7 +158,7 @@
                         billList: this.form.billList
                     }
                     SignedService.create(body).then(res => {
-                        if (res.result.data){
+                        if (res.result.data) {
                             this.$message.success('创建成功')
                             this.$router.push({
                                 path: '/pay/signed/list'
@@ -167,7 +167,7 @@
                     })
                 } else {
                     SignedService.update(this.form).then(res => {
-                        if (res.result.data){
+                        if (res.result.data) {
                             this.$message.success('修改成功')
                             this.$router.push({
                                 path: '/pay/signed/list'
@@ -179,6 +179,11 @@
             back () {
                 this.$router.push({
                     path: '/pay/signed/list'
+                })
+            },
+            approve () {
+                SignedService.approve(this.id).then(res => {
+                    console.log(res)
                 })
             }
         }

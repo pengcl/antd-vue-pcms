@@ -21,12 +21,13 @@
                 />-->
               </a-form-item>
             </a-col>
+            <a-col :md="12" :sm="24"><span class="project-type-tips">{{ projectType === 'project' ? '请选择末级新建合同' : '' }}</span></a-col>
           </a-row>
         </a-form>
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增合同</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID || projectType === 'project'" type="success" @click="handleToAdd">新增合同</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -55,6 +56,7 @@
                 placeholder="请选择"
                 v-model="queryParam.AuditStatus"
                 v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
+                <a-select-option value="">所有</a-select-option>
                 <a-select-option value="1">草拟中</a-select-option>
                 <a-select-option value="2">已审批</a-select-option>
               </a-select>
@@ -176,6 +178,7 @@
         show: false,
         // 查询参数
         queryParam: {},
+        projectType: undefined,
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -190,7 +193,7 @@
       ProjectService.tree().then(res => {
         const cities = []
         res.result.data.citys.forEach(item => {
-          const children = formatList(item.projects.items)
+          const children = formatList(item.projects.items, { key: 'type', value: 'project' })
           cities.push({
             selectable: false,
             label: item.city.nameCN,
@@ -216,13 +219,16 @@
         this.show = !this.show
         this.$refs.table.refresh(true)
       },
-      onSelect (value) {
+      onSelect (value, option) {
+        this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+        this.projectType = option.$options.propsData.dataRef.type
         if (typeof value === 'number') {
           this.city = value
           this.queryParam.ProjectGUID = ''
         } else {
           this.queryParam.ProjectGUID = value
         }
+        this.$refs.table.refresh()
         this.$forceUpdate()
       }
     }
@@ -238,6 +244,11 @@
     /deep/ .ant-form-item-label label {
       color: #fff;
     }
+  }
+
+  .project-type-tips {
+    line-height: 32px;
+    color: #ff0000;
   }
 
 </style>

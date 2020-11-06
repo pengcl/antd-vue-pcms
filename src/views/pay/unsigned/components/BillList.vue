@@ -1,68 +1,202 @@
 <template>
   <div>
     <a-col :md="24" :sm="24">
-      <table>
-        <thead>
-        <tr>
-          <th colspan="9">
-            <a-button icon="plus" @click="add('detailList')">
-              新增
-            </a-button>
-          </th>
-        </tr>
-        <tr>
-          <th>操作</th>
-          <th>票据类型</th>
-          <th>编号</th>
-          <th>发票金额</th>
-          <th>税率</th>
-          <th>不含税金额</th>
-          <th>发票日期</th>
-          <th>发票附件</th>
-          <th>备注</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>
-            <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
-              删除
-            </a-button>
-          </td>
-          <td>
-
-          </td>
-          <td>
-
-          </td>
-          <td>
-
-          </td>
-          <td>
-
-          </td>
-          <td>
-
-          </td>
-          <td>
-
-          </td>
-          <td>
-
-          </td>
-          <td>
-
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th colspan="9">
+              <a-button icon="plus" @click="add('billList')">
+                新增
+              </a-button>
+            </th>
+          </tr>
+          <tr>
+            <th>操作</th>
+            <th>票据类型</th>
+            <th>编号</th>
+            <th>发票金额</th>
+            <th>税率</th>
+            <th>不含税金额</th>
+            <th>发票日期</th>
+            <th>发票附件</th>
+            <th>备注</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-if="!item.isDeleted" v-for="(item,index) in data.billList" :key="index">
+            <td>
+              <a-upload name="file"
+                        :disabled="type === 'view'"
+                        :multiple="false"
+                        v-if="item.billType"
+                        :before-upload="beforeUpload">
+                <a-button @click="choose(index)">请选择</a-button>
+              </a-upload>
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                删除
+              </a-button>
+            </td>
+            <td>
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                @change="onchange"
+                v-model="item.billType"
+                v-decorator="['item.billType', { rules: [{required: true, message: '请选择票据类型'}] }]">
+                <a-select-option
+                  v-for="type in billTypes"
+                  :value="type"
+                  :key="type">{{ type }}
+                </a-select-option>
+              </a-select>
+            </td>
+            <td>
+              <a-input :disabled="type === 'view'" v-model="item.billNum"></a-input>
+            </td>
+            <td>
+              <a-input :disabled="type === 'view'" v-model="item.billAmount"></a-input>
+            </td>
+            <td>
+              <a-input :disabled="type === 'view'" v-model="item.taxRate"></a-input>
+            </td>
+            <td>
+              <a-input :disabled="type === 'view'" v-model="item.noTaxAmount"></a-input>
+            </td>
+            <td>
+              <a-date-picker :disabled="type === 'view'" v-model="item.billDate" @change="dateChange"></a-date-picker>
+            </td>
+            <td>
+              <a :href="item.billFileUrl" target="_blank" v-if="item.billFileName">{{item.billFileName}}</a>
+            </td>
+            <td>
+              <a-input :disabled="type === 'view'" v-model="item.remark"></a-input>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </a-col>
   </div>
 </template>
 
 <script>
+    import { UnSignedService } from '../unsigned.service'
+    import { Base as BaseService } from '@/api/base'
+
     export default {
-        name: 'BillList'
+        name: 'BillList',
+        props: {
+            data: {
+                type: Object,
+                default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
+            },
+            id: {
+                type: String,
+                default: '0'
+            },
+            masterID: {
+                type: Number,
+                default: null
+            }
+        },
+        data () {
+            return {
+                billTypes: [],
+                billType: ''
+            }
+        },
+        created () {
+            UnSignedService.billTypes().then(res => {
+                this.billTypes = res.result.data
+            })
+        },
+        methods: {
+            add (target) {
+                const item = {
+                    isDeleted: false,
+                    isTemp: true,
+                    billType: '',
+                    billNum: '',
+                    billAmount: '',
+                    taxRate: '',
+                    noTaxAmount: '',
+                    billDate: '',
+                    billFileID: '',
+                    billFileName: '',
+                    billFileUrl: '',
+                    remark: ''
+                }
+                if (this.data[target]) {
+                    this.data[target].push(item)
+                } else {
+                    this.data[target] = [item]
+                }
+                this.$forceUpdate()
+            },
+            del (index) {
+                if (this.data.billList[index].isTemp) {
+                    if (this.data.billList[index].billFileID) {
+                        this.removeFile(this.data.billList[index].billFileID)
+                    }
+                    this.data.billList.splice(index, 1)
+                } else {
+                    this.removeFile(this.data.billList[index].billFileID)
+                    this.data.billList[index].isDeleted = true
+                }
+                this.$forceUpdate()
+            },
+            beforeUpload (file) {
+                this.handleUpload(file)
+                return false
+            },
+            handleUpload (file) {
+                const formData = new FormData()
+                formData.append('file', file)
+                formData.append('masterId', this.masterID)
+                formData.append('businessID', this.type === 'create' ? '' : this.id)
+                formData.append('businessType', 'bill')
+                formData.append('subInfo1', this.billType) //文件类型
+                formData.append('subInfo2', file.name) // 文件名
+                this.uploading = true
+                const _this = this
+                this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
+                    contentType: false,
+                    processData: false,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                })
+                    .then((response) => {
+                        this.$emit('on-change-masterId', response.result.data.masterID)
+                        this.data.billList[this.index].billFileID = response.result.data.id
+                        this.data.billList[this.index].billFileName = response.result.data.fileName
+                        this.data.billList[this.index].billFileUrl = response.result.data.fileUrl
+                        this.masterID = response.result.data.masterID
+                        this.$forceUpdate()
+                        _this.$message.success('上传成功')
+                        _this.$emit('ok', response.url)
+                        _this.visible = false
+                    })
+            },
+            dateChange (value) {
+                this.$forceUpdate()
+            },
+            choose (index) {
+                this.index = index
+            },
+            onchange (value) {
+                this.billType = value
+                this.$forceUpdate()
+            },
+            removeFile (id) {
+                BaseService.removeFile(id).then(res => {
+                    console.log(res)
+                })
+            },
+        }
     }
 </script>
 

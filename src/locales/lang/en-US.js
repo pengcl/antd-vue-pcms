@@ -60,18 +60,13 @@ const locale = {
 
   'menu.pay': 'Pay',
   'menu.pay.signed.list': 'Pay Signed',
-  'menu.pay.signed.item': 'Pay Signed Edit',
-  'menu.pay.signed.ongoing.item': 'Pay signed ongoing detail',
-  'menu.pay.signed.ongoing.approval': 'Pay signed ongoing approval',
-  'menu.pay.signed.upcoming.list': 'Pay signed upcoming list',
-  'menu.pay.signed.upcoming.item': 'Pay signed upcoming detail',
-  'menu.pay.unsigned.list': 'Pay Unsigned list',
+  'menu.pay.signed.item': 'Pay Signed detail',
+  'menu.pay.unsigned.list': 'Pay Unsigned',
   'menu.pay.unsigned.edit': 'Pay Unsigned Edit',
   'menu.pay.unsigned.item': 'Pay unsigned detail',
-  'menu.pay.unsigned.approval': 'Pay unsigned approval',
-  'menu.pay.signed.apply': 'Pay signed apply',
-  'menu.pay.account.list': 'Pay account list',
-  'menu.pay.account.item': 'Pay account item',
+  'menu.pay.fundplan.list':'Pay fundplan',
+  'menu.pay.fundplan.item':'Pay fundplan detail',
+
 
   'menu.checkout': 'Checkout',
   'menu.checkout.contract.list': 'Checkout contract list',

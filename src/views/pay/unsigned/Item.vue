@@ -1,65 +1,80 @@
 <template>
   <page-header-wrapper :title="type === 'view' ? '查看合同付款' : type === 'update' ? '编辑合同付款' : '新增合同付款'">
-    <a-card :bordered="false">
+    <a-card :bordered="false" v-if="form">
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="项目名称">
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'" v-model="form.projectName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="付款单位">
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'" v-model="form.payerPartyName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="申请部门">
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'" v-model="form.sponsorDeptName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="申请人">
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'" v-model="form.requestUserName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="付款类型">
-              <a-select>
-                <a-select-option></a-select-option>
+              <a-select v-model="form.paymentBusinessType"
+                        :disabled="type === 'view'"
+                        placeholder="请选择">
+                <a-select-option v-for="item in payTypeList"
+                                 :value="item"
+                                 :key="item">{{item}}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="申请日期">
-              <a-date-picker style="width: 100%"></a-date-picker>
+              <a-date-picker :disabled="type === 'view'"
+                             v-model="form.requestDate"
+                             style="width: 100%"></a-date-picker>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="付款说明">
-              <a-textarea></a-textarea>
+              <a-textarea :disabled="type === 'view'"
+                          v-model="form.paymentContent"></a-textarea>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="付款凭证">
-              <a-select>
-                <a-select-option></a-select-option>
+              <a-select v-model="form.expenseAccountType"
+                        :disabled="type === 'view'"
+                        placeholder="请选择">
+                <a-select-option v-for="item in expenseAccountTypeList"
+                                 :value="item"
+                                 :key="item">{{item}}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="申请付款金额">
-              <a-input></a-input>
+              <a-input :disabled="type === 'view'" v-model="form.paymentAmount"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
-          <payment-info></payment-info>
+          <payment-info :data="form" :type="type" :id="id"></payment-info>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">预算列表</a-col>
-          <budget-list></budget-list>
+          <budget-list :data="form" :type="type" :id="id"></budget-list>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票管理</a-col>
-          <bill-list></bill-list>
+          <bill-list :masterID="form.masterID" :data="form" :type="type" :id="id"
+                     @on-change-masterId="changeMasterId"></bill-list>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">附件管理</a-col>
-          <attachment-list></attachment-list>
+          <attachment-list :masterID="form.masterID" :data="form" :type="type" :id="id"
+                           @on-change-masterId="changeMasterId"></attachment-list>
         </a-row>
       </a-form>
 
@@ -94,6 +109,10 @@
     import BudgetList from '@/views/pay/unsigned/components/BudgetList'
     import BillList from '@/views/pay/unsigned/components/BillList'
     import AttachmentList from '@/views/pay/unsigned/components/AttachmentList'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { UnSignedService } from './unsigned.service'
+    import { Base as BaseService } from '@/api/base'
+
     export default {
         name: 'Item',
         components: { AttachmentList, BillList, BudgetList, PaymentInfo },
@@ -101,78 +120,82 @@
             return {
                 selection: {},
                 loading: false,
+                form: SwaggerService.getForm('PaymentOtherDto'),
+                payTypeList: [],
+                expenseAccountTypeList: []
             }
         },
-        watch: {
-            /*'data.masterID' (value) {
-                console.log(value)
-            }*/
-        },
+        watch: {},
         created () {
-
+            this.getData()
+            UnSignedService.payTypeList().then(res => {
+                this.payTypeList = res.result.data
+            })
+            UnSignedService.expenseAccountTypeList().then(res => {
+                this.expenseAccountTypeList = res.result.data
+            })
         },
-        props: {
-            data: {
-                type: Object,
-                default: null
+        computed: {
+            id () {
+                return this.$route.params.id
             },
-            type: {
-                type: String,
-                default: 'view'
-            },
-            id: {
-                type: String,
-                default: '0'
+            type () {
+                return this.$route.query.type
             }
         },
-        methods: {}
+        methods: {
+            getData () {
+                if (this.id !== '0') {
+                    UnSignedService.item(this.id).then(res => {
+                        this.form = res.result.data
+                        BaseService.masterID(this.id).then(_res => {
+                            this.form.masterID = _res.result.data
+                        })
+                    })
+                } else {
+                    this.form.masterID = 0
+                    this.form.detailList = []
+                    this.form.billList = []
+                }
+            },
+            changeMasterId (val) {
+                this.form.masterID = val
+                this.$forceUpdate()
+            },
+            approve () {
+
+            },
+            save () {
+                if (this.type === 'create') {
+                    UnSignedService.create(this.form).then(res => {
+                        if (res.result.data) {
+                            this.$message.success('创建成功')
+                            this.$router.push({
+                                path: '/pay/unsigned/list'
+                            })
+                        }
+                    })
+                }else {
+                    UnSignedService.update(this.form).then(res => {
+                        if (res.result.data) {
+                            this.$message.success('修改成功')
+                            this.$router.push({
+                                path: '/pay/unsigned/list'
+                            })
+                        }
+                    })
+                }
+            },
+            back () {
+                this.$router.push({
+                    path: '/pay/unsigned/list'
+                })
+            }
+        }
     }
 </script>
 <style lang="less" scoped>
-  table {
-    margin: 15px 0;
-    width: 100%;
-    border-width: 1px 1px 0 0;
-    border-radius: 3px 3px 0 0;
-    border-style: solid;
-    border-color: #ccc;
-
-    thead {
-      tr {
-        &:first-child {
-          th {
-            background-color: #f5f5f5;
-          }
-        }
-
-        th {
-          background-color: #06c;
-          color: #fff;
-          font-weight: normal;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        td {
-          padding: 0.5em 0.6em 0.4em 0.6em !important;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
+  .ant-btn-group {
+    margin-right: 8px;
   }
 </style>
