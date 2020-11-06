@@ -1,14 +1,14 @@
 <template>
-  <a-form-model 
-    v-if="data" 
+  <a-form-model
+    v-if="data"
     ref="form"
     :model="data.voMasterInfo"
     :rules="rules"
-    :label-col="{ span: 8 }" 
+    :label-col="{ span: 8 }"
     :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
-        <a-form-model-item 
+        <a-form-model-item
           label="项目管理指令编码">
           <a-input
             :disabled="true"

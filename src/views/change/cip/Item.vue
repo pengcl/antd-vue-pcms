@@ -35,10 +35,10 @@
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
-              <a-form-item label="编号"> </a-form-item>
+              <a-form-item label="编号"></a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
-              <a-form-item label="状态"> 草拟中 (1.6) </a-form-item>
+              <a-form-item label="状态"> 草拟中 (1.6)</a-form-item>
             </a-col>
           </a-row>
 
@@ -73,7 +73,7 @@
                 :contract="contract"
                 :type="type"
                 :id="id"
-				:stage="stage"
+                :stage="stage"
               ></attachment-data>
             </a-tab-pane>
             <a-tab-pane key="5" tab="附件">
@@ -104,171 +104,172 @@
 </template>
 
 <script>
-import BaseInfo from '@/views/change/cip/components/BaseInfo'
-import CostEstimates from '@/views/change/cip/components/CostEstimates'
-import BudgetList from '@/views/change/cip/components/BudgetList'
-import AttachmentData from '@/views/change/cip/components/AttachmentData'
-import AttachmentList from '@/views/change/cip/components/AttachmentList'
-import Process from '@/views/change/cip/components/Process'
-import { ChangeService } from '@/views/change/change.service'
-import { ProjectService } from '@/views/project/project.service'
-import { SwaggerService } from '@/api/swagger.service'
-export default {
-  name: 'ChangeItem',
-  components: { Process, AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo },
-  data() {
-    return {
-      tabActiveKey: 1,
-      loading: false,
-      contract: SwaggerService.getForm('ContractOutputDto'),
-      form: SwaggerService.getForm('VOAllInfoDto'),
-      project: null,
-    }
-  },
-  created() {
-    ChangeService.changeItem({ guid: this.contractGuid }).then((res) => {
-      this.contract = res.result
-      console.log('change.item.cntract', this.contract)
-      ProjectService.view2(this.contract.projectID).then((res) => {
-        this.project = res.result.data
-      })
-    })
-    if (this.type !== 'add' ) {
-      ChangeService.item(this.id).then((res) => {
-        this.form = res.result.data
-        console.log('change.item.data', this.form)
-        if (this.form.voMasterInfo == null) {
-          this.form.voMasterInfo = {}
-        }
-      })
-    } else {
-	  if(this.stage === 'VO'){
-		  	ChangeService.voItem(this.id).then((res) => {
-				this.form = res.result.data
-				console.log('change.item.data', this.form)
-				if (this.form.voMasterInfo == null) {
-					this.form.voMasterInfo = {}
-				}
-			})
-	  }else{
-	  	this.contract.cnotractGuid = this.contractGuid
-	  }
-    }
-  },
-  computed: {
-    id() {
-      return this.$route.params.id
-    },
-    type() {
-      return this.$route.query.type
-    },
-    contractGuid() {
-      return this.$route.query.contractGuid
-	},
-	stage(){
-		return this.$route.query.stage
-	}
-  },
-  watch: {},
-  methods: {
-    approve() {
-      console.log('approve')
-    },
-    save() {
-      let isValid = true
-      const validateForms = [
-        {
-          activeKey: 1,
-          key: 'baseInfo'
-        }
-      ]
-      validateForms.forEach((item, index) => {
-        this.$refs[item.key].$refs.form.validate(valid => {
-          if (!valid) {
-            isValid = false
-            this.tabActiveKey = item.activeKey
-          }
-        })
-      })
+  import BaseInfo from '@/views/change/cip/components/BaseInfo'
+  import CostEstimates from '@/views/change/cip/components/CostEstimates'
+  import BudgetList from '@/views/change/cip/components/BudgetList'
+  import AttachmentData from '@/views/change/cip/components/AttachmentData'
+  import AttachmentList from '@/views/change/cip/components/AttachmentList'
+  import Process from '@/views/change/cip/components/Process'
+  import { ChangeService } from '@/views/change/change.service'
+  import { ProjectService } from '@/views/project/project.service'
+  import { SwaggerService } from '@/api/swagger.service'
 
-      for (let i = 0; i < validateForms.length; i++) {
-        const item = validateForms[i]
-        this.$refs[item.key].$refs.form.validate(valid => {
-          if (!valid) {
-            isValid = false
-            this.tabActiveKey = item.activeKey
-          }
-        })
-        if (!isValid) {
-          break
-        }
+  export default {
+    name: 'ChangeItem',
+    components: { Process, AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo },
+    data () {
+      return {
+        tabActiveKey: 1,
+        loading: false,
+        contract: SwaggerService.getForm('ContractOutputDto'),
+        form: SwaggerService.getForm('VOAllInfoDto'),
+        project: null
       }
-
-      /*const partyResult = this.$refs.baseInfo.getPartys()
-      if (!partyResult) {
-        return
-      }*/
-      if(isValid){
-        this.form.contractNo = this.contract.contractNo
-        console.log('saveData', this.form)
-        if (this.type == 'add') {
-          if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
-            this.form.fileMasterId = 0
+    },
+    created () {
+      ChangeService.changeItem({ guid: this.contractGuid }).then((res) => {
+        this.contract = res.result
+        console.log('change.item.cntract', this.contract)
+        ProjectService.view2(this.contract.projectID).then((res) => {
+          this.project = res.result.data
+        })
+      })
+      if (this.type !== 'add') {
+        ChangeService.item(this.id).then((res) => {
+          this.form = res.result.data
+          console.log('change.item.data', this.form)
+          if (this.form.voMasterInfo == null) {
+            this.form.voMasterInfo = {}
           }
-          this.initCreateForm()
-
-          this.loading = true
-          ChangeService.create(this.form).then((res) => {
-            this.loading = false
-            console.log(res)
-            if (res.result.statusCode === 200) {
-              this.$message.info('创建成功')
-              this.$router.push({ path: `/change/pmi` })
+        })
+      } else {
+        if (this.stage === 'VO') {
+          ChangeService.voItem(this.id).then((res) => {
+            this.form = res.result.data
+            console.log('change.item.data', this.form)
+            if (this.form.voMasterInfo == null) {
+              this.form.voMasterInfo = {}
             }
-          }).catch(() => {
-            this.$message.error('创建失败，表单未填写完整')
           })
-        } else if (this.type == 'edit') {
-          this.loading = true
-          ChangeService.update(this.form).then((res) => {
-            this.loading = false
-            console.log(res)
-            if (res.result.statusCode === 200) {
-              this.$message.info('修改成功')
-              this.$router.push({ path: `/change/pmi` })
-            }
-          }).catch(() => {
-            this.$message.error('修改失败，表单未填写完整')
-          })
+        } else {
+          this.contract.cnotractGuid = this.contractGuid
         }
       }
     },
-    startUp() {
-      this.$message.warn('功能尚未实现')
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      contractGuid () {
+        return this.$route.query.contractGuid
+      },
+      stage () {
+        return this.$route.query.stage
+      }
     },
-    back() {
-      console.log('back')
-      this.$router.push({ path: `/change/pmi` })
-    },
-    //初始化新增cip信息的voMasterInfo对象
-    initCreateForm() {
-      this.form.cipid = this.form.cipid || 0
-      this.form.voMasterInfo.id = 0
-      this.form.voMasterInfo.isDeleted = false
-      this.form.voMasterInfo.contractID = this.contract.contractGuid
-      this.form.voMasterInfo.createMode = 'M'
-      this.form.voMasterInfo.stage = this.stage //为VO时则为cip转vo
-      this.form.voMasterInfo.verMajor = 0
-      this.form.voMasterInfo.verMinor = 0
-      this.form.voMasterInfo.codeNo = 0
-      this.form.voMasterInfo.codeNoIndependent = 0
-      this.form.voMasterInfo.retentionAndTermsType = 0 //
-      this.form.voMasterInfo.contractAmount = 0
-      this.form.voMasterInfo.voAmountAccumulate = this.form.voMasterInfo.voAmountAccumulate || 0
-      this.form.voMasterInfo.voAmount = this.form.voMasterInfo.voAmount || 0
-      this.form.voMasterInfo.voTotalAmountDecrease = this.form.voMasterInfo.voTotalAmountDecrease || 0
-      this.form.voMasterInfo.voTotalAmountIncrease = this.form.voMasterInfo.voTotalAmountIncrease || 0
-    },
-  },
-}
+    watch: {},
+    methods: {
+      approve () {
+        console.log('approve')
+      },
+      save () {
+        let isValid = true
+        const validateForms = [
+          {
+            activeKey: 1,
+            key: 'baseInfo'
+          }
+        ]
+        validateForms.forEach((item, index) => {
+          this.$refs[item.key].$refs.form.validate(valid => {
+            if (!valid) {
+              isValid = false
+              this.tabActiveKey = item.activeKey
+            }
+          })
+        })
+
+        for (let i = 0; i < validateForms.length; i++) {
+          const item = validateForms[i]
+          this.$refs[item.key].$refs.form.validate(valid => {
+            if (!valid) {
+              isValid = false
+              this.tabActiveKey = item.activeKey
+            }
+          })
+          if (!isValid) {
+            break
+          }
+        }
+
+        /* const partyResult = this.$refs.baseInfo.getPartys()
+        if (!partyResult) {
+          return
+        } */
+        if (isValid) {
+          this.form.contractNo = this.contract.contractNo
+          console.log('saveData', this.form)
+          if (this.type == 'add') {
+            if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
+              this.form.fileMasterId = 0
+            }
+            this.initCreateForm()
+
+            this.loading = true
+            ChangeService.create(this.form).then((res) => {
+              this.loading = false
+              console.log(res)
+              if (res.result.statusCode === 200) {
+                this.$message.info('创建成功')
+                this.$router.push({ path: `/change/pmi` })
+              }
+            }).catch(() => {
+              this.$message.error('创建失败，表单未填写完整')
+            })
+          } else if (this.type == 'edit') {
+            this.loading = true
+            ChangeService.update(this.form).then((res) => {
+              this.loading = false
+              console.log(res)
+              if (res.result.statusCode === 200) {
+                this.$message.info('修改成功')
+                this.$router.push({ path: `/change/pmi` })
+              }
+            }).catch(() => {
+              this.$message.error('修改失败，表单未填写完整')
+            })
+          }
+        }
+      },
+      startUp () {
+        this.$message.warn('功能尚未实现')
+      },
+      back () {
+        console.log('back')
+        this.$router.push({ path: `/change/pmi` })
+      },
+      // 初始化新增cip信息的voMasterInfo对象
+      initCreateForm () {
+        this.form.cipid = this.form.cipid || 0
+        this.form.voMasterInfo.id = 0
+        this.form.voMasterInfo.isDeleted = false
+        this.form.voMasterInfo.contractID = this.contract.contractGuid
+        this.form.voMasterInfo.createMode = 'M'
+        this.form.voMasterInfo.stage = this.stage // 为VO时则为cip转vo
+        this.form.voMasterInfo.verMajor = 0
+        this.form.voMasterInfo.verMinor = 0
+        this.form.voMasterInfo.codeNo = 0
+        this.form.voMasterInfo.codeNoIndependent = 0
+        this.form.voMasterInfo.retentionAndTermsType = 0 //
+        this.form.voMasterInfo.contractAmount = 0
+        this.form.voMasterInfo.voAmountAccumulate = this.form.voMasterInfo.voAmountAccumulate || 0
+        this.form.voMasterInfo.voAmount = this.form.voMasterInfo.voAmount || 0
+        this.form.voMasterInfo.voTotalAmountDecrease = this.form.voMasterInfo.voTotalAmountDecrease || 0
+        this.form.voMasterInfo.voTotalAmountIncrease = this.form.voMasterInfo.voTotalAmountIncrease || 0
+      }
+    }
+  }
 </script>
