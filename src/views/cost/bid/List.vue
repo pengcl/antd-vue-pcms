@@ -72,7 +72,7 @@
           <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
         </span>
         <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
         </span>
 
         <span slot="action" slot-scope="text,record">
@@ -144,8 +144,7 @@
         },
         {
             title: '状态',
-            dataIndex: 'approvalStatus',
-            scopedSlots: { customRender: 'approvalStatus' }
+            dataIndex: 'auditStatus'
         }
     ]
 
@@ -195,7 +194,7 @@
                   if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID!='') {
                     return CostService.bidItems(requestParameters)
                       .then(res => {
-                        if(res.result.data.item) {
+                        if(res.result.data.items) {
                           return fixedList(res, requestParameters)
                         }
                       })
