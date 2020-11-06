@@ -56,7 +56,7 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use((response) => {
   const result = response.data.result
   if (result) {
-    if (result.statusCode !== 200) {
+    if (result.statusCode && result.statusCode !== 200) {
       notification.error({
         message: '接口错误',
         description: result.msg

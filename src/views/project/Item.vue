@@ -150,7 +150,7 @@
                     :disabled="type === 'view' || (type === 'create' && id !== '0')"
                     placeholder="请选择币种"
                     v-model="form.currencyCode">
-                    <a-select-option v-for="currency in selection.currencies" :key="currency.id" :value="currency.id">
+                    <a-select-option v-for="currency in selection.currencies" :key="currency.id + ''" :value="currency.id + ''">
                       {{ currency.nameCN }}
                     </a-select-option>
                   </a-select>
@@ -476,7 +476,6 @@ export default {
           const data = res.result.data
           const valueDto = SwaggerService.getForm('ProjectStageCreateInputDto')
           const value = SwaggerService.getValue(valueDto, data)
-          console.log(value)
           value.projectShortCode = ''
           value.projectShortName = ''
           value.parentCode = data.projectCode
@@ -487,7 +486,6 @@ export default {
         }
       })
     }
-    this.form.currencyCode = 3
     this.form.cityID = this.$route.query.cityID ? parseInt(this.$route.query.cityID, 10) : ''
     ProjectService.types().then(res => {
       this.selection.types = res.result.data
@@ -498,9 +496,6 @@ export default {
     })
     CurrencyService.list().then(res => {
       this.selection.currencies = res.result.data.items
-    })
-    ProjectService.list({}).then(res => {
-      console.log(res)
     })
   },
   watch: {

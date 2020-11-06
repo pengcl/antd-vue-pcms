@@ -120,8 +120,8 @@ const columns = [
   },
   {
     title: '房产项目名称',
-    dataIndex: 'projectName',
-    scopedSlots: { customRender: 'projectName' }
+    dataIndex: 'projectShortName',
+    scopedSlots: { customRender: 'projectShortName' }
   },
   {
     title: '地区',
