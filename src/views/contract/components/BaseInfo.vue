@@ -68,7 +68,20 @@
           label="选择原合同"
           prop="masterContractID"
         >
-          <a-auto-complete
+          <a-input v-model="data.contract.masterContractID" :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15 || type === 'view'" :hidden="true"/>
+          <a-input
+            :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15 || type === 'view'"
+            :value="data.master.contractName"
+            @click="showSelect('master')"
+            placeholder="请选择原合同"
+            suffix="选择原合同"
+            :read-only="true"/>
+          <!--<a-select @click="showSelect('master')" :readonly="true">
+            <a-select-option value="jack">
+              Jack
+            </a-select-option>
+          </a-select>-->
+          <!--<a-auto-complete
             :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15 || type === 'view'"
             class="certain-category-search"
             dropdown-class-name="certain-category-search-dropdown"
@@ -91,7 +104,7 @@
             <a-input>
               <a-icon slot="suffix" type="search" class="certain-category-icon"/>
             </a-input>
-          </a-auto-complete>
+          </a-auto-complete>-->
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -191,12 +204,12 @@
           <thead>
             <tr>
               <th colspan="2">
-                <a-button @click="addParty(19)" :disabled="type === 'view'" icon="plus">
+                <a-button @click="addParty(19)" :disabled="type === 'view' || filterParties(19).length >= 1" icon="plus">
                   新增
                 </a-button>
-                <a-button @click="clear(19)" :disabled="type === 'view'" icon="stop">
-                  重置
-                </a-button>
+              <!--<a-button @click="clear(19)" :disabled="type === 'view'" icon="stop">
+                重置
+              </a-button>-->
               </th>
             </tr>
             <tr>
@@ -240,9 +253,9 @@
                 <a-button @click="addParty(20)" :disabled="type === 'view'" icon="plus">
                   新增
                 </a-button>
-                <a-button @click="clear(20)" :disabled="type === 'view'" icon="stop">
-                  重置
-                </a-button>
+              <!--<a-button @click="clear(20)" :disabled="type === 'view'" icon="stop">
+                重置
+              </a-button>-->
               </th>
             </tr>
             <tr>
@@ -309,19 +322,28 @@
         </a-form-model-item>
       </a-col>
     </a-row>
+    <select-master-contract
+      ref="masterContract"
+      :visible="show.masterShow"
+      :data="data"
+      @cancel="handleCancel('master')"
+      @ok="handleOk('master')"></select-master-contract>
   </a-form-model>
 </template>
 
 <script>
   import { ContractService } from '@/views/contract/contract.service'
   import { Base as BaseService } from '@/api/base'
+  import SelectMasterContract from '@/components/selectMasterContract/index'
 
   export default {
     name: 'BaseInfo',
+    components: { SelectMasterContract },
     data () {
       return {
         selection: {},
         loading: false,
+        show: { masterShow: false },
         rules: {
           projectName: [
             { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
@@ -334,8 +356,16 @@
           masterContractID: [{ required: true, message: '请选择原合同', trigger: 'blur' }],
           contractType: [{ required: true, message: '请选择成本预算分类', trigger: 'blur' }],
           contractName: [{ required: true, message: '请填写合同名称', trigger: 'blur' }],
-          contractDetails: [{ required: false, message: '', trigger: 'blur' }, { max: 4000, message: '请不要超过4000个字符', trigger: 'blur' }],
-          remarks: [{ required: false, message: '', trigger: 'blur' }, { max: 4000, message: '请不要超过4000个字符', trigger: 'blur' }]
+          contractDetails: [{ required: false, message: '', trigger: 'blur' }, {
+            max: 4000,
+            message: '请不要超过4000个字符',
+            trigger: 'blur'
+          }],
+          remarks: [{ required: false, message: '', trigger: 'blur' }, {
+            max: 4000,
+            message: '请不要超过4000个字符',
+            trigger: 'blur'
+          }]
         }
       }
     },
@@ -464,6 +494,19 @@
           }
           this.$forceUpdate()
         })
+      },
+      showSelect (target) {
+        console.log(target)
+        this.show[target + 'Show'] = true
+      },
+      handleOk (target) {
+        this.show[target + 'Show'] = false
+        this.data.master = this.$refs.masterContract.selected
+        this.data.contract.masterContractID = this.data.master.contractGuid
+      },
+      handleCancel (target) {
+        this.show[target + 'Show'] = false
+        this.data.master = this.$refs.masterContract.selected
       }
     }
   }

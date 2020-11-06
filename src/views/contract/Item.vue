@@ -26,9 +26,13 @@
                 {{ form.contract.contractName }}
               </a-form-item>
             </a-col>
-            <a-col :md="12" :sm="24"></a-col>
-            <a-col :md="24" :sm="24">
+            <a-col :md="12" :sm="24">
               <a-form-item label="审批状态">
+                草拟中 (1.6)
+              </a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="预算确认">
                 草拟中 (1.6)
               </a-form-item>
             </a-col>
@@ -71,6 +75,11 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group v-if="activeKey === 3">
+            <a-button @click="approve" type="success">
+              预算确认
+            </a-button>
+          </a-button-group>
           <a-button-group>
             <a-button @click="approve" type="success">
               启动审批流程

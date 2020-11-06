@@ -171,6 +171,7 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+          white-space: nowrap;
 
           button {
             margin-right: 10px;
@@ -186,12 +187,21 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+          text-align: center;
 
           button {
             margin-right: 10px;
           }
         }
       }
+    }
+  }
+
+  .ant-upload-disabled {
+    button {
+      color: rgba(0, 0, 0, 0.25);
+      background-color: #f5f5f5;
+      border-color: #d9d9d9;
     }
   }
 </style>
