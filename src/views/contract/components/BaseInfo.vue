@@ -326,6 +326,7 @@
       ref="masterContract"
       :visible="show.masterShow"
       :data="data"
+      :default="data.master"
       @cancel="handleCancel('master')"
       @ok="handleOk('master')"></select-master-contract>
   </a-form-model>
@@ -431,6 +432,11 @@
           }
           ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
             this.selection.masters = res.result.data
+            res.result.data.forEach(item => {
+              if (item.contractGuid === this.data.contract.masterContractID) {
+                this.data.master = item
+              }
+            })
             this.$forceUpdate()
           })
         }
@@ -506,7 +512,6 @@
       },
       handleCancel (target) {
         this.show[target + 'Show'] = false
-        this.data.master = this.$refs.masterContract.selected
       }
     }
   }
