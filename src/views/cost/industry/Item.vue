@@ -187,21 +187,24 @@
         this.form.projectGUID = this.ProjectGUID
         CostService.industryCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
-            const that = this
-            this.$confirm({
-              title : that.type === 'edit' ? '修改提示' : '添加提示',
-              content : that.type === 'edit' ? '继续修改' : '继续添加',
-              onOk () {
-                if ( that.type === 'add' ) {
-                  that.form = SwaggerService.getForm('TenderPackageCreateInputDto')
-                  that.$forceUpdate()
-                }
-              },
-              onCancel(){
-                that.$router.push({ path: `/cost/industry/list?ProjectGUID=${that.ProjectGUID}`})
-              }
-            })
+            this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
           }
+          // if (res.result.statusCode === 200) {
+          //   const that = this
+          //   this.$confirm({
+          //     title : that.type === 'edit' ? '修改提示' : '添加提示',
+          //     content : that.type === 'edit' ? '继续修改' : '继续添加',
+          //     onOk () {
+          //       if ( that.type === 'add' ) {
+          //         that.form = SwaggerService.getForm('TenderPackageCreateInputDto')
+          //         that.$forceUpdate()
+          //       }
+          //     },
+          //     onCancel(){
+          //       that.$router.push({ path: `/cost/industry/list?ProjectGUID=${that.ProjectGUID}`})
+          //     }
+          //   })
+          // }
         })
       },
       back () {

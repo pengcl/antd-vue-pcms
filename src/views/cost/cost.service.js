@@ -15,6 +15,7 @@ const API = {
   budgetTypeItems: '/api/services/app/GeneralType/GetBudgetItemTypeTypes',//获取科目类型集合
   //招投标分判包
   bidItems: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',//根据项目ID获取招投标列表
+  bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
   bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage'//新增招投标分判包
 }
 
@@ -129,6 +130,14 @@ CostService.bidCreate = function (parameter) {
     url: API.bidCreate,
     method: 'POST',
     data: parameter
+  })
+}
+
+CostService.bidItem = function (parameter) {
+  return request({
+    url: API.bidItem,
+    method: 'get',
+    params: parameter
   })
 }
 

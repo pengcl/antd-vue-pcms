@@ -6,11 +6,12 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
+                <a-tree-select
+                  :treeData="cities"
                   placeholder="请选择"
-                  @change="onChange"
-                />
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  @change="onChange"/>
               </a-form-item>
             </a-col>
           </a-row>
@@ -345,7 +346,7 @@
             },
             onChange (value) {
                 if (value.length >= 2) {
-                  this.queryParam.ProjectGUID = value[value.length - 1]
+                  this.queryParam.ProjectGUID = value
                   this.$refs.table.refresh(true)
                 } else {
                   this.queryParam.ProjectGUID = ''

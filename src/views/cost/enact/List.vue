@@ -6,16 +6,18 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
+                <a-tree-select
+                  :treeData="cities"
                   placeholder="请选择"
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   @change="onChange"
-                />
+                  @select="onSelect"/>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="状态">
-                编制中
+                {{ auditStatus }}
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -113,7 +115,7 @@
         data () {
             this.columns = columns
             return {
-                // create model
+                auditStatus: '',
                 cities: [],
                 visible: false,
                 confirmLoading: false,
@@ -121,7 +123,7 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: {},
+                queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
@@ -132,52 +134,54 @@
                             data: []
                         }
                     }
-                    return CostService.items(requestParameters).then(res => {
+                    if(this.queryParam.ProjectGUID){
+                      return CostService.items(requestParameters).then(res => {
                         const requestParameters2 = Object.assign({}, parameter, { Id: this.queryParam.ProjectGUID })
                         return CostService.subjectItems(requestParameters2)
-                            .then(res2 => {
+                          .then(res2 => {
+                            if (res2.result.data != null) {
+                              res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
+                                _columns.push(
+                                  {
+                                    title: subjectItem1.costCenterName,
+                                    dataIndex: 'cost' + subjectItem1.costCenterId,
+                                    scopedSlots: { customRender: 'cost' }
+                                  }
+                                )
+                              })
+                              this.columns = _columns
+                              this.$forceUpdate()
+                              res.result.data.forEach(item => {
+                                const obj = {}
                                 if (res2.result.data != null) {
-                                    res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
-                                        _columns.push(
-                                            {
-                                                title: subjectItem1.costCenterName,
-                                                dataIndex: 'cost' + subjectItem1.costCenterId,
-                                                scopedSlots: { customRender: 'cost' }
-                                            }
-                                        )
-                                    })
-                                }
-                                this.columns = _columns
-                                this.$forceUpdate()
-                                res.result.data.forEach(item => {
-                                    const obj = {}
-                                    if (res2.result.data != null) {
-                                        res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
-                                            // 加载成本
-                                            const costName = 'cost' + subjectItem2.costCenterId
-                                            subjectItem2.mainElements.forEach(itemA => {
-                                                if (item.id === itemA.elementTypeId) {
-                                                    obj['id'] = item.id
-                                                    obj['code'] = item.code
-                                                    obj['name'] = item.nameCN
-                                                    // obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
-                                                    obj[costName] = {
-                                                        amount: itemA.amount,
-                                                        percentage: itemA.percentage
-                                                    }
-                                                }
-                                            })
-                                        })
-                                    } else {
+                                  res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
+                                    // 加载成本
+                                    const costName = 'cost' + subjectItem2.costCenterId
+                                    subjectItem2.mainElements.forEach(itemA => {
+                                      if (item.id === itemA.elementTypeId) {
                                         obj['id'] = item.id
                                         obj['code'] = item.code
                                         obj['name'] = item.nameCN
-                                    }
-                                    result.result.data.push(obj)
-                                })
-                                return fixedList(result, parameter)
-                            })
-                    })
+                                        // obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
+                                        obj[costName] = {
+                                          amount: itemA.amount,
+                                          percentage: itemA.percentage
+                                        }
+                                      }
+                                    })
+                                  })
+                                } else {
+                                  obj['id'] = item.id
+                                  obj['code'] = item.code
+                                  obj['name'] = item.nameCN
+                                }
+                                result.result.data.push(obj)
+                              })
+                            }
+                            return fixedList(result, parameter)
+                          })
+                      })
+                    }
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -219,15 +223,19 @@
             handleToAdd () {
                 this.$router.push({ path: `/cost/enact/item/0?type=add` })
             },
-            onChange (value) {
+            onChange (value,option) {
                 if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
+                    this.queryParam.ProjectGUID = value
                     this.$refs.table.refresh(true)
                 } else {
                     this.queryParam.ProjectGUID = ''
                     this.$refs.table.refresh(true)
                 }
-            }
+            },
+            onSelect (value,option) {
+                console.log(option.dataRef.auditStatus)
+                this.auditStatus = option.dataRef.auditStatus
+          }
         }
     }
 </script>
