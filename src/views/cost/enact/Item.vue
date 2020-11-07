@@ -135,7 +135,7 @@
               return items
             },
             back () {
-                this.$router.push({ path: `/cost/enact/list` })
+                this.$router.push({ path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}` })
             },
             handleToSave () {
               const result = {}

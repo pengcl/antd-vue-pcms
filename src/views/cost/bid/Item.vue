@@ -195,21 +195,44 @@
         this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
       })
-      return CostService.industryItems({ MaxResultCount : 1000 , ProjectGUID: this.ProjectGUID })
+      CostService.industryItems({ MaxResultCount : 1000 , ProjectGUID: this.ProjectGUID })
         .then(res => {
           this.industryItems = JSON.parse(JSON.stringify(res.result.data.items))
           this.$forceUpdate()
         })
       if (this.type !== 'add') {
-        CostService.industryItem({ Id: this.id }).then(res => {
+        CostService.bidItem({ Id: this.id }).then(res => {
           this.form = res.result.data
-          const values = []
-          const centers = this.form.costCenters ? this.form.costCenters : []
-          centers.forEach((item, idsIndex) => {
-            values.push(item.costCenterId)
+          if(this.form.tenderPackages){
+            this.form.tenderPackages.forEach(item => {
+              const obj = []
+              obj['packageTitle'] = item.packageTitle
+              obj['centers'] = item.costCenters
+              obj['id'] = item.id
+              obj['budgetAmount'] = item.budgetAmount
+              obj['industry'] =  item.id
+              this.tenderPackages.push(obj)
+            })
+          }
+          this.plans = this.form.plans
+          this.form.tenderPackages = []
+          //组装行业分判包列表数据，用户修改保存
+          this.tenderPackages.forEach(item => {
+            this.form.tenderPackages.push(item.id)
           })
-          this.form.costCenters = values
-          this.centers = values
+          //组装计划的列表数据，用户修改保存
+          if(this.plans.length>0){
+            this.form.plans = []
+            this.plans.forEach(item => {
+              const obj = {}
+              obj['planTitle'] = item.planTitle
+              obj['planStartDate'] = item.planStartDate
+              obj['planEndDate'] = item.planEndDate
+              obj['remarks'] = item.remarks
+              this.form.plans.push(obj)
+            })
+          }
+          this.$forceUpdate()
         })
       }
     },
@@ -254,23 +277,26 @@
         }
         CostService.bidCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
-            const that = this
-            this.$confirm({
-              title : that.type === 'edit' ? '修改提示' : '添加提示',
-              content : that.type === 'edit' ? '继续修改' : '继续添加',
-              onOk () {
-                if ( that.type === 'add' ) {
-                  that.form = SwaggerService.getForm('ProjectTenderPackageCreateInputDto')
-                  that.tenderPackages = []
-                  that.plans = []
-                  that.$forceUpdate()
-                }
-              },
-              onCancel(){
-                that.$router.push({ path: `/cost/bid/list?ProjectGUID=${that.ProjectGUID}`})
-              }
-            })
+            this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
           }
+          // if (res.result.statusCode === 200) {
+          //   const that = this
+          //   this.$confirm({
+          //     title : that.type === 'edit' ? '修改提示' : '添加提示',
+          //     content : that.type === 'edit' ? '继续修改' : '继续添加',
+          //     onOk () {
+          //       if ( that.type === 'add' ) {
+          //         that.form = SwaggerService.getForm('ProjectTenderPackageCreateInputDto')
+          //         that.tenderPackages = []
+          //         that.plans = []
+          //         that.$forceUpdate()
+          //       }
+          //     },
+          //     onCancel(){
+          //       that.$router.push({ path: `/cost/bid/list?ProjectGUID=${that.ProjectGUID}`})
+          //     }
+          //   })
+          // }
         })
       },
       back () {
