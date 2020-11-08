@@ -16,21 +16,28 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商名称">
-              <a-input></a-input>
+              <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="编号">
-              <a-input></a-input>
+              <a-input v-model="queryParam.VendorCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商分类">
-              <a-input></a-input>
+              <a-tree-select
+                v-model="queryParam.packageCodeList"
+                style="width: 100%"
+                :tree-data="types"
+                tree-checkable
+                :show-checked-strategy="SHOW_PARENT"
+                search-placeholder="请选择供应商类别"
+              />
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-button type="success">搜索</a-button>
+            <a-button @click="search()" type="success">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>
         </a-row>
@@ -61,13 +68,13 @@
             title="编辑"
             @click="handleToEdit(record)"></a-button>
         </template>
-        <template slot="vendorName" slot-scope="text">
+        <template slot="vendorAbbreviation" slot-scope="text">
           <div class="vendor">
-            <span>{{ text }}</span>
+            <ellipsis :length="8" tooltip>{{ text }}</ellipsis>
           </div>
         </template>
         <template slot="detail" slot-scope="text, record">
-          <p>{{ record.vendorAbbreviation }}</p>
+          <p>{{ record.vendorName }}</p>
           <p>
             <a-button-group v-if="record.vendorStatus">
               <span class="label-primary">{{ record.vendorStatus }}</span>
@@ -100,10 +107,10 @@
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
     import { getRoleList } from '@/api/manage'
-
-    import { fixedList } from '@/utils/util'
+    import { fixedList, formatTree } from '@/utils/util'
+    import { TreeSelect } from 'ant-design-vue'
     import { SupplierService } from '@/views/supplier/supplier.service'
-
+    const SHOW_PARENT = TreeSelect.SHOW_PARENT
     export default {
         name: 'SupplierPurchaseList',
         components: {
@@ -121,8 +128,8 @@
                 {
                     title: '供应商简称',
                     colSpan: 0,
-                    dataIndex: 'vendorName',
-                    scopedSlots: { customRender: 'vendorName' }
+                    dataIndex: 'vendorAbbreviation',
+                    scopedSlots: { customRender: 'vendorAbbreviation' }
                 },
                 {
                     title: '详情',
@@ -140,12 +147,10 @@
 
             this.columns = columns
             return {
+              SHOW_PARENT,
                 show: false,
-                mdl: null,
-                // 高级搜索 展开/关闭
-                advanced: false,
-                // 查询参数
                 queryParam: { RegisterType: 1 },
+              types: [],
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -161,7 +166,11 @@
         },
         filters: {},
         created () {
-            getRoleList({ t: new Date() })
+            // getRoleList({ t: new Date() })
+          SupplierService.types().then(res => {
+            this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
+            this.$forceUpdate()
+          })
         },
         computed: {
             rowSelection () {
@@ -172,6 +181,9 @@
             }
         },
         methods: {
+          search () {
+            this.$refs.table.refresh()
+          },
             handleToItem (record) {
                 console.log(record)
                 this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })

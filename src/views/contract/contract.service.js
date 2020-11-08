@@ -9,7 +9,9 @@ const API = {
   update: '/api/services/app/Contract/UpdateContractAllInfo',
   vendors: '/api/services/app/Contract/GetVendorList',
   centers: '/api/services/app/ProjectCostCenter/GetProjectCostCenters',
-  amount: '/api/services/app/Contract/GetContractAmountByBQList'
+  amount: '/api/services/app/Contract/GetContractAmountByBQList',
+  tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',
+  budgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid'
 }
 
 const ContractService = {}
@@ -91,6 +93,22 @@ ContractService.amount = function (contractCatrgory, params) {
     url: API.amount + '?contractCatrgory=' + contractCatrgory,
     method: 'POST',
     data: params
+  })
+}
+
+ContractService.tenders = function (params) {
+  return request({
+    url: API.tenders,
+    method: 'GET',
+    params: params
+  })
+}
+
+ContractService.budgets = function (contractGuid) {
+  return request({
+    url: API.budgets,
+    method: 'GET',
+    params: { contractGuid }
   })
 }
 

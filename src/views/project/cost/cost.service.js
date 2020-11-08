@@ -37,7 +37,7 @@ CostService.update = function (parameter) {
   return request({
     url: API.update,
     method: 'PUT',
-    params: parameter
+    data: parameter
   })
 }
 
@@ -45,7 +45,7 @@ CostService.create = function (parameter) {
   return request({
     url: API.create,
     method: 'POST',
-    params: parameter
+    data: parameter
   })
 }
 

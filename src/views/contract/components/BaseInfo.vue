@@ -22,10 +22,13 @@
           label="招投标分判包编号"
           prop="tenderPackageItemID"
         >
+          <a-input v-model="data.contract.tenderPackageItemID" :disabled="type === 'view'" :hidden="true"/>
           <a-input
             :disabled="type === 'view'"
-            placeholder="请选择招投标分判包"
-            v-model="data.contract.tenderPackageItemID"/>
+            :value="tender.packageTitle"
+            @click="showSelect('tender')"
+            placeholder="请选择招投标分判包编号"
+            :read-only="true"/>
           <span></span>
         </a-form-model-item>
       </a-col>
@@ -74,37 +77,7 @@
             :value="data.master.contractName"
             @click="showSelect('master')"
             placeholder="请选择原合同"
-            suffix="选择原合同"
             :read-only="true"/>
-          <!--<a-select @click="showSelect('master')" :readonly="true">
-            <a-select-option value="jack">
-              Jack
-            </a-select-option>
-          </a-select>-->
-          <!--<a-auto-complete
-            :disabled="!data.contract.contractCategory || data.contract.contractCategory === 15 || type === 'view'"
-            class="certain-category-search"
-            dropdown-class-name="certain-category-search-dropdown"
-            :dropdown-match-select-width="false"
-            :dropdown-style="{ width: '300px' }"
-            size="large"
-            style="width: 100%"
-            placeholder="请选择原合同"
-            option-label-prop="label"
-            :filter-option="filterMaster"
-            v-model="data.contract.masterContractID"
-            @select="select"
-          >
-            <template slot="dataSource">
-              <a-select-option v-for="item in selection.masters" :label="item.contractNo" :key="JSON.stringify(item)" :value="item.contractGuid">
-                <span>{{ item.contractNo }}</span>
-                <p class="certain-search-item-count">合同编号：{{ item.contractNo }}</p>
-              </a-select-option>
-            </template>
-            <a-input>
-              <a-icon slot="suffix" type="search" class="certain-category-icon"/>
-            </a-input>
-          </a-auto-complete>-->
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -131,13 +104,13 @@
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="成本预算分类"
-          prop="contractType"
+          prop="contractTypeCode"
         >
           <a-select
             :disabled="type === 'view'"
             placeholder="请选择成本预算分类"
-            v-model="data.contract.contractType">
-            <a-select-option :value="1">工程</a-select-option>
+            v-model="data.contract.contractTypeCode">
+            <a-select-option v-for="(option,index) in selection.itemTypes" :key="index" :value="option.code">{{ option.name }}</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-col>
@@ -329,6 +302,13 @@
       :default="data.master"
       @cancel="handleCancel('master')"
       @ok="handleOk('master')"></select-master-contract>
+    <select-tender-package
+      ref="tenderPackage"
+      :visible="show.tenderShow"
+      :data="data"
+      :project="project"
+      @cancel="handleCancel('tender')"
+      @ok="handleOk('tender')"></select-tender-package>
   </a-form-model>
 </template>
 
@@ -336,15 +316,18 @@
   import { ContractService } from '@/views/contract/contract.service'
   import { Base as BaseService } from '@/api/base'
   import SelectMasterContract from '@/components/selectMasterContract/index'
+  import SelectTenderPackage from '@/views/contract/components/baseInfo/selectTenderPackage/index'
 
   export default {
     name: 'BaseInfo',
-    components: { SelectMasterContract },
+    components: { SelectTenderPackage, SelectMasterContract },
     data () {
       return {
         selection: {},
         loading: false,
-        show: { masterShow: false },
+        tender: {},
+        itemType: {},
+        show: { masterShow: false, tenderShow: false },
         rules: {
           projectName: [
             { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
@@ -507,8 +490,18 @@
       },
       handleOk (target) {
         this.show[target + 'Show'] = false
-        this.data.master = this.$refs.masterContract.selected
-        this.data.contract.masterContractID = this.data.master.contractGuid
+        if (target === 'master') {
+          this.data.master = this.$refs.masterContract.selected
+          this.data.contract.masterContractID = this.data.master.contractGuid
+        } else {
+          this.tender = this.$refs.tenderPackage.selected
+          this.data.contract.tenderPackageItemID = this.tender.projectTenderPackageGUID
+          this.data.contract.contractTypeCode = this.tender.itemTypeCode
+          this.selection.itemTypes = [{
+            name: this.tender.itemTypeNameCN,
+            code: this.tender.itemTypeCode
+          }]
+        }
       },
       handleCancel (target) {
         this.show[target + 'Show'] = false
