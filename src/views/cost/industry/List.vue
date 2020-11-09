@@ -104,7 +104,7 @@
 
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success"  v-if="pid">新增预算</a-button>
+          <a-button type="success"  v-if="pid" @click="hanldeAddBugetItem">新增预算</a-button>
           <a-button type="danger" style="margin-left: 10px" v-if="pid">删除预算</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
@@ -152,6 +152,7 @@
         </span>
       </s-table>
     </a-card>
+    <industry-modal ref="industryModal"></industry-modal>
   </page-header-wrapper>
 </template>
 
@@ -166,6 +167,7 @@
     import { formatList } from '../../../mock/util'
     import {CostService} from "@/views/cost/cost.service";
     import {fixedList} from "@/utils/util";
+    import IndustryModal from '@/views/cost/industry/modal/IndustryModal'
 
     const columns = [
         {
@@ -257,7 +259,8 @@
             STable,
             Ellipsis,
             CreateForm,
-            StepByStepModal
+            StepByStepModal,
+            IndustryModal
         },
         data () {
             this.columns = columns
@@ -343,9 +346,18 @@
                         children: children
                     })
                 })
+                setSelectable(cities)
                 this.cities = cities
                 this.$forceUpdate()
             })
+            function setSelectable(datas){
+              datas.forEach(item =>{
+                if(item.children && item.children.length > 0){
+                  item.selectable = false
+                  setSelectable(item.children)
+                }
+              })
+            }
         },
         props: {
           type: {
@@ -476,6 +488,11 @@
             search () {
               this.show = !this.show
               this.$refs.table.refresh(true)
+            },
+            hanldeAddBugetItem(){
+              if(this.pid){
+                this.$refs.industryModal.show(this.pid)
+              }
             }
         }
     }

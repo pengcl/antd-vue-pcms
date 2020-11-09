@@ -19,7 +19,11 @@ const API = {
   bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage',//新增招投标分判包
   //行业预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
-  itemTree: '/api/services/app/Element/GetElementTreeList' //获取大类科目里面的子科目树
+  itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
+  //新增预算界面
+  budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
+  budegetTreeItem: '/api/services/app/TenderPackage/TenderPackageAddCostCenterBudgetItems'//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
+  
 
 }
 
@@ -158,6 +162,22 @@ CostService.itemTree = function (parameter) {
     url: API.itemTree,
     method: 'get',
     params: parameter
+  })
+}
+
+CostService.budegetTree = function (parameter) {
+  return request({
+    url: API.budegetTree,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.budegetTreeItem = function (parameter) {
+  return request({
+    url: API.budegetTreeItem,
+    method: 'POST',
+    data: parameter
   })
 }
 
