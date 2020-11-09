@@ -6,10 +6,13 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
-                  placeholder="请选择"
-                  @change="onChange"
+                <a-tree-select
+                  v-model="value"
+                  style="width: 100%"
+                  :tree-data="cities"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  search-placeholder="请选择"
+                  @select="onSelect"
                 />
               </a-form-item>
             </a-col>
@@ -144,6 +147,9 @@
             this.columns = columns
             return {
                 // create model
+                value: '',
+                city: '',
+                projectType: '',
                 cities: [],
                 visible: false,
                 confirmLoading: false,
@@ -218,14 +224,17 @@
                 this.show = !this.show
                 this.$refs.table.refresh(true)
             },
-            onChange (value) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
+            onSelect (value, option) {
+                this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+                this.projectType = option.$options.propsData.dataRef.type
+                if (typeof value === 'number') {
+                    this.city = value
                     this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
+                } else {
+                    this.queryParam.ProjectGUID = value
                 }
+                this.$refs.table.refresh()
+                this.$forceUpdate()
             },
             handleOk () {
                 const form = this.$refs.createModal.form
