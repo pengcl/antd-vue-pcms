@@ -14,7 +14,11 @@
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
-
+              <a-button-group style="float: right">
+                <a-button type="success" style="margin-right: 10px" @click="handleAdd">新增年度资金计划</a-button>
+                <a-button type="success" style="margin-right: 10px">新增月度资金计划</a-button>
+                <a-button type="success">查看历史版本（V1.0）</a-button>
+              </a-button-group>
             </a-col>
           </a-row>
         </a-form>
@@ -48,19 +52,19 @@
               type="primary"
               icon="form"
               style="margin-left: 4px"
-              title="编辑"
+              title="修改"
               @click="handleToEdit(record)"></a-button>
             <a-button
               type="primary"
               class="btn-info"
-              icon="file-done"
+              icon="edit"
               style="margin-left: 4px"
-              title="审批记录"></a-button>
+              title="月度修订"></a-button>
           </template>
         </span>
       </s-table>
 
-      <create-form
+      <create-annual-funding-plan
         ref="createModal"
         :visible="visible"
         :loading="confirmLoading"
@@ -68,7 +72,6 @@
         @cancel="handleCancel"
         @ok="handleOk"
       />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -79,11 +82,11 @@
     import { getRoleList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { fixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import { UnSignedService } from '@/views/pay/unsigned/unsigned.service'
+    import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
 
     const columns = [
         {
@@ -132,9 +135,9 @@
     export default {
         name: 'ContractList',
         components: {
+            CreateAnnualFundingPlan,
             STable,
             Ellipsis,
-            CreateForm,
             StepByStepModal
         },
         data () {
@@ -194,10 +197,10 @@
         },
         methods: {
             handleToItem (record) {
-                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=view` })
+                this.$router.push({ path: `/pay/fundplan/item/${record.gid}?type=view` })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=update` })
+                this.$router.push({ path: `/pay/fundplan/item/${record.gid}?type=update` })
             },
             handleToAdd () {
                 this.$router.push({ path: '/pay/unsigned/item/0?type=create' })

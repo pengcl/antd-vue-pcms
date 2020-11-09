@@ -60,17 +60,23 @@
             title="编辑"
             @click="handleToEdit(record)"></a-button>
         </template>
+
+        <template slot="vendorName" slot-scope="text">
+          <div class="vendor">
+            <span>{{ text }}</span>
+          </div>
+        </template>
         <template slot="detail" slot-scope="text, record">
           <p>{{ record.vendorAbbreviation }}</p>
           <p>
             <a-button-group v-if="record.vendorStatus">
-              <span class="label">{{ record.vendorStatus }}</span>
+              <span class="label-primary">{{ record.vendorStatus }}</span>
             </a-button-group>
             <a-button-group v-if="record.legalRep">
-              <span class="label">{{ record.legalRep }}</span>
+              <span class="label-orange">{{ record.legalRep }}</span>
             </a-button-group>
             <a-button-group v-if="record.registerType">
-              <span class="label">{{ record.registerType }}</span>
+              <span class="label-orange">{{ record.registerType }}</span>
             </a-button-group>
           </p>
           <a-row>
@@ -278,5 +284,37 @@
   background-color: #f8cbad;
   line-height: 20px;
   border-radius: 5px;
+}
+
+.label-primary {
+  border-color: #3A44E1;
+  color: #FFF;
+  background-color: #666EE8;
+  padding: 8px 15px;
+  line-height: 20px;
+  border-radius: 5px;
+}
+
+.label-orange {
+  background-color: #FF9149;
+  border-color: #FF7216;
+  color: #FFF;
+  padding: 8px 15px;
+  line-height: 20px;
+  border-radius: 5px;
+}
+
+.vendor{
+  background-color: #778fc5;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: 0 auto;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
 }
 </style>
