@@ -7,10 +7,10 @@
             预计变更金额（<span class="redText">余额：<span>1000</span>元</span>）
           </a-radio>
           <a-radio :value="2">
-            预算余额（<span class="redText">余额：<span>900</span>元</span>）
+            定标盈余（<span class="redText">余额：<span>800</span>元</span>）
           </a-radio>
           <a-radio :value="3">
-            定标盈余（<span class="redText">余额：<span>800</span>元</span>）
+            预算余额（<span class="redText">余额：<span>900</span>元</span>）
           </a-radio>
         </a-radio-group>
       </a-col>
@@ -35,7 +35,7 @@
           </tr>
           </tbody>
         </table>
-        <table v-if="budgetType==3">
+        <table v-if="budgetType==2">
           <thead>
           <tr>
             <th style="width: 25%">业态</th>
@@ -53,7 +53,7 @@
           </tr>
           </tbody>
         </table>
-        <table v-if="budgetType==2">
+        <table v-if="budgetType==3">
           <thead>
           <tr>
             <th style="width: 20%">业态</th>

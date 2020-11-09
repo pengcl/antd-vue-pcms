@@ -57,6 +57,7 @@
         bordered
         :rowSelection="rowSelection"
         ref="table">
+        <a slot="contractNo" slot-scope="text,record" href="javascript:void(0)" @click="handleToContractInfo(record)" >{{text}}</a>
         <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
@@ -145,7 +146,8 @@
     },
     {
       title: '合同编号',
-      dataIndex: 'contractNo'
+      dataIndex: 'contractNo',
+      scopedSlots: { customRender: 'contractNo' }
     },
     {
       title: '合同名称',
@@ -363,6 +365,9 @@
         this.$router.push({
           path: `/change/cip/item/${record.voGuid}?type=edit&contractGuid=${this.queryParam2.contractGuid}&stage=VO`
         })
+      },
+      handleToContractInfo(record){
+        this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       }
     }
   }
