@@ -152,6 +152,16 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
+        <a-form-model-item label="是否事前申请" >
+          <a-radio-group
+            v-model="data.voMasterInfo.isBeforeApply"
+            :disabled="type === 'view'">
+            <a-radio :value="true">是</a-radio>
+            <a-radio :value="false">否</a-radio>
+          </a-radio-group>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="24" :sm="24">
         <a-form-model-item label="变更内容" prop="voContent">
           <a-textarea
             :disabled="type === 'view'"
@@ -530,7 +540,6 @@
         // 初始化reasonType值，转换为checkboxgroup认同的值
         if (this.data.voMasterInfo.reasonType) {
           this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType)
-          this.$forceUpdate()
         }
         // 转换接收公司，抄送公司选中信息为下拉框识别的值
         if (this.data.voPartylst) {
@@ -544,8 +553,8 @@
               }
             }
           })
-          this.$forceUpdate()
         }
+          this.$forceUpdate()
       }
     },
     methods: {

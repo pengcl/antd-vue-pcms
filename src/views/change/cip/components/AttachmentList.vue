@@ -91,6 +91,10 @@
                 type: String,
                 default: '0'
             },
+            stage : {
+                type : String,
+                default : 'CIP'
+            }
         },
         watch: {},
         created () {
@@ -151,6 +155,9 @@
                           that.$forceUpdate()
                         }
                       })
+                    }else{
+                      that.fileList.splice(index, 1)
+                      that.$forceUpdate()
                     }
                   },
                   onCancel(){
@@ -169,7 +176,7 @@
                 formData.append('file', file)
                 formData.append('masterId', this.data.fileMasterId)
                 formData.append('businessID', '')
-                formData.append('businessType', 'CIP')
+                formData.append('businessType', this.stage)
                 formData.append('subInfo1', '') //
                 formData.append('subInfo2', '') // 
                 formData.append('subInfo3', '') // 

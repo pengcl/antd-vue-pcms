@@ -248,12 +248,6 @@
   import { ChangeService } from '@/views/change/change.service'
   import { ContractService } from '@/views/contract/contract.service'
 
-  const contractTypes = {
-    '15': 'contract',
-    '16': 'sa',
-    '17': 'nsc'
-  }
-
   function getNo (str, key, items) {
     const isRoot = str === '0' || !str
     let result
@@ -298,7 +292,7 @@
       })
 
 	 console.log('costEstimates.this.contract.contractCategory',this.contract.contractCategory)
-      BaseService.itemTypes(contractTypes[this.contract.contractCategory+'']).then(res => {
+      BaseService.itemTypes('vo').then(res => {
         this.selection.itemTypes = res.result.data
       })
       ContractService.centers(this.project.id).then(res => {
