@@ -1,253 +1,231 @@
 <template>
-  <page-header-wrapper>
+  <page-header-wrapper :property="{}">
     <a-card :bordered="false">
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="12" :sm="24">
+              <a-form-item label="项目">
+                <a-tree-select
+                  :treeData="cities"
+                  placeholder="请选择"
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  @change="onChange"
+                  @select="onSelect"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
 
       <s-table
-        style="margin-top: 10px"
+        style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="code"
         bordered
         :columns="columns"
         :data="loadData"
         :alert="false"
         showPagination="auto"
       >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
-        </span>
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action" slot-scope="text,record">
+        <span slot="cost" slot-scope="text">
+          <p style="text-align: center">
+            <span style="font-weight: bold;padding-right: 10px">{{text.amount}}</span>
+            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>
+          </p>
+        </span>
+
+        <span slot="action" slot-scope="text, record">
           <template>
-            <a-button type="success" icon="file-text" title="检视" @click="handleToItem(record)">
+            {{ record.code }}
+            <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
             </a-button>
-            <a-button type="primary" icon="form" style="margin-left: 4px" title="编辑" @click="handleToEdit">
+            <a-button
+              @click="handleToEdit(record)"
+              type="primary"
+              icon="form"
+              style="margin-left: 4px"
+              title="编辑">
+            </a-button>
+            <a-button
+              @click="handleToItem(record)"
+              type="primary"
+              icon="plus-square"
+              style="margin-left: 4px"
+              title="审批记录">
             </a-button>
           </template>
         </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-    import moment from 'moment'
-    import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
+  import { STable, Ellipsis } from '@/components'
+  import { getRoleList } from '@/api/manage'
 
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
+  import StepByStepModal from '@/views/list/modules/StepByStepModal'
+  import CreateForm from '@/views/list/modules/CreateForm'
+  import { ProjectService } from '@/views/project/project.service'
+  import { CostService } from '@/views/cost/cost.service'
+  import { formatList } from '../../../mock/util'
+  import { fixedList } from '@/utils/util'
 
-    const columns = [
-        {
-            title: '操作',
-            dataIndex: 'action',
-            width: '150px',
-            scopedSlots: { customRender: 'action' }
-        },
-        {
-            title: '项目代码',
-            dataIndex: 'projectNo'
-        },
-        {
-            title: '项目名称',
-            dataIndex: 'projectName',
-        },
-        {
-            title: '工程行业预算状态',
-            dataIndex: 'approvalStatus',
-            scopedSlots: { customRender: 'approvalStatus' }
-        },
-        {
-            title: '创建者',
-            dataIndex: 'creator',
-            scopedSlots: { customRender: 'creator' }
-        },
-        {
-            title: '创建日期',
-            dataIndex: 'createAt'
-        },
-        {
-            title: '最后更新者',
-            dataIndex: 'updater',
-            scopedSlots: { customRender: 'updater' }
-        },
-        {
-            title: '最后更新日期',
-            dataIndex: 'updatedAt'
-        }
-    ]
+  const defaultColumns = [
 
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
+    {
+      title: '科目代码',
+      dataIndex: 'action',
+      width: '180px',
+      scopedSlots: { customRender: 'action' }
+    },
+    {
+      title: '科目名称',
+      dataIndex: 'name'
     }
+  ]
 
-    export default {
-        name: 'TableList',
-        components: {
-            STable,
-            Ellipsis,
-            CreateForm,
-            StepByStepModal
-        },
-        data () {
-            this.columns = columns
-            return {
-                // create model
-                visible: false,
-                confirmLoading: false,
-                mdl: null,
-                // 高级搜索 展开/关闭
-                advanced: false,
-                // 查询参数
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return getServiceList(requestParameters)
-                        .then(res => {
-                            return res.result
-                        })
-                },
-                selectedRowKeys: [],
-                selectedRows: []
-            }
-        },
-        filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
-            }
-        },
-        created () {
-            getRoleList({ t: new Date() })
-        },
-        computed: {
-            rowSelection () {
-                return {
-                    selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
-                }
-            }
-        },
-        methods: {
-            handleToItem (record) {
-                this.$router.push({ path: `/cost/resolve/item/${record.id}` })
-            },
-            handleToEdit () {
-                this.$router.push({ path: '/change/vo/edit/1' })
-            },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
+  const columns = defaultColumns
 
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
+  export default {
+    name: 'CostEnactList',
+    components: {
+      STable,
+      Ellipsis,
+      CreateForm,
+      StepByStepModal
+    },
+    data () {
+      this.columns = columns
+      return {
+        auditStatus: '',
+        cities: [],
+        visible: false,
+        confirmLoading: false,
+        mdl: null,
+        // 高级搜索 展开/关闭
+        advanced: false,
+        // 查询参数
+        queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const _columns = JSON.parse(JSON.stringify(defaultColumns))
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          // console.log('loadData request parameters:', requestParameters)
+          const result = {
+            result: {
+              data: []
+            }
+          }
+          if(this.queryParam.ProjectGUID){
+            return CostService.items(requestParameters).then(res => {
+              const requestParameters2 = Object.assign({}, parameter, { Id: this.queryParam.ProjectGUID })
+              return CostService.subjectItems(requestParameters2)
+                .then(res2 => {
+                  if (res2.result.data != null) {
+                    res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
+                      _columns.push(
+                        {
+                          title: subjectItem1.costCenterName,
+                          dataIndex: 'cost' + subjectItem1.costCenterId,
+                          scopedSlots: { customRender: 'cost' }
                         }
-                    } else {
-                        this.confirmLoading = false
-                    }
+                      )
+                    })
+                    this.columns = _columns
+                    this.$forceUpdate()
+                    res.result.data.forEach(item => {
+                      const obj = {}
+                      if (res2.result.data != null) {
+                        res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
+                          // 加载成本
+                          const costName = 'cost' + subjectItem2.costCenterId
+                          subjectItem2.mainElements.forEach(itemA => {
+                            if (item.id === itemA.elementTypeId) {
+                              obj['id'] = item.id
+                              obj['code'] = item.code
+                              obj['name'] = item.nameCN
+                              // obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
+                              obj[costName] = {
+                                amount: itemA.amount,
+                                percentage: itemA.percentage
+                              }
+                            }
+                          })
+                        })
+                      } else {
+                        obj['id'] = item.id
+                        obj['code'] = item.code
+                        obj['name'] = item.nameCN
+                      }
+                      result.result.data.push(obj)
+                    })
+                  }
+                  return fixedList(result, parameter)
                 })
-            },
-            handleCancel () {
-                this.visible = false
+            })
+          }
+        },
+        selectedRowKeys: [],
+        selectedRows: []
+      }
+    },
+    created () {
+      getRoleList({ t: new Date() })
 
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
-            onSelectChange (selectedRowKeys, selectedRows) {
-                this.selectedRowKeys = selectedRowKeys
-                this.selectedRows = selectedRows
-            },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
-            },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
-                }
-            }
+      ProjectService.tree().then(res => {
+        const cities = []
+        res.result.data.citys.forEach(item => {
+          const children = formatList(item.projects.items)
+          // console.log(children)
+          cities.push({
+            label: item.city.nameCN,
+            value: item.city.id,
+            children: children
+          })
+        })
+        this.cities = cities
+        this.$forceUpdate()
+      })
+    },
+    computed: {
+      rowSelection () {
+        return {
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange
         }
+      }
+    },
+    methods: {
+      handleToItem (record) {
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
+      },
+      handleToEdit (record) {
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
+      },
+      handleToAdd () {
+        this.$router.push({ path: `/cost/enact/item/0?type=add` })
+      },
+      onChange (value,option) {
+        if (value.length >= 2) {
+          this.queryParam.ProjectGUID = value
+          this.$refs.table.refresh(true)
+        } else {
+          this.queryParam.ProjectGUID = ''
+          this.$refs.table.refresh(true)
+        }
+      },
+      onSelect (value,option) {
+        console.log(option.dataRef.auditStatus)
+        this.auditStatus = option.dataRef.auditStatus
+      }
     }
+  }
 </script>
