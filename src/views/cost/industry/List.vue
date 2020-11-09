@@ -59,7 +59,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         bordered
         :columns="columns"
         :data="loadData"
@@ -105,7 +105,7 @@
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button type="success"  v-if="pid" @click="hanldeAddBugetItem">新增预算</a-button>
-          <a-button type="danger" style="margin-left: 10px" v-if="pid">删除预算</a-button>
+          <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
           <a-form :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
@@ -128,12 +128,13 @@
         style="margin-top: 5px"
         ref="table2"
         size="default"
-        rowKey="key"
+        rowKey="id"
         bordered
         :columns="_columns"
         :data="loadData2"
         :alert="false"
         showPagination="auto"
+        :rowSelection="rowSelection2"
       >
         <span slot="itemAction" slot-scope="text, record">
           <template>
@@ -201,15 +202,15 @@
     ]
 
     const _columns = [
-        {
-          title: '操作',
-          dataIndex: 'action',
-          width: '150px',
-          scopedSlots: { customRender: 'itemAction' }
-        },
+        // {
+        //   title: '操作',
+        //   dataIndex: 'action',
+        //   width: '150px',
+        //   scopedSlots: { customRender: 'itemAction' }
+        // },
         {
             title: '业态成本中心',
-            dataIndex: 'action',
+            dataIndex: 'costCenterName',
         },
         {
             title: '科目名称',
@@ -267,12 +268,12 @@
             this._columns = _columns
             return {
                 pid: '',
-                budgetItems: {},
                 cities: [],
                 show: false,
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
+                budgetId : '',
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
@@ -374,6 +375,15 @@
                   selectedRowKeys: this.selectedRowKeys,
                   onChange: this.onSelectChange
               }
+          },
+          rowSelection2 (){
+            const that = this
+            return {
+              type: 'radio',
+              onSelect: function (record, selected, selectRows, nativeEvent) {
+                that.budgetId = record.id
+              }
+            }
           }
         },
         methods: {
@@ -492,6 +502,26 @@
             hanldeAddBugetItem(){
               if(this.pid){
                 this.$refs.industryModal.show(this.pid)
+              }
+            },
+            handleRemoveBudgetItem(){
+              if(this.budgetId){
+                var that = this
+                this.$confirm({
+                  title : '删除预算',
+                  content : '是否确定删除选中预算?',
+                  onOK (){
+                    CostService.removeBudgetItem({packageId : that.queryParam.id,budgetItemId : that.budgetItemId}).then(res =>{
+                      if(res.result.statusCode === 200){
+                        that.$message.info('预算删除成功')
+                        this.$refs.table2.refresh()
+                      }
+                    })
+                  },
+                  onCancel (){
+
+                  }
+                })
               }
             }
         }

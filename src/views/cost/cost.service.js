@@ -22,9 +22,9 @@ const API = {
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
   //新增预算界面
   budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
-  budegetTreeItem: '/api/services/app/TenderPackage/TenderPackageAddCostCenterBudgetItems'//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
-  
-
+  budegetTreeItem: '/api/services/app/TenderPackage/TenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
+  addBudgetItem : '/api/services/app/TenderPackage/TenderPackageAddBudgetItem',//行业分判包添加行业预算
+  removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem'//行业分判包移除行业预算
 }
 
 const CostService = {}
@@ -181,6 +181,21 @@ CostService.budegetTreeItem = function (parameter) {
   })
 }
 
+CostService.addBudgetItem = function (parameter) {
+  return request({
+    url: API.addBudgetItem,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.removeBudgetItem = function (parameter) {
+  return request({
+    url: API.removeBudgetItem,
+    method: 'POST',
+    data: parameter
+  })
+}
 
 /**
  * login func

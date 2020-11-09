@@ -39,7 +39,7 @@
         }
     ]
 
-    const columns = defaultColumns
+    const columns = Object.assign([],defaultColumns)
 
     export default {
         name: 'CostIndustryModal',
@@ -182,9 +182,23 @@
             }
             console.log('result',result)
             if(result.length > 0){
-              
+              result.forEach(item => {
+                CostService.addBudgetItem(item).then(res =>{
+                  if(res.result.statusCode === 200){
+                    this.$message.info('添加行业预算成功')
+                    this.closeModal()
+                  }
+                })
+              })
+            }else{
+              this.closeModal()
             }
+          },
+          closeModal(){
+            this.columns = defaultColumns
+            this.columnDatas = []
             this.visible = false
+            this.$forceUpdate()
           },
           checkChange(obj,record,budgetItemId){
             if(obj.target.checked){
