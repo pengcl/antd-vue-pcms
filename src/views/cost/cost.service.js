@@ -20,10 +20,11 @@ const API = {
   //行业预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
+  elementTradeTypes: '/api/services/app/ElementTradeType/GetElementTradeTypes',//获取预算科目下的行业类型集合
+  resolveCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算分解
   //新增预算界面
   budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
   budegetTreeItem: '/api/services/app/TenderPackage/TenderPackageAddCostCenterBudgetItems'//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
-  
 
 }
 
@@ -181,6 +182,21 @@ CostService.budegetTreeItem = function (parameter) {
   })
 }
 
+CostService.elementTradeTypes = function (parameter) {
+  return request({
+    url: API.elementTradeTypes,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.resolveCreate = function (parameter) {
+  return request({
+    url: API.resolveCreate,
+    method: 'POST',
+    data: parameter
+  })
+}
 
 /**
  * login func

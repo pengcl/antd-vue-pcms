@@ -3,18 +3,6 @@
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">
       <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-<!--        <a-row :gutter="48">-->
-<!--            <a-col :md="12" :sm="24">-->
-<!--                <a-form-item label="项目">-->
-<!--                  <a-select-->
-<!--                    :disabled="type === 'view'"-->
-<!--                    placeholder="请选择"-->
-<!--                    v-decorator="['paymentUser', { rules: [{required: true, message: '付款账户必须填写'}] }]">-->
-<!--                    <a-select-option value="1">广佛新世界第一期</a-select-option>-->
-<!--                  </a-select>-->
-<!--                </a-form-item>-->
-<!--            </a-col>-->
-<!--        </a-row>-->
         <a-row>
           <a-col :md="12" :sm="24">
             工程行业预算
@@ -26,6 +14,8 @@
         </a-row>
       </a-form>
       </div>
+      <a-row>
+        <a-col :md="24" :sm="24">
       <s-table
         style="margin-top: 5px"
         ref="table"
@@ -42,14 +32,31 @@
             <span style="font-weight: bold;padding-right: 10px">{{text}}</span>
           </p>
         </span>
+        <span slot="action" slot-scope="text, record">
+          <template>
+            <a-button v-if="record.isCreate" @click="showModal(record,'add')" type="success" icon="plus-square" title="新增">
+            </a-button>
+            {{record.BudgetTitle}}
+          </template>
+        </span>
       </s-table>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :md="12" :sm="24">
+          <a-button type="danger" style="margin-top: 10px" @click="back">关闭</a-button>
+        </a-col>
+      </a-row>
     </a-card>
+    <resolve-modal ref="resolveModal"></resolve-modal>
   </page-header-wrapper>
 </template>
 
 <script>
     import {CostService} from "@/views/cost/cost.service";
     import {Ellipsis, STable} from "@/components";
+    import ResolveModal from '@/views/cost/resolve/modal/ResolveModal'
+    import StepByStepModal from "@/views/list/modules/StepByStepModal";
 
     function fixedList (res, params) {
       const result = {}
@@ -89,22 +96,30 @@
         obj.elementInfoId = item.elementInfoId
         obj.elementInfoCode = item.elementInfoCode
         obj.BudgetTitle = item.elementInfoNameCN
+
         costCenters.forEach(center => {
           const costName = 'cost' + center.costCenterId
           obj[costName] = item.amount
         })
         if (item.childs) {
           const childrenList = getList(item.childs,costCenters)
-          childrenList.forEach(child =>{
-            obj.children.push(child)
-          })
-          console.log('obj.children',obj.children,obj)
+          obj.childs = childrenList
+          obj.children = obj.childs
         } else {
           obj.children = null
           obj.isEndNode = true
         }
+        //判断是否有新增按钮
+        if ( item.tradeBudgetInfo !== null ) {
+          obj.isCreate = true
+          obj.costCenters = costCenters
+        }else{
+          obj.isCreate = false
+          obj.costCenters = null
+        }
         list.push(obj)
-        if(item.tradeBudgetInfo){
+        //插入General Trade行
+        if( item.tradeBudgetInfo ){
           const gt = {}
           costCenters.forEach(center => {
             gt.elementInfoId = item.elementInfoId
@@ -122,8 +137,9 @@
     const defaultColumns = [
       {
         title: '行业名称',
-        width: '300px',
-        dataIndex: 'BudgetTitle'
+        width: '350px',
+        dataIndex: 'BudgetTitle',
+        scopedSlots: { customRender: 'action' }
       },
       {
         title: '行业名称',
@@ -138,7 +154,8 @@
       name: 'list',
       components: {
         STable,
-        Ellipsis
+        Ellipsis,
+        ResolveModal
       },
       data () {
         this.columns = columns
@@ -155,7 +172,7 @@
           // 加载数据方法 必须为 Promise 对象
           loadData: parameter => {
             const _columns = JSON.parse(JSON.stringify(defaultColumns))
-            const requestParameters = Object.assign({}, parameter, this.queryParam, { ProjectGUID: this.queryParam.ProjectGUID,ElementTypeId: this.id})
+            const requestParameters = Object.assign({}, parameter, this.queryParam, { MaxResultCount : 1000 ,ProjectGUID: this.queryParam.ProjectGUID,ElementTypeId: this.id})
             const result = {
               result: {
                 data: []
@@ -222,9 +239,6 @@
         handleToAdd () {
           this.$router.push({ path: `/cost/enact/item/0?type=add` })
         },
-        handleToResolve () {
-          this.$router.push({ path: `/cost/resolve/item/0?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
-        },
         onChange (value,option) {
           if (value.length >= 2) {
             this.queryParam.ProjectGUID = value
@@ -236,7 +250,30 @@
         },
         onSelect (value,option) {
           this.auditStatus = option.dataRef.auditStatus
-        }
+        },
+        back () {
+          this.$router.push({ path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}` })
+        },
+        showModal(record,type) {
+          CostService.elementTradeTypes({Id:record.elementInfoId}).then(res => {
+            record.elementTradeTypes = JSON.parse(JSON.stringify(res.result.data))
+            record.ProjectGUID = this.ProjectGUID
+            record.type = type
+            this.$refs.resolveModal.show(record)
+          })
+        },
+        handleOk(e) {
+          this.ModalText = 'The modal will be closed after two seconds';
+          this.confirmLoading = true;
+          setTimeout(() => {
+            this.visible = false;
+            this.confirmLoading = false;
+          }, 2000);
+        },
+        handleCancel(e) {
+          console.log('Clicked cancel button');
+          this.visible = false;
+        },
       }
     }
 </script>
