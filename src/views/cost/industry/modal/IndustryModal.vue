@@ -39,7 +39,7 @@
         }
     ]
 
-    const columns = defaultColumns
+    const columns = Object.assign([],defaultColumns)
 
     export default {
         name: 'CostIndustryModal',
@@ -62,7 +62,6 @@
                 loadData: parameter => {
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    // console.log('loadData request parameters:', requestParameters)
                     if(this.queryParam.id){
                       return CostService.budegetTree(requestParameters).then(res => {
                         return CostService.budegetTreeItem(requestParameters)
@@ -79,10 +78,16 @@
                                   title : column.costCenterName,
                                   dataIndex : 'cost'+column.costCenterId,
                                   customRender : (text,row,index) =>{
-                                    if(row.childs.length < 1){
-                                      const costCenterId = column.costCenterId
-                                      const budgetItemId = 'budgetItemId'+costCenterId
-                                      return <a-checkbox v-value="{row[budgetItemId]}">{text}</a-checkbox>
+                                    if(row.childs.length < 1 && row.id){
+                                      const budgetItemCheckId = 'budgetItemId'+column.costCenterId
+                                      const myChangeEvent = (e) =>{
+                                        this.checkChange(e,row,budgetItemCheckId)
+                                      }
+                                      const content = (<a-checkbox onClick={myChangeEvent}>{text}</a-checkbox>)
+                                      const obj = {
+                                        children : content
+                                      }
+                                      return obj
                                     }else{
                                       return text
                                     }
@@ -142,12 +147,6 @@
                 }
             }
         },
-        // watch : {
-        //   'queryParam.id'(value){
-        //     consoe.log('id发生变化',value)
-        //     this.$refs.table.refresh()
-        //   }
-        // },
         created () {
         },
         computed: {
@@ -158,7 +157,6 @@
             this.visible = true
             console.log('调用展示窗口',id)
             this.queryParam.id = id
-            // this.$refs.table.refresh()
             this.loadData()
             this.$forceUpdate()
           },
@@ -166,8 +164,48 @@
             this.visible = false
           },
           handleOk(){
-            this.$message.warn('待完善')
+            var result = []
+            var that = this
+            getResults(this.columnDatas)
+            function getResults(datas){
+              datas.forEach(item => {
+                for(var i in item){
+                  if(i.indexOf('budgetItemCheck') > -1 && item[i]){
+                    console.log('itemId',i)
+                    result.push({packageId : that.queryParam.id, budgetItemId : item['budgetItemId'+(i.replace('budgetItemCheck',''))] })
+                  }
+                  if(item.children && item.children.length > 0){
+                    getResults(item.children)
+                  }
+                }
+              })
+            }
+            console.log('result',result)
+            if(result.length > 0){
+              result.forEach(item => {
+                CostService.addBudgetItem(item).then(res =>{
+                  if(res.result.statusCode === 200){
+                    this.$message.info('添加行业预算成功')
+                    this.closeModal()
+                  }
+                })
+              })
+            }else{
+              this.closeModal()
+            }
+          },
+          closeModal(){
+            this.columns = defaultColumns
+            this.columnDatas = []
             this.visible = false
+            this.$forceUpdate()
+          },
+          checkChange(obj,record,budgetItemId){
+            if(obj.target.checked){
+              record['budgetItemCheck'+record[budgetItemId]] = true
+            }else{
+              record['budgetItemCheck'+record[budgetItemId]] = false
+            }
           }
         }
     }
