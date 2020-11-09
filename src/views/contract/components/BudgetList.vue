@@ -48,7 +48,7 @@ export default {
     }
   },
   created () {
-    ContractService.budgets(this.data.contract.contractGuid).then(res => {
+    ContractService.viewBudgets(this.data.contract.contractGuid).then(res => {
       console.log(res)
     })
   },
