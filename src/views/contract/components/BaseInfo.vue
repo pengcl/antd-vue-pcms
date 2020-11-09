@@ -366,6 +366,18 @@
         this.selection.vendors = res.result.data
         this.$forceUpdate()
       })
+      ContractService.tenders({ ProjectGUID: this.project.projectGUID, MaxResultCount: 999 }).then(res => {
+        res.result.data.items.forEach(item => {
+          if (this.data.contract.tenderPackageItemID === item.projectTenderPackageGUID) {
+            console.log(item)
+            this.tender = item
+            this.selection.itemTypes = [{
+              name: this.tender.itemTypeNameCN,
+              code: this.tender.itemTypeCode
+            }]
+          }
+        })
+      })
       if (this.data.contract.contractCategory) {
         this.getMasters(this.data.contract.contractCategory)
       }
@@ -414,7 +426,7 @@
             this.data.master = {}
             this.data.contract.masterContractID = ''
             this.$forceUpdate()
-          }else {
+          } else {
             ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
               this.selection.masters = res.result.data
               res.result.data.forEach(item => {
@@ -429,11 +441,6 @@
       },
       filterParties (partyType) {
         return ContractService.filterParties(partyType, this.data.contractPartylst)
-      },
-      filterMaster (input, option) {
-        return (
-          option.componentOptions.propsData.label.indexOf(input) >= 0
-        )
       },
       select (value, item) {
         this.data.master = JSON.parse(item.data.key)
@@ -488,7 +495,6 @@
         })
       },
       showSelect (target) {
-        console.log(target)
         this.show[target + 'Show'] = true
       },
       handleOk (target) {
