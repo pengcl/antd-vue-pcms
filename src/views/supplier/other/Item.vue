@@ -1,121 +1,129 @@
 <template>
   <page-header-wrapper>
-    <a-card :bordered="false">
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+    <a-card v-if="form" :bordered="false">
+      <a-form-model
+        ref="form"
+        :model="form.vendor"
+        :rules="rules"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
-          <a-col :md="12" :sm="24">
-            <a-form-item label="供应商编号">
-              <a-input
-                :disabled="type === 'view'"
-                placeholder="请填写供应商编号"
-                v-model="form.vendor.vendorCode"
-                v-decorator="['form.vendor.vendorCode', { initialValue: '', rules: [{required: true, message: '请填写供应商编号'}] }]"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="供应商名称">
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="供应商名称" prop="vendorName">
               <a-input
                 :disabled="type === 'view'"
                 placeholder="请填写供应商名称"
-                v-model="form.vendor.vendorName"
-                v-decorator="['form.vendor.vendorName', { initialValue: '', rules: [{required: true, message: '请填写供应商名称'}] }]"/>
-            </a-form-item>
+                @blur="checkName(form.vendor.vendorName)"
+                v-model="form.vendor.vendorName">
+                <span
+                  v-if="id === '0' && duplicated"
+                  :class="'tips-error'"
+                  slot="suffix">供应商名称重复，请重新填写</span>
+              </a-input>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="供应商简称">
+            <a-form-model-item label="供应商编号" prop="vendorCode">
+              <a-input
+                :disabled="true"
+                placeholder="请填写供应商编号"
+                v-model="form.vendor.vendorCode"/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-model-item label="供应商简称" prop="vendorAbbreviation">
               <a-input
                 :disabled="type === 'view'"
                 placeholder="请填写供应商简称"
-                v-model="form.vendor.vendorAbbreviation"
-                v-decorator="['form.vendor.vendorAbbreviation', { initialValue: '', rules: [{required: true, message: '请填写供应商简称'}] }]"/>
-            </a-form-item>
+                v-model="form.vendor.vendorAbbreviation"/>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="供应商类别">
+            <a-form-model-item label="供应商类别" prop="packageCodeList">
               <a-tree-select
-                v-model="form.vendor.packageCode"
+                :disabled="type === 'view'"
+                v-model="form.vendor.packageCodeList"
                 style="width: 100%"
                 :tree-data="selection.types"
                 tree-checkable
                 :show-checked-strategy="SHOW_PARENT"
                 search-placeholder="请选择供应商类别"
               />
-              <!--<a-select placeholder="请选择" default-value="0">
-                <a-select-option value="0">深圳</a-select-option>
-                <a-select-option value="1">广州</a-select-option>
-                <a-select-option value="2">珠海</a-select-option>
-              </a-select>-->
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="公司所在地">
-              <a-cascader :options="selection.cities" placeholder="请选择公司所在地" @change="cityChange"/>
-            </a-form-item>
+            <a-form-model-item label="公司所在地" prop="city">
+              <a-cascader
+                :disabled="type === 'view'"
+                :options="selection.cities"
+                :key="form.vendor.city"
+                :default-value="[form.vendor.province,form.vendor.city]"
+                placeholder="请选择公司所在地"
+                @change="cityChange"/>
+            </a-form-model-item>
           </a-col>
-          <!--<a-col :md="12" :sm="24">
-            <a-form-item label="公司所在地(省)">
-              <a-select placeholder="请选择" default-value="0">
-                <a-select-option value="0">深圳</a-select-option>
-                <a-select-option value="1">广州</a-select-option>
-                <a-select-option value="2">珠海</a-select-option>
-              </a-select>
-            </a-form-item>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="供应商注册地址" prop="registerAddress">
+              <a-input
+                :disabled="type === 'view'"
+                placeholder="供应商注册地址"
+                v-model="form.vendor.registerAddress"/>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="市">
-              <a-select placeholder="请选择" default-value="0">
-                <a-select-option value="0">深圳</a-select-option>
-                <a-select-option value="1">广州</a-select-option>
-                <a-select-option value="2">珠海</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>-->
-          <a-col :md="12" :sm="24">
-            <a-form-item label="法人代表">
+            <a-form-model-item label="法人代表" prop="legalRep">
               <a-input
                 :disabled="type === 'view'"
                 placeholder="请填写法人代表"
                 v-model="form.vendor.legalRep"
                 v-decorator="['form.vendor.legalRep', { initialValue: '', rules: [{required: true, message: '请填写法人代表'}] }]"/>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="经办部门">
-              <a-select placeholder="请选择" default-value="0">
+            <a-form-model-item label="经办部门">
+              <a-select :disabled="type === 'view'" placeholder="请选择" default-value="0">
                 <a-select-option value="0">深圳</a-select-option>
                 <a-select-option value="1">广州</a-select-option>
                 <a-select-option value="2">珠海</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="纳税人身份">
-              <a-select v-model="form.vendor.taxpayerName" placeholder="请选择">
+            <a-form-model-item label="纳税人身份" prop="taxpayerName">
+              <a-select :disabled="type === 'view'" v-model="form.vendor.taxpayerName" placeholder="请选择纳税人身份">
                 <a-select-option value="一般纳税人">一般纳税人</a-select-option>
                 <a-select-option value="小规模纳税人">小规模纳税人</a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="变更备注">
+            <a-form-model-item label="变更备注" prop="logRemark">
               <a-textarea
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || type === 'create'"
                 placeholder="请填写变更备注"
                 v-model="form.vendor.logRemark"></a-textarea>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
         </a-row>
-      </a-form>
+      </a-form-model>
 
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="公司员工">
-          <company-staff ref="staff" :vendor="form" :items="form.vendorEmployeeList" :type="type" :id="id"></company-staff>
+          <company-staff
+            ref="staff"
+            :vendor="form"
+            :items="form.vendorEmployeeList"
+            :type="type"
+            :id="id"></company-staff>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="变更信息">
-          <change-info></change-info>
+        <a-tab-pane v-if="type === 'view'" key="2" tab="变更信息">
+          <change-info
+            :type="type"
+            :id="id"
+            :items="form.vendorChangeLogList"></change-info>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="合同信息">
-          <contract-info></contract-info>
+        <a-tab-pane v-if="type === 'view'" key="3" tab="合同信息">
+          <contract-info :type="type" :id="id" :items="form.vendorContractList"></contract-info>
         </a-tab-pane>
         <a-tab-pane key="4" tab="银行信息">
           <bank-info ref="bank" :vendor="form.vendor" :items="form.vendorBankList" :type="type" :id="id"></bank-info>
@@ -124,9 +132,24 @@
           <attachment-info :data="form" :type="type" :id="id"></attachment-info>
         </a-tab-pane>
       </a-tabs>
-
+      <a-modal
+        v-if="dialog"
+        :title="dialog.title"
+        :visible="dialog.visible"
+        :okText="dialog.confirmText"
+        :cancelText="dialog.cancelText"
+        @ok="dialog.confirm"
+        @cancel="dialog.cancel"
+      >
+        <p>{{ dialog.content }}</p>
+      </a-modal>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+          <a-button-group>
+            <a-button v-if="type === 'view' && !form.vendor.logGID" @click="askUpdate()" type="success">
+              供应商信息变更
+            </a-button>
+          </a-button-group>
           <a-button-group>
             <a-button @click="approve()" type="success">
               启动审批流程
@@ -161,7 +184,13 @@ import { SupplierService } from '@/views/supplier/supplier.service'
 import { formatTree } from '@/utils/util'
 import { TreeSelect } from 'ant-design-vue'
 import { City as CitySvc, formatCities } from '@/api/city'
+import { DIALOGCONFIG } from '@/api/base'
 
+const DTO = {
+  create: 'ChangeVendorZRInputDto',
+  update: 'ChangeVendorEditDto',
+  view: 'VendorViewDtoResultModel'
+}
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 export default {
   name: 'SupplierOtherItem',
@@ -169,25 +198,37 @@ export default {
   data () {
     return {
       SHOW_PARENT,
+      dialog: DIALOGCONFIG,
       selection: {},
-      dto: {},
+      checkText: '',
+      duplicated: false,
       form: {
         vendor: {},
-        vendorBankList: [],
-        vendorEmployeeList: []
+        vendorEmployeeList: [],
+        vendorBankList: []
+      },
+      rules: {
+        vendorCode: [{ required: false, message: '请填写供应商编号', trigger: 'blur' }],
+        vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
+        vendorAbbreviation: [{ required: true, message: '请填写供应商别名', trigger: 'change' }],
+        packageCodeList: [{ required: true, message: '请选择供应商类别', trigger: 'change' }],
+        city: [{ required: true, message: '请选择公司所在地', trigger: 'blur' }],
+        legalRep: [{ required: true, message: '请填写法人代表', trigger: 'blur' }],
+        taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'blur' }],
+        logRemark: [{ required: this.type === 'update', message: '请填写变更备注', trigger: 'blur' }]
       }
     }
   },
   created () {
-    this.dto = SwaggerService.getDto('VendorChange')
-    this.form.vendor = SwaggerService.getForm('VendorChangeDto')
     if (this.id !== '0') {
-      SupplierService.item(this.id).then(res => {
+      SupplierService[this.type + 'Entity'](this.id).then(res => {
         this.data = res.result.data
-        this.form.vendor = SwaggerService.getValue(this.form.vendor, res.result.data)
-        this.form.vendorEmployeeList = res.result.data.vendorEmployeeList
-        console.log(this.form.vendorEmployeeList)
+        this.form = res.result.data
+        this.form.vendor.registerType = 1
+        this.$forceUpdate()
       })
+    } else {
+      this.form.vendor.registerType = 1
     }
     SupplierService.types().then(res => {
       this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
@@ -207,20 +248,64 @@ export default {
     }
   },
   methods: {
-      back () {
-          this.$router.push({ path: `/supplier/other/list` })
-      },
+    checkName (name) {
+      if (this.id === '0') {
+        SupplierService.check(name).then(res => {
+          this.duplicated = res.result.data
+        })
+      }
+    },
+    back () {
+      this.$router.push({ path: `/supplier/other/list` })
+    },
     cityChange (value) {
-      console.log(value)
+      this.form.vendor.province = value[0]
+      this.form.vendor.city = value[1]
     },
     handleEdit (record) {
       this.visible = true
       this.mdl = { ...record }
     },
+    askUpdate () {
+      SupplierService.generate(this.id).then(res => {
+        this.$router.push({ path: `/supplier/other/item/${res.result.data}?type=update` })
+      })
+    },
     save () {
-      console.log(this.form)
-      SupplierService.update(this.form).then(res => {
-        console.log(res)
+      this.form.vendorEmployeeList.forEach(item => {
+        item.logGID = this.form.vendor.logGID
+        item.vendorGID = this.form.vendor.vendorGID
+      })
+      this.form.vendorBankList.forEach(item => {
+        item.logGID = this.form.vendor.logGID
+        item.vendorGID = this.form.vendor.vendorGID
+      })
+
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          SupplierService[this.type](this.form).then(res => {
+            if (res.result.statusCode === 200) {
+              this.dialog.show({
+                content: this.type === 'update' ? '修改成功' : '添加成功',
+                title: '',
+                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+                cancelText: '返回上一页'
+              }, (state) => {
+                if (state) {
+                  if (this.type === 'create') {
+                    this.form = {
+                      vendor: SwaggerService.getForm(DTO[this.type]),
+                      vendorBankList: [],
+                      vendorEmployeeList: []
+                    }
+                  }
+                } else {
+                  this.$router.push('/supplier/other/list')
+                }
+              })
+            }
+          })
+        }
       })
     }
   }
@@ -242,11 +327,12 @@ table {
 
   thead {
     tr {
-      &:first-child{
-        th{
+      &:first-child {
+        th {
           background-color: #f5f5f5;
         }
       }
+
       th {
         background-color: #06c;
         color: #fff;

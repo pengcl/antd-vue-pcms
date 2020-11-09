@@ -27,24 +27,6 @@
   import { STable, Ellipsis } from '@/components'
   import { ContractService } from '@/views/contract/contract.service'
   import { fixedList } from '@/utils/util'
-/*
-auditStatus: "未审核"
-auditTime: null
-budgetAmount: 0
-creationTime: "2020-11-06T20:06:35.9316508"
-creatorUser: "test01"
-description: "测试06"
-id: 1
-isAudit: false
-itemTypeCode: null
-itemTypeNameCN: null
-lastModificationTime: null
-lastModifierUser: "INIT"
-packageDate: "2020-11-06T09:46:56.193"
-packageTitle: "测试06"
-projectTenderPackageGUID: "3255f3e5-d147-49c7-9c65-2ea612fbf1de"
-tradePackageCode: "CC01-TENDER-0001"
-*/
   const columns = [
     {
       title: '招投标分判包名称',

@@ -111,6 +111,12 @@
     >
       <p>{{ dialog.content }}</p>
     </a-modal>
+    <contract-compute-budgets
+      ref="budgets"
+      :visible="show"
+      :contractGuid="contractGuid"
+      @cancel="handleCancel()"
+      @ok="handleOk()"></contract-compute-budgets>
   </page-header-wrapper>
 </template>
 <script>
@@ -125,10 +131,11 @@ import { SwaggerService } from '@/api/swagger.service'
 import { ProjectService } from '@/views/project/project.service'
 import { DIALOGCONFIG } from '@/api/base'
 import { Company as CompanyService } from '@/api/company'
+import ContractComputeBudgets from '@/views/contract/components/computeBudgets/index'
 
 export default {
   name: 'ContractItem',
-  components: { AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
+  components: { ContractComputeBudgets, AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
   data () {
     return {
       disabled: true,
@@ -137,6 +144,8 @@ export default {
       project: null,
       dialog: DIALOGCONFIG,
       selection: {},
+      contractGuid: null,
+      show: false,
       form: SwaggerService.getForm('ContractAllInfoDto')
     }
   },
@@ -182,7 +191,18 @@ export default {
         this.activeKey = 1
       })
     },
-    getTenders (ProjectGUID) {
+    viewBudgets (contractGuid) {
+      ContractService.viewBudgets(contractGuid).then(res => {
+        console.log(res)
+      })
+    },
+    showBudgets () {
+      this.show = true
+    },
+    computeBudgets (contractGuid) {
+      ContractService.computeBudgets(contractGuid).then(res => {
+        console.log(res)
+      })
     },
     getData () {
       this.form = SwaggerService.getForm('ContractAllInfoDto')
@@ -193,10 +213,10 @@ export default {
           this.form.contract.useStore = 2
           ProjectService.view2(this.form.contract.projectID).then(res => {
             this.project = res.result.data
-            this.getTenders()
             this.getCompanies()
           })
         })
+        this.viewBudgets(this.id)
       } else {
         this.form.fileMasterId = 0
         this.form.contract.id = 0
@@ -259,7 +279,10 @@ export default {
         ContractService[this.type](this.form).then((res, err) => {
           this.loading = false
           if (res.result.statusCode === 200) {
-            this.dialog.show({
+            this.contractGuid = res.result.data
+            console.log(this.contractGuid)
+            this.showBudgets()
+            /* this.dialog.show({
               content: this.type === 'update' ? '修改成功' : '添加成功',
               title: '',
               confirmText: this.type === 'update' ? '继续修改' : '继续添加',
@@ -272,7 +295,7 @@ export default {
               } else {
                 this.$router.push('/contract/list')
               }
-            })
+            }) */
           }
         }).catch(() => {
           this.dialog.show({
@@ -299,6 +322,14 @@ export default {
     handleToEdit () {
       console.log('handleToEdit')
       this.$router.push({ path: `/contract/item/${this.id}?type=edit` })
+    },
+    handleCancel () {
+      this.show = false
+    },
+    handleOk () {
+      this.show = false
+      const data = this.$refs.budgets.data
+      console.log(data)
     }
   }
 }

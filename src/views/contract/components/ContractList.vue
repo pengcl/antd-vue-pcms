@@ -574,7 +574,7 @@ contractPSAmount: 0
       let names = ''
       let item
       values.forEach(value => {
-        const arr = value.split(':')
+        const arr = value.split(';')
         item = this.data.contractBQlst[arr[0]]
         const id = arr[1]
         const name = arr[2]

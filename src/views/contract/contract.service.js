@@ -11,7 +11,8 @@ const API = {
   centers: '/api/services/app/ProjectCostCenter/GetProjectCostCenters',
   amount: '/api/services/app/Contract/GetContractAmountByBQList',
   tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',
-  budgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid'
+  viewBudgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid',
+  computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid'
 }
 
 const ContractService = {}
@@ -104,11 +105,19 @@ ContractService.tenders = function (params) {
   })
 }
 
-ContractService.budgets = function (contractGuid) {
+ContractService.viewBudgets = function (contractGuid) {
   return request({
-    url: API.budgets,
+    url: API.viewBudgets,
     method: 'GET',
     params: { contractGuid }
+  })
+}
+
+ContractService.computeBudgets = function (params) {
+  return request({
+    url: API.computeBudgets,
+    method: 'POST',
+    params: params
   })
 }
 

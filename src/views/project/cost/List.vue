@@ -6,10 +6,12 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
-                  placeholder="请选择"
-                  @change="onChange"
+                <a-tree-select
+                  style="width: 100%"
+                  :tree-data="cities"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  search-placeholder="请选择"
+                  @select="onSelect"
                 />
               </a-form-item>
             </a-col>
@@ -87,139 +89,147 @@
 </template>
 
 <script>
-    import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
-    import { CostService } from '@/views/project/cost/cost.service'
-    import { fixedList } from '@/utils/util'
-    import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../../mock/util'
+import { STable, Ellipsis } from '@/components'
+import { CostService } from '@/views/project/cost/cost.service'
+import { fixedList } from '@/utils/util'
+import { ProjectService } from '@/views/project/project.service'
 
-    function fixedProjects (projects) {
-        const list = []
-        if (projects) {
-            if (projects.items) {
-                projects.items.forEach(item => {
-                    item.label = item.projectName
-                    item.value = item.projectGUID
-                    item.children = fixedProjects(item.childs)
-                    list.push(item)
-                })
-            }
-        }
-        return list
+const columns = [
+  {
+    title: '操作',
+    dataIndex: 'action',
+    width: '150px',
+    scopedSlots: { customRender: 'action' }
+  },
+  {
+    title: '成本中心编号',
+    dataIndex: 'costCenterCode'
+  },
+  {
+    title: '成本中心名称',
+    dataIndex: 'costCenterName',
+    scopedSlots: { customRender: 'costCenterName' }
+  },
+  {
+    title: '审批状态',
+    dataIndex: 'auditStatus',
+    scopedSlots: { customRender: 'auditStatus' }
+  },
+  {
+    title: '创建者',
+    dataIndex: 'creator',
+    scopedSlots: { customRender: 'creator' }
+  },
+  {
+    title: '创建日期',
+    dataIndex: 'createAt'
+  },
+  {
+    title: '最后更新者',
+    dataIndex: 'updater',
+    scopedSlots: { customRender: 'updater' }
+  },
+  {
+    title: '最后更新日期',
+    dataIndex: 'updatedAt'
+  }
+]
+
+const formatList = (items, option) => {
+  const list = []
+  items.forEach(item => {
+    if (item.childs) {
+      item.selectable = item.childs.items.length < 1
+      item.children = formatList(item.childs.items)
+    } else {
+      item.selectable = true
+      item.children = null
     }
-
-    const columns = [
-        {
-            title: '操作',
-            dataIndex: 'action',
-            width: '150px',
-            scopedSlots: { customRender: 'action' }
-        },
-        {
-            title: '成本中心编号',
-            dataIndex: 'costCenterCode'
-        },
-        {
-            title: '成本中心名称',
-            dataIndex: 'costCenterName',
-            scopedSlots: { customRender: 'costCenterName' }
-        },
-        {
-            title: '审批状态',
-            dataIndex: 'auditStatus',
-            scopedSlots: { customRender: 'auditStatus' }
-        },
-        {
-            title: '创建者',
-            dataIndex: 'creator',
-            scopedSlots: { customRender: 'creator' }
-        },
-        {
-            title: '创建日期',
-            dataIndex: 'createAt'
-        },
-        {
-            title: '最后更新者',
-            dataIndex: 'updater',
-            scopedSlots: { customRender: 'updater' }
-        },
-        {
-            title: '最后更新日期',
-            dataIndex: 'updatedAt'
-        }
-    ]
-
-    export default {
-        name: 'ProjectCostList',
-        components: {
-            STable,
-            Ellipsis
-        },
-        data () {
-            this.columns = columns
-            return {
-                show: false,
-                cities: [],
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return CostService.list(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
-                }
-            }
-        },
-        created () {
-            // getRoleList({ t: new Date() })
-            ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items)
-                    console.log(children)
-                    cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
-                })
-                this.cities = cities
-                this.$forceUpdate()
-            })
-        },
-        methods: {
-            handleToItem (record) {
-                this.$router.push({ path: `/project/cost/item/${record.id}?type=view` })
-            },
-            handleToEdit (record) {
-                this.$router.push({ path: `/project/cost/item/${record.id}?type=update` })
-            },
-            handleToAdd () {
-                this.$router.push({ path: `/project/cost/item/0?type=create` })
-            },
-            onChange (value) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
-            }
-        }
+    if (option) {
+      item.selectable = false
+      item[option.key] = option.value
     }
+    item.label = item.projectName
+    item.value = item.projectGUID
+    list.push(item)
+  })
+  console.log(list)
+  return list
+}
+
+export default {
+  name: 'ProjectCostList',
+  components: {
+    STable,
+    Ellipsis
+  },
+  data () {
+    this.columns = columns
+    return {
+      show: false,
+      cities: [],
+      queryParam: {},
+      // 加载数据方法 必须为 Promise 对象
+      loadData: parameter => {
+        const requestParameters = Object.assign({}, parameter, this.queryParam)
+        return CostService.list(requestParameters).then(res => {
+          return fixedList(res, requestParameters)
+        })
+      }
+    }
+  },
+  created () {
+    // getRoleList({ t: new Date() })
+    ProjectService.tree().then(res => {
+      const cities = []
+      res.result.data.citys.forEach(item => {
+        const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+        cities.push({
+          selectable: false,
+          label: item.city.nameCN,
+          value: item.city.id,
+          children: children
+        })
+      })
+      this.cities = cities
+      this.$forceUpdate()
+    })
+  },
+  methods: {
+    handleToItem (record) {
+      this.$router.push({ path: `/project/cost/item/${record.id}?type=view` })
+    },
+    handleToEdit (record) {
+      this.$router.push({ path: `/project/cost/item/${record.id}?type=update` })
+    },
+    handleToAdd () {
+      this.$router.push({ path: `/project/cost/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
+    },
+    onSelect (value, option) {
+      this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+      this.projectType = option.$options.propsData.dataRef.type
+      if (typeof value === 'number') {
+        this.city = value
+        this.queryParam.ProjectGUID = ''
+      } else {
+        this.queryParam.ProjectGUID = value
+      }
+      this.$refs.table.refresh()
+      this.$forceUpdate()
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
-  .search-form {
-    background-color: #1E9FF2;
-    padding: 20px;
-    border-radius: 0.35rem;
+.search-form {
+  background-color: #1E9FF2;
+  padding: 20px;
+  border-radius: 0.35rem;
 
-    /deep/ .ant-form-item-label label {
-      color: #fff;
-    }
+  /deep/ .ant-form-item-label label {
+    color: #fff;
   }
+}
 
 </style>

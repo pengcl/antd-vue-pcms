@@ -140,8 +140,8 @@ const columns = [
   },
   {
     title: '审批状态',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
+    dataIndex: 'auditStatus',
+    scopedSlots: { customRender: 'auditStatus' }
   },
   /* {
     title: '创建者',
@@ -203,7 +203,7 @@ export default {
   },
   methods: {
     handleToItem (record) {
-      this.$router.push({ path: `/project/item/${record.id}?type=view` })
+      this.$router.push({ path: `/project/item/${record.id}?type=view&stage=${record.projectDataType}` })
     },
     handleToEdit (record) {
       this.$router.push({ path: `/project/item/${record.id}?type=update&stage=${record.projectDataType}` })

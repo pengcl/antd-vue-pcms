@@ -104,9 +104,7 @@
 </template>
 
 <script>
-    import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
     import { fixedList, formatTree } from '@/utils/util'
     import { TreeSelect } from 'ant-design-vue'
     import { SupplierService } from '@/views/supplier/supplier.service'
@@ -149,7 +147,7 @@
             return {
               SHOW_PARENT,
                 show: false,
-                queryParam: { RegisterType: 1 },
+                queryParam: { RegisterType: 0 },
               types: [],
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
@@ -172,14 +170,6 @@
             this.$forceUpdate()
           })
         },
-        computed: {
-            rowSelection () {
-                return {
-                    selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
-                }
-            }
-        },
         methods: {
           search () {
             this.$refs.table.refresh()
@@ -194,14 +184,6 @@
             },
             handleToAdd () {
                 this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
-            },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
             },
             handleOk () {
                 const form = this.$refs.createModal.form
@@ -246,31 +228,6 @@
                         this.confirmLoading = false
                     }
                 })
-            },
-            handleCancel () {
-                this.visible = false
-
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
-            onSelectChange (selectedRowKeys, selectedRows) {
-                this.selectedRowKeys = selectedRowKeys
-                this.selectedRows = selectedRows
-            },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
-            },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
-                }
             }
         }
     }
@@ -328,5 +285,6 @@
     justify-content: center;
     font-size: 16px;
     font-weight: bold;
+    text-align: center;
   }
 </style>

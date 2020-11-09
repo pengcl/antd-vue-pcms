@@ -411,17 +411,20 @@
         if (val) {
           if (val === 15) {
             this.rules.masterContractID = [{ required: false, message: '请选择原合同', trigger: 'blur' }]
+            this.data.master = {}
+            this.data.contract.masterContractID = ''
             this.$forceUpdate()
-          }
-          ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
-            this.selection.masters = res.result.data
-            res.result.data.forEach(item => {
-              if (item.contractGuid === this.data.contract.masterContractID) {
-                this.data.master = item
-              }
+          }else {
+            ContractService.masters({ ProjectId: this.data.contract.projectID, ContractCategory: val }).then(res => {
+              this.selection.masters = res.result.data
+              res.result.data.forEach(item => {
+                if (item.contractGuid === this.data.contract.masterContractID) {
+                  this.data.master = item
+                }
+              })
+              this.$forceUpdate()
             })
-            this.$forceUpdate()
-          })
+          }
         }
       },
       filterParties (partyType) {

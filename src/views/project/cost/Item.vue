@@ -1,8 +1,8 @@
 <template>
-  <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增业态成本中心' : '编辑业态成本中心'">
+  <page-header-wrapper :title="type === 'view' ? '业态成本详情' : id === '0' ? '新增业态成本中心' : '编辑业态成本中心'">
     <a-card :bordered="false">
       <div v-if="id !== '0'" class="table-page-search-wrapper">
-        <a-form-model
+        <a-form
           :label-col="{ span: 8 }"
           :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
@@ -13,7 +13,7 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="业态标签">
-                杭州望江新城項目 (Testing)
+                {{ form.propertyTypeID }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -23,7 +23,7 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="产品业态属性">
-                杭州望江新城項目 (Testing)
+                {{ form.developmentPurposeID }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -32,7 +32,7 @@
               </a-form-item>
             </a-col>
           </a-row>
-        </a-form-model>
+        </a-form>
       </div>
       <a-form-model
         ref="form"
@@ -79,12 +79,19 @@
                   label="业态标签"
                   prop="propertyTypeID"
                 >
-                  <a-select
+                  <!--<a-select
                     :disabled="type === 'view'"
                     placeholder="请选择业态标签"
                     v-model="form.propertyTypeID">
                     <a-select-option value="1">ant-design@alipay.com</a-select-option>
-                  </a-select>
+                  </a-select>-->
+                  <a-tree-select
+                    v-model="form.propertyTypeID"
+                    style="width: 100%"
+                    :tree-data="selection.tagTree"
+                    :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                    search-placeholder="请选择"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
@@ -104,14 +111,17 @@
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
-                  label="二次分摊",
+                  label="二次分摊"
                   prop="secCostAllocateTypeID"
                 >
                   <a-select
                     :disabled="type === 'view'"
                     placeholder="请选择二次分摊"
+                    :default-value="1"
                     v-model="form.secCostAllocateTypeID">
-                    <a-select-option value="1">ant-design@alipay.com</a-select-option>
+                    <a-select-option :value="1">1</a-select-option>
+                    <a-select-option :value="2">2</a-select-option>
+                    <a-select-option :value="3">3</a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -324,8 +334,7 @@
                 >
                   <a-input
                     :disabled="type === 'view'"
-                    placeholder="请填写单位/车位"
-                    v-decorator="['paymentUser', { initialValue: 0, rules: [{required: false, type:'number', message: '请填写单位/车位'}] }]"/>
+                    placeholder="请填写单位/车位"/>
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -526,6 +535,17 @@
         </a-col>
       </a-row>
     </a-card>
+    <a-modal
+      v-if="dialog.visible"
+      :title="dialog.title"
+      :visible="dialog.visible"
+      :okText="dialog.confirmText"
+      :cancelText="dialog.cancelText"
+      @ok="dialog.confirm"
+      @cancel="dialog.cancel"
+    >
+      <p>{{ dialog.content }}</p>
+    </a-modal>
   </page-header-wrapper>
 </template>
 <script>
@@ -538,6 +558,21 @@ const DTO = {
   create: 'ProjectCostCenterCreateInputDto',
   update: 'ProjectCostCenterEditInputDto'
 }
+
+const formatList = (items) => {
+  const list = []
+  items.forEach(item => {
+    if (item.childs) {
+      item.children = formatList(item.childs)
+    } else {
+      item.children = null
+    }
+    item.label = item.nameCN
+    item.value = item.id
+    list.push(item)
+  })
+  return list
+}
 export default {
   name: 'ProjectItem',
   data () {
@@ -546,7 +581,7 @@ export default {
       selection: {},
       activeKey: 1,
       dialog: DIALOGCONFIG,
-      form: null,
+      form: {},
       rules: {
         costCenterName: [
           { required: true, message: '请填写成本中心名称', trigger: 'blur' }
@@ -561,8 +596,7 @@ export default {
   },
   created () {
     BaseService.centerTags().then(res => {
-      this.selection.tagTree = res.result.data
-      console.log(this.selection)
+      this.selection.tagTree = formatList([res.result.data])
       this.$forceUpdate()
     })
     BaseService.centerTypes().then(res => {
@@ -578,19 +612,20 @@ export default {
     type () {
       return this.$route.query.type
     },
-    filteredOptions () {
-      return OPTIONS.filter(o => !this.selectedItems.includes(o))
+    ProjectGUID () {
+      return this.$route.query.ProjectGUID
     }
   },
   methods: {
     getData () {
-      console.log(this.id)
-      if (this.id === '0') {
-        this.form = SwaggerService.getForm(DTO[this.type])
-      } else {
+      this.form = SwaggerService.getForm(DTO[this.type])
+      this.form.status = 0
+      if (this.id !== '0') {
         CostService.item(this.id).then(res => {
           this.form = SwaggerService.getValue(this.form, res.result.data)
         })
+      } else {
+        this.form.projectGUID = this.ProjectGUID
       }
     },
     approve () {

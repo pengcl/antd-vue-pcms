@@ -16,21 +16,28 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商名称">
-              <a-input></a-input>
+              <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="编号">
-              <a-input></a-input>
+              <a-input v-model="queryParam.VendorCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商分类">
-              <a-input></a-input>
+              <a-tree-select
+                v-model="queryParam.packageCodeList"
+                style="width: 100%"
+                :tree-data="types"
+                tree-checkable
+                :show-checked-strategy="SHOW_PARENT"
+                search-placeholder="请选择供应商类别"
+              />
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-button type="success">搜索</a-button>
+            <a-button @click="search()" type="success">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>
         </a-row>
@@ -39,7 +46,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="projectGUID"
+        rowKey="gid"
         bordered
         :columns="columns"
         :data="loadData"
@@ -53,6 +60,7 @@
             title="查看"
             @click="handleToItem(record)"></a-button>
           <a-button
+            v-if="record.logGID"
             class="btn-info"
             type="primary"
             icon="form"
@@ -60,17 +68,22 @@
             title="编辑"
             @click="handleToEdit(record)"></a-button>
         </template>
+        <template slot="vendorAbbreviation" slot-scope="text">
+          <div class="vendor">
+            <ellipsis :length="8" tooltip>{{ text }}</ellipsis>
+          </div>
+        </template>
         <template slot="detail" slot-scope="text, record">
-          <p>{{ record.vendorAbbreviation }}</p>
+          <p>{{ record.vendorName }}</p>
           <p>
             <a-button-group v-if="record.vendorStatus">
-              <span class="label">{{ record.vendorStatus }}</span>
+              <span class="label-primary">{{ record.vendorStatus }}</span>
             </a-button-group>
             <a-button-group v-if="record.legalRep">
-              <span class="label">{{ record.legalRep }}</span>
+              <span class="label-orange">{{ record.legalRep }}</span>
             </a-button-group>
             <a-button-group v-if="record.registerType">
-              <span class="label">{{ record.registerType }}</span>
+              <span class="label-orange">{{ record.registerType }}</span>
             </a-button-group>
           </p>
           <a-row>
@@ -91,11 +104,12 @@
 </template>
 
 <script>
-    import moment from 'moment'
-    import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
-    import { fixedList } from '@/utils/util'
-    import { SupplierService } from '@/views/supplier/supplier.service'
+import moment from 'moment'
+import { STable, Ellipsis } from '@/components'
+import { fixedList, formatTree } from '@/utils/util'
+import { TreeSelect } from 'ant-design-vue'
+import { SupplierService } from '@/views/supplier/supplier.service'
+const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
     export default {
         name: 'SupplierOtherList',
@@ -114,8 +128,8 @@
           {
             title: '供应商简称',
             colSpan: 0,
-            dataIndex: 'vendorName',
-            scopedSlots: { customRender: 'vendorName' }
+            dataIndex: 'vendorAbbreviation',
+            scopedSlots: { customRender: 'vendorAbbreviation' }
           },
           {
             title: '详情',
@@ -133,18 +147,14 @@
 
         this.columns = columns
         return {
+          SHOW_PARENT,
           show: false,
-          mdl: null,
-          // 高级搜索 展开/关闭
-          advanced: false,
-          // 查询参数
-          queryParam: { RegisterType: 2 },
+          queryParam: { RegisterType: 1 },
+          types: [],
           // 加载数据方法 必须为 Promise 对象
           loadData: parameter => {
             const requestParameters = Object.assign({}, parameter, this.queryParam)
-            console.log('loadData request parameters:', requestParameters)
             return SupplierService.items(requestParameters).then(res => {
-              console.log(res)
               return fixedList(res, requestParameters)
             })
           },
@@ -152,10 +162,13 @@
           selectedRows: []
         }
       },
-      filters: {
-      },
+      filters: {},
       created () {
-        getRoleList({ t: new Date() })
+        // getRoleList({ t: new Date() })
+        SupplierService.types().then(res => {
+          this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
+          this.$forceUpdate()
+        })
       },
       computed: {
         rowSelection () {
@@ -166,24 +179,17 @@
         }
       },
       methods: {
+        search () {
+          this.$refs.table.refresh()
+        },
         handleToItem (record) {
-          console.log(record)
           this.$router.push({ path: `/supplier/other/item/${record.gid}?type=view` })
         },
         handleToEdit (record) {
-          console.log(record)
-          this.$router.push({ path: `/supplier/other/item/${record.gid}?type=edit` })
+          this.$router.push({ path: `/supplier/other/item/${record.logGID}?type=update` })
         },
         handleToAdd () {
-          this.$router.push({ path: `/supplier/other/item/0?type=add` })
-        },
-        handleAdd () {
-          this.mdl = null
-          this.visible = true
-        },
-        handleEdit (record) {
-          this.visible = true
-          this.mdl = { ...record }
+          this.$router.push({ path: `/supplier/other/item/0?type=create` })
         },
         handleOk () {
           const form = this.$refs.createModal.form
@@ -229,30 +235,9 @@
             }
           })
         },
-        handleCancel () {
-          this.visible = false
-
-          const form = this.$refs.createModal.form
-          form.resetFields() // 清理表单数据（可不做）
-        },
-        handleSub (record) {
-          if (record.status !== 0) {
-            this.$message.info(`${record.no} 订阅成功`)
-          } else {
-            this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-          }
-        },
         onSelectChange (selectedRowKeys, selectedRows) {
           this.selectedRowKeys = selectedRowKeys
           this.selectedRows = selectedRows
-        },
-        toggleAdvanced () {
-          this.advanced = !this.advanced
-        },
-        resetSearchForm () {
-          this.queryParam = {
-            date: moment(new Date())
-          }
         }
       }
     }
@@ -278,5 +263,38 @@
   background-color: #f8cbad;
   line-height: 20px;
   border-radius: 5px;
+}
+
+.label-primary {
+  border-color: #3A44E1;
+  color: #FFF;
+  background-color: #666EE8;
+  padding: 8px 15px;
+  line-height: 20px;
+  border-radius: 5px;
+}
+
+.label-orange {
+  background-color: #FF9149;
+  border-color: #FF7216;
+  color: #FFF;
+  padding: 8px 15px;
+  line-height: 20px;
+  border-radius: 5px;
+}
+
+.vendor{
+  background-color: #778fc5;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: 0 auto;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
 }
 </style>

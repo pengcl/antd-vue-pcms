@@ -64,10 +64,12 @@
       }
     },
     created () {
-      BaseService.masterID(this.data.contract.contractGuid).then(res => {
-        this.data.fileMasterId = res.result.data
-        this.getFiles()
-      })
+      if (this.id !== '0') {
+        BaseService.masterID(this.data.contract.contractGuid).then(res => {
+          this.data.fileMasterId = res.result.data
+          this.getFiles()
+        })
+      }
     },
     methods: {
       getFiles () {

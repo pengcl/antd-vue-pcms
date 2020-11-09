@@ -56,7 +56,8 @@
               <a-cascader
                 :disabled="type === 'view'"
                 :options="selection.cities"
-                :default-value="[form.vendor.province, form.vendor.city]"
+                :key="form.vendor.city"
+                :default-value="[form.vendor.province,form.vendor.city]"
                 placeholder="请选择公司所在地"
                 @change="cityChange"/>
             </a-form-model-item>
@@ -223,10 +224,11 @@ export default {
       SupplierService[this.type + 'Entity'](this.id).then(res => {
         this.data = res.result.data
         this.form = res.result.data
-        this.form.vendor.registerType = 1
+        this.form.vendor.registerType = 0
+        this.$forceUpdate()
       })
     } else {
-      this.form.vendor.registerType = 1
+      this.form.vendor.registerType = 0
     }
     SupplierService.types().then(res => {
       this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
@@ -247,7 +249,6 @@ export default {
   },
   methods: {
     checkName (name) {
-      console.log(name)
       if (this.id === '0') {
         SupplierService.check(name).then(res => {
           this.duplicated = res.result.data
