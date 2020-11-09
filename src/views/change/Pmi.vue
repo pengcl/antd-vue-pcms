@@ -11,7 +11,7 @@
                   placeholder="请选择"
                   style="width: 100%"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
-                  @change="onChange"/>
+                  @select="onSelect"/>
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -353,14 +353,11 @@
         this.show = !this.show
         this.$refs.table.refresh(true)
       },
-      onChange (value) {
-        if (value.length >= 2) {
-          this.queryParam.ProjectGUID = value[value.length - 1]
-          this.$refs.table.refresh(true)
-        } else {
-          this.queryParam.ProjectGUID = ''
-          this.$refs.table.refresh(true)
-        }
+      onSelect (value,option) {
+        console.log('option',option.$options)
+        this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+        this.$refs.table.refresh()
+        this.$forceUpdate()
       },
       showVO (record) {
         this.$router.push({

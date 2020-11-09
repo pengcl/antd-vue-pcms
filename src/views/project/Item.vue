@@ -1,41 +1,38 @@
 <template>
   <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增项目' : '编辑项目'">
     <a-card :bordered="false">
-      <div v-if="id !== '0'" class="table-page-search-wrapper">
-        <a-form-model
-          ref="form"
-          :model="form"
-          :rules="rules"
+      <div v-if="id !== '0' && info" class="table-page-search-wrapper">
+        <a-form
           :label-col="{ span: 8 }"
           :wrapper-col="{ span: 16 }">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目编码">
-                {{ form.projectCode }}
+                {{ info.projectCode }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="项目状态">
-                {{ form.projStatus }}
+                {{ info.projStatus }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="房产项目名称(中文)">
-                {{ form.projectName }}
+                {{ info.projectName }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="房产项目名称(英文)">
-                {{ form.projectEnName }}11
+                {{ info.projectEnName }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="审批状态">
-                {{ form.auditStatus }}
+                {{ info.auditStatus }}
               </a-form-item>
             </a-col>
           </a-row>
-        </a-form-model>
+        </a-form>
       </div>
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
@@ -80,7 +77,7 @@
                   prop="projStatus"
                 >
                   <a-select
-                    :disabled="type === 'view' || (type === 'create' && id !== '0')"
+                    :disabled="type === 'view' || stage !== 'Project'"
                     placeholder="请选择项目状态"
                     v-model="form.projStatus"
                     v-decorator="['form.projStatus', { rules: [{required: true, message: '付款账户必须填写'}] }]">
@@ -120,7 +117,7 @@
                   prop="projAddress"
                 >
                   <a-input
-                    :disabled="type === 'view' || (type === 'create' && id !== '0')"
+                    :disabled="type === 'view' || stage !== 'Project'"
                     :placeholder="'请填写' + name + '地址'"
                     v-model="form.projAddress"/>
                 </a-form-model-item>
@@ -131,7 +128,7 @@
                   prop="description"
                 >
                   <a-textarea
-                    :disabled="type === 'view' || (type === 'create' && id !== '0')"
+                    :disabled="type === 'view' || stage !== 'Project'"
                     rows="4"
                     placeholder="请输入总体描述"
                     v-model="form.description"
@@ -147,7 +144,7 @@
                   prop="currencyCode"
                 >
                   <a-select
-                    :disabled="type === 'view' || (type === 'create' && id !== '0')"
+                    :disabled="type === 'view' || stage !== 'Project'"
                     placeholder="请选择币种"
                     v-model="form.currencyCode">
                     <a-select-option v-for="currency in selection.currencies" :key="currency.id + ''" :value="currency.id + ''">
@@ -162,7 +159,7 @@
                   prop="companyCode"
                 >
                   <a-select
-                    :disabled="type === 'view' || (type === 'create' && id !== '0')"
+                    :disabled="type === 'view' || stage !== 'Project'"
                     placeholder="请选择项目公司"
                     v-model="form.companyCode"
                     v-decorator="['form.companyCode', { rules: [{required: false, message: '请选择项目公司'}] }]">
@@ -180,7 +177,7 @@
                   prop="builtUpArea"
                 >
                   <a-input-number
-                    :disabled="type === 'view' || (type === 'create' && id !== '0')"
+                    :disabled="type === 'view' || stage !== 'Project'"
                     v-model="form.builtUpArea"
                     placeholder="请填写工地面积"/>
                 </a-form-model-item>
@@ -456,6 +453,7 @@ export default {
       selection: {},
       selectedItems: [],
       form: {},
+      info: null,
       rules: {
         cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
         projectShortCode: [{ required: true, message: '请填写编码', trigger: 'blur' }],
@@ -472,8 +470,9 @@ export default {
     this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
     if (this.id !== '0') {
       ProjectService.item(this.id).then(res => {
+        const data = res.result.data
+        this.info = JSON.parse(JSON.stringify(data))
         if (this.type === 'create') {
-          const data = res.result.data
           const valueDto = SwaggerService.getForm('ProjectStageCreateInputDto')
           const value = SwaggerService.getValue(valueDto, data)
           value.projectShortCode = ''
@@ -482,7 +481,7 @@ export default {
           value.parentId = this.id
           this.form = value
         } else {
-          this.form = res.result.data
+          this.form = data
         }
       })
     }

@@ -38,57 +38,76 @@
 </template>
 
 <script>
-    export default {
-        name: 'BudgetList',
-        data () {
-            return {
-                form: this.$form.createForm(this),
-                loading: false
-            }
-        },
-        props: {}
+import { ContractService } from '@/views/contract/contract.service'
+
+export default {
+  name: 'BudgetList',
+  data () {
+    return {
+      items:[],
     }
+  },
+  created () {
+    ContractService.budgets(this.data.contract.contractGuid).then(res => {
+      console.log(res)
+    })
+  },
+  props: {
+    data: {
+      type: Object,
+      default: null
+    },
+    type: {
+      type: String,
+      default: 'view'
+    },
+    id: {
+      type: String,
+      default: '0'
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
-  table {
-    margin: 15px 0;
-    width: 100%;
-    border-width: 1px 1px 0 0;
-    border-radius: 3px 3px 0 0;
-    border-style: solid;
-    border-color: #ccc;
+table {
+  margin: 15px 0;
+  width: 100%;
+  border-width: 1px 1px 0 0;
+  border-radius: 3px 3px 0 0;
+  border-style: solid;
+  border-color: #ccc;
 
-    thead {
-      tr {
-        th {
-          background-color: #06c;
-          color: #fff;
-          font-weight: normal;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
+  thead {
+    tr {
+      th {
+        background-color: #06c;
+        color: #fff;
+        font-weight: normal;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
+        border-color: #ccc;
 
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        td {
-          padding: 0.5em 0.6em 0.4em 0.6em !important;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
+        button {
+          margin-right: 10px;
         }
       }
     }
   }
+
+  tbody {
+    tr {
+      td {
+        padding: 0.5em 0.6em 0.4em 0.6em !important;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
+        border-color: #ccc;
+
+        button {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
 </style>

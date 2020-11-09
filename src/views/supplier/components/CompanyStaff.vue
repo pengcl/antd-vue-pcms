@@ -10,9 +10,9 @@
                   <a-button :disabled="type === 'view'" @click="add()" icon="plus">
                     添加员工
                   </a-button>
-                  <a-button :disabled="type === 'view'" @click="clear()" icon="stop">
+                  <!--<a-button :disabled="type === 'view'" @click="clear()" icon="stop">
                     重置
-                  </a-button>
+                  </a-button>-->
                 </th>
               </tr>
               <tr>
