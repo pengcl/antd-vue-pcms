@@ -10,9 +10,9 @@
                   <a-button :disabled="type === 'view'" @click="add()" icon="plus">
                     添加银行账号
                   </a-button>
-                  <a-button :disabled="type === 'view'" @click="clear()" icon="stop">
+                  <!--<a-button :disabled="type === 'view'" @click="clear()" icon="stop">
                     重置
-                  </a-button>
+                  </a-button>-->
                 </th>
               </tr>
               <tr>
@@ -45,6 +45,7 @@
 <script>
 
 import { SwaggerService } from '@/api/swagger.service'
+import { addItem, clearItems, removeItem } from '@/api/base'
 
 export default {
   name: 'BankInfo',
@@ -75,53 +76,17 @@ export default {
     }
   },
   methods: {
-    showForm () {
-      this.model = null
-      this.visible = true
-    },
-    ok () {
-      const form = this.$refs.createModal.form
-      this.confirmLoading = true
-      form.validateFields((errors, values) => {
-        if (!errors) {
-          this.items.push(values)
-          this.visible = false
-          this.confirmLoading = false
-          // 重置表单数据
-          form.resetFields()
-          // 刷新表格
-        } else {
-          this.confirmLoading = false
-        }
-      })
-    },
     add () {
       const item = SwaggerService.getForm('ChangeVendorEditDto_Bank')
-      item.isDeleted = false
-      item.isTemp = false
-      this.items.push(item)
+      item.id = 0
+      item.gid = '00000000-0000-0000-0000-000000000000'
+      addItem(item, this.items)
     },
     del (index) {
-      if (this.items[index].isTemp) {
-        this.items.splice(index, 1)
-      } else {
-        this.items[index].isDeleted = true
-      }
+      removeItem(index, this.items)
     },
     clear () {
-      const items = []
-      this.items.forEach(item => {
-        if (!item.isTemp) {
-          item.isDeleted = true
-          items.push(item)
-        }
-      })
-      this.items = items
-    },
-    handleCancel () {
-      this.visible = false
-      const form = this.$refs.createModal.form
-      form.resetFields() // 清理表单数据（可不做）
+      clearItems(this.items)
     }
   }
 }

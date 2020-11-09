@@ -8,20 +8,26 @@
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="供应商名称" prop="vendorName">
+              <a-input
+                :disabled="type === 'view'"
+                placeholder="请填写供应商名称"
+                @blur="checkName(form.vendor.vendorName)"
+                v-model="form.vendor.vendorName">
+                <span
+                  v-if="id === '0' && duplicated"
+                  :class="'tips-error'"
+                  slot="suffix">供应商名称重复，请重新填写</span>
+              </a-input>
+            </a-form-model-item>
+          </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="供应商编号" prop="vendorCode">
               <a-input
                 :disabled="true"
                 placeholder="请填写供应商编号"
                 v-model="form.vendor.vendorCode"/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-model-item label="供应商名称" prop="vendorName">
-              <a-input
-                :disabled="type === 'view'"
-                placeholder="请填写供应商名称"
-                v-model="form.vendor.vendorName"/>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -43,11 +49,6 @@
                 :show-checked-strategy="SHOW_PARENT"
                 search-placeholder="请选择供应商类别"
               />
-              <!--<a-select placeholder="请选择" default-value="0">
-                <a-select-option value="0">深圳</a-select-option>
-                <a-select-option value="1">广州</a-select-option>
-                <a-select-option value="2">珠海</a-select-option>
-              </a-select>-->
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -58,6 +59,14 @@
                 :default-value="[form.vendor.province, form.vendor.city]"
                 placeholder="请选择公司所在地"
                 @change="cityChange"/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="供应商注册地址" prop="registerAddress">
+              <a-input
+                :disabled="type === 'view'"
+                placeholder="供应商注册地址"
+                v-model="form.vendor.registerAddress"/>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -99,18 +108,26 @@
 
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="公司员工">
-          <company-staff ref="staff" :vendor="form" :items="form.vendorEmployeeList" :type="type" :id="id"></company-staff>
+          <company-staff
+            ref="staff"
+            :vendor="form"
+            :items="form.vendorEmployeeList"
+            :type="type"
+            :id="id"></company-staff>
         </a-tab-pane>
         <a-tab-pane v-if="type === 'view'" key="2" tab="变更信息">
-          <change-info :type="type" :id="id"></change-info>
+          <change-info
+            :type="type"
+            :id="id"
+            :items="form.vendorChangeLogList"></change-info>
         </a-tab-pane>
         <a-tab-pane v-if="type === 'view'" key="3" tab="合同信息">
-          <contract-info :type="type" :id="id"></contract-info>
+          <contract-info :type="type" :id="id" :items="form.vendorContractList"></contract-info>
         </a-tab-pane>
         <a-tab-pane key="4" tab="银行信息">
           <bank-info ref="bank" :vendor="form.vendor" :items="form.vendorBankList" :type="type" :id="id"></bank-info>
         </a-tab-pane>
-        <a-tab-pane  key="5" tab="附件信息">
+        <a-tab-pane key="5" tab="附件信息">
           <attachment-info :data="form" :type="type" :id="id"></attachment-info>
         </a-tab-pane>
       </a-tabs>
@@ -182,6 +199,8 @@ export default {
       SHOW_PARENT,
       dialog: DIALOGCONFIG,
       selection: {},
+      checkText: '',
+      duplicated: false,
       form: {
         vendor: {},
         vendorEmployeeList: [],
@@ -204,8 +223,10 @@ export default {
       SupplierService[this.type + 'Entity'](this.id).then(res => {
         this.data = res.result.data
         this.form = res.result.data
-        console.log(this.form)
+        this.form.vendor.registerType = 1
       })
+    } else {
+      this.form.vendor.registerType = 1
     }
     SupplierService.types().then(res => {
       this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
@@ -225,11 +246,18 @@ export default {
     }
   },
   methods: {
+    checkName (name) {
+      console.log(name)
+      if (this.id === '0') {
+        SupplierService.check(name).then(res => {
+          this.duplicated = res.result.data
+        })
+      }
+    },
     back () {
       this.$router.push({ path: `/supplier/purchase/list` })
     },
     cityChange (value) {
-      console.log(value)
       this.form.vendor.province = value[0]
       this.form.vendor.city = value[1]
     },
@@ -239,7 +267,6 @@ export default {
     },
     askUpdate () {
       SupplierService.generate(this.id).then(res => {
-        console.log(res.result.data)
         this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
       })
     },

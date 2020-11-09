@@ -16,7 +16,11 @@ const API = {
   //招投标分判包
   bidItems: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',//根据项目ID获取招投标列表
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
-  bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage'//新增招投标分判包
+  bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage',//新增招投标分判包
+  //行业预算分解
+  resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
+  itemTree: '/api/services/app/Element/GetElementTreeList' //获取大类科目里面的子科目树
+
 }
 
 const CostService = {}
@@ -76,7 +80,7 @@ CostService.item = function (industryId) {
   })
 }
 
-CostService.createIndustry = function (parameter) {
+CostService.industryCreate = function (parameter) {
   return request({
     url: API.industryCreate,
     method: 'POST',
@@ -140,6 +144,23 @@ CostService.bidItem = function (parameter) {
     params: parameter
   })
 }
+
+CostService.resolveTreeItems = function (parameter) {
+  return request({
+    url: API.resolveTreeItems,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.itemTree = function (parameter) {
+  return request({
+    url: API.itemTree,
+    method: 'get',
+    params: parameter
+  })
+}
+
 
 /**
  * login func
