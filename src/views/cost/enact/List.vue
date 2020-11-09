@@ -64,6 +64,13 @@
               title="编辑">
             </a-button>
             <a-button
+              @click="handleToResolve(record)"
+              type="primary"
+              icon="snippets"
+              style="margin-left: 4px"
+              title="预算分解">
+            </a-button>
+            <a-button
               @click="handleToItem(record)"
               type="primary"
               icon="plus-square"
@@ -93,7 +100,7 @@
         {
             title: '科目代码',
             dataIndex: 'action',
-            width: '180px',
+            width: '200px',
             scopedSlots: { customRender: 'action' }
         },
         {
@@ -115,6 +122,7 @@
         data () {
             this.columns = columns
             return {
+                titleIds:[],
                 auditStatus: '',
                 cities: [],
                 visible: false,
@@ -148,32 +156,34 @@
                                     scopedSlots: { customRender: 'cost' }
                                   }
                                 )
+                                this.titleIds.push('cost' + subjectItem1.costCenterId)
                               })
                               this.columns = _columns
                               this.$forceUpdate()
                               res.result.data.forEach(item => {
                                 const obj = {}
+                                obj['id'] = item.id
+                                obj['code'] = item.code
+                                obj['name'] = item.nameCN
+
                                 if (res2.result.data != null) {
                                   res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
                                     // 加载成本
                                     const costName = 'cost' + subjectItem2.costCenterId
                                     subjectItem2.mainElements.forEach(itemA => {
                                       if (item.id === itemA.elementTypeId) {
-                                        obj['id'] = item.id
-                                        obj['code'] = item.code
-                                        obj['name'] = item.nameCN
-                                        // obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
                                         obj[costName] = {
                                           amount: itemA.amount,
                                           percentage: itemA.percentage
                                         }
+                                      }else{
+                                        obj[costName] = {
+                                          amount: 0,
+                                          percentage: 0
+                                        }
                                       }
                                     })
                                   })
-                                } else {
-                                  obj['id'] = item.id
-                                  obj['code'] = item.code
-                                  obj['name'] = item.nameCN
                                 }
                                 result.result.data.push(obj)
                               })
@@ -222,6 +232,9 @@
             },
             handleToAdd () {
                 this.$router.push({ path: `/cost/enact/item/0?type=add` })
+            },
+            handleToResolve (record) {
+              this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
             },
             onChange (value,option) {
                 if (value.length >= 2) {

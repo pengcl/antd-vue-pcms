@@ -1,32 +1,37 @@
 <template>
   <page-header-wrapper>
+    <a-form-model
+      ref="form"
+      :model="form"
+      :rules="rules"
+      :label-col="{ span: 8 }"
+      :wrapper-col="{ span: 16 }">
     <a-card :bordered="false">
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-form-item label="分判包编号">
+            <a-form-model-item prop="tradePackageCode" label="分判包编号">
               <a-input :disabled="true" v-model="form.tradePackageCode"></a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="日期">
+            <a-form-model-item prop="packageDate" label="日期">
               <a-date-picker
                 :disabled="type === 'view'"
-                :format="dateFormat"
                 v-model="form.packageDate"></a-date-picker>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="分判包描述">
+            <a-form-model-item prop="packageTitle" label="分判包描述">
               <a-input
                 :disabled="type === 'view'"
                 v-model="form.packageTitle"
               >
               </a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="范围">
+            <a-form-model-item prop="centers" label="范围">
               <a-select
                 :disabled="type === 'view'"
                 mode="multiple"
@@ -39,10 +44,10 @@
                   {{ option.costCenterName }}
                 </a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="分判包类型">
+            <a-form-model-item prop="itemTypeId" label="分判包类型">
               <a-select
                 :disabled="type === 'view'"
                 placeholder="请选择"
@@ -52,12 +57,12 @@
                   {{ option.nameCN }}
                 </a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="金额">
+            <a-form-model-item prop="budgetAmount" label="金额">
               <a-input :disabled="true" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <!--          <a-col :md="24" :sm="24">-->
           <!--            <table>-->
@@ -115,6 +120,7 @@
       </a-row>
 
     </a-card>
+    </a-form-model>
   </page-header-wrapper>
 </template>
 
@@ -129,7 +135,21 @@
         centers: [],
         costCenters: [],
         budgetTypeItems: [],
-        form: SwaggerService.getForm('TenderPackageCreateInputDto')
+        form: SwaggerService.getForm('TenderPackageCreateInputDto'),
+        rules: {
+          packageDate: [
+            { required: true, message: '请选择日期', trigger: 'blur' }
+          ],
+          packageTitle: [
+            { required: true, message: '请输入分判包描述', trigger: 'blur' }
+          ],
+          costCenters: [
+            { required: true, message: '请选择范围', trigger: 'change' }
+          ],
+          itemTypeId: [
+            { required: true, message: '请选择分判包类型', trigger: 'change' }
+          ]
+        }
       }
     },
     computed: {
@@ -184,28 +204,17 @@
         })
       },
       handleToSave () {
-        this.form.projectGUID = this.ProjectGUID
-        CostService.industryCreate(this.form).then(res => {
-          if (res.result.statusCode === 200) {
-            this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+        this.$refs.form.validate(valid => {
+          if(valid){
+            this.form.projectGUID = this.ProjectGUID
+            CostService.industryCreate(this.form).then(res => {
+              if (res.result.statusCode === 200) {
+                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+              }
+            })
           }
-          // if (res.result.statusCode === 200) {
-          //   const that = this
-          //   this.$confirm({
-          //     title : that.type === 'edit' ? '修改提示' : '添加提示',
-          //     content : that.type === 'edit' ? '继续修改' : '继续添加',
-          //     onOk () {
-          //       if ( that.type === 'add' ) {
-          //         that.form = SwaggerService.getForm('TenderPackageCreateInputDto')
-          //         that.$forceUpdate()
-          //       }
-          //     },
-          //     onCancel(){
-          //       that.$router.push({ path: `/cost/industry/list?ProjectGUID=${that.ProjectGUID}`})
-          //     }
-          //   })
-          // }
         })
+
       },
       back () {
         this.$router.push({ path: `/cost/industry/list?ProjectGUID=${this.ProjectGUID}`})
