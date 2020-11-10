@@ -89,23 +89,25 @@
                 if (this.type === 'create') {
                     const contractList = []
                     let masterInfoDetailList = []
-                    this.form.contractMasterInfo['detailList'].forEach(item => {
-                            const params = {
-                                detailContractType: '主合同',
-                                mainContractGID: this.form.contractMasterInfo['contractGID'],
-                                secondaryContractGID: this.form.contractMasterInfo['contractGID'],
-                                paymentType: item.paymentType,
-                                paymentAmount: item.paymentAmount,
-                                paymentUse: item.paymentUse,
-                                vendorGID: item.vendorGID,
-                                vendorName: item.vendorName,
-                                vendorBankGID: item.vendorBankGID,
-                                vendorBankName: item.vendorBankName,
-                                vendorBankAccounts: item.vendorBankAccounts
+                    if (this.form.contractMasterInfo['detailList'].length > 0) {
+                        this.form.contractMasterInfo['detailList'].forEach(item => {
+                                const params = {
+                                    detailContractType: '主合同',
+                                    mainContractGID: this.form.contractMasterInfo['contractGID'],
+                                    secondaryContractGID: this.form.contractMasterInfo['contractGID'],
+                                    paymentType: item.paymentType,
+                                    paymentAmount: item.paymentAmount,
+                                    paymentUse: item.paymentUse,
+                                    vendorGID: item.vendorGID,
+                                    vendorName: item.vendorName,
+                                    vendorBankGID: item.vendorBankGID,
+                                    vendorBankName: item.vendorBankName,
+                                    vendorBankAccounts: item.vendorBankAccounts
+                                }
+                                masterInfoDetailList.push(params)
                             }
-                            masterInfoDetailList.push(params)
-                        }
-                    )
+                        )
+                    }
                     const contractMasterInfo = {
                         contractType: '主合同',
                         mainContractGID: this.form.contractMasterInfo['contractGID'],
@@ -120,34 +122,42 @@
                         detailList: masterInfoDetailList
                     }
                     let contractNSCInfoList = []
-                    this.form.contractNSCInfoList.forEach(item => {
-                        item.detailList.forEach(v => {
-                            v.detailContractType = '分合同'
-                            v.mainContractGID = item.contractGID
-                            v.secondaryContractGID = item.contractGID
+                    if (this.form.contractNSCInfoList.length > 0) {
+                        this.form.contractNSCInfoList.forEach(item => {
+                            if (item.detailList) {
+                                item.detailList.forEach(v => {
+                                    v.detailContractType = '分合同'
+                                    v.mainContractGID = item.contractGID
+                                    v.secondaryContractGID = item.contractGID
+                                })
+                            }
+                            const params = {
+                                contractType: '分合同',
+                                mainContractGID: item.contractGID,
+                                secondaryContractGID: item.contractGID,
+                                paymentRequestAmount: item.paymentRequestAmount,
+                                progressSendDate: item.progressSendDate,
+                                progressRequestAmount: item.progressRequestAmount,
+                                progressConfirmDate: item.progressConfirmDate,
+                                progressValuationDate: item.progressValuationDate,
+                                progressApproveDate: item.progressApproveDate,
+                                paymentBusinessType: item.paymentBusinessType,
+                                detailList: item.detailList
+                            }
+                            contractNSCInfoList.push(params)
                         })
-                        const params = {
-                            contractType: '分合同',
-                            mainContractGID: item.contractGID,
-                            secondaryContractGID: item.contractGID,
-                            paymentRequestAmount: item.paymentRequestAmount,
-                            progressSendDate: item.progressSendDate,
-                            progressRequestAmount: item.progressRequestAmount,
-                            progressConfirmDate: item.progressConfirmDate,
-                            progressValuationDate: item.progressValuationDate,
-                            progressApproveDate: item.progressApproveDate,
-                            paymentBusinessType: item.paymentBusinessType,
-                            detailList: item.detailList
-                        }
-                        contractNSCInfoList.push(params)
-                    })
+                    }
                     contractList.push(contractMasterInfo)
-                    contractNSCInfoList.forEach(item => {
-                        contractList.push(item)
-                    })
-                    this.form.billList.forEach(item => {
-                        item.contractGID = this.id
-                    })
+                    if (contractNSCInfoList.length > 0) {
+                        contractNSCInfoList.forEach(item => {
+                            contractList.push(item)
+                        })
+                    }
+                    if (this.form.billList.length > 0) {
+                        this.form.billList.forEach(item => {
+                            item.contractGID = this.id
+                        })
+                    }
                     const body = {
                         contractGID: this.id,
                         paymentPhase: this.form['paymentPhase'],

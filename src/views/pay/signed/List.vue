@@ -125,14 +125,25 @@
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
-              type="primary"
-              class="btn-info"
-              icon="file-done"
+              v-if="record.auditStatus === '未审核'"
+              type="danger"
+              icon="delete"
               style="margin-left: 4px"
-              title="审批记录"></a-button>
+              title="删除"
+              @click="remove(record)"></a-button>
           </template>
         </span>
       </s-table>
+
+      <a-modal
+        title="删除付款单"
+        :visible="visible"
+        :confirm-loading="confirmLoading"
+        @ok="handleOk"
+        @cancel="handleCancel"
+      >
+        <p>您确定要删除？</p>
+      </a-modal>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -258,6 +269,7 @@
             return {
                 // create model
                 id: '',
+                deleteId: '',
                 contractAmt: {},
                 canAdd: false,
                 value: '',
@@ -337,6 +349,10 @@
             }
         },
         methods: {
+            remove (record) {
+                this.visible = true
+                this.deleteId = record.gid
+            },
             getContractAmt (record) {
                 this.id = record.contractGuid
                 this.$refs.table.refresh(true)
@@ -378,54 +394,19 @@
                 this.$refs.contractTable.refresh()
                 this.$forceUpdate()
             },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading = false
+            handleOk (e) {
+                this.confirmLoading = true;
+                SignedService.delete(this.deleteId).then(res => {
+                    if (res.result.data){
+                        this.visible = false;
+                        this.confirmLoading = false;
+                        this.$message.success('删除成功')
+                        this.$refs.table.refresh(true)
                     }
                 })
             },
-            handleCancel () {
+            handleCancel (e) {
                 this.visible = false
-
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
             },
             handleSub (record) {
                 if (record.status !== 0) {
