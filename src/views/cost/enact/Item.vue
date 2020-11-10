@@ -15,7 +15,20 @@
           <!--            :alert="false"-->
           <!--            showPagination="auto"-->
           <!--          >-->
-          <a-table :columns="columns" :data-source="data" bordered>
+          <a-table :columns="columns" :dataSource="data" bordered>
+            <template
+              v-for="col in columns"
+              :slot="col"
+              slot-scope="text, record, index"
+            >
+              <div :key="col">
+                <a-input
+                  v-if="record.editable=true"
+                  style="margin: -5px 0"
+                  :value="text"
+                />
+              </div>
+            </template>
               <span slot="cost" slot-scope="text">
                 <p style="text-align: center">
                   <span style="font-weight: bold;padding-right: 10px">{{text}}</span>
@@ -64,22 +77,6 @@
 
   const columns = defaultColumns
 
-  function fixedList(res, params) {
-    const result = {}
-    result.pageSize = params.pageSize
-    result.pageNo = params.pageNo
-    if (res.result.data) {
-      result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
-      result.totalCount = res.result.data.length
-      result.data = formatList(res.result.data, true)
-    } else {
-      result.totalPage = 0
-      result.totalCount = 0
-      result.data = []
-    }
-    return result
-  }
-
   function formatList(items, isRoot) {
     const list = []
     items.forEach(item => {
@@ -127,6 +124,18 @@
     return list
   }
 
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    onSelect: (record, selected, selectedRows) => {
+      console.log(record, selected, selectedRows);
+    },
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      console.log(selected, selectedRows, changeRows);
+    },
+  };
+
   export default {
     name: 'table',
     components: {
@@ -134,47 +143,36 @@
       Ellipsis
     },
     data() {
-      this.columns = columns
       return {
-        visible: false,
-        confirmLoading: false,
-        mdl: null,
-        advanced: false,
-        queryParam: {},
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-            const result = {result: {data: []}}
-            const _columns = JSON.parse(JSON.stringify(defaultColumns))
-            const requestParameters = {MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id}
-            console.log('loadData request parameters:', requestParameters)
-            return CostService.subjectViewItems(requestParameters).then(res => {
-                const list = formatList(res.result.data[0].elementItem.childs, true)
-                res.result.data.forEach(item => {
-                  //组装动态列
-                  _columns.push(
-                    {
-                      title: item.costCenterName,
-                      dataIndex: 'cost' + item.costCenterId,
-                      scopedSlots: {customRender: 'cost'}
-                    }
-                  )
-              })
-              console.log(getList(list, res.result.data))
-              result.result.data = getList(list, res.result.data)
-              this.columns = _columns
-              this.$forceUpdate()
-              return fixedList(result, parameter)
-            })
-        },
-        selectedRowKeys: [],
-        selectedRows: []
-      }
+        data,
+        columns,
+        rowSelection,
+      };
     },
     filters: {
 
     },
     created() {
-
+      const result = {result: {data: []}}
+      const _columns = JSON.parse(JSON.stringify(defaultColumns))
+      const requestParameters = {MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id}
+      CostService.subjectViewItems(requestParameters).then(res => {
+        const list = formatList(res.result.data[0].elementItem.childs, true)
+        res.result.data.forEach(item => {
+          //组装动态列
+          _columns.push(
+            {
+              title: item.costCenterName,
+              dataIndex: 'cost' + item.costCenterId,
+              scopedSlots: {customRender: 'cost'}
+            }
+          )
+        })
+        result.result.data = getList(list, res.result.data)
+        this.columns = _columns
+        this.$forceUpdate()
+        this.data = getList(list, res.result.data)
+      })
     },
     computed: {
       id() {
