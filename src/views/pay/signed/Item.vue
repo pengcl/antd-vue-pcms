@@ -175,6 +175,10 @@
                                 SignedService.approve(res.result.data).then(res => {
                                     window.location.href = res.result.data
                                 })
+                            } else {
+                                this.$router.push({
+                                    path: '/pay/signed/list'
+                                })
                             }
                         }
                     })
@@ -185,6 +189,10 @@
                             if (this.approveStatus) {
                                 SignedService.approve(this.id).then(res => {
                                     window.location.href = res.result.data
+                                })
+                            } else {
+                                this.$router.push({
+                                    path: '/pay/signed/list'
                                 })
                             }
                         }

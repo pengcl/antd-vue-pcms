@@ -391,6 +391,7 @@
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 v-model="item.billAmount"
+                                @change="billAmountChange"
                                 :min="0"
                                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
@@ -399,6 +400,7 @@
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 v-model="item.taxRate"
+                                @change="taxRateChange"
                                 :min="0"
                                 :max="100"
                                 :formatter="value => `${value}%`"
@@ -407,6 +409,7 @@
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 v-model="item.noTaxAmount"
+                                @change="noTaxAmountChange"
                                 :min="0"
                                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
@@ -507,6 +510,15 @@
             }
         },
         methods: {
+            billAmountChange (value) {
+                this.$forceUpdate()
+            },
+            taxRateChange (value) {
+                this.$forceUpdate()
+            },
+            noTaxAmountChange (value) {
+                this.$forceUpdate()
+            },
             receiveDateChange (date, dateString) {
                 var receiveDate = new Date(dateString)
                 var startDate = new Date(receiveDate.getFullYear(), receiveDate.getMonth(), receiveDate.getDate())
