@@ -85,12 +85,9 @@ tradePackageCode: "CC01-TENDER-0001"
         searchKey: '',
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-          console.log(this.project)
-          console.log('tenders')
           this.queryParam.ProjectGUID = this.project.projectGUID
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return ContractService.tenders(requestParameters).then(res => {
-            console.log(res)
             const items = []
             res.result.data.items.forEach(item => {
               if (item.packageTitle.indexOf(this.searchKey) >= 0) {
@@ -99,7 +96,6 @@ tradePackageCode: "CC01-TENDER-0001"
             })
             res.result.data.items = items
             res.result.data.totalCount = items.length
-            console.log(fixedList(res, requestParameters))
             return fixedList(res, requestParameters)
           })
         }

@@ -10,8 +10,8 @@
             placeholder="请选择"
             v-model="data.retentionAndTermsType"
             v-decorator="['paymentUser', { rules: [{required: true, message: ' 请输入保修金/保固金/保留金条款类型\n'}] }]">
-            <a-select-option v-for="option in selection.retentionTypes" :key="option.id" :value="option.id">{{
-              option.nameCN }}
+            <a-select-option v-for="option in selection.retentionTypes" :key="option.id" :value="option.id">
+              {{ option.nameCN }}
             </a-select-option>
           </a-select>
         </a-form-item>
