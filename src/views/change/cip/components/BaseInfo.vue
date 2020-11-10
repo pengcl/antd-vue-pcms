@@ -191,7 +191,7 @@
             v-if="data.voMasterInfo.voType==='现场管理'"
             :disabled="type === 'view'"
             @change="changeReasonType">
-            <a-checkbox value="紧急工程(安全)">紧急工程(安全)</a-checkbox>
+            <a-checkbox value="抢险">抢险</a-checkbox>
             <a-checkbox value="索偿">索偿</a-checkbox>
             <a-checkbox value="其他">其他</a-checkbox>
           </a-checkbox-group>
@@ -467,10 +467,10 @@
         selection: {},
         loading: false,
         rules: {
-          toParty: [
-            { required: true, message: '请选择承包/顾问单位', trigger: 'change' }
-          ],
-          toRate: [{ required: true, message: '请输入承包/顾问单位百分比', trigger: 'change' }],
+          // toParty: [
+          //   { required: true, message: '请选择承包/顾问单位', trigger: 'change' }
+          // ],
+          // toRate: [{ required: true, message: '请输入承包/顾问单位百分比', trigger: 'change' }],
           reason: [{ required: true, message: '请输入变更原因详细', trigger: 'change' }],
           voContent: [
             { required: true, message: '请输入变更内容', trigger: 'change' }

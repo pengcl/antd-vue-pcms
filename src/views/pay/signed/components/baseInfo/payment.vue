@@ -48,6 +48,7 @@
             </td>
             <td>
               <a-input-number placeholder="请输入"
+                              @change="paymentAmountChange"
                               :disabled="type === 'view'"
                               v-model="item.paymentAmount"
                               :min="0"
@@ -191,6 +192,9 @@
                 })
             },
             moneyTypeChange (value) {
+                this.$forceUpdate()
+            },
+            paymentAmountChange (value) {
                 this.$forceUpdate()
             },
             onChange (value, option) {

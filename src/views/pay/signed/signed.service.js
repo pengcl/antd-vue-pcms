@@ -15,6 +15,7 @@ const API = {
   masters: '/api/services/app/Contract/GetMasterContractInfo',
   create: '/api/services/app/Payment/CreatePayment',
   update: '/api/services/app/Payment/UpdatePayment',
+  delete: '/api/services/app/Payment/DeletePayment',
   progressByContract: '/api/services/app/Payment/GetPaymentProgressByContract',
   progressInfo: '/api/services/app/Payment/GetPaymentProgress',
   progressById: '/api/services/app/Payment/GetPaymentProgressByID',
@@ -192,6 +193,14 @@ SignedService.update = function (parameter) {
     url: API.update,
     method: 'PUT',
     data: parameter
+  })
+}
+
+SignedService.delete = function (gid) {
+  return request({
+    url: API.delete,
+    method: 'DELETE',
+    params: { gid }
   })
 }
 
