@@ -327,9 +327,11 @@ export default {
       this.show = false
     },
     handleOk () {
-      this.show = false
+      console.log(this.$refs.budgets.$refs.form)
+      this.$refs.budgets.$refs.form.validate(valid => { console.log(valid) })
+      /* this.show = false
       const data = this.$refs.budgets.data
-      console.log(data)
+      console.log(data) */
     }
   }
 }
