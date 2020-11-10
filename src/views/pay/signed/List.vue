@@ -89,7 +89,7 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd" v-if="id">新增付款</a-button>
+          <a-button type="success" @click="handleToAdd" v-if="id && canAdd">新增付款</a-button>
           <a-button type="success" style="margin-left: 10px">发票管理</a-button>
         </a-col>
       </a-row>
@@ -117,6 +117,7 @@
               title="查看"
               @click="handleToItem(record)"></a-button>
             <a-button
+              v-if="record.auditStatus === '未审核'"
               class="btn-info"
               type="primary"
               icon="form"
@@ -258,6 +259,7 @@
                 // create model
                 id: '',
                 contractAmt: {},
+                canAdd: false,
                 value: '',
                 city: '',
                 projectType: '',
@@ -340,6 +342,7 @@
                 this.$refs.table.refresh(true)
                 SignedService.contractAmt(record.contractGuid).then(res => {
                     this.contractAmt = res.result.data
+                    this.canAdd = res.result.data.canAdd
                 })
             },
             handleToItem (record) {
