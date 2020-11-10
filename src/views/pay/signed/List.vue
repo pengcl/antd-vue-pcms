@@ -108,6 +108,18 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
+        <span slot="auditTime" slot-scope="text">
+          <template>
+            <span>{{text | moment}}</span>
+          </template>
+        </span>
+
+        <span slot="paymentReceiveDate" slot-scope="text">
+          <template>
+            <span>{{text | moment}}</span>
+          </template>
+        </span>
+
         <span slot="action" slot-scope="text, record">
           <template>
             <a-button
@@ -227,7 +239,8 @@
         },
         {
             title: '支付日期',
-            dataIndex: 'paymentReceiveDate'
+            dataIndex: 'paymentReceiveDate',
+            scopedSlots: { customRender: 'paymentReceiveDate' }
         },
         {
             title: '付款状态',
