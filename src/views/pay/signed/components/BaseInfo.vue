@@ -328,7 +328,8 @@
         </a-col>
         <base-info-payment :data="item" :type="type" :id="id"></base-info-payment>
         <base-info-attachment :master-id="data.masterID"
-                              :data="item" :type="type"
+                              :data="item"
+                              :type="type"
                               :id="id"
                               @on-change-masterId="changeMasterId"></base-info-attachment>
       </div>

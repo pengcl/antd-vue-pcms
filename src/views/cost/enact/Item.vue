@@ -4,41 +4,35 @@
 
       <a-row>
         <a-col :md="24" :sm="24">
-          <table>
-            <thead>
-            <tr>
-              <th style="width: 30%">科目代码</th>
-              <th style="width: 40%">科目名称</th>
-              <th v-for="(item,index) in titels" :key="index">
-                {{item.costCenterName}}
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(item,index) in data" :key="index">
-              <td>
-                {{item.elementInfoCode}}
-              </td>
-              <td>
-                {{item.elementInfoNameCN}}
-              </td>
-              <td v-for="(costCenterItem,index) in item.costCenter" :key="index">
-                <a-input v-model="costCenterItem.amount"></a-input>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+          <!--          <a-table-->
+          <!--            style="margin-top: 5px"-->
+          <!--            ref="table"-->
+          <!--            size="default"-->
+          <!--            rowKey="code"-->
+          <!--            bordered-->
+          <!--            :columns="columns"-->
+          <!--            :data-source="loadData"-->
+          <!--            :alert="false"-->
+          <!--            showPagination="auto"-->
+          <!--          >-->
+          <a-table :columns="columns" :data-source="data" bordered>
+              <span slot="cost" slot-scope="text">
+                <p style="text-align: center">
+                  <span style="font-weight: bold;padding-right: 10px">{{text}}</span>
+                </p>
+              </span>
+          </a-table>
         </a-col>
       </a-row>
-      <a-row>
+      <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
-          <a-button type="success" @click="handleToSave">储存</a-button>
-          <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
+          <a-button style="margin-right: 20px" type="success">启动审批流程</a-button>
+          <a-button @click="handleToSave" type="success">储存</a-button>
+          <a-button @click="back" style="margin-left: 5px" type="danger">关闭</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button type="success" style="margin-right: 10px">导入导出</a-button>
+            <a-button style="margin-right: 10px" type="success">导入导出</a-button>
             <a-button type="success">审批记录</a-button>
           </a-button-group>
         </a-col>
@@ -48,122 +42,182 @@
 </template>
 
 <script>
-    import {CostService} from "@/views/cost/cost.service"
-    import {ContractService} from "@/views/contract/contract.service";
-    import {SwaggerService} from "@/api/swagger.service";
-    export default {
-        name: 'Item',
-        data () {
-          return {
-            data:[],
-            titels:[],
-            loading: false
-          }
-        },
-        filters: {
+  import {CostService} from "@/views/cost/cost.service"
+  import {ContractService} from "@/views/contract/contract.service";
+  import {SwaggerService} from "@/api/swagger.service";
+  import {Ellipsis, STable} from "@/components";
 
-        },
-        created () {
-            const requestParameters = {ProjectGUID:this.ProjectGUID,ElementTypeId:this.id}
-            CostService.subjectViewItems(requestParameters).then(res => {
-                this.titels = res.result.data
-                //创建行数据
-                const items = []
+  const defaultColumns = [
+    {
+      title: '科目代码',
+      width: '150px',
+      dataIndex: 'elementInfoCode',
+      key: 'elementInfoCode'
+    },
+    {
+      title: '科目名称',
+      width: '350px',
+      dataIndex: 'elementInfoNameCN',
+      key: 'elementInfoNameCN'
+    }
+  ]
+
+  const columns = defaultColumns
+
+  function fixedList(res, params) {
+    const result = {}
+    result.pageSize = params.pageSize
+    result.pageNo = params.pageNo
+    if (res.result.data) {
+      result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
+      result.totalCount = res.result.data.length
+      result.data = formatList(res.result.data, true)
+    } else {
+      result.totalPage = 0
+      result.totalCount = 0
+      result.data = []
+    }
+    return result
+  }
+
+  function formatList(items, isRoot) {
+    const list = []
+    items.forEach(item => {
+      item.isRoot = isRoot
+      if (item.childs) {
+        item.children = formatList(item.childs, false)
+      } else {
+        item.children = null
+        item.isEndNode = true
+      }
+      list.push(item)
+    })
+    return list
+  }
+
+  function getList(items, costCenters) {
+    const list = []
+    items.forEach(item => {
+      //组装成本中心数据
+      const costCenter = []
+      costCenters.forEach(center => {
+        center.elementItem.childs.forEach(childItem => {
+          const obj = {}
+          if (item.elementInfoId === childItem.elementInfoId) {
+            obj['costCenterId'] = center.costCenterId
+            obj['costCenterCode'] = center.costCenterCode
+            obj['costCenterName'] = center.costCenterName
+            obj['elementInfoId'] = childItem.elementInfoId
+            obj['elementInfoCode'] = childItem.elementInfoCode
+            obj['elementInfoNameCN'] = childItem.elementInfoNameCN
+            obj['amount'] = childItem.amount
+            costCenter.push(obj)
+          }
+        })
+        item['costCenter'] = costCenter
+      })
+      if (item.childs) {
+        item.children = getList(item.childs, costCenters)
+      } else {
+        item.children = null
+        item.isEndNode = true
+      }
+      list.push(item)
+    })
+    return list
+  }
+
+  export default {
+    name: 'table',
+    components: {
+      STable,
+      Ellipsis
+    },
+    data() {
+      this.columns = columns
+      return {
+        visible: false,
+        confirmLoading: false,
+        mdl: null,
+        advanced: false,
+        queryParam: {},
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+            const result = {result: {data: []}}
+            const _columns = JSON.parse(JSON.stringify(defaultColumns))
+            const requestParameters = {MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id}
+            console.log('loadData request parameters:', requestParameters)
+            return CostService.subjectViewItems(requestParameters).then(res => {
+                const list = formatList(res.result.data[0].elementItem.childs, true)
                 res.result.data.forEach(item => {
-                    item.elementItem.childs.forEach(childItem => {
-                        const len = items.length // this.list是要插入的数据列表，array
-                        if(len===0){
-                          items.push(childItem)
-                        }else{
-                          let flag = false // 定义一个标识符
-                          for (let i = 0; i < len; i++) {
-                            if(items[i].elementInfoCode===childItem.elementInfoCode){
-                              flag = true
-                              break
-                            }
-                          }
-                          if(!flag){
-                            items.push(childItem)
-                          }
-                        }
-                    })
-                })
-                //插入动态列数据
-                items.forEach(item =>{
-                  const costCenter = []
-                    res.result.data.forEach(costCenterItem => {
-                        costCenterItem.elementItem.childs.forEach(childItem => {
-                            const obj = {}
-                            if(item.elementInfoId === childItem.elementInfoId){
-                              obj['costCenterId'] = costCenterItem.costCenterId
-                              obj['costCenterCode'] = costCenterItem.costCenterCode
-                              obj['costCenterName'] = costCenterItem.costCenterName
-                              obj['elementInfoId'] = childItem.elementInfoId
-                              obj['elementInfoCode'] = childItem.elementInfoCode
-                              obj['elementInfoNameCN'] = childItem.elementInfoNameCN
-                              obj['amount'] = childItem.amount
-                              costCenter.push(obj)
-                            }
-                        })
-                      item['costCenter'] = costCenter
-                    })
-                })
-                this.data = items
-                // console.log(this.data)
-                this.$forceUpdate()
+                  //组装动态列
+                  _columns.push(
+                    {
+                      title: item.costCenterName,
+                      dataIndex: 'cost' + item.costCenterId,
+                      scopedSlots: {customRender: 'cost'}
+                    }
+                  )
+              })
+              console.log(getList(list, res.result.data))
+              result.result.data = getList(list, res.result.data)
+              this.columns = _columns
+              this.$forceUpdate()
+              return fixedList(result, parameter)
             })
         },
-        computed: {
-            id () {
-              return this.$route.params.id
-            },
-            type () {
-              return this.$route.query.type
-            },
-            ProjectGUID () {
-              return this.$route.query.ProjectGUID
-            }
-        },
-        methods: {
-            filterParties () {
-              const items = []
-              if (this.data.childs.forEach) {
-                this.data.childs.forEach(item => {
-                    items.push(item)
-                })
-              }
-              return items
-            },
-            back () {
-                this.$router.push({ path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}` })
-            },
-            handleToSave () {
-              const result = {}
-              const items = []
-              //组装保存数据
-              result['ProjectGUID'] = this.ProjectGUID
-              result['budgetBaseTypeId'] = 83
-              result['elementTypeId'] = this.id
-              if (this.data.length>0) {
-                this.data.forEach(item => {
-                  item.costCenter.forEach(centerItem => {
-                    const obj = {}
-                    obj['costCenterId'] = centerItem.costCenterId
-                    obj['elementInfoId'] = centerItem.elementInfoId
-                    obj['amount'] = centerItem.amount
-                    items.push(obj)
-                  })
-                })
-              }
-              result['items'] = items
-              CostService.update(result).then(res => {
-                if (res.result.statusCode === 200) {
-                  this.$message.info('修改成功')
-                }
-              })
-            }
+        selectedRowKeys: [],
+        selectedRows: []
+      }
+    },
+    filters: {
+
+    },
+    created() {
+
+    },
+    computed: {
+      id() {
+        return this.$route.params.id
+      },
+      type() {
+        return this.$route.query.type
+      },
+      ProjectGUID() {
+        return this.$route.query.ProjectGUID
+      }
+    },
+    methods: {
+      back() {
+        this.$router.push({path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}`})
+      },
+      handleToSave() {
+        const result = {}
+        const items = []
+        //组装保存数据
+        result['ProjectGUID'] = this.ProjectGUID
+        result['budgetBaseTypeId'] = 83
+        result['elementTypeId'] = this.id
+        if (this.data.length > 0) {
+          this.data.forEach(item => {
+            item.costCenter.forEach(centerItem => {
+              const obj = {}
+              obj['costCenterId'] = centerItem.costCenterId
+              obj['elementInfoId'] = centerItem.elementInfoId
+              obj['amount'] = centerItem.amount
+              items.push(obj)
+            })
+          })
         }
+        result['items'] = items
+        CostService.update(result).then(res => {
+          if (res.result.statusCode === 200) {
+            this.$message.info('修改成功')
+          }
+        })
+      }
     }
+  }
 </script>
 
 <style lang="less" scoped>
