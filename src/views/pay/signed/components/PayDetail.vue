@@ -17,17 +17,32 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item label="合约价">
-          <a-input v-model="payDetail.contractAmount" :disabled="true"></a-input>
+          <a-input-number v-model="payDetail.contractAmount"
+                          :disabled="true"
+                          :min="0"
+                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item label="同意更改后的合约价">
-          <a-input v-model="payDetail.contractEffectAmount" :disabled="true"></a-input>
+          <a-input-number v-model="payDetail.contractEffectAmount"
+                          :disabled="true"
+                          :min="0"
+                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item label="预计结算金额">
-          <a-input v-model="payDetail.contractEstimateAmount" :disabled="true"></a-input>
+          <a-input-number v-model="payDetail.contractEstimateAmount"
+                          :disabled="true"
+                          :min="0"
+                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">

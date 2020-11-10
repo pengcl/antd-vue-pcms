@@ -72,12 +72,12 @@
           label="申请批准金额"
           prop="paymentRequestAmount"
         >
-          <a-input :disabled="type === 'view'"
-                   v-model="data.paymentRequestAmount"
-                   :min="0"
-                   :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                   :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                   :precision="2"></a-input>
+          <a-input-number :disabled="type === 'view'"
+                          v-model="data.paymentRequestAmount"
+                          :min="0"
+                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -85,12 +85,12 @@
           label="本期支付金额"
           prop="paymentAmount"
         >
-          <a-input :disabled="type === 'view'"
-                   v-model="data.paymentAmount"
-                   :min="0"
-                   :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                   :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                   :precision="2"></a-input>
+          <a-input-number :disabled="type === 'view'"
+                          v-model="data.paymentAmount"
+                          :min="0"
+                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
@@ -126,19 +126,19 @@
             <td rowspan="4" style="text-align: center">原合同</td>
             <td>合同金额</td>
             <td>
-              <a-input :disabled="true"
-                       v-model="data.contractMasterInfo.contractAmount"
-                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                       :precision="2"></a-input>
+              <a-input-number :disabled="true"
+                              v-model="data.contractMasterInfo.contractAmount"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"></a-input-number>
             </td>
             <td>预计结算金额</td>
             <td>
-              <a-input :disabled="true"
-                       v-model="data.contractMasterInfo.contractEstimateAmount"
-                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                       :precision="2"></a-input>
+              <a-input-number :disabled="true"
+                              v-model="data.contractMasterInfo.contractEstimateAmount"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"></a-input-number>
             </td>
             <td>累计支付金额</td>
             <td>
@@ -157,13 +157,13 @@
             </td>
             <td>单位承包上报金额</td>
             <td>
-              <a-input :disabled="type === 'view'"
-                       v-model="data.contractMasterInfo.progressRequestAmount"
-                       :min="0"
-                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                       :precision="2"
-                       v-decorator="['progressRequestAmount', { rules: [{required: true, message: '请输入单位承包上报金额'}] }]"></a-input>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="data.contractMasterInfo.progressRequestAmount"
+                              :min="0"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"
+                              v-decorator="['progressRequestAmount', { rules: [{required: true, message: '请输入单位承包上报金额'}] }]"></a-input-number>
             </td>
             <td>现场确认时间</td>
             <td>
@@ -190,13 +190,13 @@
             </td>
             <td>申请批准金额</td>
             <td>
-              <a-input :disabled="type === 'view'"
-                       v-model="data.contractMasterInfo.paymentRequestAmount"
-                       :min="0"
-                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                       :precision="2"
-                       v-decorator="['paymentRequestAmount', { rules: [{required: true, message: '请输入申请批准金额'}] }]"></a-input>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="data.contractMasterInfo.paymentRequestAmount"
+                              :min="0"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"
+                              v-decorator="['paymentRequestAmount', { rules: [{required: true, message: '请输入申请批准金额'}] }]"></a-input-number>
             </td>
           </tr>
           <tr>
@@ -242,11 +242,21 @@
             <tr>
               <td>合同金额</td>
               <td>
-                <a-input :disabled="true" v-model="item.contractAmount"></a-input>
+                <a-input-number :disabled="true"
+                                v-model="item.contractAmount"
+                                :min="0"
+                                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
               </td>
               <td>预计结算金额</td>
               <td>
-                <a-input :disabled="true" v-model="item.contractEstimateAmount"></a-input>
+                <a-input-number :disabled="true"
+                                v-model="item.contractEstimateAmount"
+                                :min="0"
+                                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
               </td>
               <td>累计支付金额</td>
               <td>
@@ -263,7 +273,12 @@
               </td>
               <td>单位承包上报金额</td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.progressRequestAmount"></a-input>
+                <a-input-number :disabled="type === 'view'"
+                                v-model="item.progressRequestAmount"
+                                :min="0"
+                                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
               </td>
               <td>现场确认时间</td>
               <td>
@@ -284,7 +299,12 @@
               </td>
               <td>申请批准金额</td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.paymentRequestAmount"></a-input>
+                <a-input-number :disabled="type === 'view'"
+                                v-model="item.paymentRequestAmount"
+                                :min="0"
+                                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
               </td>
             </tr>
             <tr>
@@ -307,7 +327,10 @@
           </table>
         </a-col>
         <base-info-payment :data="item" :type="type" :id="id"></base-info-payment>
-        <base-info-attachment :master-id="data.masterID" :data="item" :type="type" :id="id"></base-info-attachment>
+        <base-info-attachment :master-id="data.masterID"
+                              :data="item" :type="type"
+                              :id="id"
+                              @on-change-masterId="changeMasterId"></base-info-attachment>
       </div>
       <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票信息</a-col>
       <a-col :md="24" :sm="24">
@@ -365,13 +388,28 @@
                 <a-input :disabled="type === 'view'" v-model="item.billNum"></a-input>
               </td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.billAmount"></a-input>
+                <a-input-number :disabled="type === 'view'"
+                                v-model="item.billAmount"
+                                :min="0"
+                                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
               </td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.taxRate"></a-input>
+                <a-input-number :disabled="type === 'view'"
+                                v-model="item.taxRate"
+                                :min="0"
+                                :max="100"
+                                :formatter="value => `${value}%`"
+                                :parser="value => value.replace('%', '')"></a-input-number>
               </td>
               <td>
-                <a-input :disabled="type === 'view'" v-model="item.noTaxAmount"></a-input>
+                <a-input-number :disabled="type === 'view'"
+                                v-model="item.noTaxAmount"
+                                :min="0"
+                                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
               </td>
               <td>
                 <a-date-picker :disabled="type === 'view'" v-model="item.billDate" @change="dateChange"></a-date-picker>

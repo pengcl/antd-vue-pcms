@@ -29,32 +29,39 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="收款单号">
-              <a-input v-model="queryParam.ContractNo"></a-input>
+              <a-input v-model="queryParam.paymentOtherCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="收款单位">
-              <a-input v-model="queryParam.ContractName"></a-input>
+              <a-input v-model="queryParam.payeePartyNameList"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="款项类型">
-              <a-input v-model="queryParam.VendorName"></a-input>
+              <a-select
+                placeholder="请选择"
+                v-model="queryParam.paymentType">
+                <a-select-option v-for="type in moneyTypes"
+                                 :value="type"
+                                 :key="type">{{type}}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="审批状态">
               <a-select
                 placeholder="请选择"
-                v-model="queryParam.AuditStatus"
-                v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
+                v-model="queryParam.auditStatus"
+                v-decorator="[queryParam.auditStatus, { rules: [{required: true, message: '请选择'}] }]">
                 <a-select-option value="1">草拟中</a-select-option>
                 <a-select-option value="2">已审批</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-button type="success" @click="search()">搜索</a-button>
+            <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>
         </a-row>
@@ -202,6 +209,7 @@
             return {
                 // create model
                 cities: [],
+                moneyTypes: [],
                 city: '',
                 value: '',
                 projectType: '',
@@ -247,6 +255,10 @@
                 this.cities = cities
                 this.$forceUpdate()
             })
+            UnSignedService.moneyTypes().then(res => {
+                this.moneyTypes = res.result.data
+            })
+
         },
         computed: {
             rowSelection () {

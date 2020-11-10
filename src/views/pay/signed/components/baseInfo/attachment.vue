@@ -102,8 +102,8 @@
             'data.mainContractGID' (value) {
                 if (this.type !== 'create') {
                     SignedService.masterID(this.id).then(_res => {
-                        this.masterID = _res.result.data
-                        this.getFileList(this.masterID, this.data['mainContractGID'])
+                        this.masterId = _res.result.data
+                        this.getFileList(this.masterId, this.data['mainContractGID'])
                     })
                 }
             }
@@ -114,9 +114,9 @@
             })
             if (this.type !== 'create') {
                 SignedService.masterID(this.id).then(_res => {
-                    this.masterID = _res.result.data
+                    this.masterId = _res.result.data
                     if (this.data['mainContractGID']) {
-                        this.getFileList(this.masterID, this.data['mainContractGID'])
+                        this.getFileList(this.masterId, this.data['mainContractGID'])
                     }
 
                 })

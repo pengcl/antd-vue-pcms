@@ -187,6 +187,14 @@ SignedService.create = function (parameter) {
   })
 }
 
+SignedService.update = function (parameter) {
+  return request({
+    url: API.update,
+    method: 'PUT',
+    data: parameter
+  })
+}
+
 SignedService.upload = function (parameter) {
   return request({
     url: API.upload,
