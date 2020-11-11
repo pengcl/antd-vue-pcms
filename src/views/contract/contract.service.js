@@ -5,6 +5,7 @@ const API = {
   item: '/api/services/app/Contract/GetAllContractInfo',
   types: '/api/services/app/GeneralType/GetContractCategoryTypes',
   masters: '/api/services/app/Contract/GetMasterContractInfo',
+  storeTypes: '/api/services/app/GeneralType/GetContractUseStoreTypes',
   create: '/api/services/app/Contract/CreateContractAllInfo',
   update: '/api/services/app/Contract/UpdateContractAllInfo',
   delete: '/api/services/app/Contract/DeleteContractAllInfo',
@@ -53,6 +54,14 @@ ContractService.types = function () {
 ContractService.masters = function (parameter) {
   return request({
     url: API.masters,
+    method: 'get',
+    params: parameter
+  })
+}
+
+ContractService.storeTypes = function (parameter) {
+  return request({
+    url: API.storeTypes,
     method: 'get',
     params: parameter
   })

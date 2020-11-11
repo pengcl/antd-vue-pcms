@@ -8,9 +8,6 @@
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
-    <!--<a-form-model>
-
-    </a-form-model>-->
     <div>
       <a-form-model
         ref="form"
@@ -29,11 +26,16 @@
                 :disabled="true"
                 v-model="item.value"
                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :precision="2" />
+                :precision="2"/>
             </a-form-model-item>
           </a-col>
         </a-row>
       </a-form-model>
+      <a-radio-group v-model="useStore" button-style="solid">
+        <a-radio-button v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
+          {{ item.nameCN }}
+        </a-radio-button>
+      </a-radio-group>
     </div>
     <s-table
       style="margin-top: 5px"
@@ -53,21 +55,21 @@
           :min="0"
           :max="record.budgetPlanDetailAmount"
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-          :precision="2" />
+          :precision="2"/>
       </template>
       <template slot="tenderSurplus" slot-scope="text, record">
         <a-input-number
           :disabled="true"
           :value="record.tenderSurplus"
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-          :precision="2" />
+          :precision="2"/>
       </template>
       <template slot="alterPlan" slot-scope="text, record">
         <a-input-number
           :disabled="true"
           :value="record.alterPlan"
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-          :precision="2" />
+          :precision="2"/>
       </template>
       <template slot="balanceAmount" slot-scope="text, record">
         <a-form-model-item>
@@ -75,7 +77,7 @@
             :disabled="true"
             :value="record.balanceAmount"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :precision="2" />
+            :precision="2"/>
         </a-form-model-item>
       </template>
     </s-table>
@@ -86,6 +88,7 @@
   import { STable, Ellipsis } from '@/components'
   import { ContractService } from '@/views/contract/contract.service'
   import { fixedList } from '@/utils/util'
+
   const columns = [
     {
       title: '科目',
@@ -141,7 +144,9 @@
         total: {},
         balance: {},
         balances: [],
+        selection: {},
         queryParam: {},
+        useStore: null,
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           this.queryParam.contractGuid = this.contractGuid
@@ -175,7 +180,12 @@
         required: true
       }
     },
-    computed: {
+    computed: {},
+    created () {
+      ContractService.storeTypes().then(res => {
+        this.selection.storeTypes = res.result.data
+        this.useStore = res.result.data[0].id
+      })
     },
     watch: {
       'contractGuid' (value) {

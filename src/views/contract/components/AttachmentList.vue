@@ -111,7 +111,7 @@
         const formData = new FormData()
         formData.append('file', file)
         formData.append('masterId', this.data.fileMasterId)
-        formData.append('businessID', this.id)
+        formData.append('businessID', this.id === '0' ? '' : this.id)
         formData.append('businessType', 'Contract')
         formData.append('subInfo1', '') // 文件类型
         formData.append('subInfo2', file.name) // 文件名

@@ -97,6 +97,7 @@
               @click="handleToItem(record)"></a-button>
             <a-button
               class="btn-info"
+              :disabled="record.auditStatus !== '未审核'"
               type="primary"
               icon="form"
               style="margin-left: 4px"
