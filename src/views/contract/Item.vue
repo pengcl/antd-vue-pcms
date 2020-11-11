@@ -191,18 +191,8 @@ export default {
         this.activeKey = 1
       })
     },
-    viewBudgets (contractGuid) {
-      ContractService.viewBudgets(contractGuid).then(res => {
-        console.log(res)
-      })
-    },
     showBudgets () {
       this.show = true
-    },
-    computeBudgets (contractGuid) {
-      ContractService.computeBudgets(contractGuid).then(res => {
-        console.log(res)
-      })
     },
     getData () {
       this.form = SwaggerService.getForm('ContractAllInfoDto')
@@ -216,7 +206,6 @@ export default {
             this.getCompanies()
           })
         })
-        this.viewBudgets(this.id)
       } else {
         this.form.fileMasterId = 0
         this.form.contract.id = 0
@@ -275,41 +264,30 @@ export default {
       }
 
       if (isValid) {
-        this.loading = true
-        ContractService[this.type](this.form).then((res, err) => {
-          this.loading = false
-          if (res.result.statusCode === 200) {
-            this.contractGuid = res.result.data
-            console.log(this.contractGuid)
-            this.showBudgets()
-            /* this.dialog.show({
-              content: this.type === 'update' ? '修改成功' : '添加成功',
-              title: '',
-              confirmText: this.type === 'update' ? '继续修改' : '继续添加',
-              cancelText: '返回上一页'
-            }, (state) => {
-              if (state) {
-                if (this.type === 'create') {
-                  this.getData()
-                }
-              } else {
-                this.$router.push('/contract/list')
-              }
-            }) */
-          }
-        }).catch(() => {
-          this.dialog.show({
-            content: '创建失败，表单未填写完整',
-            title: '',
-            confirmText: '我知道了',
-            cancelText: '返回上一页'
-          }, (state) => {
-            if (state) {
-
-            } else {
+        let items = JSON.parse(JSON.stringify(this.form.contractBQlst))
+        items = items.filter(item => item.isCarryData)
+        if (items.length > 0) {
+          this.loading = true
+          ContractService[this.type](this.form).then((res, err) => {
+            this.loading = false
+            if (res.result.statusCode === 200) {
+              this.contractGuid = res.result.data
+              this.showBudgets()
             }
+          }).catch(() => {
+            this.dialog.show({
+              content: '创建失败，表单未填写完整',
+              title: '',
+              confirmText: '我知道了',
+              cancelText: ''
+            }, () => {
+              this.loading = false
+            })
           })
-        })
+        } else {
+          alert('您要在合同量清单中至少选择一条带数项！')
+          this.activeKey = 4
+        }
       }
     },
     handleChange (selectedItems) {
@@ -328,10 +306,36 @@ export default {
     },
     handleOk () {
       console.log(this.$refs.budgets.$refs.form)
-      this.$refs.budgets.$refs.form.validate(valid => { console.log(valid) })
-      /* this.show = false
-      const data = this.$refs.budgets.data
-      console.log(data) */
+      this.$refs.budgets.$refs.form.validate(valid => {
+        if (valid) {
+          // console.log(this.$refs.budgets.$refs.table.localDataSource)
+          const form = {
+            contractGuid: this.id,
+            useStore: 1,
+            budgetIsConfirm: true,
+            contractBudgetAdjustlst: this.$refs.budgets.$refs.table.localDataSource
+          }
+          ContractService.updateBudgets(form).then(res => {
+            if (res.result.statusCode === 200) {
+              this.dialog.show({
+                content: this.type === 'update' ? '修改成功' : '添加成功',
+                title: '',
+                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+                cancelText: '返回上一页'
+              }, (state) => {
+                this.show = false
+                if (state) {
+                  if (this.type === 'create') {
+                    this.getData()
+                  }
+                } else {
+                  this.$router.push('/contract/list')
+                }
+              })
+            }
+          })
+        }
+      })
     }
   }
 }
