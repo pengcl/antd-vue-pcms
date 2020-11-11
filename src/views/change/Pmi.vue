@@ -366,6 +366,7 @@
       onSelect (value,option) {
         console.log('option',option.$options)
         this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+        this.$refs.table.clearSelected()
         this.$refs.table.refresh()
         this.$forceUpdate()
       },

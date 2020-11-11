@@ -60,9 +60,14 @@
         </a-row>
       </a-form>
 
-      <s-table :columns="columns" :data="loadData2" ref="contractTable" bordered>
+      <s-table :columns="columns"
+               :data="loadData2"
+               ref="contractTable"
+               rowKey="contractGuid"
+               :rowSelection="rowSelection"
+               bordered>
         <span slot="contractNo" slot-scope="text, record">
-            <a @click="getContractAmt(record)">{{text}}</a>
+            <a @click="handleToContractInfo(record)">{{text}}</a>
         </span>
         <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
@@ -97,12 +102,10 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="contractGuid"
+        rowKey="gid"
         bordered
         :columns="_columns"
         :data="loadData"
-        :alert="false"
-        showPagination="auto"
       >
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
@@ -204,7 +207,7 @@
         },
         {
             title: '结算状态',
-            dataIndex: 'payState',
+            dataIndex: 'balanceStatus',
         }
     ]
 
@@ -269,7 +272,7 @@
     }
 
     export default {
-        name: 'ContractList',
+        name: 'SignedList',
         components: {
             STable,
             Ellipsis,
@@ -298,6 +301,7 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
+                queryParam2: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -308,20 +312,21 @@
                     } else {
                         const res = {
                             result: {
-                                codeEnum: 0,
-                                statusCode: 200,
-                                msg: '请求(或处理)成功',
                                 data: {
                                     totalCount: 0,
                                     items: []
                                 }
                             }
                         }
-                        return fixedList(res, requestParameters)
+                        const data = fixedList(res, requestParameters)
+                        return new Promise(function (resolve, reject) {
+                            //业务逻辑
+                            resolve(data)
+                        })
                     }
                 },
                 loadData2: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    const requestParameters = Object.assign({}, parameter, this.queryParam2)
                     return SignedService.items(requestParameters).then(res => {
                         return fixedList(res, requestParameters)
                     })
@@ -358,12 +363,23 @@
         },
         computed: {
             rowSelection () {
+                const that = this
                 return {
                     selectedRowKeys: this.selectedRowKeys,
+                    onChange: this.onSelectChange,
+                    type: 'radio',
+                    onSelect: function (record, selected, selectRows, nativeEvent) {
+                        that.id = record.contractGuid
+                        that.getContractAmt(record.contractGuid)
+                        that.$refs.table.refresh()
+                    }
                 }
-            }
+            },
         },
         methods: {
+            handleToContractInfo (record) {
+                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+            },
             handToInvoice () {
                 this.$router.push({
                     path: '/pay/signed/invoice/list'
@@ -373,10 +389,8 @@
                 this.visible = true
                 this.deleteId = record.gid
             },
-            getContractAmt (record) {
-                this.id = record.contractGuid
-                this.$refs.table.refresh(true)
-                SignedService.contractAmt(record.contractGuid).then(res => {
+            getContractAmt (id) {
+                SignedService.contractAmt(id).then(res => {
                     this.contractAmt = res.result.data
                     this.canAdd = res.result.data.canAdd
                 })
@@ -403,16 +417,17 @@
                 this.$refs.contractTable.refresh(true)
             },
             onSelect (value, option) {
-                this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+                this.queryParam2.ProjectID = option.$options.propsData.dataRef.projectCode
                 this.projectType = option.$options.propsData.dataRef.type
                 if (typeof value === 'number') {
                     this.city = value
-                    this.queryParam.ProjectGUID = ''
+                    this.queryParam2.ProjectGUID = ''
                 } else {
-                    this.queryParam.ProjectGUID = value
+                    this.queryParam2.ProjectGUID = value
                 }
                 this.contractAmt = {}
                 this.id = ''
+                this.$refs.contractTable.clearSelected()
                 this.$refs.table.refresh(true)
                 this.$refs.contractTable.refresh(true)
                 this.$forceUpdate()
