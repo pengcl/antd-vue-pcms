@@ -93,7 +93,7 @@
     import { ProjectService } from '@/views/project/project.service'
     import { CostService } from '@/views/cost/cost.service'
     import { formatList } from '../../../mock/util'
-    import { fixedList } from '@/utils/util'
+    import {fixedList, nullFixedList} from '@/utils/util'
 
     const defaultColumns = [
 
@@ -191,6 +191,8 @@
                             return fixedList(result, parameter)
                           })
                       })
+                    }else {
+                      return nullFixedList(requestParameters)
                     }
                 },
                 selectedRowKeys: [],
