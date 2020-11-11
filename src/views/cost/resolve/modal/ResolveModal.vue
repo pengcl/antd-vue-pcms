@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :visible="visible"
-    :width="1000"
+    :width="1100"
     title="新增预算分解"
     @cancel="handleCancel"
     @ok="handleOk"
@@ -47,7 +47,12 @@
                     </a-select>
                   </td>
                   <td v-for="(costCenterItem,index) in item.costCenterItems" :key="index">
-                    <a-input v-model="item.costCenterItems[index].amount"></a-input>
+                    <a-input-number
+                      v-model="item.costCenterItems[index].amount"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    >
+                    </a-input-number>
                   </td>
                 </tr>
               </tbody>

@@ -4,23 +4,29 @@
 
       <a-row>
         <a-col :md="24" :sm="24">
-          <!--          <a-table-->
-          <!--            style="margin-top: 5px"-->
-          <!--            ref="table"-->
-          <!--            size="default"-->
-          <!--            rowKey="code"-->
-          <!--            bordered-->
-          <!--            :columns="columns"-->
-          <!--            :data-source="loadData"-->
-          <!--            :alert="false"-->
-          <!--            showPagination="auto"-->
-          <!--          >-->
-          <a-table :columns="columns" :data-source="data" bordered>
-              <span slot="cost" slot-scope="text">
-                <p style="text-align: center">
-                  <span style="font-weight: bold;padding-right: 10px">{{text}}</span>
-                </p>
-              </span>
+          <a-table
+            style="margin-top: 5px"
+            ref="table"
+            size="default"
+            rowKey="elementInfoId"
+            bordered
+            :columns="columns"
+            :data-source="datas"
+            :alert="false"
+            :pagination="false"
+          >
+          <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId" slot-scope="text, record">
+            <a-input-number
+              v-if="record.childs.length ==0"
+              v-model="record['cost' + item.costCenterId]"
+              @change="e => checkChange(e.target.value, record, item.costCenterId)"
+              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            />
+            <template v-else>
+              {{ record['cost' + item.costCenterId] }}
+            </template>
+          </span>
           </a-table>
         </a-col>
       </a-row>
@@ -64,22 +70,6 @@
 
   const columns = defaultColumns
 
-  function fixedList(res, params) {
-    const result = {}
-    result.pageSize = params.pageSize
-    result.pageNo = params.pageNo
-    if (res.result.data) {
-      result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
-      result.totalCount = res.result.data.length
-      result.data = formatList(res.result.data, true)
-    } else {
-      result.totalPage = 0
-      result.totalCount = 0
-      result.data = []
-    }
-    return result
-  }
-
   function formatList(items, isRoot) {
     const list = []
     items.forEach(item => {
@@ -95,37 +85,7 @@
     return list
   }
 
-  function getList(items, costCenters) {
-    const list = []
-    items.forEach(item => {
-      //组装成本中心数据
-      const costCenter = []
-      costCenters.forEach(center => {
-        center.elementItem.childs.forEach(childItem => {
-          const obj = {}
-          if (item.elementInfoId === childItem.elementInfoId) {
-            obj['costCenterId'] = center.costCenterId
-            obj['costCenterCode'] = center.costCenterCode
-            obj['costCenterName'] = center.costCenterName
-            obj['elementInfoId'] = childItem.elementInfoId
-            obj['elementInfoCode'] = childItem.elementInfoCode
-            obj['elementInfoNameCN'] = childItem.elementInfoNameCN
-            obj['amount'] = childItem.amount
-            costCenter.push(obj)
-          }
-        })
-        item['costCenter'] = costCenter
-      })
-      if (item.childs) {
-        item.children = getList(item.childs, costCenters)
-      } else {
-        item.children = null
-        item.isEndNode = true
-      }
-      list.push(item)
-    })
-    return list
-  }
+
 
   export default {
     name: 'table',
@@ -133,48 +93,90 @@
       STable,
       Ellipsis
     },
-    data() {
+    data () {
       this.columns = columns
       return {
         visible: false,
+        datas : [],
+        ars: [],
+        isUpdate: false,
         confirmLoading: false,
         mdl: null,
+        // 高级搜索 展开/关闭
         advanced: false,
-        queryParam: {},
+        // 查询参数
+        queryParam: { },
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-            const result = {result: {data: []}}
-            const _columns = JSON.parse(JSON.stringify(defaultColumns))
-            const requestParameters = {MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id}
-            console.log('loadData request parameters:', requestParameters)
-            return CostService.subjectViewItems(requestParameters).then(res => {
-                const list = formatList(res.result.data[0].elementItem.childs, true)
-                res.result.data.forEach(item => {
-                  //组装动态列
-                  _columns.push(
-                    {
-                      title: item.costCenterName,
-                      dataIndex: 'cost' + item.costCenterId,
-                      scopedSlots: {customRender: 'cost'}
-                    }
-                  )
-              })
-              console.log(getList(list, res.result.data))
-              result.result.data = getList(list, res.result.data)
-              this.columns = _columns
-              this.$forceUpdate()
-              return fixedList(result, parameter)
+          const _columns = JSON.parse(JSON.stringify(defaultColumns))
+          const requestParameters = {MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id}
+          return CostService.subjectViewItems(requestParameters).then(res => {
+            this.ars = res.result.data
+            this.ars.forEach(item => {
+              // 组装动态列
+              _columns.push(
+                {
+                  title: item.costCenterName,
+                  dataIndex: 'cost' + item.costCenterId,
+                  scopedSlots: { customRender: 'cost' + item.costCenterId }
+                }
+              )
             })
+            this.columns = _columns
+            this.$forceUpdate()
+            const rows = res.result.data[0].elementItem.childs
+            forEachRow(rows, res.result.data)
+            this.datas = rows
+            console.log(this.datas)
+          })
+
+          function forEachItem (datas, elementId){
+            let result = null
+            for(var i in datas){
+              let data = datas[i]
+              if(data.elementInfoId === elementId){
+                result = data
+                break
+              }
+              if(data.childs && data.childs.length > 0){
+                result = forEachItem(data.childs,elementId)
+                if(result != null){
+                  break
+                }
+              }
+            }
+            return result
+          }
+
+          function forEachRow (datas, columnDatas){
+            for(var i in datas){
+              var data = datas[i]
+              data['costCenters'] = []
+              columnDatas.forEach(item =>{
+                if( item.elementItem ){
+                  var costName = 'cost'+item.costCenterId
+                  if (item.elementItem) {
+                      var costColumn = forEachItem([item.elementItem],data.elementInfoId)
+                      if(costColumn != null){
+                        data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                      }
+                  }
+                }
+              })
+              if(data.childs && data.childs.length > 0){
+                forEachRow(data.childs,columnDatas)
+                data.children = data.childs
+              }
+            }
+          }
         },
-        selectedRowKeys: [],
-        selectedRows: []
       }
     },
     filters: {
 
     },
     created() {
-
+      this.loadData()
     },
     computed: {
       id() {
@@ -198,15 +200,17 @@
         result['ProjectGUID'] = this.ProjectGUID
         result['budgetBaseTypeId'] = 83
         result['elementTypeId'] = this.id
-        if (this.data.length > 0) {
-          this.data.forEach(item => {
-            item.costCenter.forEach(centerItem => {
-              const obj = {}
-              obj['costCenterId'] = centerItem.costCenterId
-              obj['elementInfoId'] = centerItem.elementInfoId
-              obj['amount'] = centerItem.amount
-              items.push(obj)
-            })
+        getResults(this.datas)
+        function getResults(datas){
+          datas.forEach(item => {
+            if(item.costCenters.length > 0){
+              item.costCenters.forEach(center =>{
+                items.push(center)
+              })
+            }
+            if(item.children && item.children.length > 0){
+              getResults(item.children)
+            }
           })
         }
         result['items'] = items
@@ -215,6 +219,23 @@
             this.$message.info('修改成功')
           }
         })
+      },
+      checkChange(value,record,costCenterId){
+        //找到如果数据内存在旧数据，先移除，再添加
+        this.isUpdate = false
+        record.costCenters.forEach(center =>{
+          if(center.costCenterId===costCenterId){
+            center.amount = value
+            this.isUpdate = true
+          }
+        })
+        if(!this.isUpdate){
+          const item ={}
+          item['costCenterId'] = costCenterId
+          item['elementInfoId'] = record.elementInfoId
+          item['amount'] = value
+          record.costCenters.push(item)
+        }
       }
     }
   }

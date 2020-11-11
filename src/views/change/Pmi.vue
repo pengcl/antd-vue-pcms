@@ -75,14 +75,14 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button type="success" @click="handleToAdd" :disabled="queryParam2.contractGuid==undefined">新增CIP</a-button>
+          <a-button type="success" @click="handleToAdd" v-if="queryParam2.contractGuid">新增CIP</a-button>
           <a-button
             type="success"
             style="margin-left: 20px"
             @click="handleCipToVo"
-            :disabled="tableSelected.auditStatus !== '已审核' && tableSelected.voGuid === '00000000-0000-0000-0000-000000000000'">CIP转VO
+            v-if="tableSelected.auditStatus === '已审核'">CIP转VO
           </a-button>
-          <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
+          <a-button type="success" style="margin-left: 20px" v-if="tableSelected.auditStatus === '已审核'">现场签证</a-button>
         </a-col>
         <a-col :md="24" :sm="24"> 变更列表</a-col>
       </a-row>

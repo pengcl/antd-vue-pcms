@@ -1,6 +1,5 @@
 <template>
   <a-form-model
-    v-if="data"
     ref="form"
     :model="data.voMasterInfo"
     :rules="rules"
@@ -45,7 +44,7 @@
           <tbody>
             <tr>
               <td >
-                <a-form-model-item prop="toParty">
+                <a-form-model-item prop="to">
                   <a-select
                     placeholder="请选择"
                     v-model="to"
@@ -115,7 +114,7 @@
           </a-radio-group>
         </a-form-model-item>
       </a-col>
-      <a-col :md="24" :sm="24">
+      <a-col :md="24" :sm="24" style="margin-bottom:15px">
         <a-form-model-item label="变更内容" prop="voContent">
           <a-textarea
             :disabled="type === 'view'"
@@ -135,7 +134,7 @@
           </a-select>
         </a-form-model-item>
       </a-col>
-      <a-col :md="24" :sm="24">
+      <a-col :md="24" :sm="24" style="margin-bottom:15px">
         <a-form-model-item label="此工作指令按下述理由发出" prop="reasonType">
           <a-checkbox-group
             v-model="reasonType"
@@ -145,11 +144,12 @@
           </a-checkbox-group>
         </a-form-model-item>
       </a-col>
-      <a-col :md="24" :sm="24">
+      <a-col :md="24" :sm="24" style="margin-bottom:15px">
         <!-- mustChange 因一行多个必填项-->
-        <a-form-model-item label="此变更对整体工期是否有影响" prop="voHasEffect">
+        <a-form-item label="此变更对整体工期是否有影响" required="true">
           <a-row>
             <a-col :span="8">
+              <a-form-model-item prop="voHasEffect">
               <a-select
                 placeholder="请选择"
                 :disabled="type === 'view'"
@@ -159,6 +159,7 @@
                 <a-select-option :value="true">有影响</a-select-option>
                 <a-select-option :value="false">无影响</a-select-option>
               </a-select>
+              </a-form-model-item>
             </a-col>
             <a-col :span="8">
               <a-select
@@ -180,7 +181,7 @@
               ></a-input-number>
             </a-col>
           </a-row>
-        </a-form-model-item>
+        </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-row>
@@ -516,16 +517,16 @@
         selection: {},
         loading: false,
         rules: {
-          // toParty: [
-          //   { required: true, message: '请选择承包/顾问单位', trigger: 'change' }
-          // ],
-          // toRate: [{ required: true, message: '请输入承包/顾问单位百分比', trigger: 'change' }],
+          to: [
+            { validator: this.checkTo,  type : 'string',trigger : 'change',required : true }
+          ],
           reason: [{ required: true, message: '请输入变更原因详细', trigger: 'change' }],
           voContent: [
             { required: true, message: '请输入变更内容', trigger: 'change' }
           ],
+          voHasEffect : [ {requeired : true, message : '请选择是否影响工期',type:'boolean' }],
           voType: [{ required: true, message: '请选择变更类型', trigger: 'change' }],
-          reasonType: [{ required: true, message: '请选择次工作指令发出理由', trigger: 'change' }],
+          reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
           packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
           consultantEstimatedAmount: [{ required: true, message: '请输入顾问估算金额', trigger: 'change' }],
           currencyExchangeRate: [{ required: true, message: '请输入汇率', trigger: 'change' }]
@@ -672,7 +673,9 @@
       // reasonType值变更事件监听
       // 监听的同时转换checkboxgroup选中值为保存接口所需的以;号分隔的字符串
       changeReasonType (checkedValues) {
-        this.data.voMasterInfo.reasonType = checkedValues.join(';')
+        if(checkedValues.length > 0){
+          this.data.voMasterInfo.reasonType = checkedValues.join(';')
+        }
       },
       // 变更类型change监听，变更后清空reasonType值
       changeVoType (value) {
@@ -728,7 +731,23 @@
       effecChange (value) {
         if (!value) {
           this.data.voMasterInfo.effectResult = ''
-          this.data.voMasterInfo.effectDay = ''
+          this.data.voMasterInfo.effectDay = '0'
+        }
+      },
+      checkReasonType(rule,value,callback){
+        
+        if(this.reasonType.length < 1){
+          callback(new Error('请选择工作指令发出理由'))
+        }else{
+          callback()
+        }
+      },
+      checkTo(rule,value,callback){
+        console.log('toValue',value,rule)
+        if(!this.to){
+          callback(new Error('请选择顾问/承包单位'))
+        }else{
+          callback()
         }
       }
     }
