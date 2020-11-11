@@ -378,6 +378,7 @@
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },
       handleToDel(record){
+        const that = this
         this.$confirm({
           title : '废弃提醒',
           content : '是否确认废弃该变更？',
