@@ -12,7 +12,7 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
+          <a-button-group v-if="type !== 'view'">
             <a-button @click="approve" type="success">
               启动审批流程
             </a-button>
@@ -173,22 +173,10 @@
                             this.$message.success('创建成功')
                             if (this.approveStatus) {
                                 SignedService.approve(res.result.data).then(res => {
-                                    window.location.href = res.result.data
-                                })
-                            } else {
-                                this.$router.push({
-                                    path: '/pay/signed/list'
-                                })
-                            }
-                        }
-                    })
-                } else if (this.type === 'update') {
-                    SignedService.update(this.form).then(res => {
-                        if (res.result.data) {
-                            this.$message.success('修改成功')
-                            if (this.approveStatus) {
-                                SignedService.approve(this.id).then(res => {
-                                    window.location.href = res.result.data
+                                    if (res.result.data) {
+                                        this.$message.success('已启动审批流程')
+                                        window.location.href = res.result.data
+                                    }
                                 })
                             } else {
                                 this.$router.push({
@@ -198,8 +186,22 @@
                         }
                     })
                 } else {
-                    SignedService.approve(this.id).then(res => {
-                        window.location.href = res.result.data
+                    SignedService.update(this.form).then(res => {
+                        if (res.result.data) {
+                            this.$message.success('修改成功')
+                            if (this.approveStatus) {
+                                SignedService.approve(this.id).then(res => {
+                                    if (res.result.data) {
+                                        this.$message.success('已启动审批流程')
+                                        window.location.href = res.result.data
+                                    }
+                                })
+                            } else {
+                                this.$router.push({
+                                    path: '/pay/signed/list'
+                                })
+                            }
+                        }
                     })
                 }
             },
