@@ -13,14 +13,23 @@
     </a-form-model>-->
     <div>
       <a-form-model
+        ref="form"
+        :model="form"
+        :rules="rules"
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
-          <a-col v-for="item in balances" :key="item.key" :md="12" :sm="24">
+          <a-col v-for="(item, index) in form.balances" :key="item.key" :md="12" :sm="24">
             <a-form-model-item
               required
+              :prop="'balances.' + index + '.value'"
+              :rules="[{ type: 'number', required: true, message: '请输入项目名称(中文)' },{ type: 'number', max: 0.01, min:-0.01, message: item.key + '必须等于0' }]"
               :label="item.key">
-              <a-input-number :disabled="true" v-model="item.value" :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')" :precision="2" />
+              <a-input-number
+                :disabled="true"
+                v-model="item.value"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :precision="2" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -61,11 +70,13 @@
           :precision="2" />
       </template>
       <template slot="balanceAmount" slot-scope="text, record">
-        <a-input-number
-          :disabled="true"
-          :value="record.balanceAmount"
-          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-          :precision="2" />
+        <a-form-model-item>
+          <a-input-number
+            :disabled="true"
+            :value="record.balanceAmount"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :precision="2" />
+        </a-form-model-item>
       </template>
     </s-table>
   </a-modal>
@@ -126,7 +137,7 @@
     data () {
       return {
         columns: columns,
-        data: null,
+        data: { data: {} },
         total: {},
         balance: {},
         balances: [],
@@ -140,8 +151,17 @@
             this.getBalance(res.result.data)
             this.getBalances()
             this.data = fixedList(res, requestParameters)
+            console.log(this.data)
             return this.data
           })
+        },
+        rules: {
+          value: [
+            { type: 'number', required: true, message: '请输入项目名称(中文)' }
+          ]
+        },
+        form: {
+          balances: []
         }
       }
     },
@@ -203,7 +223,6 @@
           console.log(items)
           this.balance[key] = this.getBalanceItem(key, items)
         }
-        console.log(this.balance)
       },
       getBalances () {
         const balances = []
@@ -213,7 +232,8 @@
             value: this.balance[key]
           })
         }
-        this.balances = balances
+        this.form.balances = balances
+        this.$forceUpdate()
       }
     }
   }
