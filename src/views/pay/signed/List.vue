@@ -307,14 +307,16 @@
                         })
                     } else {
                         const res = {
-                            'result': {
-                                'data': {
-                                    'totalCount': 0,
-                                    'items': []
+                            result: {
+                                codeEnum: 0,
+                                statusCode: 200,
+                                msg: '请求(或处理)成功',
+                                data: {
+                                    totalCount: 0,
+                                    items: []
                                 }
                             }
                         }
-                        console.log(fixedList(res, requestParameters))
                         return fixedList(res, requestParameters)
                     }
                 },
@@ -404,15 +406,18 @@
                 } else {
                     this.queryParam.ProjectGUID = value
                 }
-                this.$refs.contractTable.refresh()
+                this.contractAmt = {}
+                this.id = ''
+                this.$refs.table.refresh(true)
+                this.$refs.contractTable.refresh(true)
                 this.$forceUpdate()
             },
             handleOk (e) {
-                this.confirmLoading = true;
+                this.confirmLoading = true
                 SignedService.delete(this.deleteId).then(res => {
-                    if (res.result.data){
-                        this.visible = false;
-                        this.confirmLoading = false;
+                    if (res.result.data) {
+                        this.visible = false
+                        this.confirmLoading = false
                         this.$message.success('删除成功')
                         this.$refs.table.refresh(true)
                     }
