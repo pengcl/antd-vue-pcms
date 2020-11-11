@@ -291,7 +291,7 @@
             var item = this.form.vobQlst[i]
             if(!item.isDeleted){
               if(item.costCenter == '' || item.itemType == ''){
-                this.$message.warn('请选择[造价估算]的成本中心和清单项类别')
+                this.$message.warn('请选择【造价估算】的“业态成本中心”和“清单项类别”')
                 return false
               }
             }

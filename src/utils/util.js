@@ -79,6 +79,20 @@ export function fixedList (res, params) {
   return result
 }
 
+export function nullFixedList (params) {
+  const total = 0
+  const items = []
+  const result = {}
+  result.pageSize = params.pageSize
+  result.pageNo = params.pageNo
+  result.totalPage = Math.ceil(total / params.pageSize)
+  result.totalCount = total
+  result.data = items
+  return new Promise((resolve, reject) => {
+    resolve(result)
+  })
+}
+
 export function formatTree (data, keys) {
   const items = []
   data.forEach(item => {

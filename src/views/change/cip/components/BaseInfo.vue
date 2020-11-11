@@ -81,6 +81,7 @@
                     :disabled="type === 'view'"
                     v-model="cc"
                     @change="ccChange"
+                    option-filter-prop="children"
                   >
                     <a-select-option
                       v-for="option in selection.sendCopyParties"
@@ -90,36 +91,6 @@
                     </a-select-option>
                   </a-select>
                 </a-form-model-item>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>单位名称</th>
-                      <th>百分比</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-if="!item.isDeleted && item.isSendCopy" v-for="(item,index) in data.voPartylst" :key="item.id">
-                      <td>{{ item.partName }}</td>
-                      <td>
-                        <a-input-number
-                          style="width : 90%"
-                          placeholder="请输入百分比"
-                          v-model="item.percentage"
-                          :disabled="type === 'view'"
-                          :min="0"
-                          :max="100"
-                          :formatter="value => `${value}%`"
-                          :parser="value => value.replace('%', '')"
-                        >
-                        </a-input-number>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
               </td>
             </tr>
           </tbody>
@@ -431,7 +402,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="10" :sm="10"  v-if="this.contract.isNeedTrip">
-            <a-form-model-item label="已出差" labelAlign="center">
+            <a-form-model-item label="已出差" >
               <a-input-number
                 :disabled="true"
                 :value="contract.hasBeenTripTimes"
@@ -644,6 +615,7 @@
       // 抄送公司变更监听
       ccChange (vals) {
         var that = this
+        console.log('cc',vals)
         // 整理抄送公司
         // 将抄送下拉框信息放入到voPartyLst中
         vals.forEach(item => {

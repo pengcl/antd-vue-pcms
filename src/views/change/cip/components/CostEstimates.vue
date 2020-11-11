@@ -35,8 +35,8 @@
                   <th style="width: 5%" rowspan="2">预留字段0</th>
                   <th style="width: 5%" rowspan="2">预留字段1</th>
                   <th style="width: 5%" rowspan="2">清单描述</th>
-                  <th style="width: 5%" rowspan="2">业态成本中心</th>
-                  <th style="width: 5%" rowspan="2">清单项类别</th>
+                  <th style="width: 5%; " rowspan="2">业态成本中心</th>
+                  <th style="width: 5%; " rowspan="2">清单项类别</th>
                   <th style="width: 15%" colspan="4">供应</th>
                   <th style="width: 15%" colspan="4">安装</th>
                   <th style="width: 15%" colspan="4">供应+安装</th>

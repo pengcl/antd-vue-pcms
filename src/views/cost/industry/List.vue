@@ -168,6 +168,7 @@
     import { formatList } from '../../../mock/util'
     import {CostService} from "@/views/cost/cost.service";
     import {fixedList} from "@/utils/util";
+    import {nullFixedList} from "@/utils/util";
     import IndustryModal from '@/views/cost/industry/modal/IndustryModal'
 
     const columns = [
@@ -290,15 +291,7 @@
                           }
                         })
                     } else {
-                      const res = {
-                        'result': {
-                          'data': {
-                            'totalCount': 0,
-                            'items': []
-                          }
-                        }
-                      }
-                      return fixedList(res, requestParameters)
+                      return nullFixedList(requestParameters)
                     }
                 },
                 loadData2: parameter => {
@@ -311,15 +304,7 @@
                         }
                       })
                   }else{
-                    const res = {
-                      'result': {
-                        'data': {
-                          'totalCount': 0,
-                          'items': []
-                        }
-                      }
-                    }
-                    return fixedList(res, requestParameters)
+                    return nullFixedList(requestParameters)
                   }
                 },
                 selectedRowKeys: [],
