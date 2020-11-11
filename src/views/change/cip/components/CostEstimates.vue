@@ -444,6 +444,14 @@
 </script>
 
 <style lang="less" scoped>
+  .ant-form .ant-form-item .ant-form-item-label.ant-col-8 {
+    width: 15em
+  }
+
+  .ant-form .ant-form-item .ant-form-item-control-wrapper.ant-col-16 {
+    width: calc(100% - 15em);
+  }
+
   table {
     margin: 15px 0;
     width: 100%;
@@ -467,6 +475,7 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+          white-space: nowrap;
 
           button {
             margin-right: 10px;
@@ -482,19 +491,20 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+          text-align: center;
+
+          .ant-input {
+            min-width: 60px;
+          }
 
           button {
             margin-right: 10px;
           }
+
+          /deep/ .has-error .ant-form-explain {
+            white-space: nowrap;
+          }
         }
-      }
-
-      input {
-        width: 60px;
-      }
-
-      .ant-select {
-        width: 100px;
       }
     }
   }
