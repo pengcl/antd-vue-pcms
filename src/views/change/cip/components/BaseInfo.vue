@@ -204,7 +204,9 @@
                 :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
                 v-model="data.voMasterInfo.effectDay"
                 :min="0"
-              ></a-input-number> 日
+                :formatter="value => `${value}日`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\日\s?|(,*)/g, '')"
+              ></a-input-number>
             </a-col>
           </a-row>
         </a-form-model-item>
@@ -803,8 +805,4 @@
     }
   }
 
-  .ant-input-number {
-    width: 40% !important;
-
-  }
 </style>
