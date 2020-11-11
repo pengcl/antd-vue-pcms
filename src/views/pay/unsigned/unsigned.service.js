@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import { SignedService } from '@/views/pay/signed/signed.service'
 
 const API = {
   items: '/api/services/app/PaymentOther/GetPaymentOtherPage',
@@ -11,6 +10,7 @@ const API = {
   vendorTypes: '/api/services/app/PaymentOther/GetPaymentOtherVendor',
   create: '/api/services/app/PaymentOther/CreatePaymentOther',
   update: '/api/services/app/PaymentOther/UpdatePaymentOther',
+  delete: '/api/services/app/PaymentOther/DeletePaymentOther',
 }
 
 const UnSignedService = {}
@@ -89,8 +89,16 @@ UnSignedService.create = function (parameter) {
 UnSignedService.update = function (parameter) {
   return request({
     url: API.update,
-    method: 'POST',
+    method: 'PUT',
     data: parameter
+  })
+}
+
+UnSignedService.delete = function (gid) {
+  return request({
+    url: API.delete,
+    method: 'DELETE',
+    params: { gid }
   })
 }
 

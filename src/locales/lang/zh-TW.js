@@ -57,7 +57,9 @@ const locale = {
   'menu.cost.bid.item': '招投标分判包详细',
 
   'menu.pay': '付款管理',
-  'menu.pay.signed': '合同付款申请',
+  'menu.pay.signed.list': '合同付款申请',
+  'menu.pay.signed.item': '新增合同付款',
+  'menu.pay.signed.invoice': '合同付款发票管理',
   'menu.pay.unsigned.list': '非合同付款申请',
   'menu.pay.unsigned.item': '非合同付款详情',
   'menu.pay.unsigned.approval': '非合同付款审批',

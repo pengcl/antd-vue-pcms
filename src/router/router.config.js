@@ -321,11 +321,11 @@ export const asyncRouterMap = [
             meta: { title: 'menu.pay.signed.item', keepAlive: true, permission: ['pay'] },
           },
           {
-            path: '/pay/signed/edit',
-            name: 'PaySignedEdit',
+            path: '/pay/signed/invoice/list',
+            name: 'PaySignedInvoiceList',
             hidden: true,
-            component: () => import('@/views/pay/signed/Edit'),
-            meta: { title: 'menu.pay.signed.edit', keepAlive: true, permission: ['pay'] },
+            component: () => import('@/views/pay/signed/invoice/List'),
+            meta: { title: 'menu.pay.signed.invoice', keepAlive: true, permission: ['pay'] },
           },
           {
             path: '/pay/unsigned/list',

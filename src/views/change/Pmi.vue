@@ -140,6 +140,7 @@
   import { ChangeService } from '@/views/change/change.service'
   import { ProjectService } from '@/views/project/project.service'
   import { fixedList } from '@/utils/util'
+  import { nullFixedList } from '@/utils/util'
   import { formatList } from '../../mock/util'
 
   const columns = [
@@ -188,7 +189,7 @@
       scopedSlots: { customRender: 'action' }
     },
     {
-      title: '审核状态',
+      title: '审核状态(CIP)',
       dataIndex: 'auditStatus',
       scopedSlots: { customRender: 'auditStatus' }
     },
@@ -211,7 +212,7 @@
       scopedSlots: { customRender: 'voType' }
     },
     {
-      title: '变更确认',
+      title: '变更确认(VO)',
       dataIndex: 'voStatus',
       scopedSlots: { customRender: 'voStatus' }
     },
@@ -249,6 +250,9 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
+          if(!this.queryParam.ProjectID ){
+            return nullFixedList(requestParameters)
+          }
           return ChangeService.items(requestParameters)
             .then(res => {
               return fixedList(res, parameter)
@@ -257,6 +261,9 @@
         // 变更列表加载数据方法 必须为 Promise 对象
         loadData2: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam2)
+          if(!this.queryParam2.contractGuid){
+            return nullFixedList(requestParameters)
+          }
           return ChangeService.changeItems(requestParameters).then(res => {
             return fixedList(res, parameter)
           })
@@ -360,12 +367,18 @@
         }
       },
       search () {
-        this.show = !this.show
-        this.$refs.table.refresh(true)
+        if(!this.queryParam.ProjectID){
+          this.$message.warn('请选择项目')
+          return
+        }else{
+          this.show = !this.show
+          this.$refs.table.refresh(true)
+        }
       },
       onSelect (value,option) {
         console.log('option',option.$options)
         this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+        this.$refs.table.clearSelected()
         this.$refs.table.refresh()
         this.$forceUpdate()
       },
@@ -378,6 +391,7 @@
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },
       handleToDel(record){
+        const that = this
         this.$confirm({
           title : '废弃提醒',
           content : '是否确认废弃该变更？',

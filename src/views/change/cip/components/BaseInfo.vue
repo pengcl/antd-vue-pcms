@@ -81,6 +81,7 @@
                     :disabled="type === 'view'"
                     v-model="cc"
                     @change="ccChange"
+                    option-filter-prop="children"
                   >
                     <a-select-option
                       v-for="option in selection.sendCopyParties"
@@ -197,7 +198,7 @@
             </a-form-model-item>
           </a-col>
         </a-row>
-        
+
       </a-col>
       <a-col :md="24" :sm="24">
         <a-row>
@@ -401,7 +402,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="10" :sm="10"  v-if="this.contract.isNeedTrip">
-            <a-form-model-item label="已出差" labelAlign="center">
+            <a-form-model-item label="已出差" >
               <a-input-number
                 :disabled="true"
                 :value="contract.hasBeenTripTimes"
@@ -614,6 +615,7 @@
       // 抄送公司变更监听
       ccChange (vals) {
         var that = this
+        console.log('cc',vals)
         // 整理抄送公司
         // 将抄送下拉框信息放入到voPartyLst中
         vals.forEach(item => {
@@ -726,7 +728,7 @@
       effecChange (value) {
         if (!value) {
           this.data.voMasterInfo.effectResult = ''
-          this.data.voMasterInfo.effectDay = '0'
+          this.data.voMasterInfo.effectDay = ''
         }
       }
     }
@@ -774,4 +776,5 @@
       }
     }
   }
+
 </style>
