@@ -7,11 +7,11 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  v-model="value"
                   style="width: 100%"
                   :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   search-placeholder="请选择"
+                  v-model="queryParam.ProjectGUID"
                   @select="onSelect"
                 />
                 <!--<a-cascader
@@ -125,11 +125,12 @@
 
 <script>
   import { STable, Ellipsis } from '@/components'
-
+  import storage from 'store'
   import { ContractService } from '@/views/contract/contract.service'
-  import { fixedList } from '@/utils/util'
+  import { fixedList, getPosValue } from '@/utils/util'
   import { ProjectService } from '@/views/project/project.service'
   import { formatList } from '../../mock/util'
+  import { ACCESS_TOKEN } from '@/store/mutation-types'
 
   const columns = [
     {
@@ -213,6 +214,11 @@
           })
         })
         this.cities = cities
+        const value = getPosValue(this.cities)
+        this.queryParam.ProjectID = value.projectCode
+        this.projectType = value.type
+        this.queryParam.ProjectGUID = value.projectGUID
+        console.log(this.queryParam)
         this.$forceUpdate()
       })
     },
@@ -236,6 +242,7 @@
         this.$refs.table.refresh(true)
       },
       onSelect (value, option) {
+        storage.set('POS', option.pos)
         this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
         this.projectType = option.$options.propsData.dataRef.type
         if (typeof value === 'number') {

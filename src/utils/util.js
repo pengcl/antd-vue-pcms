@@ -1,3 +1,4 @@
+import storage from 'store'
 export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
@@ -155,3 +156,20 @@ export function compare (a, b) {
 
 export const currencyFormat = 'value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, \',\')'
 export const currencyParser = 'value => value.replace(/\$\s?|(,*)/g, \'\')'
+
+export function getPosValue (cities) {
+  const POS = storage.get('POS') ? storage.get('POS').split('-').splice(1) : []
+  let value = JSON.parse(JSON.stringify(cities))
+  POS.forEach((index, i) => {
+    if (i === 0) {
+      if (value[index]) {
+        value = value[index]
+      }
+    } else {
+      if (value.children[index]) {
+        value = value.children[index]
+      }
+    }
+  })
+  return value
+}
