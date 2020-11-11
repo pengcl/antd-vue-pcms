@@ -21,13 +21,16 @@
                 />-->
               </a-form-item>
             </a-col>
-            <a-col :md="12" :sm="24"><span class="project-type-tips">{{ projectType === 'project' ? '请选择末级新建合同' : '' }}</span></a-col>
+            <a-col :md="12" :sm="24"><span
+              class="project-type-tips">{{ projectType === 'project' ? '请选择末级新建合同' : '' }}</span></a-col>
           </a-row>
         </a-form>
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID || projectType === 'project'" type="success" @click="handleToAdd">新增合同</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID || projectType === 'project'" type="success" @click="handleToAdd">
+          新增合同
+        </a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -100,6 +103,13 @@
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
+              :disabled="record.auditStatus !== '未审核'"
+              @click="handleToDel(record)"
+              type="danger"
+              title="删除"
+              style="margin-left: 4px"
+              icon="delete"></a-button>
+            <a-button
               type="primary"
               class="btn-info"
               icon="file-done"
@@ -120,47 +130,47 @@
   import { ProjectService } from '@/views/project/project.service'
   import { formatList } from '../../mock/util'
 
-    const columns = [
-        {
-            title: '操作',
-            dataIndex: 'action',
-            width: '150px',
-            scopedSlots: { customRender: 'action' }
-        },
-        {
-            title: '合同编号',
-            dataIndex: 'contractNo'
-        },
-        {
-            title: '合同名称',
-            dataIndex: 'contractName',
-            scopedSlots: { customRender: 'contractName' }
-        },
-        {
-            title: '合同金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
-        },
-        {
-            title: '签约日期',
-            dataIndex: 'signDate',
-            scopedSlots: { customRender: 'signDate' }
-        },
-        {
-            title: '审批状态',
-            dataIndex: 'auditStatus',
-            scopedSlots: { customRender: 'auditStatus' }
-        },
-        {
-            title: '建立日期',
-            dataIndex: 'creationTime'
-        },
-        {
-            title: '建立者',
-            dataIndex: 'creatorUser',
-            scopedSlots: { customRender: 'creatorUser' }
-        }
-    ]
+  const columns = [
+    {
+      title: '操作',
+      dataIndex: 'action',
+      width: '200px',
+      scopedSlots: { customRender: 'action' }
+    },
+    {
+      title: '合同编号',
+      dataIndex: 'contractNo'
+    },
+    {
+      title: '合同名称',
+      dataIndex: 'contractName',
+      scopedSlots: { customRender: 'contractName' }
+    },
+    {
+      title: '合同金额',
+      dataIndex: 'contractAmount',
+      scopedSlots: { customRender: 'contractAmount' }
+    },
+    {
+      title: '签约日期',
+      dataIndex: 'signDate',
+      scopedSlots: { customRender: 'signDate' }
+    },
+    {
+      title: '审批状态',
+      dataIndex: 'auditStatus',
+      scopedSlots: { customRender: 'auditStatus' }
+    },
+    {
+      title: '建立日期',
+      dataIndex: 'creationTime'
+    },
+    {
+      title: '建立者',
+      dataIndex: 'creatorUser',
+      scopedSlots: { customRender: 'creatorUser' }
+    }
+  ]
 
   export default {
     name: 'ContractList',
@@ -214,6 +224,11 @@
       },
       handleToAdd () {
         this.$router.push({ path: `/contract/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
+      },
+      handleToDel (record) {
+        ContractService.delete(record.contractGuid).then(res => {
+          this.$refs.table.refresh()
+        })
       },
       search () {
         this.show = !this.show

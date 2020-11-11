@@ -7,12 +7,14 @@ const API = {
   masters: '/api/services/app/Contract/GetMasterContractInfo',
   create: '/api/services/app/Contract/CreateContractAllInfo',
   update: '/api/services/app/Contract/UpdateContractAllInfo',
+  delete: '/api/services/app/Contract/DeleteContractAllInfo',
   vendors: '/api/services/app/Contract/GetVendorList',
   centers: '/api/services/app/ProjectCostCenter/GetProjectCostCenters',
   amount: '/api/services/app/Contract/GetContractAmountByBQList',
   tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',
   viewBudgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid',
-  computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid'
+  computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid',
+  updateBudgets: '/api/services/app/Contract/UpdateContractBudget'
 }
 
 const ContractService = {}
@@ -72,6 +74,14 @@ ContractService.update = function (parameter) {
   })
 }
 
+ContractService.delete = function (contractGuid) {
+  return request({
+    url: API.delete,
+    method: 'DELETE',
+    params: { contractGuid }
+  })
+}
+
 ContractService.vendors = function () {
   return request({
     url: API.vendors,
@@ -118,6 +128,14 @@ ContractService.computeBudgets = function (params) {
     url: API.computeBudgets,
     method: 'POST',
     params: params
+  })
+}
+
+ContractService.updateBudgets = function (params) {
+  return request({
+    url: API.updateBudgets,
+    method: 'PUT',
+    data: params
   })
 }
 
