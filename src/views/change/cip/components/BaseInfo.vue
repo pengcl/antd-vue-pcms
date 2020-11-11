@@ -12,7 +12,6 @@
           label="项目管理指令编码">
           <a-input
             :disabled="true"
-            placeholder="请输入项目管理指令编码"
             :value="data.voMasterInfo.voNo"
           ></a-input>
         </a-form-model-item>
@@ -21,7 +20,7 @@
         <a-form-model-item label="项目管理指令发出日期">
           <a-input
             :disabled="true"
-            :value="data.voMasterInfo.creationTime | moment"
+            :value="creationTime"
           ></a-input>
         </a-form-model-item>
       </a-col>
@@ -29,7 +28,7 @@
         <a-form-model-item label="项目管理指令最后更新日期">
           <a-input
             :disabled="true"
-            :value="data.voMasterInfo.lastModificationTime | moment"
+            :value="lastModificationTime"
           ></a-input>
         </a-form-model-item>
       </a-col>
@@ -41,12 +40,11 @@
           <thead>
             <tr>
               <th>致：</th>
-              <th>百分比：</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="width : 50%">
+              <td >
                 <a-form-model-item prop="toParty">
                   <a-select
                     placeholder="请选择"
@@ -60,21 +58,6 @@
                       {{ option.partName }}
                     </a-select-option>
                   </a-select>
-                </a-form-model-item>
-              </td>
-              <td style="width : 50%">
-                <a-form-model-item prop="toRate">
-                  <a-input-number
-                    style="width : 90%"
-                    placeholder="请输入百分比"
-                    v-model="toRate"
-                    :disabled="type === 'view'"
-                    :min="0"
-                    :max="100"
-                    :formatter="value => `${value}%`"
-                    :parser="value => value.replace('%', '')"
-                  >
-                  </a-input-number>
                 </a-form-model-item>
               </td>
             </tr>
@@ -107,36 +90,6 @@
                     </a-select-option>
                   </a-select>
                 </a-form-model-item>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>单位名称</th>
-                      <th>百分比</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-if="!item.isDeleted && item.isSendCopy" v-for="(item,index) in data.voPartylst" :key="item.id">
-                      <td>{{ item.partName }}</td>
-                      <td>
-                        <a-input-number
-                          style="width : 90%"
-                          placeholder="请输入百分比"
-                          v-model="item.percentage"
-                          :disabled="type === 'view'"
-                          :min="0"
-                          :max="100"
-                          :formatter="value => `${value}%`"
-                          :parser="value => value.replace('%', '')"
-                        >
-                        </a-input-number>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
               </td>
             </tr>
           </tbody>
@@ -177,10 +130,7 @@
             :disabled="type === 'view'"
             v-model="data.voMasterInfo.voType"
             @change="changeVoType">
-            <a-select-option value="现场管理">现场管理</a-select-option>
-            <a-select-option value="设计变更">设计变更</a-select-option>
-            <a-select-option value="暂转固">暂转固</a-select-option>
-            <a-select-option value="其他变更">其他变更</a-select-option>
+            <a-select-option :key="index" v-for="(item,index) in resonTypes" :value="index">{{index}}</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-col>
@@ -188,45 +138,9 @@
         <a-form-model-item label="此工作指令按下述理由发出" prop="reasonType">
           <a-checkbox-group
             v-model="reasonType"
-            v-if="data.voMasterInfo.voType==='现场管理'"
             :disabled="type === 'view'"
             @change="changeReasonType">
-            <a-checkbox value="抢险">抢险</a-checkbox>
-            <a-checkbox value="索偿">索偿</a-checkbox>
-            <a-checkbox value="其他">其他</a-checkbox>
-          </a-checkbox-group>
-
-          <a-checkbox-group
-            v-model="reasonType"
-            v-if="data.voMasterInfo.voType==='设计变更'"
-            :disabled="type === 'view'"
-            @change="changeReasonType">
-            <a-checkbox value="设计要求">设计要求</a-checkbox>
-            <a-checkbox value="其他">其他</a-checkbox>
-          </a-checkbox-group>
-
-          <a-checkbox-group
-            v-model="reasonType"
-            v-if="data.voMasterInfo.voType==='其他变更'"
-            :disabled="type === 'view'"
-            @change="changeReasonType">
-            <a-checkbox value="法规要求">法规要求</a-checkbox>
-            <a-checkbox value="人工/材料差价">人工/材料差价</a-checkbox>
-            <a-checkbox value="延长顾问服务期之费用">延长顾问服务期之费用</a-checkbox>
-            <a-checkbox value="其他">其他</a-checkbox>
-          </a-checkbox-group>
-
-          <a-checkbox-group
-            v-model="reasonType"
-            v-if="data.voMasterInfo.voType==='暂转固'"
-            :disabled="type === 'view'"
-            @change="changeReasonType">
-            <a-checkbox value="定款使用">暂定款使用</a-checkbox>
-            <a-checkbox value="选择項目使用">选择項目使用</a-checkbox>
-            <a-checkbox value="暂定料价及单价调整">暂定料价及单价调整</a-checkbox>
-            <a-checkbox value="暂定数量调整">暂定数量调整</a-checkbox>
-            <a-checkbox value="指定承判商(NSC)">指定承判商(NSC)</a-checkbox>
-            <a-checkbox value="其他">其他</a-checkbox>
+            <a-checkbox v-for="item in resonTypes[data.voMasterInfo.voType]" :key="item.value" :value="item.value">{{item.text}}</a-checkbox>
           </a-checkbox-group>
         </a-form-model-item>
       </a-col>
@@ -268,177 +182,236 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="变更造价估算 (增加)">
-          <a-input-number
-            :disabled="true"
-            v-model="data.voMasterInfo.voTotalAmountIncrease"
-            :min="0"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="24" :sm="24">
-        <a-form-model-item label="变更造价估算 (减少)">
-          <a-input-number
-            :disabled="true"
-            v-model="data.voMasterInfo.voTotalAmountDecrease"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="24" :sm="24">
-        <a-form-model-item label="变更造价估算">
-          <a-row>
-            <a-col :span="2">
-              <a-input
-                :value="data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease > 0 ? '增加' : '减少'"
-                :disabled="true"></a-input>
-            </a-col>
-            <a-col :span="16">
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="变更造价估算 (增加)">
               <a-input-number
                 :disabled="true"
-                :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease)"
+                v-model="data.voMasterInfo.voTotalAmountIncrease"
+                :min="0"
+                :span="6"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input-number>
-            </a-col>
-          </a-row>
-        </a-form-model-item>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+        
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="人工/材料差价累计 (已提交)">
-          <a-input-number
-            :disabled="true"
-            :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountIncrease"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="变更造价估算 (减少)">
+              <a-input-number
+                :disabled="true"
+                v-model="data.voMasterInfo.voTotalAmountDecrease"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="人工/材料差价累计 (已审批)">
-          <a-input-number
-            :disabled="true"
-            :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountDecrease"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="14">
+            <a-form-model-item label="变更造价估算">
+              <a-row>
+                <a-col :span="10">
+                  <a-input
+                    :value="data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease > 0 ? '增加' : '减少'"
+                    :disabled="true"></a-input>
+                </a-col>
+                <a-col :span="14">
+                  <a-input-number
+                    :disabled="true"
+                    :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease)"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"
+                  ></a-input-number>
+                </a-col>
+              </a-row>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="人工/材料差价累计">
-          <a-input-number
-            :disabled="true"
-            :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmount"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="人工/材料差价累计 (已提交)">
+              <a-input-number
+                :disabled="true"
+                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountIncrease"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="延长顾问服务之累计费用 (已提交)">
-          <a-input-number
-            :disabled="true"
-            :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountIncrease"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="人工/材料差价累计 (已审批)">
+              <a-input-number
+                :disabled="true"
+                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountDecrease"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="延长顾问服务之累计费用 (已审批)">
-          <a-input-number
-            :disabled="true"
-            :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountDecrease"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="人工/材料差价累计">
+              <a-input-number
+                :disabled="true"
+                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmount"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="延长顾问服务费用累计">
-          <a-input-number
-            :disabled="true"
-            :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmount"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="延长顾问服务之累计费用 (已提交)">
+              <a-input-number
+                :disabled="true"
+                :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountIncrease"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="承包商报价" prop="packageContractorQuotation">
-          <a-input-number
-            :disabled="type === 'view'"
-            placeholder="请输入变更造价估算（增加）"
-            v-model="data.voMasterInfo.packageContractorQuotation"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="延长顾问服务之累计费用 (已审批)">
+              <a-input-number
+                :disabled="true"
+                :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountDecrease"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="顾问估算金额" prop="consultantEstimatedAmount">
-          <a-input-number
-            :disabled="type === 'view'"
-            placeholder="请输入顾问估算金额"
-            v-model="data.voMasterInfo.consultantEstimatedAmount"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-          ></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="延长顾问服务费用累计">
+              <a-input-number
+                :disabled="true"
+                :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmount"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="汇率" prop="currencyExchangeRate">
-          <a-input-number
-            :disabled="type === 'view'"
-            placeholder="请输入汇率"
-            :min="0"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            :precision="2"
-            v-model="data.voMasterInfo.currencyExchangeRate"></a-input-number>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="承包商报价" prop="packageContractorQuotation">
+              <a-input-number
+                :disabled="type === 'view'"
+                placeholder="请输入变更造价估算（增加）"
+                v-model="data.voMasterInfo.packageContractorQuotation"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-model-item label="顾问评估日期">
-          <a-date-picker
-            :disabled="type === 'view'"
-            placeholder="请选择顾问评估日期"
-            v-model="data.voMasterInfo.qsAssessmentDate"></a-date-picker>
-        </a-form-model-item>
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="顾问估算金额" prop="consultantEstimatedAmount">
+              <a-input-number
+                :disabled="type === 'view'"
+                placeholder="请输入顾问估算金额"
+                v-model="data.voMasterInfo.consultantEstimatedAmount"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item label="合同约定出差次数">
-          <a-input-number
-            :disabled="true"
-            :value="contract.tripTimes"
-            :formatter="value => `${value}次`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\次\s?|(,*)/g, '')"></a-input-number>
-        </a-form-model-item>
+      <a-col :md="24" :sm="24">
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="汇率" prop="currencyExchangeRate">
+              <a-input-number
+                :disabled="type === 'view'"
+                placeholder="请输入汇率"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+                v-model="data.voMasterInfo.currencyExchangeRate"></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item label="已出差">
-          <a-input-number
-            :disabled="true"
-            :value="contract.hasBeenTripTimes"
-            :formatter="value => `${value}次`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\次\s?|(,*)/g, '')"></a-input-number>
-        </a-form-model-item>
+      <a-col :md="24" :sm="24">
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="顾问评估日期">
+              <a-date-picker
+                :disabled="type === 'view'"
+                placeholder="请选择顾问评估日期"
+                v-model="data.voMasterInfo.qsAssessmentDate"></a-date-picker>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
       </a-col>
-      <a-col :md="12" :sm="24">
+
+      <a-col :md="24" :sm="24">
+        <a-row>
+          <a-col :md="10" :sm="10" v-if="this.contract.isNeedTrip">
+            <a-form-model-item label="合同约定出差次数">
+              <a-input-number
+                :disabled="true"
+                :value="contract.tripTimes"
+                :formatter="value => `${value}次`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\次\s?|(,*)/g, '')"></a-input-number>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="10" :sm="10"  v-if="this.contract.isNeedTrip">
+            <a-form-model-item label="已出差" labelAlign="center">
+              <a-input-number
+                :disabled="true"
+                :value="contract.hasBeenTripTimes"
+                :formatter="value => `${value}次`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\次\s?|(,*)/g, '')"></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-col>
+      <a-col :md="12" :sm="24" v-if="this.contract.isNeedTrip">
         <a-form-model-item label="本次申请出差">
           <a-radio-group
             v-model="data.voMasterInfo.isTrip"
@@ -455,6 +428,78 @@
 <script>
 
   import { ChangeService } from '@/views/change/change.service'
+  import moment from 'moment'
+
+  const resonTypes = {
+    "现场管理" : [
+      {
+        value : '抢险',
+        text : '抢险'
+      },
+      {
+        value : '索偿',
+        text : '索偿'
+      },
+      {
+        value : '其他',
+        text : '其他'
+      }
+    ],
+    "设计变更" : [
+      {
+        value : '设计要求',
+        text : '设计要求'
+      },
+      {
+        value : '其他',
+        text : '其他'
+      }
+    ],
+    "暂转固" : [
+      {
+        value : '暂定款使用',
+        text : '暂定款使用'
+      },
+      {
+        value : '选择項目使用',
+        text : '选择項目使用'
+      },
+      {
+        value : '暂定料价及单价调整',
+        text : '暂定料价及单价调整'
+      },
+      {
+        value : '暂定数量调整',
+        text : '暂定数量调整'
+      },
+      {
+        value : '指定承判商(NSC)',
+        text : '指定承判商(NSC)'
+      },
+      {
+        value : '其他',
+        text : '其他'
+      }
+    ],
+    "其他变更" : [
+      {
+        value : '法规要求',
+        text : '法规要求'
+      },
+      {
+        value : '人工/材料差价',
+        text : '人工/材料差价'
+      },
+      {
+        value : '延长顾问服务期之费用',
+        text : '延长顾问服务期之费用'
+      },
+      {
+        value : '其他',
+        text : '其他'
+      }
+    ]
+  }
 
   export default {
     name: 'BaseInfo',
@@ -462,6 +507,9 @@
       return {
         to: '',
         cc: [],
+        resonTypes : resonTypes,
+        creationTime : '',
+        lastModificationTime : '',
         toRate: 0,
         reasonType: [],
         selection: {},
@@ -537,6 +585,8 @@
         }
       },
       'data.voMasterInfo' (value) {
+        this.creationTime = this.data.voMasterInfo.creationTime ? moment(this.data.voMasterInfo.creationTime).format('yyyy-MM-DD HH:mm:ss') : '2'
+        this.lastModificationTime = this.data.voMasterInfo.lastModificationTime ? moment(this.data.voMasterInfo.lastModificationTime).format('yyyy-MM-dd HH:mm:ss') : ''
         // 初始化reasonType值，转换为checkboxgroup认同的值
         if (this.data.voMasterInfo.reasonType) {
           this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType)
@@ -554,7 +604,7 @@
             }
           })
         }
-          this.$forceUpdate()
+        this.$forceUpdate()
       }
     },
     methods: {
@@ -615,7 +665,6 @@
           }
         }
 
-        console.log('cc', vals, 'partylst', this.data.voPartylst)
         this.$forceUpdate()
       },
       // reasonType值变更事件监听
@@ -677,7 +726,7 @@
       effecChange (value) {
         if (!value) {
           this.data.voMasterInfo.effectResult = ''
-          this.data.voMasterInfo.effectDay = ''
+          this.data.voMasterInfo.effectDay = '0'
         }
       }
     }

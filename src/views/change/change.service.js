@@ -20,7 +20,8 @@ const API = {
   insuaranceList : '/api/services/app/Contract/GetContractInsuarancelstByContractGuid',
   materialQualityGuaranteeList : '/api/services/app/Contract/GetContractMaterialQualityGuaranteelstByContractGuid',
   paymentTermsList : '/api/services/app/Contract/GetContractPaymentTermslstByContractGuid',
-  fileTypes : '/api/services/app/GeneralType/GetVOFileTypes'
+  fileTypes : '/api/services/app/GeneralType/GetVOFileTypes',
+  delete : '/api/services/app/VO/DeleteVOAllInfo'
 }
 
 const ChangeService = {}
@@ -252,6 +253,18 @@ ChangeService.fileTypes = function(){
 	    url: API.fileTypes,
 	    method: 'get',
 	    params: {}
+	  })
+}
+
+
+/**
+ * 废弃变更信息
+ */
+ChangeService.delete = function(voguid){
+	return request({
+	    url: API.delete,
+	    method: 'delete',
+	    params: {voguid}
 	  })
 }
 
