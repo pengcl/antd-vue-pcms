@@ -80,7 +80,7 @@
             type="success"
             style="margin-left: 20px"
             @click="handleCipToVo"
-            :disabled="tableSelected.auditStatus != '已审批'">CIP转VO
+            :disabled="tableSelected.auditStatus !== '已审核' && tableSelected.voGuid === '00000000-0000-0000-0000-000000000000'">CIP转VO
           </a-button>
           <a-button type="success" style="margin-left: 20px" @click="handleToCertificate">现场签证</a-button>
         </a-col>

@@ -61,7 +61,7 @@
                 <tr v-if="!item.isDeleted" v-for="(item,index) in data.vobQlst" :key="item.srNo">
                   <td>
                     <div style="width: 220px;">
-                      <a-button @click="add(item.srNo)" :disabled="type === 'view'" icon="plus">
+                      <a-button @click="add(index,item.srNo)" :disabled="type === 'view'" icon="plus">
                         添加子项
                       </a-button>
                       <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
@@ -114,6 +114,7 @@
                     <a-select
                       placeholder="请选择"
                       v-model="item.itemType"
+                      style="width:200px"
                       :disabled="type === 'view'"
                       v-decorator="['item.itemType', { rules: [{required: true, message: '请选择'}] }]">
                       <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">{{
@@ -140,7 +141,6 @@
                       @change="valueChange(item)" 
                       v-model="item.unitPriceMaterial" 
                       :disabled="type === 'view'"
-                      :min="0"
                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                       :precision="2"></a-input-number>
@@ -149,7 +149,6 @@
                     <a-input-number 
                       :disabled="true" 
                       v-model="item.subAmountMaterial" 
-                      :min="0"
                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                       :precision="2"></a-input-number>
@@ -173,7 +172,6 @@
                       @change="valueChange(item)" 
                       v-model="item.unitPriceWork" 
                       :disabled="type === 'view'"
-                      :min="0"
                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                       :precision="2"></a-input-number>
@@ -182,7 +180,6 @@
                     <a-input 
                       :disabled="true" 
                       v-model="item.subAmountWork"
-                      :min="0"
                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                       :precision="2"></a-input>
@@ -206,7 +203,6 @@
                       @change="valueChange(item)" 
                       v-model="item.unitPriceWorkMat" 
                       :disabled="type === 'view'"
-                      :min="0"
                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                       :precision="2"></a-input-number>
@@ -215,7 +211,6 @@
                     <a-input-number 
                       :disabled="true" 
                       v-model="item.subAmountWorkMat"
-                      :min="0"
                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                       :precision="2"></a-input-number>
@@ -264,7 +259,7 @@
       arr[0] = parseInt(arr[0], 10) + 1 + ''
       result = arr[0]
     } else {
-      items = items.filter(item => item[key].indexOf(str) === 0)
+      items = items.filter(item => item[key].indexOf(str) === 0 && item[key].split('.').length < str.split('.').length+2)
       arr = items[0][key].split('.')
       if (items.length === 1) {
         arr.push('0')
@@ -341,8 +336,7 @@
       }
     },
     methods: {
-      add (stringNo,addData) {
-      	console.log('addData',addData)
+      add (index,stringNo,addData) {
         const newSrNo = getNo(stringNo, 'srNo', this.data.vobQlst)
         let data = SwaggerService.getForm('VOBQDto')
         if(addData){
@@ -368,8 +362,25 @@
         data.isDeleted = false
         data.vobqGuid = ''
         data.void = ''
-        console.log('myData',data)
-        this.data.vobQlst.push(data)
+        //增加子项时需要将数据追加到当前行下级而不是表格最后一行
+        if(index != undefined){
+          //获取以当前行清单编号开头的所有清单
+        var appendIndex = 0
+        for(var i = index; i < this.data.vobQlst.length; i++){
+          var item = this.data.vobQlst[i]
+          if(item.srNo.indexOf(stringNo) === 0){
+            appendIndex++
+          }else{
+            break;
+          }
+        }
+        console.log('addCostList',appendIndex)
+          //追加插入到指定位置
+          this.data.vobQlst.splice(index+appendIndex,0,data)
+        }else{
+          this.data.vobQlst.push(data)
+        }
+        this.$forceUpdate()
       },
       del (index) {
         const str = this.data.vobQlst[index].srNo
@@ -483,7 +494,7 @@
       }
 
       .ant-select {
-        width: 120px;
+        width: 100px;
       }
     }
   }

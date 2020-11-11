@@ -35,7 +35,7 @@
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
-              <a-form-item label="状态"> 草拟中 (1.6)</a-form-item>
+              <a-form-item label="状态"> {{form.voMasterInfo.auditStatus}}</a-form-item>
             </a-col>
           </a-row>
 
@@ -93,6 +93,7 @@
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
             <a-button type="success" v-if="type != 'view'" @click="save">储存</a-button>
+            <a-button type="danger" v-if="form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -239,7 +240,6 @@
         this.$message.warn('功能尚未实现')
       },
       back () {
-        console.log('back')
         this.$router.push({ path: `/change/pmi` })
       },
       // 初始化新增cip信息的voMasterInfo对象
@@ -247,7 +247,7 @@
         this.form.cipid = this.form.cipid || 0
         this.form.voMasterInfo.id = 0
         this.form.voMasterInfo.isDeleted = false
-        this.form.voMasterInfo.contractID = this.contract.contractGuid
+        this.form.voMasterInfo.contractID = this.contractGuid
         this.form.voMasterInfo.createMode = 'M'
         this.form.voMasterInfo.stage = this.stage // 为VO时则为cip转vo
         this.form.voMasterInfo.verMajor = 0
@@ -264,7 +264,7 @@
         this.form.voMasterInfo.consultantEstimatedAmount = this.form.voMasterInfo.consultantEstimatedAmount || 0
         this.form.voMasterInfo.currencyExchangeRate = this.form.voMasterInfo.currencyExchangeRate || 1
         this.form.voMasterInfo.effectDay = this.form.voMasterInfo.effectDay || 0
-        this.form.voMasterInfo.isBeforeApply = this.form.voMasterInfo.isBeforeApply || false
+        this.form.voMasterInfo.isBeforeApply = this.form.voMasterInfo.isBeforeApply == undefined || this.form.voMasterInfo.isBeforeApply == null || this.form.voMasterInfo.isBeforeApply == '' ? true : this.form.voMasterInfo.isBeforeApply
         this.form.voMasterInfo.isTrip = this.form.voMasterInfo.isTrip || false
         // this.$forceUpdate()
       },
@@ -286,7 +286,6 @@
         if(this.form.vobQlst && this.form.vobQlst.length > 0){
           for(var i in this.form.vobQlst){
             var item = this.form.vobQlst[i]
-              console.log('vobqItem',item)
             if(!item.isDeleted){
               if(item.costCenter == '' || item.itemType == ''){
                 this.$message.warn('请选择[造价估算]的成本中心和清单项类别')
@@ -296,6 +295,28 @@
           }
         }
         return true
+      },
+      //废弃
+      cancel(){
+        const that = this
+        this.$confirm({
+          title : '废弃提醒',
+          content : '是否确认废弃该变更？',
+          onOk () {
+            ChangeService.delete(that.form.voMasterInfo.voGuid).then(res =>{
+              if(res.result.statusCode === 200){
+                that.$message.info('废弃成功').then(() =>{
+                  that.$router.push({ path: `/change/pmi` })
+                })
+              }
+            })
+            //调用废弃接口
+            console.log('进入废弃功能按钮点击事件')
+          },
+          onCancel(){
+
+          }
+        })
       }
     }
   }

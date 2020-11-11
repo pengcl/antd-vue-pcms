@@ -25,7 +25,7 @@
                       v-if="item.fileInfo && item.filePage && item.id === 0"
                       :multiple="false"
                       :before-upload="beforeUpload">
-              <a-button @click="choose(index)">请选择</a-button>
+              <a-button @click="choose(index)">上传附件</a-button>
             </a-upload>
             <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
               删除
