@@ -203,6 +203,9 @@
           this.tabActiveKey = 2
           return
         }
+        if(!this.$refs.baseInfo.getPartys()){
+          return
+        }
         if (isValid) {
           this.form.contractNo = this.contract.contractNo
           console.log('saveData', this.form)

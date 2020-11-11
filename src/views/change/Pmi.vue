@@ -112,6 +112,14 @@
                 style="margin-left: 4px"
                 title="编辑"
                 @click="handleToEdit(record)"
+              ></a-button>
+              <a-button
+                type="danger"
+                icon="delete"
+                v-if="record.auditStatus === '未审核'"
+                style="margin-left: 4px"
+                title="编辑"
+                @click="handleToDel(record)"
               >
               </a-button>
             </template>
@@ -368,6 +376,24 @@
       },
       handleToContractInfo(record){
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+      },
+      handleToDel(record){
+        this.$confirm({
+          title : '废弃提醒',
+          content : '是否确认废弃该变更？',
+          onOk () {
+            ChangeService.delete(record.cipGuid).then(res =>{
+              if(res.result.statusCode === 200){
+                that.$message.info('废弃成功').then(() =>{
+                  that.$refs.table2.refresh()
+                })
+              }
+            })
+          },
+          onCancel(){
+
+          }
+        })
       }
     }
   }
