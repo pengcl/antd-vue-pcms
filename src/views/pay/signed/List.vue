@@ -166,7 +166,6 @@
 <script>
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
@@ -174,7 +173,7 @@
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import { SignedService } from './signed.service'
-    import { ContractService } from '@/views/contract/contract.service'
+    import { nullFixedList } from '@/utils/util'
 
     const columns = [
         {
@@ -310,19 +309,7 @@
                             return fixedList(res, requestParameters)
                         })
                     } else {
-                        const res = {
-                            result: {
-                                data: {
-                                    totalCount: 0,
-                                    items: []
-                                }
-                            }
-                        }
-                        const data = fixedList(res, requestParameters)
-                        return new Promise(function (resolve, reject) {
-                            //业务逻辑
-                            resolve(data)
-                        })
+                        return nullFixedList(requestParameters)
                     }
                 },
                 loadData2: parameter => {
