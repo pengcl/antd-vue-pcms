@@ -147,14 +147,22 @@
                   </a-form-model-item>
                 </td>
                 <td>
+                  <a-form-model-item
+                    :prop="'plans.' + index +'.planStartDate'"
+                    :rules="[{required: true, message: '请填写计划开始时间', trigger: 'blur' }]">
                   <a-date-picker
                     :disabled="type === 'view'"
-                    v-model="item.planStartDate"></a-date-picker>
+                    v-model="form.plans[index].planStartDate"></a-date-picker>
+                  </a-form-model-item>
                 </td>
                 <td>
+                  <a-form-model-item
+                    :prop="'plans.' + index +'.planEndDate'"
+                    :rules="[{required: true, message: '请填写计划完成时间', trigger: 'blur' }]">
                   <a-date-picker
                     :disabled="type === 'view'"
-                    v-model="item.planEndDate"></a-date-picker>
+                    v-model="form.plans[index].planEndDate"></a-date-picker>
+                  </a-form-model-item>
                 </td>
                 <td>
                   <a-input :disabled="type === 'view'" v-model="item.remarks"></a-input>
@@ -235,19 +243,14 @@
       if (this.type !== 'add') {
         CostService.bidItem({ Id: this.id }).then(res => {
           this.form = res.result.data
-          this.plans = this.form.plans
-          // 组装计划的列表数据，用户修改保存
-          if (this.plans.length > 0) {
-            this.form.plans = []
-            this.plans.forEach(item => {
-              const obj = {}
-              obj['planTitle'] = item.planTitle
-              obj['planStartDate'] = item.planStartDate
-              obj['planEndDate'] = item.planEndDate
-              obj['remarks'] = item.remarks
-              this.form.plans.push(obj)
+          if(this.form.tenderPackages){
+            const packages = []
+            this.form.tenderPackages.forEach(item =>{
+              packages.push(item.id)
             })
+            this.form.tenderPackages = packages
           }
+          console.log(this.form)
           this.$forceUpdate()
         })
       }
@@ -261,7 +264,6 @@
             industryItem = item
           }
         })
-        console.log(industryItem)
         return industryItem
       },
       addIndustry () {
@@ -269,9 +271,6 @@
       },
       addPlan () {
         const item = {
-          _id: new Date().getTime(),
-          planID: this.id === '0' ? '' : this.id,
-          id: '',
           planTitle: '',
           planStartDate: '',
           planEndDate: '',
@@ -280,20 +279,7 @@
         addItem(item, this.form.plans)
       },
       handleToSave () {
-        console.log(this.form)
         this.form.projectGUID = this.ProjectGUID
-        // 组装计划的列表数据
-        if (this.plans.length > 0) {
-          this.form.plans = []
-          this.plans.forEach(item => {
-            const obj = {}
-            obj['planTitle'] = item.planTitle
-            obj['planStartDate'] = item.planStartDate
-            obj['planEndDate'] = item.planEndDate
-            obj['remarks'] = item.remarks
-            this.form.plans.push(obj)
-          })
-        }
         this.$refs.form.validate(valid => {
           if (valid) {
             CostService.bidCreate(this.form).then(res => {
@@ -305,7 +291,7 @@
         })
       },
       back () {
-        this.$router.push({ path: `/cost/bid/list?ProjectGUID=${this.ProjectGUID}` })
+        this.$router.push({ path: `/cost/bid/list` })
       },
       delIndustry (index) {
         const items = this.tenderPackages

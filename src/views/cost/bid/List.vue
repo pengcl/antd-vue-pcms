@@ -234,7 +234,6 @@
             const value = getPosValue(this.cities)
             this.queryParam.ProjectID = value.projectCode
             this.queryParam.ProjectGUID = value.projectGUID
-            this.$forceUpdate()
             this.$refs.table.refresh(true)
           })
         },
