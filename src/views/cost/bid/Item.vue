@@ -80,26 +80,26 @@
                   <a-button :disabled="type === 'view'" @click="delIndustry(index)" icon="delete" type="danger"></a-button>
                 </td>
                 <td>
-                                    <a-form-model-item
-                                      :prop="'tenderPackages.' + index"
-                                      :rules="[{required: true, message: '请选择行业分判包' }]"
-                                    >
+                  <a-form-model-item
+                    :prop="'tenderPackages.' + index + '.id'"
+                    :rules="[{required: true, message: '请选择行业分判包' }]"
+                  >
                   <a-select
                     :disabled="type === 'view'"
                     placeholder="请选择"
                     v-model="item.id"
                     @change="onChange"
                   >
-                    <a-select-option  v-for="option in item.industryItems" :key="JSON.stringify(option)" :value="option.id">
+                    <a-select-option  v-for="option in item.industryItems" :key="index + '#&' + JSON.stringify(option)" :value="option.id">
                       {{ option.packageTitle }} - {{ option.tradePackageCode}}
                     </a-select-option>
                   </a-select>
-                                    </a-form-model-item>
+                  </a-form-model-item>
                 </td>
                 <td>{{item.packageTitle}}</td>
                 <td>
                   <span v-for="childItem in item.costCenters" :key="childItem.costCenterId">
-                      {{ childItem.costCenterName }}
+                     【 {{ childItem.costCenterName }} 】
                   </span>
                 </td>
                 <td>{{item.budgetAmount}}</td>
@@ -189,7 +189,8 @@
           packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
           packageTitle: [{ required: true, message: '请输入工程名称', trigger: 'blur' }],
           description: [{ required: true, message: '请输入说明', trigger: 'change' }],
-          itemTypeId: [{ required: true, message: '请选择招投标类型', trigger: 'change' }]
+          itemTypeId: [{ required: true, message: '请选择招投标类型', trigger: 'change' }],
+          tenderPackages: []
         }
       }
     },
@@ -262,7 +263,8 @@
           industryItems: this.industryItems,
           packageTitle: '',
           tradePackageCode: '',
-          budgetAmount:''
+          budgetAmount:'',
+          industry:''
         }
         addItem(item, this.form.tenderPackages)
         this.$forceUpdate()
@@ -309,17 +311,17 @@
       },
       onChange (value, option) {
         console.log(value)
-        // const optionValue = option.data.key
-        // const index = optionValue.split('#&')[0]
-        // const item = JSON.parse(optionValue.split('#&')[1])
-        // console.log(item)
-        // this.tenderPackages[index]['packageTitle'] = item.packageTitle
-        // this.tenderPackages[index]['centers'] = item.costCenters
-        // this.tenderPackages[index]['id'] = item.id
-        // this.tenderPackages[index]['budgetAmount'] = item.budgetAmount
-        //
+        const optionValue = option.data.key
+        const index = optionValue.split('#&')[0]
+        const item = JSON.parse(optionValue.split('#&')[1])
+        console.log(item)
+        this.form.tenderPackages[index]['packageTitle'] = item.packageTitle
+        this.form.tenderPackages[index]['costCenters'] = item.costCenters
+        // this.form.tenderPackages[index]['id'] = item.id
+        this.form.tenderPackages[index]['budgetAmount'] = item.budgetAmount
+        this.$forceUpdate()
         // this.form.tenderPackages = []
-        // //组装行业分判包列表数据
+        //组装行业分判包列表数据
         // this.tenderPackages.forEach(item => {
         //   this.form.tenderPackages.push(item.id)
         // })
