@@ -11,6 +11,7 @@
                   :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   search-placeholder="请选择"
+                  v-model="queryParam.ProjectGUID"
                   @select="onSelect"
                 />
               </a-form-item>
@@ -21,9 +22,9 @@
 
       <div class="table-operator">
         <a-button type="success" @click="handleToAdd">新增业态成本中心</a-button>
-        <a-button type="primary" @click="show = !show">
+        <!--<a-button type="primary" @click="show = !show">
           <a-icon type="search"></a-icon>
-        </a-button>
+        </a-button>-->
         <a-button type="primary" style="float: right">汇出</a-button>
       </div>
 
@@ -91,7 +92,7 @@
 <script>
 import { STable, Ellipsis } from '@/components'
 import { CostService } from '@/views/project/cost/cost.service'
-import { fixedList } from '@/utils/util'
+import { fixedList, getPosValue } from '@/utils/util'
 import { ProjectService } from '@/views/project/project.service'
 
 const columns = [
@@ -153,7 +154,6 @@ const formatList = (items, option) => {
     item.value = item.projectGUID
     list.push(item)
   })
-  console.log(list)
   return list
 }
 
@@ -192,6 +192,9 @@ export default {
         })
       })
       this.cities = cities
+      const value = getPosValue(this.cities)
+      this.queryParam.ProjectGUID = value.projectGUID
+      console.log(this.queryParam)
       this.$forceUpdate()
     })
   },
@@ -209,13 +212,15 @@ export default {
       this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
       this.projectType = option.$options.propsData.dataRef.type
       if (typeof value === 'number') {
-        this.city = value
         this.queryParam.ProjectGUID = ''
       } else {
         this.queryParam.ProjectGUID = value
       }
       this.$refs.table.refresh()
       this.$forceUpdate()
+    },
+    search () {
+      this.$refs.table.refresh()
     }
   }
 }

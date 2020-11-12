@@ -72,7 +72,7 @@ table {
         border-width: 0 0 1px 1px;
         border-style: solid;
         border-color: #ccc;
-
+        white-space: nowrap;
         button {
           margin-right: 10px;
         }

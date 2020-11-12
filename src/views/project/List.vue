@@ -42,6 +42,14 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
+        <span slot="cityID" slot-scope="text">
+          {{ getCity(text) }}
+        </span>
+
+        <span slot="beginDate" slot-scope="text">
+          {{ text | moment }}
+        </span>
+
         <span slot="action" slot-scope="text, record">
           <template>
             <a-button @click="handleToItem(record)" class="btn-success" type="primary" icon="file-text" title="查看">
@@ -150,7 +158,8 @@ const columns = [
   }, */
   {
     title: '创建日期',
-    dataIndex: 'beginDate'
+    dataIndex: 'beginDate',
+    scopedSlots: { customRender: 'beginDate' }
   }
   /* {
     title: '最后更新者',
@@ -202,6 +211,17 @@ export default {
     }
   },
   methods: {
+    getCity (id) {
+      console.log(typeof id)
+      let city = {}
+      this.cities.forEach(item => {
+        console.log(item)
+        if (item.city.id === id) {
+          city = item.city
+        }
+      })
+      return city.nameCN
+    },
     handleToItem (record) {
       this.$router.push({ path: `/project/item/${record.id}?type=view&stage=${record.projectDataType}` })
     },

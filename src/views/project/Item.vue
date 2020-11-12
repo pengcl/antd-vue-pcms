@@ -158,17 +158,23 @@
                   label="项目公司"
                   prop="companyCode"
                 >
-                  <a-select
+                  <a-input v-model="form.companyCode" :disabled="type === 'view'" :hidden="true"/>
+                  <a-input
+                    :disabled="type === 'view'"
+                    @click="showSelect()"
+                    placeholder="请选择项目公司"
+                    :value="getName(form.companyCode)"
+                    :read-only="true"/>
+                  <!--<a-select
                     :disabled="type === 'view' || stage !== 'Project'"
                     placeholder="请选择项目公司"
-                    v-model="form.companyCode"
-                    v-decorator="['form.companyCode', { rules: [{required: false, message: '请选择项目公司'}] }]">
+                    v-model="form.companyCode">
                     <a-select-option
                       v-for="company in selection.companies"
                       :key="company.code"
                       :value="company.code">{{ company.nameCN }}
                     </a-select-option>
-                  </a-select>
+                  </a-select>-->
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
@@ -434,6 +440,13 @@
       >
         <p>{{ dialog.content }}</p>
       </a-modal>
+
+      <select-company
+        ref="company"
+        :visible="show"
+        :data="selection.companies"
+        @cancel="handleCancel('company')"
+        @ok="handleOk('company')"></select-company>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -443,14 +456,17 @@ import { ProjectService } from '@/views/project/project.service'
 import { Currency as CurrencyService } from '@/api/currency'
 import { Company as CompanyService } from '@/api/company'
 import { DIALOGCONFIG } from '@/api/base'
+import SelectCompany from '@/views/project/components/selectComany/index'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 export default {
   name: 'ProjectItem',
+  components: { SelectCompany },
   data () {
     return {
       dialog: DIALOGCONFIG,
       selection: {},
+      show: false,
       selectedItems: [],
       form: {},
       info: null,
@@ -499,11 +515,12 @@ export default {
   },
   watch: {
     'form.cityID' (value) {
-      console.log(value)
-      CompanyService.list(value).then(res => {
-        this.selection.companies = res.result.data
-        this.$forceUpdate()
-      })
+      if (value) {
+        CompanyService.list(value).then(res => {
+          this.selection.companies = res.result.data
+          this.$forceUpdate()
+        })
+      }
     }
   },
   computed: {
@@ -526,6 +543,15 @@ export default {
     }
   },
   methods: {
+    getName (code) {
+      let name = ''
+      if (code && this.selection.companies) {
+        this.selection.companies.forEach(item => {
+          name = item.nameCN
+        })
+      }
+      return name
+    },
     approve () {
       console.log('approve')
     },
@@ -585,6 +611,16 @@ export default {
     handleToEdit () {
       console.log('handleToEdit')
       this.$router.push({ path: `/project/item/${this.id}?type=edit` })
+    },
+    showSelect () {
+      this.show = true
+    },
+    handleOk () {
+      this.show = false
+      this.form.companyCode = this.$refs.company.selected.code
+    },
+    handleCancel () {
+      this.show = false
     }
   }
 }
