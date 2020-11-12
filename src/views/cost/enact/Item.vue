@@ -17,6 +17,7 @@
           >
           <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId" slot-scope="text, record">
             <a-input-number
+              :disabled="type === 'view'"
               v-if="record.childs.length ==0"
               v-model="record['cost' + item.costCenterId]"
               @change="e => checkChange(e.target.value, record, item.costCenterId)"
@@ -33,7 +34,7 @@
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button style="margin-right: 20px" type="success">启动审批流程</a-button>
-          <a-button @click="handleToSave" type="success">储存</a-button>
+          <a-button :disabled="type === 'view'" @click="handleToSave" type="success">储存</a-button>
           <a-button @click="back" style="margin-left: 5px" type="danger">关闭</a-button>
         </a-col>
         <a-col :md="12" :sm="24">

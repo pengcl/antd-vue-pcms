@@ -21,7 +21,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success" @click="handleToAdd">新增工程招标包</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增工程招标包</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -135,16 +135,16 @@
         },
         {
             title: '工程名称',
-            dataIndex: 'description',
-            scopedSlots: { customRender: 'description' }
+            dataIndex: 'packageTitle'
         },
         {
             title: '预算金额',
-            dataIndex: 'budgetAmount'
+            dataIndex: 'budgetAmount',
+          scopedSlots: { customRender: 'contractAmount' }
         },
         {
             title: '经办人',
-            dataIndex: 'creatorUser',
+            dataIndex: 'creatorUser'
         },
         {
             title: '状态',

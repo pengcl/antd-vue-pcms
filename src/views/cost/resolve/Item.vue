@@ -7,6 +7,7 @@
             <a-col :md="12" :sm="24">
               工程行业预算
               <a-button type="success" style="margin-left: 20px">审批记录</a-button>
+              <a-button type="success" @click="createGT" style="margin-left: 20px">生成GT</a-button>
             </a-col>
             <a-col :md="24" :sm="24">
               <a-checkbox>Budget Re-allocation</a-checkbox>
@@ -262,6 +263,13 @@
       handleCancel(e) {
         console.log('Clicked cancel button');
         this.visible = false;
+      },
+      createGT() {
+        CostService.createGT({projectGUID: this.ProjectGUID, planPackageGUID : this.ProjectGUID}).then(res => {
+          if (res.result.statusCode === 200) {
+            this.$message.info('GeneralTrade已触发生成')
+          }
+        })
       },
     }
   }

@@ -1,40 +1,45 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+      <a-form-model
+        ref="form"
+        :model="form"
+        :rules="rules"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-form-item label="招投标包编号">
+            <a-form-model-item label="招投标包编号">
               <a-input :disabled="true" v-model="form.tradePackageCode"></a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="日期">
+            <a-form-model-item label="日期" prop="packageDate">
               <a-date-picker
                 :disabled="type === 'view'"
                 v-model="form.packageDate"></a-date-picker>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="工程名称">
+            <a-form-model-item label="工程名称" prop="packageTitle">
               <a-input
                 :disabled="type === 'view'"
                 v-model="form.packageTitle"
               >
               </a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="说明">
+            <a-form-model-item label="说明" prop="description">
               <a-input
                 :disabled="type === 'view'"
                 v-model="form.description"
               >
               </a-input>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="招投标包类型">
+            <a-form-model-item label="招投标包类型" prop="itemTypeId">
               <a-select
                 :disabled="type === 'view'"
                 placeholder="请选择"
@@ -44,10 +49,10 @@
                   {{ option.nameCN }}
                 </a-select-option>
               </a-select>
-            </a-form-item>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-item label="金额">
+            <a-form-item label="金额" prop="budgetAmount">
               <a-input :disabled="true" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
             </a-form-item>
           </a-col>
@@ -70,25 +75,30 @@
               </tr>
               </thead>
               <tbody>
-              <tr v-for="(item,index) in tenderPackages" :key="index">
+              <tr v-for="(item,index) in form.tenderPackages" :key="index">
                 <td>
                   <a-button :disabled="type === 'view'" @click="delIndustry(index)" icon="delete" type="danger"></a-button>
                 </td>
                 <td>
+                                    <a-form-model-item
+                                      :prop="'tenderPackages.' + index"
+                                      :rules="[{required: true, message: '请选择行业分判包' }]"
+                                    >
                   <a-select
                     :disabled="type === 'view'"
                     placeholder="请选择"
-                    v-model="item.industry"
+                    v-model="item.id"
                     @change="onChange"
                   >
-                    <a-select-option  v-for="option in industryItems" :key="index + '#&' + JSON.stringify(option)" :value="option.id">
+                    <a-select-option  v-for="option in item.industryItems" :key="JSON.stringify(option)" :value="option.id">
                       {{ option.packageTitle }} - {{ option.tradePackageCode}}
                     </a-select-option>
                   </a-select>
+                                    </a-form-model-item>
                 </td>
                 <td>{{item.packageTitle}}</td>
                 <td>
-                  <span v-for="childItem in item.centers" :key="childItem.costCenterId">
+                  <span v-for="childItem in item.costCenters" :key="childItem.costCenterId">
                       {{ childItem.costCenterName }}
                   </span>
                 </td>
@@ -97,51 +107,51 @@
               </tbody>
             </table>
           </a-col>
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="5">
-                  <a-button :disabled="type === 'view'" @click="addPlan()" icon="plus" type="success">
-                    招投标计划
-                  </a-button>
-                </th>
-              </tr>
-              <tr>
-                <th style="width: 10%">操作</th>
-                <th style="width: 25%">工作项</th>
-                <th style="width: 20%">计划开始时间</th>
-                <th style="width: 20%">计划完成时间</th>
-                <th style="width: 25%">备注</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="(item,index) in plans" :key="index">
-                <td>
-                  <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>
-                </td>
-                <td>
-                  <a-input :disabled="type === 'view'" v-model="item.planTitle"></a-input>
-                </td>
-                <td>
-                  <a-date-picker
-                    :disabled="type === 'view'"
-                    v-model="item.planStartDate"></a-date-picker>
-                </td>
-                <td>
-                  <a-date-picker
-                    :disabled="type === 'view'"
-                    v-model="item.planEndDate"></a-date-picker>
-                </td>
-                <td>
-                  <a-input :disabled="type === 'view'" v-model="item.remarks"></a-input>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </a-col>
+          <!--          <a-col :md="24" :sm="24">-->
+          <!--            <table>-->
+          <!--              <thead>-->
+          <!--              <tr>-->
+          <!--                <th colspan="5">-->
+          <!--                  <a-button :disabled="type === 'view'" @click="addPlan()" icon="plus" type="success">-->
+          <!--                    招投标计划-->
+          <!--                  </a-button>-->
+          <!--                </th>-->
+          <!--              </tr>-->
+          <!--              <tr>-->
+          <!--                <th style="width: 10%">操作</th>-->
+          <!--                <th style="width: 25%">工作项</th>-->
+          <!--                <th style="width: 20%">计划开始时间</th>-->
+          <!--                <th style="width: 20%">计划完成时间</th>-->
+          <!--                <th style="width: 25%">备注</th>-->
+          <!--              </tr>-->
+          <!--              </thead>-->
+          <!--              <tbody>-->
+          <!--              <tr v-for="(item,index) in plans" :key="index">-->
+          <!--                <td>-->
+          <!--                  <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>-->
+          <!--                </td>-->
+          <!--                <td>-->
+          <!--                  <a-input :disabled="type === 'view'" v-model="item.planTitle"></a-input>-->
+          <!--                </td>-->
+          <!--                <td>-->
+          <!--                  <a-date-picker-->
+          <!--                    :disabled="type === 'view'"-->
+          <!--                    v-model="item.planStartDate"></a-date-picker>-->
+          <!--                </td>-->
+          <!--                <td>-->
+          <!--                  <a-date-picker-->
+          <!--                    :disabled="type === 'view'"-->
+          <!--                    v-model="item.planEndDate"></a-date-picker>-->
+          <!--                </td>-->
+          <!--                <td>-->
+          <!--                  <a-input :disabled="type === 'view'" v-model="item.remarks"></a-input>-->
+          <!--                </td>-->
+          <!--              </tr>-->
+          <!--              </tbody>-->
+          <!--            </table>-->
+          <!--          </a-col>-->
         </a-row>
-      </a-form>
+      </a-form-model>
 
       <a-row>
         <a-col :md="12" :sm="24">
@@ -174,7 +184,13 @@
         budgetTypeItems: [],
         tenderPackages:[],
         plans:[],
-        form: SwaggerService.getForm('TenderPackageCreateInputDto')
+        form: SwaggerService.getForm('TenderPackageCreateInputDto'),
+        rules: {
+          packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
+          packageTitle: [{ required: true, message: '请输入工程名称', trigger: 'blur' }],
+          description: [{ required: true, message: '请输入说明', trigger: 'change' }],
+          itemTypeId: [{ required: true, message: '请选择招投标类型', trigger: 'change' }]
+        }
       }
     },
     computed: {
@@ -191,6 +207,7 @@
     filters: {
     },
     created () {
+      this.form.tenderPackages = []
       CostService.budgetTypeItems().then(res => {
         this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
@@ -203,23 +220,23 @@
       if (this.type !== 'add') {
         CostService.bidItem({ Id: this.id }).then(res => {
           this.form = res.result.data
-          if(this.form.tenderPackages){
-            this.form.tenderPackages.forEach(item => {
-              const obj = []
-              obj['packageTitle'] = item.packageTitle
-              obj['centers'] = item.costCenters
-              obj['id'] = item.id
-              obj['budgetAmount'] = item.budgetAmount
-              obj['industry'] =  item.id
-              this.tenderPackages.push(obj)
-            })
-          }
+          // if(this.form.tenderPackages){
+          //   this.form.tenderPackages.forEach(item => {
+          //     const obj = []
+          //     obj['packageTitle'] = item.packageTitle
+          //     obj['centers'] = item.costCenters
+          //     obj['id'] = item.id
+          //     obj['budgetAmount'] = item.budgetAmount
+          //     obj['industry'] =  item.id
+          //     this.tenderPackages.push(obj)
+          //   })
+          // }
           this.plans = this.form.plans
-          this.form.tenderPackages = []
+          // this.form.tenderPackages = []
           //组装行业分判包列表数据，用户修改保存
-          this.tenderPackages.forEach(item => {
-            this.form.tenderPackages.push(item.id)
-          })
+          // this.tenderPackages.forEach(item => {
+          //   this.form.tenderPackages.push(item.id)
+          // })
           //组装计划的列表数据，用户修改保存
           if(this.plans.length>0){
             this.form.plans = []
@@ -242,12 +259,14 @@
           _id: new Date().getTime(),
           tenderPackagesID: this.id === '0' ? '' : this.id,
           id: '',
+          industryItems: this.industryItems,
           packageTitle: '',
           tradePackageCode: '',
-          centens: '',
           budgetAmount:''
         }
-        addItem(item, this.tenderPackages)
+        addItem(item, this.form.tenderPackages)
+        this.$forceUpdate()
+        console.log(this.form.tenderPackages)
       },
       addPlan () {
         const item = {
@@ -275,48 +294,35 @@
             this.form.plans.push(obj)
           })
         }
-        CostService.bidCreate(this.form).then(res => {
-          if (res.result.statusCode === 200) {
-            this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            CostService.bidCreate(this.form).then(res => {
+              if (res.result.statusCode === 200) {
+                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+              }
+            })
           }
-          // if (res.result.statusCode === 200) {
-          //   const that = this
-          //   this.$confirm({
-          //     title : that.type === 'edit' ? '修改提示' : '添加提示',
-          //     content : that.type === 'edit' ? '继续修改' : '继续添加',
-          //     onOk () {
-          //       if ( that.type === 'add' ) {
-          //         that.form = SwaggerService.getForm('ProjectTenderPackageCreateInputDto')
-          //         that.tenderPackages = []
-          //         that.plans = []
-          //         that.$forceUpdate()
-          //       }
-          //     },
-          //     onCancel(){
-          //       that.$router.push({ path: `/cost/bid/list?ProjectGUID=${that.ProjectGUID}`})
-          //     }
-          //   })
-          // }
         })
       },
       back () {
         this.$router.push({ path: `/cost/bid/list?ProjectGUID=${this.ProjectGUID}`})
       },
       onChange (value, option) {
-          const optionValue = option.data.key
-          const index = optionValue.split('#&')[0]
-          const item = JSON.parse(optionValue.split('#&')[1])
-          console.log(item)
-          this.tenderPackages[index]['packageTitle'] = item.packageTitle
-          this.tenderPackages[index]['centers'] = item.costCenters
-          this.tenderPackages[index]['id'] = item.id
-          this.tenderPackages[index]['budgetAmount'] = item.budgetAmount
-
-          this.form.tenderPackages = []
-          //组装行业分判包列表数据
-          this.tenderPackages.forEach(item => {
-              this.form.tenderPackages.push(item.id)
-          })
+        console.log(value)
+        // const optionValue = option.data.key
+        // const index = optionValue.split('#&')[0]
+        // const item = JSON.parse(optionValue.split('#&')[1])
+        // console.log(item)
+        // this.tenderPackages[index]['packageTitle'] = item.packageTitle
+        // this.tenderPackages[index]['centers'] = item.costCenters
+        // this.tenderPackages[index]['id'] = item.id
+        // this.tenderPackages[index]['budgetAmount'] = item.budgetAmount
+        //
+        // this.form.tenderPackages = []
+        // //组装行业分判包列表数据
+        // this.tenderPackages.forEach(item => {
+        //   this.form.tenderPackages.push(item.id)
+        // })
       },
       delIndustry (index) {
         const items = this.tenderPackages

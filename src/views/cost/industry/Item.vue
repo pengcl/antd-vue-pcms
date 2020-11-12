@@ -7,7 +7,6 @@
       :label-col="{ span: 8 }"
       :wrapper-col="{ span: 16 }">
     <a-card :bordered="false">
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-model-item prop="tradePackageCode" label="分判包编号">
@@ -31,7 +30,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item prop="centers" label="范围">
+            <a-form-model-item prop="costCenters" label="范围">
               <a-select
                 :disabled="type === 'view'"
                 mode="multiple"
@@ -105,7 +104,6 @@
           <!--            </table>-->
           <!--          </a-col>-->
         </a-row>
-      </a-form>
       <a-row>
         <a-col :md="12" :sm="24">
           <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
@@ -137,18 +135,10 @@
         budgetTypeItems: [],
         form: SwaggerService.getForm('TenderPackageCreateInputDto'),
         rules: {
-          packageDate: [
-            { required: true, message: '请选择日期', trigger: 'blur' }
-          ],
-          packageTitle: [
-            { required: true, message: '请输入分判包描述', trigger: 'blur' }
-          ],
-          costCenters: [
-            { required: true, message: '请选择范围', trigger: 'change' }
-          ],
-          itemTypeId: [
-            { required: true, message: '请选择分判包类型', trigger: 'change' }
-          ]
+          packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
+          packageTitle: [{ required: true, message: '请输入分判包描述', trigger: 'blur' }],
+          costCenters: [{ required: true, message: '请选择范围', trigger: 'change' }],
+          itemTypeId: [{ required: true, message: '请选择分判包类型', trigger: 'change' }]
         }
       }
     },
