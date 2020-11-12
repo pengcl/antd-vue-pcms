@@ -107,13 +107,14 @@
           label="是否需出差"
           prop="isNeedTrip"
         >
-          <a-select
-            :disabled="type === 'view'"
-            placeholder="请选择"
-            v-model="data.contract.isNeedTrip">
-            <a-select-option :value="true">是</a-select-option>
-            <a-select-option :value="false">否</a-select-option>
-          </a-select>
+          <a-radio-group name="isNeedTrip" v-model="data.contract.isNeedTrip">
+            <a-radio :value="true">
+              是
+            </a-radio>
+            <a-radio :value="false">
+              否
+            </a-radio>
+          </a-radio-group>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -130,16 +131,17 @@
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="出差次数"
+          prop="tripTimes"
+          :rules="[{ type: 'number', required: data.contract.isNeedTrip, message: '请输入出差次数' },{ type: 'number', min:data.contract.isNeedTrip ? 1 : 0, message: '出差次数必须大于0' }]"
         >
           <a-input-number
-            :disabled="type === 'view'"
+            :disabled="type === 'view' || !data.contract.isNeedTrip"
             v-model="data.contract.tripTimes"
-            :min="0"
             :formatter="value => `${value}次`"
-            :parser="value => value.replace('次', '')"></a-input-number>
-        </a-form-item>
+            :parser="value => value.replace('次', '')"/>
+        </a-form-model-item>
       </a-col>
       <contract-info-retention :data="data" :type="type" :id="id"></contract-info-retention>
       <contract-info-retention-release :data="data" :type="type" :id="id"></contract-info-retention-release>
@@ -270,7 +272,6 @@
   import ContractInfoInsurance from '@/views/contract/components/contractInfo/insurance'
   import ContractInfoFluctuationClause from '@/views/contract/components/contractInfo/fluctuationClause'
   import ContractInfoPaymentTerms from '@/views/contract/components/contractInfo/paymentTerms'
-  import { currencyFormat, currencyParser } from '@/utils/util'
   export default {
     name: 'ContractInfo',
     components: { ContractInfoPaymentTerms, ContractInfoFluctuationClause, ContractInfoInsurance, ContractInfoBond, ContractInfoAdvanceCharge, ContractInfoRetentionRelease, ContractInfoRetention },
