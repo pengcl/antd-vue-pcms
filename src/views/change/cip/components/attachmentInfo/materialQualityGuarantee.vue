@@ -62,6 +62,7 @@
   </div>
 </template>
 <script>
+  import { Base as BaseService , removeItem , clearItems} from '@/api/base'
   import { ChangeService } from '@/views/change/change.service'
   export default {
     name: 'AttachmentInfoMaterialQualityGuarantee',
@@ -106,20 +107,10 @@
         this.data.voMaterialQualityGuaranteelst.push(item)
       },
       del (item,index) {
-        if(item.isTemp){
-          this.data.voMaterialQualityGuaranteelst.splice(index,1)
-        }else{
-          item.isDeleted = true
-        }
+        removeItem(index,this.data.voMaterialQualityGuaranteelst)
       },
       clear () {
-        this.data.voMaterialQualityGuaranteelst.forEach((item,index) => {
-          if(item.isTemp){
-            this.data.voMaterialQualityGuaranteelst.splice(index,1)
-          }else{
-            item.isDeleted = true
-          }
-        })
+        clearItems(this.data.voMaterialQualityGuaranteelst)
       },
       replaceByContract(){
         this.clear()

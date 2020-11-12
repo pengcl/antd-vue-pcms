@@ -216,8 +216,7 @@
 </template>
 
 <script>
-
-  import { Base as BaseService } from '@/api/base'
+  import { Base as BaseService , removeItem , clearItems} from '@/api/base'
   import { ChangeService } from '@/views/change/change.service'
   import AttachmentInfoBond from '@/views/change/cip/components/attachmentInfo/bond'
   import AttachmentInfoInsurance from '@/views/change/cip/components/attachmentInfo/insurance'
@@ -297,27 +296,15 @@
        * @target 要删除行数据的对象列表
        */
       del (item, index, target) {
-        item.isDeleted = true
-        if (item.isTemp) {
-          this.data[target].splice(index, 1)
-        }
-        this.$forceUpdate()
+        removeItem(index,this.data[target])
       },
       /**
        * 通用清空行方法
-
        * @target 要删除行数据的对象列表
        */
       clear (target) {
-        const list = []
-        this.data[target].forEach(item => {
-          item.isDeleted = true
-          if (!item.isTemp) {
-            list.push(item)
-          }
-        })
-        this.data[target] = list
-        this.$forceUpdate()
+        this.data[target] = clearItems(this.data[target])
+        console.log(this.data[target])
       },
       // 增加保修金/保固金/保留金返还行
       addRelease () {
