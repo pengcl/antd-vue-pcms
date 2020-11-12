@@ -44,6 +44,7 @@
                 :disabled="type === 'view'"
                 placeholder="请选择"
                 v-model="form.itemTypeId"
+                style="width:500px"
               >
                 <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">
                   {{ option.nameCN }}
@@ -110,6 +111,63 @@
                   </td>
                   <td>{{ getIndustryItem(index).budgetAmount }}</td>
                 </tr>
+              </tbody>
+            </table>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <table>
+              <thead>
+              <tr>
+                <th colspan="5">
+                  <a-button :disabled="type === 'view'" @click="addPlan()" icon="plus" type="success">
+                    招投标计划
+                  </a-button>
+                </th>
+              </tr>
+              <tr>
+                <th style="width: 10%">操作</th>
+                <th style="width: 25%">工作项</th>
+                <th style="width: 20%">计划开始时间</th>
+                <th style="width: 20%">计划完成时间</th>
+                <th style="width: 25%">备注</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(item,index) in form.plans" :key="index">
+                <td>
+                  <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>
+                </td>
+                <td>
+                  <a-form-model-item
+                    :prop="'plans.' + index +'.planTitle'"
+                    :rules="[{required: true, message: '请填写工作项', trigger: 'blur' }]">
+                    <a-input
+                      :disabled="type === 'view'"
+                      v-model="form.plans[index].planTitle"></a-input>
+                  </a-form-model-item>
+                </td>
+                <td>
+                  <a-form-model-item
+                    :prop="'plans.' + index +'.planStartDate'"
+                    :rules="[{required: true, message: '请填写计划开始时间', trigger: 'blur' }]">
+                  <a-date-picker
+                    :disabled="type === 'view'"
+                    v-model="form.plans[index].planStartDate"></a-date-picker>
+                  </a-form-model-item>
+                </td>
+                <td>
+                  <a-form-model-item
+                    :prop="'plans.' + index +'.planEndDate'"
+                    :rules="[{required: true, message: '请填写计划完成时间', trigger: 'blur' }]">
+                  <a-date-picker
+                    :disabled="type === 'view'"
+                    v-model="form.plans[index].planEndDate"></a-date-picker>
+                  </a-form-model-item>
+                </td>
+                <td>
+                  <a-input :disabled="type === 'view'" v-model="item.remarks"></a-input>
+                </td>
+              </tr>
               </tbody>
             </table>
           </a-col>
@@ -184,37 +242,15 @@
         })
       if (this.type !== 'add') {
         CostService.bidItem({ Id: this.id }).then(res => {
-          console.log(res)
           this.form = res.result.data
-          // if(this.form.tenderPackages){
-          //   this.form.tenderPackages.forEach(item => {
-          //     const obj = []
-          //     obj['packageTitle'] = item.packageTitle
-          //     obj['centers'] = item.costCenters
-          //     obj['id'] = item.id
-          //     obj['budgetAmount'] = item.budgetAmount
-          //     obj['industry'] =  item.id
-          //     this.tenderPackages.push(obj)
-          //   })
-          // }
-          this.plans = this.form.plans
-          // this.form.tenderPackages = []
-          // 组装行业分判包列表数据，用户修改保存
-          // this.tenderPackages.forEach(item => {
-          //   this.form.tenderPackages.push(item.id)
-          // })
-          // 组装计划的列表数据，用户修改保存
-          if (this.plans.length > 0) {
-            this.form.plans = []
-            this.plans.forEach(item => {
-              const obj = {}
-              obj['planTitle'] = item.planTitle
-              obj['planStartDate'] = item.planStartDate
-              obj['planEndDate'] = item.planEndDate
-              obj['remarks'] = item.remarks
-              this.form.plans.push(obj)
+          if(this.form.tenderPackages){
+            const packages = []
+            this.form.tenderPackages.forEach(item =>{
+              packages.push(item.id)
             })
+            this.form.tenderPackages = packages
           }
+          console.log(this.form)
           this.$forceUpdate()
         })
       }
@@ -228,7 +264,6 @@
             industryItem = item
           }
         })
-        console.log(industryItem)
         return industryItem
       },
       addIndustry () {
@@ -236,30 +271,15 @@
       },
       addPlan () {
         const item = {
-          _id: new Date().getTime(),
-          planID: this.id === '0' ? '' : this.id,
-          id: '',
           planTitle: '',
           planStartDate: '',
           planEndDate: '',
-          remarks: ''
+          remarks:''
         }
-        addItem(item, this.plans)
+        addItem(item, this.form.plans)
       },
       handleToSave () {
         this.form.projectGUID = this.ProjectGUID
-        // 组装计划的列表数据
-        if (this.plans.length > 0) {
-          this.form.plans = []
-          this.plans.forEach(item => {
-            const obj = {}
-            obj['planTitle'] = item.planTitle
-            obj['planStartDate'] = item.planStartDate
-            obj['planEndDate'] = item.planEndDate
-            obj['remarks'] = item.remarks
-            this.form.plans.push(obj)
-          })
-        }
         this.$refs.form.validate(valid => {
           if (valid) {
             CostService.bidCreate(this.form).then(res => {
@@ -271,24 +291,7 @@
         })
       },
       back () {
-        this.$router.push({ path: `/cost/bid/list?ProjectGUID=${this.ProjectGUID}` })
-      },
-      onChange (value, option) {
-        console.log(value)
-        const optionValue = option.data.key
-        const index = optionValue.split('#&')[0]
-        const item = JSON.parse(optionValue.split('#&')[1])
-        console.log(item)
-        this.form.tenderPackages[index]['packageTitle'] = item.packageTitle
-        this.form.tenderPackages[index]['costCenters'] = item.costCenters
-        // this.form.tenderPackages[index]['id'] = item.id
-        this.form.tenderPackages[index]['budgetAmount'] = item.budgetAmount
-        this.$forceUpdate()
-        // this.form.tenderPackages = []
-        // 组装行业分判包列表数据
-        // this.tenderPackages.forEach(item => {
-        //   this.form.tenderPackages.push(item.id)
-        // })
+        this.$router.push({ path: `/cost/bid/list` })
       },
       delIndustry (index) {
         const items = this.tenderPackages

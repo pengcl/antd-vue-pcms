@@ -207,7 +207,7 @@
 
       },
       back () {
-        this.$router.push({ path: `/cost/industry/list?ProjectGUID=${this.ProjectGUID}`})
+        this.$router.push({ path: `/cost/industry/list`})
       }
     }
   }

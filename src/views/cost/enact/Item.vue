@@ -15,21 +15,19 @@
             :alert="false"
             :pagination="false"
           >
-            <template :slot="'cost' + item.costCenterId" slot-scope="text, record">
-              <span v-for="item in ars" :key="'cost' + item.costCenterId">
-                <a-input-number
-                  :disabled="type === 'view'"
-                  v-if="record.childs.length ==0"
-                  v-model="record['cost' + item.costCenterId]"
-                  @change="e => checkChange(e.target.value, record, item.costCenterId)"
-                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                />
-                <span v-else>
-                  {{ record['cost' + item.costCenterId] }}
-                </span>
-              </span>
+            <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId" slot-scope="text, record">
+            <a-input-number
+              :disabled="type === 'view'"
+              v-if="record.childs.length ==0"
+              v-model="record['cost' + item.costCenterId]"
+              @change="e => checkChange(e.target.value, record, item.costCenterId)"
+              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            />
+            <template v-else>
+              {{ record['cost' + item.costCenterId] }}
             </template>
+          </span>
           </a-table>
         </a-col>
       </a-row>
@@ -192,7 +190,7 @@
     },
     methods: {
       back () {
-        this.$router.push({ path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}` })
+        this.$router.push({ path: `/cost/enact/list` })
       },
       handleToSave () {
         const result = {}
