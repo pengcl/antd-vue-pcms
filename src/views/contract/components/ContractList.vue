@@ -114,256 +114,252 @@
           <a-button type="success" style="float: right">导入导出</a-button>
         </a-col>
         <a-col :md="24" :sm="24">
-          <div class="table-wrapper">
-            <div class="fixed-header-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th colspan="25">
-                      <a-button @click="add()" :disabled="type === 'view'" icon="plus">
-                        新增
-                      </a-button>
-                      <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
-                        重置
-                      </a-button>
-                    </th>
-                  </tr>
-                  <tr>
-                    <th rowspan="2">操作</th>
-                    <th rowspan="2">
-                      带数项目
-                    </th>
-                    <th style="width: 60px" rowspan="2">清单编号</th>
-                    <th style="width: 60px" rowspan="2">标段</th>
-                    <th style="width: 5%" rowspan="2">楼栋</th>
-                    <th style="width: 5%" rowspan="2">分部</th>
-                    <th style="width: 5%" rowspan="2">分项</th>
-                    <th style="width: 5%" rowspan="2">预留字段0</th>
-                    <th style="width: 5%" rowspan="2">预留字段1</th>
-                    <th style="width: 5%" rowspan="2">清单描述</th>
-                    <th style="width: 5%" rowspan="2">业态成本中心</th>
-                    <th style="width: 5%" rowspan="2">清单项类别</th>
-                    <th style="width: 15%" colspan="4">供应</th>
-                    <th style="width: 15%" colspan="4">安装</th>
-                    <th style="width: 15%" colspan="4">供应+安装</th>
-                    <th style="width: 5%" rowspan="2">合计</th>
-                  </tr>
-                  <tr>
-                    <th>单位</th>
-                    <th>工程量</th>
-                    <th>单价</th>
-                    <th>小计</th>
-                    <th>单位</th>
-                    <th>工程量</th>
-                    <th>单价</th>
-                    <th>小计</th>
-                    <th>单位</th>
-                    <th>工程量</th>
-                    <th>单价</th>
-                    <th>小计</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-if="!item.isDeleted" v-for="(item,index) in data.contractBQlst" :key="index">
-                    <td>
-                      <div style="width: 220px;">
-                        <a-button @click="add(item.srNo)" :disabled="type === 'view'" icon="plus">
-                          添加子项
-                        </a-button>
-                        <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
-                          删除
-                        </a-button>
-                      </div>
-                    </td>
-                    <td>
-                      <a-icon
-                        :disabled="type === 'view'"
-                        @click="checkCarry(item,type === 'view',index)"
-                        :type="item.isCarryData ? 'check-square' : 'border'"/>
-                    </td>
-                    <td>
-                      <a-input style="width:100px" :disabled="true" :value="item.srNo"></a-input>
-                    </td>
-                    <td>
-                      <a-input :disabled="type === 'view'" v-model="item.section"></a-input>
-                    </td>
-                    <td>
-                      <a-input :disabled="type === 'view'" v-model="item.building"></a-input>
-                    </td>
-                    <td>
-                      <a-input :disabled="type === 'view'" v-model="item.subsection"/>
-                    </td>
-                    <td><a-input :disabled="type === 'view'" v-model="item.segmentation"/></td>
-                    <td>
-                      <a-input :disabled="type === 'view'" v-model="item.remark1"></a-input>
-                    </td>
-                    <td>
-                      <a-input :disabled="type === 'view'" v-model="item.remark2"></a-input>
-                    </td>
-                    <td>
-                      <a-input :disabled="type === 'view'" v-model="item.description"></a-input>
-                    </td>
-                    <td>
-                      <a-form-model-item
-                        :prop="'contractBQlst.' + index + '.costCenter'"
-                        :rules="[{required: !item.isDeleted, message: '请选择成本中心' }]"
-                      >
-                        <a-input :hidden="true" v-model="item.costCenter"/>
-                        <a-select
-                          :disabled="type === 'view'"
-                          :default-value="item | getValue(index)"
-                          style="width: 200px;margin-top: 15px"
-                          mode="multiple"
-                          @change="centerChange">
-                          <a-select-option
-                            :value="index + ';' + center.id + ';' + center.costCenterName"
-                            :itemIndex="index"
-                            v-for="center in selection.centers"
-                            :key="JSON.stringify(center)">
-                            {{ center.costCenterName }}
-                          </a-select-option>
-                        </a-select>
-                      </a-form-model-item>
-                    </td>
-                    <td>
-                      <a-form-model-item
-                        :prop="'contractBQlst.' + index + '.itemType'"
-                        :rules="[{required: !item.isDeleted, message: '请选择清单项类别' }]"
-                      >
-                        <a-select
-                          :disabled="type === 'view'"
-                          placeholder="请选择"
-                          style="margin-top: 15px"
-                          v-model="item.itemType"
-                          v-decorator="['item.itemType', { rules: [{required: true, message: '请选择'}] }]">
-                          <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">
-                            {{ item.nameCN }}
-                          </a-select-option>
-                        </a-select>
-                      </a-form-model-item>
-                    </td>
-                    <td>
-                      <a-select
-                        :disabled="type === 'view'"
-                        placeholder="请选择"
-                        v-model="item.unitMaterial"
-                        v-decorator="['item.unitMaterial', { rules: [{required: true, message: '请选择'}] }]">
-                        <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
-                          {{ item.nameCN }}
-                        </a-select-option>
-                      </a-select>
-                    </td>
-                    <td>
-                      <a-input
-                        :disabled="type === 'view'"
-                        @change="valueChange(item)"
-                        v-model="item.quantityMaterial"></a-input>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="type === 'view'"
-                        @change="valueChange(item)"
-                        v-model="item.unitPriceMaterial"
-                        :min="0"
-                        :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                        :precision="2"></a-input-number>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="true"
-                        v-model="item.subAmountMaterial"
-                        :min="0"
-                        :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                        :precision="2"></a-input-number>
-                    </td>
-                    <td>
-                      <a-select
-                        :disabled="type === 'view'"
-                        placeholder="请选择"
-                        v-model="item.unitWork"
-                        v-decorator="['item.unitWork', { rules: [{required: true, message: '请选择'}] }]">
-                        <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
-                          {{ item.nameCN }}
-                        </a-select-option>
-                      </a-select>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="type === 'view'"
-                        @change="valueChange(item)"
-                        v-model="item.quantityWork"></a-input-number>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="type === 'view'"
-                        @change="valueChange(item)"
-                        v-model="item.unitPriceWork"
-                        :min="0"
-                        :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                        :precision="2"></a-input-number>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="true"
-                        v-model="item.subAmountWork"
-                        :min="0"
-                        :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                        :precision="2"></a-input-number>
-                    </td>
-                    <td>
-                      <a-select
-                        :disabled="type === 'view'"
-                        placeholder="请选择"
-                        v-model="item.unitWorkMat"
-                        v-decorator="['item.unitWorkMat', { rules: [{required: true, message: '请选择'}] }]">
-                        <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
-                          {{ item.nameCN }}
-                        </a-select-option>
-                      </a-select>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="type === 'view'"
-                        @change="valueChange(item)"
-                        v-model="item.quantityWorkMat"></a-input-number>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="type === 'view'"
-                        @change="valueChange(item)"
-                        v-model="item.unitPriceWorkMat"
-                        :min="0"
-                        :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                        :precision="2"></a-input-number>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="true"
-                        v-model="item.subAmountWorkMat"
-                        :min="0"
-                        :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                        :precision="2"></a-input-number>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :disabled="true"
-                        v-model="item.allAmount"
-                        :min="0"
-                        :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                        :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                        :precision="2"></a-input-number>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <a-table
+            :columns="columns"
+            :data-source="data.contractBQlst"
+            size="default"
+            rowKey="id"
+            :scroll="{ x : '1500px',y : '300px' }"
+            bordered>
+            <template slot="action" slot-scope="text, record, index">
+              <a-button @click="add(record.srNo)" :disabled="type === 'view'" icon="plus">
+                添加子项
+              </a-button>
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                删除
+              </a-button>
+            </template>
+            <template slot="isCarryData" slot-scope="text, record, index">
+              <a-icon
+                :disabled="type === 'view'"
+                @click="checkCarry(record,type === 'view',index)"
+                :type="record.isCarryData ? 'check-square' : 'border'"/>
+            </template>
+            <template slot="srNo" slot-scope="text, record">
+              <a-input style="width:100px" :disabled="true" :value="record.srNo"></a-input>
+            </template>
+            <template slot="section" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.section"></a-input>
+            </template>
+            <template slot="building" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.building"></a-input>
+            </template>
+            <template slot="subsection" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.subsection"></a-input>
+            </template>
+            <template slot="segmentation" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.segmentation"></a-input>
+            </template>
+            <template slot="segmentation" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.segmentation"></a-input>
+            </template>
+            <template slot="remark1" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.remark1"></a-input>
+            </template>
+            <template slot="remark2" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.remark2"></a-input>
+            </template>
+            <template slot="description" slot-scope="text, record">
+              <a-input style="width:100px" :value="record.description"></a-input>
+            </template>
+            <template slot="costCenter" slot-scope="text, record, index">
+              <a-form-model-item
+                :prop="'contractBQlst.' + index + '.costCenter'"
+                :rules="[{required: !record.isDeleted, message: '请选择成本中心' }]"
+              >
+                <a-input :hidden="true" v-model="record.costCenter"/>
+                <a-select
+                  :disabled="type === 'view'"
+                  :default-value="record | getValue(index)"
+                  style="width: 200px;margin-top: 15px"
+                  mode="multiple"
+                  @change="centerChange">
+                  <a-select-option
+                    :value="index + ';' + center.id + ';' + center.costCenterName"
+                    :itemIndex="index"
+                    v-for="center in selection.centers"
+                    :key="JSON.stringify(center)">
+                    {{ center.costCenterName }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </template>
+
+            <template slot="itemType" slot-scope="text, record, index">
+              <a-form-model-item
+                :prop="'contractBQlst.' + index + '.itemType'"
+                :rules="[{required: !record.isDeleted, message: '请选择清单项类别' }]"
+              >
+                <a-select
+                  :disabled="type === 'view'"
+                  placeholder="请选择"
+                  style="margin-top: 15px"
+                  v-model="record.itemType">
+                  <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">
+                    {{ item.nameCN }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </template>
+
+            <template slot="unitMaterial" slot-scope="text, record">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="record.unitMaterial">
+                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
+                  {{ item.nameCN }}
+                </a-select-option>
+              </a-select>
+            </template>
+
+            <template slot="quantityMaterial" slot-scope="text, record">
+              <a-input
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.quantityMaterial"></a-input>
+            </template>
+
+            <template slot="unitPriceMaterial" slot-scope="text, record">
+              <a-input-number
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.unitPriceMaterial"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+
+            <template slot="subAmountMaterial" slot-scope="text, record">
+              <a-input-number
+                :disabled="true"
+                v-model="record.subAmountMaterial"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+
+            <template slot="unitWork" slot-scope="text, record">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="record.unitWork">
+                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
+                  {{ item.nameCN }}
+                </a-select-option>
+              </a-select>
+            </template>
+
+            <template slot="quantityWork" slot-scope="text, record">
+              <a-input-number
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.quantityWork"></a-input-number>
+            </template>
+
+            <template slot="unitPriceWork" slot-scope="text, record">
+              <a-input-number
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.unitPriceWork"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+
+            <template slot="subAmountWork" slot-scope="text, record">
+              <a-input-number
+                :disabled="true"
+                v-model="record.subAmountWork"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+
+            <template slot="unitWork" slot-scope="text, record">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="record.unitWork">
+                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
+                  {{ item.nameCN }}
+                </a-select-option>
+              </a-select>
+            </template>
+            <template slot="quantityWork" slot-scope="text, record">
+              <a-input-number
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.quantityWork"></a-input-number>
+            </template>
+            <template slot="unitPriceWork" slot-scope="text, record">
+              <a-input-number
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.unitPriceWork"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+            <template slot="subAmountWork" slot-scope="text, record">
+              <a-input-number
+                :disabled="true"
+                v-model="record.subAmountWork"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+            <template slot="unitWorkMat" slot-scope="text, record">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="record.unitWorkMat">
+                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
+                  {{ item.nameCN }}
+                </a-select-option>
+              </a-select>
+            </template>
+            <template slot="quantityWorkMat" slot-scope="text, record">
+              <a-input-number
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.quantityWorkMat"></a-input-number>
+            </template>
+            <template slot="unitPriceWorkMat" slot-scope="text, record">
+              <a-input-number
+                :disabled="type === 'view'"
+                @change="valueChange(record)"
+                v-model="record.unitPriceWorkMat"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+            <template slot="subAmountWorkMat" slot-scope="text, record">
+              <a-input-number
+                :disabled="true"
+                v-model="record.subAmountWorkMat"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+            <template slot="allAmount" slot-scope="text, record">
+              <a-input-number
+                :disabled="true"
+                v-model="record.allAmount"
+                :min="0"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"></a-input-number>
+            </template>
+          </a-table>
         </a-col>
       </a-row>
     </a-form-model>
@@ -376,6 +372,161 @@
   import { SwaggerService } from '@/api/swagger.service'
   import { ContractService } from '@/views/contract/contract.service'
 
+  const columns = [
+    {
+      title: '操作',
+      dataIndex: 'action',
+      scopedSlots: { customRender: 'action' },
+      width: 250
+    },
+    {
+      title: '带数项目',
+      dataIndex: 'isCarryData',
+      scopedSlots: { customRender: 'isCarryData' },
+      width: 160
+    },
+    {
+      title: '清单编号',
+      dataIndex: 'srNo',
+      scopedSlots: { customRender: 'srNo' },
+      width: 160
+    },
+    {
+      title: '标段',
+      dataIndex: 'section',
+      scopedSlots: { customRender: 'section' },
+      width: 160
+    },
+    {
+      title: '楼栋',
+      dataIndex: 'building',
+      scopedSlots: { customRender: 'building' },
+      width: 160
+    },
+    {
+      title: '预留字段0',
+      dataIndex: 'remark1',
+      scopedSlots: { customRender: 'remark1' },
+      width: 160
+    },
+    {
+      title: '预留字段1',
+      dataIndex: 'remark2',
+      scopedSlots: { customRender: 'remark2' },
+      width: 160
+    },
+    {
+      title: '清单描述',
+      dataIndex: 'description',
+      scopedSlots: { customRender: 'description' },
+      width: 160
+    },
+    {
+      title: '业态成本中心',
+      dataIndex: 'costCenter',
+      scopedSlots: { customRender: 'costCenter' },
+      width: 250
+    },
+    {
+      title: '清单项类别',
+      dataIndex: 'itemType',
+      scopedSlots: { customRender: 'itemType' },
+      width: 160
+    },
+    {
+      title: '供应',
+      children: [
+        {
+          title: '单位',
+          dataIndex: 'unitMaterial',
+          scopedSlots: { customRender: 'unitMaterial' },
+          width: 160
+        },
+        {
+          title: '工程量',
+          dataIndex: 'quantityMaterial',
+          scopedSlots: { customRender: 'quantityMaterial' },
+          width: 160
+        },
+        {
+          title: '单价',
+          dataIndex: 'unitPriceMaterial',
+          scopedSlots: { customRender: 'unitPriceMaterial' },
+          width: 160
+        },
+        {
+          title: '小计',
+          dataIndex: 'subAmountMaterial',
+          scopedSlots: { customRender: 'subAmountMaterial' },
+          width: 160
+        }
+      ]
+    },
+    {
+      title: '安装',
+      children: [
+        {
+          title: '单位',
+          dataIndex: 'unitWork',
+          scopedSlots: { customRender: 'unitWork' },
+          width: 160
+        },
+        {
+          title: '工程量',
+          dataIndex: 'quantityWork',
+          scopedSlots: { customRender: 'quantityWork' },
+          width: 160
+        },
+        {
+          title: '单价',
+          dataIndex: 'unitPriceWork',
+          scopedSlots: { customRender: 'unitPriceWork' },
+          width: 160
+        },
+        {
+          title: '小计',
+          dataIndex: 'subAmountWork',
+          scopedSlots: { customRender: 'subAmountWork' },
+          width: 160
+        }
+      ]
+    },
+    {
+      title: '供应+安装',
+      children: [
+        {
+          title: '单位',
+          dataIndex: 'unitWorkMat',
+          scopedSlots: { customRender: 'unitWorkMat' },
+          width: 160
+        },
+        {
+          title: '工程量',
+          dataIndex: 'quantityWorkMat',
+          scopedSlots: { customRender: 'quantityWorkMat' },
+          width: 160
+        },
+        {
+          title: '单价',
+          dataIndex: 'unitPriceWorkMat',
+          scopedSlots: { customRender: 'unitPriceWorkMat' },
+          width: 160
+        },
+        {
+          title: '小计',
+          dataIndex: 'subAmountWorkMat',
+          scopedSlots: { customRender: 'subAmountWorkMat' },
+          width: 160
+        }
+      ]
+    },
+    {
+      title: '合计',
+      dataIndex: 'allAmount',
+      scopedSlots: { customRender: 'allAmount' },
+      width: 160
+    }
+  ]
   const contractTypes = {
     '15': 'contract',
     '16': 'sa',
@@ -417,6 +568,7 @@
         selection: {},
         form: this.$form.createForm(this),
         loading: false,
+        columns: columns,
         rules: {
           contractAmount: [{ required: true, message: '请选择带数项生成合同金额', trigger: 'change' }],
           contractEffectAmount: [{ required: true, message: '请选择带数项生成合同有效金额', trigger: 'change' }],
@@ -626,6 +778,10 @@
 
   .ant-form .ant-form-item .ant-form-item-control-wrapper.ant-col-16 {
     width: calc(100% - 15em);
+  }
+
+  /deep/ .has-error .ant-form-explain {
+    white-space: nowrap;
   }
 
   table {
