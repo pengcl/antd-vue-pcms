@@ -518,14 +518,11 @@ export default {
     },
     del(index) {
       const str = this.data.vobQlst[index].srNo
-      const items = this.data.vobQlst.filter((item) => item.srNo.indexOf(str) === 0)
+      const items = this.data.vobQlst.filter(item => item.srNo.indexOf(str) === 0)
       items.forEach((item) => {
-        if (item.isTemp) {
-          this.data.vobQlst.splice(index, 1)
-        } else {
-          item.isDeleted = true
-        }
+        item.isDeleted = true
       })
+      this.data.vobQlst = this.data.vobQlst.filter(item => !(item.isDeleted && item.isTemp))
       this.$forceUpdate()
     },
     clear() {
