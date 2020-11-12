@@ -74,7 +74,7 @@
         </a-tab-pane>
       </a-tabs>
       <a-row :gutter="48">
-        <a-col :md="24" :sm="24" style="margin-bottom: 10px">
+        <a-col v-if="type !== 'view'" :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group v-if="activeKey === 3">
             <a-button @click="approve" type="success">
               预算确认
@@ -88,7 +88,7 @@
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group>
-            <a-button :loading="loading" :disabled="type === 'view'" @click="save" type="success">
+            <a-button :loading="loading" v-if="type !== 'view'" @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -229,6 +229,10 @@ export default {
     },
     approve () {
       console.log('approve')
+      ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
+        console.log(res)
+        window.location.href = res.result.data
+      })
     },
     save () {
       let isValid = true

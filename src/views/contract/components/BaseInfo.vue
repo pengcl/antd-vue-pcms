@@ -19,17 +19,13 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item
-          label="招投标分判包编号"
-          prop="tenderPackageItemID"
+          label="合同名称"
+          prop="contractName"
         >
-          <a-input v-model="data.contract.tenderPackageItemID" :disabled="type === 'view'" :hidden="true"/>
           <a-input
             :disabled="type === 'view'"
-            :value="tender.packageTitle"
-            @click="showSelect('tender')"
-            placeholder="请选择招投标分判包编号"
-            :read-only="true"/>
-          <span></span>
+            placeholder="请填写合同名称"
+            v-model="data.contract.contractName"/>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -92,13 +88,17 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item
-          label="合同名称"
-          prop="contractName"
+          label="招投标分判包编号"
+          prop="tenderPackageItemID"
         >
+          <a-input v-model="data.contract.tenderPackageItemID" :disabled="type === 'view'" :hidden="true"/>
           <a-input
             :disabled="type === 'view'"
-            placeholder="请填写合同名称"
-            v-model="data.contract.contractName"/>
+            :value="tender.packageTitle"
+            @click="showSelect('tender')"
+            placeholder="请选择招投标分判包编号"
+            :read-only="true"/>
+          <span></span>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -121,19 +121,9 @@
         <table>
           <thead>
             <tr>
-              <th colspan="3">
-                <a-button @click="addParty(18)" :disabled="filterParties(18).length >= 1" icon="plus">
-                  新增
-                </a-button>
-                <a-button @click="clear(18)" :disabled="true" icon="stop">
-                  重置
-                </a-button>
-              </th>
-            </tr>
-            <tr>
-              <th style="width: 30%">操作</th>
-              <th style="width: 40%">公司名</th>
-              <th style="width: 40%">百分比</th>
+              <th style="width: 30%;background-color: #06c;">操作</th>
+              <th style="width: 40%;background-color: #06c;">公司名</th>
+              <th style="width: 40%;background-color: #06c;">百分比</th>
             </tr>
           </thead>
           <tbody>

@@ -158,7 +158,7 @@
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group>
-            <a-button :disabled="type === 'view'" @click="save" type="success">
+            <a-button v-if="type !== 'view'" @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -330,6 +330,7 @@ table {
       &:first-child {
         th {
           background-color: #f5f5f5;
+          white-space: nowrap;
         }
       }
 

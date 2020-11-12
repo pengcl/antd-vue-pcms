@@ -28,12 +28,12 @@ signDate: "2020-10-10T06:21:29.682"
           -->
           <tbody>
             <tr v-for="(item,index) in items" :key="index">
-              <td>{{item.contractNo}}</td>
-              <td>{{item.contractName}}</td>
-              <td>{{item.auditStatus}}</td>
-              <td>{{item.signDate | moment}}</td>
-              <td>{{item.currencyID}}</td>
-              <td>{{item.contractAmount}}</td>
+              <td>{{ item.contractNo }}</td>
+              <td>{{ item.contractName }}</td>
+              <td>{{ item.auditStatus }}</td>
+              <td>{{ item.signDate | moment }}</td>
+              <td>{{ item.currencyID }}</td>
+              <td>{{ item.contractAmount }}</td>
               <td></td>
             </tr>
           </tbody>
@@ -81,7 +81,7 @@ table {
         border-width: 0 0 1px 1px;
         border-style: solid;
         border-color: #ccc;
-
+        white-space: nowrap;
         button {
           margin-right: 10px;
         }

@@ -106,6 +106,7 @@ export default {
         &:first-child{
           th{
             background-color: #f5f5f5;
+            white-space: nowrap;
           }
         }
         th {
