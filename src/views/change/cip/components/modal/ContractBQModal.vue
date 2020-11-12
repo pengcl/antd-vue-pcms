@@ -221,7 +221,7 @@
       		this.$message.warn(请选择合同造价数据);
       	}else{
       		this.selectedRows.forEach(item => {
-      			this.$parent.add(undefined,undefined,item)
+      			this.$parent.add(undefined,item)
       		})
       		this.visible = false
       	}
