@@ -1,6 +1,11 @@
 <template>
   <div>
-    <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+    <a-form-model
+      ref="form"
+      :model="data"
+      :rules="tableRules"
+      :label-col="{ span: 8 }"
+      :wrapper-col="{ span: 16 }">
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
           <div class="table-wrapper">
@@ -94,40 +99,51 @@
                   <td>
                     <a-input v-model="item.description" :disabled="type === 'view'"></a-input>
                   </td>
-                  <td><!--{{ item.costCenter }}-->
-                    <a-select
-                      :default-value="item | getValue(index)"
-                      style="width: 200px"
-                      mode="multiple"
-                      :disabled="type === 'view'"
-                      @change="centerChange">
-                      <a-select-option
-                        :value="index + ':' + center.id "
-                        :itemIndex="index"
-                        v-for="center in selection.centers"
-                        :key="JSON.stringify(center)">
-                        {{ center.costCenterName }}
-                      </a-select-option>
-                    </a-select>
+                  <td>
+                     <a-form-model-item
+                      :prop="'vobQlst.' + index + '.costCenter'"
+                      :rules="[{required: !item.isDeleted, message: '请选择成本中心',type : 'string',trigger:'change' }]"
+                    >
+                      <a-input :hidden="true" v-model="item.costCenter"/>
+                      <a-select
+                        :default-value="item | getValue(item)"
+                        style="width: 200px"
+                        mode="multiple"
+                        :disabled="type === 'view'"
+                        @change="value => centerChange(value,index)">
+                        <a-select-option
+                          :value="center.id"
+                          v-for="center in selection.centers"
+                          :key="JSON.stringify(center)">
+                          {{ center.costCenterName }}
+                        </a-select-option>
+                      </a-select>
+
+                    </a-form-model-item>
                   </td>
                   <td>
-                    <a-select
-                      placeholder="请选择"
-                      v-model="item.itemType"
-                      style="width:200px"
-                      :disabled="type === 'view'"
-                      v-decorator="['item.itemType', { rules: [{required: true, message: '请选择'}] }]">
-                      <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">{{
-                        item.nameCN }}
-                      </a-select-option>
-                    </a-select>
+                    <a-form-model-item
+                      :prop="'vobQlst.' + index + '.itemType'"
+                      :rules="[{required: !item.isDeleted, message: '请选择清单项类别' }]"
+                    >
+                      <a-select
+                        placeholder="请选择"
+                        v-model="item.itemType"
+                        style="width:200px"
+                        :disabled="type === 'view'"
+                        >
+                        <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">{{
+                          item.nameCN }}
+                        </a-select-option>
+                      </a-select>
+                    </a-form-model-item>
                   </td>
                   <td>
                     <a-select
                       placeholder="请选择"
                       v-model="item.unitMaterial"
                       :disabled="type === 'view'"
-                      v-decorator="['item.unitMaterial', { rules: [{required: true, message: '请选择'}] }]">
+                      >
                       <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
                         item.nameCN }}
                       </a-select-option>
@@ -158,7 +174,7 @@
                       placeholder="请选择"
                       v-model="item.unitWork"
                       :disabled="type === 'view'"
-                      v-decorator="['item.unitWork', { rules: [{required: true, message: '请选择'}] }]">
+                      >
                       <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
                         item.nameCN }}
                       </a-select-option>
@@ -189,7 +205,7 @@
                       placeholder="请选择"
                       v-model="item.unitWorkMat"
                       :disabled="type === 'view'"
-                      v-decorator="['item.unitWorkMat', { rules: [{required: true, message: '请选择'}] }]">
+                      >
                       <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">{{
                         item.nameCN }}
                       </a-select-option>
@@ -229,7 +245,7 @@
           </div>
         </a-col>
       </a-row>
-    </a-form>
+    </a-form-model>
     <contract-bq-modal ref="bqModal" :contract="contract" :data="data"></contract-bq-modal>
   </div>
 </template>
@@ -278,7 +294,10 @@
       return {
         selection: {},
         form: this.$form.createForm(this),
-        loading: false
+        loading: false,
+        tableRules: {
+          vobQlst: []
+        }
       }
     },
     created () {
@@ -303,14 +322,8 @@
       filterDeleted (items) {
         return items.filter(item => !item.isDeleted)
       },
-      getValue (item, index) {
-        const values = []
-        const ids = item.costCenter ? item.costCenter.split(';') : []
-        ids.forEach((id, idsIndex) => {
-          const value = index + ':' + id 
-          values.push(value)
-        })
-        return values
+      getValue (item) {
+        return item.costCenter ? item.costCenter.split(';').map(Number) : []
       }
     },
     props: {
@@ -374,7 +387,6 @@
             break;
           }
         }
-        console.log('addCostList',appendIndex)
           //追加插入到指定位置
           this.data.vobQlst.splice(index+appendIndex,0,data)
         }else{
@@ -405,20 +417,9 @@
           this.$forceUpdate()
         })
       },
-      centerChange (values) {
-        let ids = ''
-        let item
-        values.forEach(value => {
-          const arr = value.split(':')
-          item = this.data.vobQlst[arr[0]]
-          const id = arr[1]
-          if (ids) {
-            ids = ids + ';' + id
-          } else {
-            ids = id
-          }
-        })
-        item.costCenter = ids
+      centerChange (values,index) {
+        let item = this.data.vobQlst[index]
+        item.costCenter = values.join(';').trim()
       },
       valueChange (item) {
         item.subAmountMaterial = item.quantityMaterial * item.unitPriceMaterial

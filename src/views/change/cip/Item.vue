@@ -59,6 +59,7 @@
                 :type="type"
                 :id="id"
                 :stage="stage"
+                ref="costEstimates"
               ></cost-estimates>
             </a-tab-pane>
             <a-tab-pane :key="3" tab="预算调整">
@@ -176,17 +177,11 @@
           {
             activeKey: 1,
             key: 'baseInfo'
+          }, {
+            activeKey: 2,
+            key: 'costEstimates'
           }
         ]
-        validateForms.forEach((item, index) => {
-          this.$refs[item.key].$refs.form.validate(valid => {
-            if (!valid) {
-              isValid = false
-              this.tabActiveKey = item.activeKey
-            }
-          })
-        })
-
         for (let i = 0; i < validateForms.length; i++) {
           const item = validateForms[i]
           this.$refs[item.key].$refs.form.validate(valid => {
