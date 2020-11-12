@@ -114,18 +114,24 @@
           <a-button type="success" style="float: right">导入导出</a-button>
         </a-col>
         <a-col :md="24" :sm="24">
+          <div
+            style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
+            <a-button :disabled="type === 'view'" icon="plus" @click="add()">
+              新增
+            </a-button>
+          </div>
           <a-table
             :columns="columns"
-            :data-source="data.contractBQlst"
+            :data-source="data.contractBQlst | filterDeleted"
             size="default"
-            rowKey="id"
+            rowKey="srNo"
             :scroll="{ x : '1500px',y : '300px' }"
             bordered>
             <template slot="action" slot-scope="text, record, index">
               <a-button @click="add(record.srNo)" :disabled="type === 'view'" icon="plus">
                 添加子项
               </a-button>
-              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+              <a-button @click="del(record)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </template>
@@ -583,6 +589,9 @@
       }
     },
     created () {
+      this.data.contractBQlst.forEach((item, index) => {
+        item._id = index
+      })
       this.data.contractBQlst.sort((a, b) => {
         return compare(a.srNo, b.srNo)
       })
@@ -619,6 +628,7 @@
     },
     filters: {
       filterDeleted (items) {
+        console.log(items)
         return items.filter(item => !item.isDeleted)
       },
       getValue (item, index) {
@@ -675,17 +685,17 @@
         data.subAmountWorkMat = 0
         data.allAmount = 0
         this.data.contractBQlst.push(data)
-      },
-      del (index) {
-        const str = this.data.contractBQlst[index].srNo
-        const items = this.data.contractBQlst.filter(item => item.srNo.indexOf(str) === 0)
-        items.forEach(item => {
-          if (item.isTemp) {
-            this.data.contractBQlst.splice(index, 1)
-          } else {
-            item.isDeleted = true
-          }
+        this.data.contractBQlst.sort((a, b) => {
+          return compare(a.srNo, b.srNo)
         })
+      },
+      del (record) {
+        const str = record.srNo
+        const items = this.data.contractBQlst.filter(item => item.srNo.indexOf(str) === 0)
+        items.forEach((item) => {
+          item.isDeleted = true
+        })
+        this.data.contractBQlst = this.data.contractBQlst.filter(item => !(item.isDeleted && item.isTemp))
         this.$forceUpdate()
       },
       clear () {
@@ -715,23 +725,26 @@
         }
       },
       checkCarry (item, isDisabled, index) {
-        console.log(item)
-        this.$refs.tableForm.validate(valid => {
-          if (valid) {
-            if (typeof item.allAmount === 'number' && !isDisabled) {
-              if (this.data.contract.contractCategory) {
-                item.isCarryData = !item.isCarryData
-                this.getContractAmount()
-              } else {
-                this.$emit('validate-field', {
-                  activeKey: 1,
-                  component: 'baseInfo',
-                  filed: 'contractCategory'
-                })
-              }
+        if (!this.data.contract.contractCategory) {
+          this.$emit('validate-field', {
+            activeKey: 1,
+            component: 'baseInfo',
+            filed: 'contractCategory'
+          })
+        } else {
+          let isValid = true
+          this.$refs.tableForm.validateField([
+            'contractBQlst.' + index + '.costCenter',
+            'contractBQlst.' + index + '.itemType'], valid => {
+            if (valid) {
+              isValid = false
             }
+          })
+          if (isValid) {
+            item.isCarryData = !item.isCarryData
+            this.getContractAmount()
           }
-        })
+        }
       },
       centerChange (values) {
         let ids = ''

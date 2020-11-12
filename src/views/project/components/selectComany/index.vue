@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="请选择招投标分判包"
+    title="请选择项目公司"
     :width="800"
     :visible="visible"
     @ok="() => { $emit('ok') }"
@@ -102,7 +102,6 @@
     },
     methods: {
       change (e) {
-        this.$refs.table.refresh()
       }
     }
   }
