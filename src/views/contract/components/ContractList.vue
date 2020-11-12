@@ -127,7 +127,7 @@
             rowKey="srNo"
             :scroll="{ x : '1500px',y : '300px' }"
             bordered>
-            <template slot="action" slot-scope="text, record, index">
+            <template slot="action" slot-scope="text, record">
               <a-button @click="add(record.srNo)" :disabled="type === 'view'" icon="plus">
                 添加子项
               </a-button>
