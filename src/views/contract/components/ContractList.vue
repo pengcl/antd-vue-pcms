@@ -209,7 +209,7 @@
                       <a-select
                         :disabled="type === 'view'"
                         :default-value="item | getValue(index)"
-                        style="width: 200px"
+                        style="width: 200px;margin-top: 15px"
                         mode="multiple"
                         @change="centerChange">
                         <a-select-option
@@ -230,6 +230,7 @@
                       <a-select
                         :disabled="type === 'view'"
                         placeholder="请选择"
+                        style="margin-top: 15px"
                         v-model="item.itemType"
                         v-decorator="['item.itemType', { rules: [{required: true, message: '请选择'}] }]">
                         <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">

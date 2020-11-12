@@ -7,7 +7,7 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  v-model="value"
+                  v-model="queryParam.ProjectGUID"
                   style="width: 100%"
                   :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
@@ -76,7 +76,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="contractGuid"
+        rowKey="gid"
         bordered
         :columns="columns"
         :data="loadData"
@@ -96,7 +96,7 @@
               title="查看"
               @click="handleToItem(record)"></a-button>
             <a-button
-              v-if="record.auditStatus === '未审核'"
+              :disabled="record.auditStatus !== '未审核'"
               class="btn-info"
               type="primary"
               icon="form"
@@ -104,7 +104,7 @@
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
-              v-if="record.auditStatus === '未审核'"
+              :disabled="record.auditStatus !== '未审核'"
               type="danger"
               icon="delete"
               style="margin-left: 4px"
@@ -223,13 +223,17 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: {},
+                queryParam: { ProjectGUID: '19a6f5a0-d192-4875-8397-7945e5a33b8a', ProjectID: 'NWSC.LNXM.LN3.CC01' },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return UnSignedService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
+                    if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
+                        const requestParameters = Object.assign({}, parameter, this.queryParam)
+                        return UnSignedService.items(requestParameters).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    } else {
+                        return []
+                    }
                 },
                 selectedRowKeys: [],
                 selectedRows: []
