@@ -15,19 +15,21 @@
             :alert="false"
             :pagination="false"
           >
-          <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId" slot-scope="text, record">
-            <a-input-number
-              :disabled="type === 'view'"
-              v-if="record.childs.length ==0"
-              v-model="record['cost' + item.costCenterId]"
-              @change="e => checkChange(e.target.value, record, item.costCenterId)"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            />
-            <template v-else>
-              {{ record['cost' + item.costCenterId] }}
+            <template :slot="'cost' + item.costCenterId" slot-scope="text, record">
+              <span v-for="item in ars" :key="'cost' + item.costCenterId">
+                <a-input-number
+                  :disabled="type === 'view'"
+                  v-if="record.childs.length ==0"
+                  v-model="record['cost' + item.costCenterId]"
+                  @change="e => checkChange(e.target.value, record, item.costCenterId)"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                />
+                <span v-else>
+                  {{ record['cost' + item.costCenterId] }}
+                </span>
+              </span>
             </template>
-          </span>
           </a-table>
         </a-col>
       </a-row>
@@ -49,10 +51,10 @@
 </template>
 
 <script>
-  import {CostService} from "@/views/cost/cost.service"
-  import {ContractService} from "@/views/contract/contract.service";
-  import {SwaggerService} from "@/api/swagger.service";
-  import {Ellipsis, STable} from "@/components";
+  import { CostService } from '@/views/cost/cost.service'
+  import { ContractService } from '@/views/contract/contract.service'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { Ellipsis, STable } from '@/components'
 
   const defaultColumns = [
     {
@@ -71,7 +73,7 @@
 
   const columns = defaultColumns
 
-  function formatList(items, isRoot) {
+  function formatList (items, isRoot) {
     const list = []
     items.forEach(item => {
       item.isRoot = isRoot
@@ -86,10 +88,8 @@
     return list
   }
 
-
-
   export default {
-    name: 'table',
+    name: 'Table',
     components: {
       STable,
       Ellipsis
@@ -98,7 +98,7 @@
       this.columns = columns
       return {
         visible: false,
-        datas : [],
+        datas: [],
         ars: [],
         isUpdate: false,
         confirmLoading: false,
@@ -110,7 +110,7 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const _columns = JSON.parse(JSON.stringify(defaultColumns))
-          const requestParameters = {MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id}
+          const requestParameters = { MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id }
           return CostService.subjectViewItems(requestParameters).then(res => {
             this.ars = res.result.data
             this.ars.forEach(item => {
@@ -131,17 +131,17 @@
             console.log(this.datas)
           })
 
-          function forEachItem (datas, elementId){
+          function forEachItem (datas, elementId) {
             let result = null
-            for(var i in datas){
-              let data = datas[i]
-              if(data.elementInfoId === elementId){
+            for (var i in datas) {
+              const data = datas[i]
+              if (data.elementInfoId === elementId) {
                 result = data
                 break
               }
-              if(data.childs && data.childs.length > 0){
-                result = forEachItem(data.childs,elementId)
-                if(result != null){
+              if (data.childs && data.childs.length > 0) {
+                result = forEachItem(data.childs, elementId)
+                if (result != null) {
                   break
                 }
               }
@@ -149,67 +149,67 @@
             return result
           }
 
-          function forEachRow (datas, columnDatas){
-            for(var i in datas){
+          function forEachRow (datas, columnDatas) {
+            for (var i in datas) {
               var data = datas[i]
               data['costCenters'] = []
-              columnDatas.forEach(item =>{
-                if( item.elementItem ){
-                  var costName = 'cost'+item.costCenterId
+              columnDatas.forEach(item => {
+                if (item.elementItem) {
+                  var costName = 'cost' + item.costCenterId
                   if (item.elementItem) {
-                      var costColumn = forEachItem([item.elementItem],data.elementInfoId)
-                      if(costColumn != null){
+                      var costColumn = forEachItem([item.elementItem], data.elementInfoId)
+                      if (costColumn != null) {
                         data[costName] = costColumn.amount !== null ? costColumn.amount : 0
                       }
                   }
                 }
               })
-              if(data.childs && data.childs.length > 0){
-                forEachRow(data.childs,columnDatas)
+              if (data.childs && data.childs.length > 0) {
+                forEachRow(data.childs, columnDatas)
                 data.children = data.childs
               }
             }
           }
-        },
+        }
       }
     },
     filters: {
 
     },
-    created() {
+    created () {
       this.loadData()
     },
     computed: {
-      id() {
+      id () {
         return this.$route.params.id
       },
-      type() {
+      type () {
         return this.$route.query.type
       },
-      ProjectGUID() {
+      ProjectGUID () {
         return this.$route.query.ProjectGUID
       }
     },
     methods: {
-      back() {
-        this.$router.push({path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}`})
+      back () {
+        this.$router.push({ path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}` })
       },
-      handleToSave() {
+      handleToSave () {
         const result = {}
         const items = []
-        //组装保存数据
+        // 组装保存数据
         result['ProjectGUID'] = this.ProjectGUID
         result['budgetBaseTypeId'] = 83
         result['elementTypeId'] = this.id
         getResults(this.datas)
-        function getResults(datas){
+        function getResults (datas) {
           datas.forEach(item => {
-            if(item.costCenters.length > 0){
-              item.costCenters.forEach(center =>{
+            if (item.costCenters.length > 0) {
+              item.costCenters.forEach(center => {
                 items.push(center)
               })
             }
-            if(item.children && item.children.length > 0){
+            if (item.children && item.children.length > 0) {
               getResults(item.children)
             }
           })
@@ -221,17 +221,17 @@
           }
         })
       },
-      checkChange(value,record,costCenterId){
-        //找到如果数据内存在旧数据，先移除，再添加
+      checkChange (value, record, costCenterId) {
+        // 找到如果数据内存在旧数据，先移除，再添加
         this.isUpdate = false
-        record.costCenters.forEach(center =>{
-          if(center.costCenterId===costCenterId){
+        record.costCenters.forEach(center => {
+          if (center.costCenterId === costCenterId) {
             center.amount = value
             this.isUpdate = true
           }
         })
-        if(!this.isUpdate){
-          const item ={}
+        if (!this.isUpdate) {
+          const item = {}
           item['costCenterId'] = costCenterId
           item['elementInfoId'] = record.elementInfoId
           item['amount'] = value
