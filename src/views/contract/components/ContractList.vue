@@ -715,6 +715,7 @@
         }
       },
       checkCarry (item, isDisabled, index) {
+        console.log(item)
         this.$refs.tableForm.validate(valid => {
           if (valid) {
             if (typeof item.allAmount === 'number' && !isDisabled) {
@@ -782,6 +783,10 @@
 
   /deep/ .has-error .ant-form-explain {
     white-space: nowrap;
+  }
+
+  /deep/ .ant-table-tbody > tr > td {
+    padding: 0px 16px !important;
   }
 
   table {
