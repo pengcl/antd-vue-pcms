@@ -74,6 +74,7 @@
       <template slot="balanceAmount" slot-scope="text, record">
         <a-form-model-item>
           <a-input-number
+            style="margin-top: 18px"
             :disabled="true"
             :value="record.balanceAmount"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"

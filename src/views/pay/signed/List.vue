@@ -7,7 +7,7 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  v-model="value"
+                  v-model="queryParam2.ProjectGUID"
                   style="width: 100%"
                   :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
@@ -287,7 +287,6 @@
                 deleteId: '',
                 contractAmt: {},
                 canAdd: false,
-                value: '',
                 city: '',
                 projectType: '',
                 cities: [],
@@ -300,7 +299,7 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
-                queryParam2: {},
+                queryParam2: { ProjectGUID: '19a6f5a0-d192-4875-8397-7945e5a33b8a', ProjectID: 'NWSC.LNXM.LN3.CC01' },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -313,10 +312,15 @@
                     }
                 },
                 loadData2: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam2)
-                    return SignedService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
+                    if (this.queryParam2.ProjectGUID && this.queryParam2.ProjectID) {
+                        const requestParameters = Object.assign({}, parameter, this.queryParam2)
+                        return SignedService.items(requestParameters).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    } else {
+                        return []
+                    }
+
                 },
                 selectedRowKeys: [],
                 selectedRows: []
