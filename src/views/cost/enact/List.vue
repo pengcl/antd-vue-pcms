@@ -7,12 +7,13 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  :treeData="cities"
-                  placeholder="请选择"
                   style="width: 100%"
+                  :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
-                  @change="onChange"
-                  @select="onSelect"/>
+                  search-placeholder="请选择"
+                  v-model="queryParam.ProjectGUID"
+                  @select="onSelect"
+                />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -93,7 +94,8 @@
     import { ProjectService } from '@/views/project/project.service'
     import { CostService } from '@/views/cost/cost.service'
     import { formatList } from '../../../mock/util'
-    import {fixedList, nullFixedList} from '@/utils/util'
+    import {fixedList, getPosValue, nullFixedList} from '@/utils/util'
+    import storage from "store";
 
     const defaultColumns = [
 
@@ -131,7 +133,7 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
+                queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
@@ -200,21 +202,23 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
-
             ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items)
-                    // console.log(children)
-                    cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
+              const cities = []
+              res.result.data.citys.forEach(item => {
+                const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+                cities.push({
+                  selectable: false,
+                  label: item.city.nameCN,
+                  value: item.city.id,
+                  children: children
                 })
-                this.cities = cities
-                this.$forceUpdate()
+              })
+              this.cities = cities
+              const value = getPosValue(this.cities)
+              this.queryParam.ProjectID = value.projectCode
+              this.queryParam.ProjectGUID = value.projectGUID
+              this.$forceUpdate()
+              this.$refs.table.refresh(true)
             })
         },
         computed: {
@@ -238,19 +242,19 @@
             handleToResolve (record) {
               this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
             },
-            onChange (value,option) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
-            },
-            onSelect (value,option) {
-                console.log(option.dataRef.auditStatus)
-                this.auditStatus = option.dataRef.auditStatus
-          }
+            onSelect (value, option) {
+              storage.set('POS', option.pos)
+              this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
+              if (typeof value === 'number') {
+                this.city = value
+                this.queryParam.ProjectGUID = ''
+              } else {
+                this.queryParam.ProjectGUID = value
+              }
+              this.auditStatus = option.dataRef.auditStatus
+              this.$refs.table.refresh()
+              this.$forceUpdate()
+            }
         }
     }
 </script>

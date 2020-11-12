@@ -10,6 +10,7 @@
                   :treeData="cities"
                   placeholder="请选择"
                   style="width: 100%"
+                  v-model="queryParam.ProjectGUID"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   @select="onSelect"/>
               </a-form-item>
@@ -75,14 +76,14 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button type="success" @click="handleToAdd" v-if="queryParam2.contractGuid">新增CIP</a-button>
+          <a-button type="success" @click="handleToAdd" :disabled="!queryParam2.contractGuid">新增CIP</a-button>
           <a-button
             type="success"
             style="margin-left: 20px"
             @click="handleCipToVo"
-            v-if="tableSelected.auditStatus === '已审核'">CIP转VO
+            :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核'">CIP转VO
           </a-button>
-          <a-button type="success" style="margin-left: 20px" v-if="tableSelected.auditStatus === '已审核'">现场签证</a-button>
+          <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核'">现场签证</a-button>
         </a-col>
         <a-col :md="24" :sm="24"> 变更列表</a-col>
       </a-row>
@@ -111,12 +112,13 @@
                 icon="form"
                 style="margin-left: 4px"
                 title="编辑"
+                :disabled="record.auditStatus !== '未审核'"
                 @click="handleToEdit(record)"
               ></a-button>
               <a-button
                 type="danger"
                 icon="delete"
-                v-if="record.auditStatus === '未审核'"
+                :disabled="record.auditStatus !== '未审核'"
                 style="margin-left: 4px"
                 title="编辑"
                 @click="handleToDel(record)"
@@ -132,6 +134,7 @@
 
 <script>
   import moment from 'moment'
+  import storage from 'store'
   import { STable, Ellipsis } from '@/components'
   // import { getRoleList, getServiceList } from '@/api/manage'
 
@@ -139,8 +142,7 @@
   import CreateForm from '@/views/list/modules/CreateForm'
   import { ChangeService } from '@/views/change/change.service'
   import { ProjectService } from '@/views/project/project.service'
-  import { fixedList } from '@/utils/util'
-  import { nullFixedList } from '@/utils/util'
+  import { fixedList, getPosValue,nullFixedList } from '@/utils/util'
   import { formatList } from '../../mock/util'
 
   const columns = [
@@ -290,8 +292,13 @@
             selectable: false
           })
         })
-        this.cities = cities
+        this.cities = cities 
+        const value = getPosValue(this.cities)
+        this.queryParam.ProjectID = value.projectCode
+        this.queryParam.ProjectGUID = value.projectGUID
+        console.log(this.queryParam)
         this.$forceUpdate()
+        this.$refs.table.refresh()
       })
     },
     computed: {
@@ -376,8 +383,9 @@
         }
       },
       onSelect (value,option) {
-        console.log('option',option.$options)
+        storage.set('POS', option.pos)
         this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+        this.queryParam.ProjectGUID = value.projectGUID
         this.$refs.table.clearSelected()
         this.$refs.table.refresh()
         this.$forceUpdate()

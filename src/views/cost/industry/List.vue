@@ -7,11 +7,13 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  :treeData="cities"
-                  placeholder="请选择"
                   style="width: 100%"
+                  :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
-                  @change="onChange"/>
+                  search-placeholder="请选择"
+                  v-model="queryParam.ProjectGUID"
+                  @select="onSelect"
+                />
               </a-form-item>
             </a-col>
           </a-row>
@@ -167,9 +169,10 @@
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import {CostService} from "@/views/cost/cost.service";
-    import {fixedList} from "@/utils/util";
+    import {fixedList, getPosValue} from "@/utils/util";
     import {nullFixedList} from "@/utils/util";
     import IndustryModal from '@/views/cost/industry/modal/IndustryModal'
+    import storage from "store";
 
     const columns = [
         {
@@ -235,26 +238,6 @@
             dataIndex: 'approvalStatus',
         }
     ]
-
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
-
     export default {
         name: 'TableList',
         components: {
@@ -320,21 +303,23 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
-            this.queryParam.ProjectGUID = this.$route.query.ProjectGUID
             ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items)
-                    cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
+              const cities = []
+              res.result.data.citys.forEach(item => {
+                const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+                cities.push({
+                  selectable: false,
+                  label: item.city.nameCN,
+                  value: item.city.id,
+                  children: children
                 })
-                setSelectable(cities)
-                this.cities = cities
-                this.$forceUpdate()
+              })
+              this.cities = cities
+              const value = getPosValue(this.cities)
+              this.queryParam.ProjectID = value.projectCode
+              this.queryParam.ProjectGUID = value.projectGUID
+              this.$forceUpdate()
+              this.$refs.table.refresh(true)
             })
             function setSelectable(datas){
               datas.forEach(item =>{
@@ -471,14 +456,18 @@
                     date: moment(new Date())
                 }
             },
-            onChange (value) {
-              if (value.length >= 2) {
-                this.queryParam.ProjectGUID = value
-                this.$refs.table.refresh(true)
-              } else {
+            onSelect (value, option) {
+              storage.set('POS', option.pos)
+              this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
+              if (typeof value === 'number') {
+                this.city = value
                 this.queryParam.ProjectGUID = ''
-                this.$refs.table.refresh(true)
+              } else {
+                this.queryParam.ProjectGUID = value
               }
+              this.auditStatus = option.dataRef.auditStatus
+              this.$refs.table.refresh()
+              this.$forceUpdate()
             },
             search () {
               this.show = !this.show

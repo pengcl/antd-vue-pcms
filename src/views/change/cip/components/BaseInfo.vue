@@ -73,7 +73,7 @@
           <tbody>
             <tr>
               <td>
-                <a-form-model-item >
+                <a-form-item >
                   <a-select
                     mode="multiple"
                     placeholder="请选择"
@@ -89,7 +89,7 @@
                       {{ option.partName }}
                     </a-select-option>
                   </a-select>
-                </a-form-model-item>
+                </a-form-item>
               </td>
             </tr>
           </tbody>
@@ -145,40 +145,41 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24" style="margin-bottom:15px">
-        <!-- mustChange 因一行多个必填项-->
-        <a-form-item label="此变更对整体工期是否有影响" required="true">
+        <a-form-item label="此变更对整体工期是否有影响" :required="true">
           <a-row>
-            <a-col :span="8">
+            <a-col :span="6">
               <a-form-model-item prop="voHasEffect">
-              <a-select
-                placeholder="请选择"
-                :disabled="type === 'view'"
-                style="width : 90%"
-                @change="effecChange"
-                v-model="data.voMasterInfo.voHasEffect">
-                <a-select-option :value="true">有影响</a-select-option>
-                <a-select-option :value="false">无影响</a-select-option>
-              </a-select>
+                <a-radio-group v-model="data.voMasterInfo.voHasEffect" @change="effecChange" :disabled="type === 'view'">
+                  <a-radio :value="true">
+                    有影响
+                  </a-radio>
+                  <a-radio :value="false">
+                    无影响
+                  </a-radio>
+                </a-radio-group>
               </a-form-model-item>
             </a-col>
             <a-col :span="8">
-              <a-select
-                placeholder="请选择"
-                :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
-                style="width : 90%"
-                v-model="data.voMasterInfo.effectResult">
-                <a-select-option value="增加">增加</a-select-option>
-                <a-select-option value="减少">减少</a-select-option>
-              </a-select>
+              <a-form-model-item prop="effectResult">
+                <a-select
+                  placeholder="请选择"
+                  :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
+                  style="width : 90%"
+                  v-model="data.voMasterInfo.effectResult">
+                  <a-select-option value="增加">增加</a-select-option>
+                  <a-select-option value="减少">减少</a-select-option>
+                </a-select>
+              </a-form-model-item>
             </a-col>
             <a-col :span="8">
+              <a-form-model-item prop="effectDay">
               <a-input-number
                 :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
                 v-model="data.voMasterInfo.effectDay"
-                :min="0"
                 :formatter="value => `${value}日`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\日\s?|(,*)/g, '')"
               ></a-input-number>
+              </a-form-model-item>
             </a-col>
           </a-row>
         </a-form-item>
@@ -518,13 +519,15 @@
         loading: false,
         rules: {
           to: [
-            { validator: this.checkTo,  type : 'string',trigger : 'change',required : true }
+            { validator: this.checkTo,  type : 'number',trigger : 'change',required : true }
           ],
           reason: [{ required: true, message: '请输入变更原因详细', trigger: 'change' }],
           voContent: [
             { required: true, message: '请输入变更内容', trigger: 'change' }
           ],
           voHasEffect : [ {requeired : true, message : '请选择是否影响工期',type:'boolean' }],
+          effectResult : [ {requeired : false, message : '请选择增加或减少工期',type:'string' }],
+          effectDay : [ { validator : this.checkEffectDay, type:'number' }],
           voType: [{ required: true, message: '请选择变更类型', trigger: 'change' }],
           reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
           packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
@@ -558,10 +561,6 @@
       }
     },
     watch: {
-      // 接收单位变更事件监听
-      'to' (value) {
-        console.log('toValue', value)
-      },
       // 监听合同信息赋值
       // 因为baseinfo为第一个tab,界面加载后默认先打开了baseinfo，因为在item.created异步加载的数据无法在本界面created中获取到数据
       // 所以使用对象监听的方式来获取item界面获取到的对象信息
@@ -728,14 +727,18 @@
 
         return true
       },
-      effecChange (value) {
+      effecChange (e) {
+        const value = e.target.value
+        console.log(value)
         if (!value) {
+          this.rules.effectResult[0].required = false
           this.data.voMasterInfo.effectResult = ''
           this.data.voMasterInfo.effectDay = '0'
+        }else{
+          this.rules.effectResult[0].required = true
         }
       },
       checkReasonType(rule,value,callback){
-        
         if(this.reasonType.length < 1){
           callback(new Error('请选择工作指令发出理由'))
         }else{
@@ -743,12 +746,27 @@
         }
       },
       checkTo(rule,value,callback){
-        console.log('toValue',value,rule)
+        value = value || ''
         if(!this.to){
           callback(new Error('请选择顾问/承包单位'))
         }else{
           callback()
         }
+      },
+      checkEffectDay(rule,value,callback){
+        if(this.data.voMasterInfo.voHasEffect && this.data.voMasterInfo.effectResult != '' && this.data.voMasterInfo.effectResult != null){
+          if(value === null || value === ''){
+            callback(new Error('请输入影响天数'))
+          }else {
+            const isAdd = this.data.voMasterInfo.effectResult === '增加'
+            if(isAdd && value < 0.000000000000001){
+              callback(new Error('增加的天数必须大于0'))
+            }else if(!isAdd && value > -0.000000000000001){
+              callback(new Error('减少的天数必须小于0'))
+            }
+          }
+        }
+        callback()
       }
     }
   }
