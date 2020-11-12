@@ -199,7 +199,6 @@ export default {
       if (this.$refs.baseInfo) {
         this.$refs.baseInfo.tender = {}
       }
-      console.log(this.$refs.baseInfo)
       if (this.id !== '0') {
         ContractService.item(this.id).then(res => {
           this.form = res.result.data
@@ -298,21 +297,17 @@ export default {
       this.selectedItems = selectedItems
     },
     back () {
-      console.log('back')
       this.$router.push({ path: `/contract/list` })
     },
     handleToEdit () {
-      console.log('handleToEdit')
       this.$router.push({ path: `/contract/item/${this.id}?type=edit` })
     },
     handleCancel () {
       this.show = false
     },
     handleOk () {
-      console.log(this.$refs.budgets.useStore)
       this.$refs.budgets.$refs.form.validate(valid => {
         if (valid) {
-          // console.log(this.$refs.budgets.$refs.table.localDataSource)
           const form = {
             contractGuid: this.contractGuid,
             useStore: this.$refs.budgets.useStore,
