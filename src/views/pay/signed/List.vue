@@ -132,7 +132,7 @@
               title="查看"
               @click="handleToItem(record)"></a-button>
             <a-button
-              v-if="record.auditStatus === '未审核'"
+              :disabled="record.auditStatus !== '未审核'"
               class="btn-info"
               type="primary"
               icon="form"
@@ -140,7 +140,7 @@
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
-              v-if="record.auditStatus === '未审核'"
+              :disabled="record.auditStatus !== '未审核'"
               type="danger"
               icon="delete"
               style="margin-left: 4px"
