@@ -72,9 +72,8 @@
           label="申请批准金额"
           prop="paymentRequestAmount"
         >
-          <a-input-number :disabled="type === 'view'"
+          <a-input-number :disabled="true"
                           v-model="data.paymentRequestAmount"
-                          :min="0"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -85,9 +84,8 @@
           label="本期支付金额"
           prop="paymentAmount"
         >
-          <a-input-number :disabled="type === 'view'"
+          <a-input-number :disabled="true"
                           v-model="data.paymentAmount"
-                          :min="0"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -192,6 +190,7 @@
             <td>
               <a-input-number :disabled="type === 'view'"
                               v-model="data.contractMasterInfo.paymentRequestAmount"
+                              @change="paymentRequestAmountChange"
                               :min="0"
                               :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :parser="value => value.replace(/\元\s?|(,*)/g, '')"
@@ -218,7 +217,8 @@
           </tbody>
         </table>
       </a-col>
-      <base-info-payment :data="data.contractMasterInfo" :type="type" :id="id"></base-info-payment>
+      <base-info-payment :data="data.contractMasterInfo" :type="type" :id="id" :index="0"
+                         @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
       <base-info-attachment :master-id="data.masterID"
                             :data="data.contractMasterInfo"
                             :type="type"
@@ -301,6 +301,7 @@
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 v-model="item.paymentRequestAmount"
+                                @change="paymentRequestAmountChange2"
                                 :min="0"
                                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
@@ -326,7 +327,8 @@
             </tbody>
           </table>
         </a-col>
-        <base-info-payment :data="item" :type="type" :id="id"></base-info-payment>
+        <base-info-payment :data="item" :type="type" :id="id" :index="index+1"
+                           @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
         <base-info-attachment :master-id="data.masterID"
                               :data="item"
                               :type="type"
@@ -468,6 +470,8 @@
                 model: null,
                 form: this.$form.createForm(this),
                 index: 0,
+                paymentAmount: {},
+                paymentRequestAmount: {},
                 billType: '',
                 rules: {
                     paymentReceiveDate: [{ required: true, message: '请选择收到请款单日期', trigger: 'change' }],
@@ -478,11 +482,7 @@
                 }
             }
         },
-        watch: {
-            /*'data.masterID' (value) {
-                console.log(value)
-            }*/
-        },
+        watch: {},
         created () {
             SignedService.paymentTypes().then(res => {
                     this.paymentTypes = res.result.data
@@ -510,6 +510,54 @@
             }
         },
         methods: {
+            changePaymentAmount (value) {
+                const index = value.index
+                const detailList = value.detailList
+                let paymentAmount = 0
+                detailList.forEach(item => {
+                    if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                        paymentAmount += item.paymentAmount
+                    } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                        paymentAmount -= Math.abs(item.paymentAmount)
+                    }
+                })
+                this.paymentAmount['' + index] = paymentAmount
+                let _paymentAmount = 0
+                for (const key in this.paymentAmount) {
+                    if (this.paymentAmount[key]) {
+                        _paymentAmount += this.paymentAmount[key]
+                    }
+                }
+                this.data.paymentAmount = _paymentAmount
+                this.$forceUpdate()
+            },
+            paymentRequestAmountChange (value) {
+                let paymentRequestAmount = 0
+                paymentRequestAmount += value
+                this.paymentRequestAmount['0'] = paymentRequestAmount
+                let _paymentRequestAmount = 0
+                for (const key in this.paymentRequestAmount) {
+                    if (this.paymentRequestAmount[key]) {
+                        _paymentRequestAmount += this.paymentRequestAmount[key]
+                    }
+                }
+                this.data.paymentRequestAmount = _paymentRequestAmount
+                this.$forceUpdate()
+            },
+            paymentRequestAmountChange2 (value) {
+                const index = this.data.contractNSCInfoList.findIndex(item => item.paymentRequestAmount === value)
+                let paymentRequestAmount = 0
+                paymentRequestAmount += value
+                this.paymentRequestAmount['' + (index + 1)] = paymentRequestAmount
+                let _paymentRequestAmount = 0
+                for (const key in this.paymentRequestAmount) {
+                    if (this.paymentRequestAmount[key]) {
+                        _paymentRequestAmount += this.paymentRequestAmount[key]
+                    }
+                }
+                this.data.paymentRequestAmount = _paymentRequestAmount
+                this.$forceUpdate()
+            },
             billAmountChange (value) {
                 this.$forceUpdate()
             },

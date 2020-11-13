@@ -48,11 +48,21 @@
             </td>
             <td>
               <a-input-number placeholder="请输入"
+                              v-if="item.paymentType === '一般付款' || item.paymentType === '扣款冲销'"
                               @change="paymentAmountChange"
                               :disabled="type === 'view'"
                               v-model="item.paymentAmount"
                               :min="0"
-                              :formatter="value => `${0-value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"
+                              v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input-number>
+              <a-input-number placeholder="请输入"
+                              v-if="item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
+                              @change="paymentAmountChange"
+                              :disabled="type === 'view'"
+                              v-model="item.paymentAmount"
+                              :formatter="value => `${-Math.abs(value)}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                               :precision="2"
                               v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input-number>
@@ -122,6 +132,10 @@
             id: {
                 type: String,
                 default: '0'
+            },
+            index: {
+                type: Number,
+                default: 0
             }
         },
         watch: {
@@ -163,7 +177,7 @@
                     isDeleted: false,
                     isTemp: true,
                     paymentType: '',
-                    paymentAmount: 0,
+                    paymentAmount: '',
                     paymentUse: '',
                     vendorGID: '',
                     vendorName: '',
@@ -184,6 +198,7 @@
                 } else {
                     this.data.detailList[index].isDeleted = true
                 }
+                this.$emit('on-change-paymentAmount', { detailList: this.data.detailList, index: this.index })
                 this.$forceUpdate()
             },
             clear (target) {
@@ -195,6 +210,7 @@
                 this.$forceUpdate()
             },
             paymentAmountChange (value) {
+                this.$emit('on-change-paymentAmount', { detailList: this.data.detailList, index: this.index })
                 this.$forceUpdate()
             },
             onChange (value, option) {
