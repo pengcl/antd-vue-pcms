@@ -95,8 +95,9 @@ tradePackageCode: "CC01-TENDER-0001"
               }
             })
             res.result.data.items = items
-            res.result.data.totalCount = items.length
-            return fixedList(res, requestParameters)
+            const data = fixedList(res, requestParameters)
+            console.log(data)
+            return data
           })
         }
       }

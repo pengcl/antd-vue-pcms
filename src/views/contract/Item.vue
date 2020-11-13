@@ -75,20 +75,15 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col v-if="type !== 'view'" :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="activeKey === 3">
-            <a-button @click="approve" type="success">
-              预算确认
-            </a-button>
-          </a-button-group>
           <a-button-group>
-            <a-button @click="approve" type="success">
+            <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group>
-            <a-button :loading="loading" v-if="type !== 'view'" @click="save" type="success">
+            <a-button :loading="loading.save" v-if="type !== 'view'" @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -140,7 +135,10 @@ export default {
     return {
       disabled: true,
       activeKey: 1,
-      loading: false,
+      loading: {
+        bpm: false,
+        save: false
+      },
       project: null,
       dialog: DIALOGCONFIG,
       selection: {},
@@ -227,10 +225,10 @@ export default {
         })
       }
     },
-    approve () {
-      console.log('approve')
+    bpm () {
+      this.loading.bpm = true
       ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
-        console.log(res)
+        this.loading.bpm = false
         window.location.href = res.result.data
       })
     },
@@ -274,9 +272,9 @@ export default {
         let items = JSON.parse(JSON.stringify(this.form.contractBQlst))
         items = items.filter(item => item.isCarryData)
         if (items.length > 0) {
-          this.loading = true
+          this.loading.save = true
           ContractService[this.type](this.form).then((res, err) => {
-            this.loading = false
+            this.loading.save = false
             if (res.result.statusCode === 200) {
               this.contractGuid = res.result.data
               this.showBudgets()
@@ -288,7 +286,7 @@ export default {
               confirmText: '我知道了',
               cancelText: ''
             }, () => {
-              this.loading = false
+              this.loading.save = false
             })
           })
         } else {
