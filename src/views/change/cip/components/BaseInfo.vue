@@ -587,7 +587,7 @@
       },
       'data.voMasterInfo' (value) {
         this.creationTime = this.data.voMasterInfo.creationTime ? moment(this.data.voMasterInfo.creationTime).format('yyyy-MM-DD HH:mm:ss') : '2'
-        this.lastModificationTime = this.data.voMasterInfo.lastModificationTime ? moment(this.data.voMasterInfo.lastModificationTime).format('yyyy-MM-dd HH:mm:ss') : ''
+        this.lastModificationTime = this.data.voMasterInfo.lastModificationTime ? moment(this.data.voMasterInfo.lastModificationTime).format('yyyy-MM-DD HH:mm:ss') : ''
         // 初始化reasonType值，转换为checkboxgroup认同的值
         if (this.data.voMasterInfo.reasonType) {
           this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType)
