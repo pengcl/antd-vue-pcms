@@ -86,7 +86,9 @@ const locale = {
   'menu.checkout.finance.item': '财务结算书详情',
 
   'menu.report': '报表管理',
-  'menu.data': '基础数据设置',
+
+  'menu.data.list': '基础数据设置',
+  'menu.data.item': '基础数据设置',
 
   'menu.settings': '系统设置',
   'menu.settings.base': '基本设置',

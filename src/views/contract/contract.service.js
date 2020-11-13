@@ -125,11 +125,11 @@ ContractService.tenders = function (params) {
   })
 }
 
-ContractService.viewBudgets = function (contractGuid) {
+ContractService.viewBudgets = function (params) {
   return request({
     url: API.viewBudgets,
     method: 'GET',
-    params: { contractGuid }
+    params: params
   })
 }
 
@@ -153,7 +153,7 @@ ContractService.bpm = function (ContractGuid, sProjectCode) {
   return request({
     url: API.bpm,
     method: 'POST',
-    data: { ContractGuid, sProjectCode }
+    params: { ContractGuid, sProjectCode }
   })
 }
 

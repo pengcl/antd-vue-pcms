@@ -110,12 +110,12 @@
               title="删除"
               style="margin-left: 4px"
               icon="delete"></a-button>
-            <a-button
+            <!--<a-button
               type="primary"
               class="btn-info"
               icon="file-done"
               style="margin-left: 4px"
-              title="审批记录"></a-button>
+              title="审批记录"></a-button>-->
           </template>
         </span>
       </s-table>
@@ -129,14 +129,13 @@
   import { ContractService } from '@/views/contract/contract.service'
   import { fixedList, getPosValue } from '@/utils/util'
   import { ProjectService } from '@/views/project/project.service'
-  import { formatList } from '../../mock/util'
-  import { ACCESS_TOKEN } from '@/store/mutation-types'
+  import { formatList } from '@/mock/util'
 
   const columns = [
     {
       title: '操作',
       dataIndex: 'action',
-      width: '200px',
+      width: '140px',
       scopedSlots: { customRender: 'action' }
     },
     {

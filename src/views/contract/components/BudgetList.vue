@@ -2,7 +2,22 @@
   <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
-        <table>
+        <a-radio-group v-model="useStore" button-style="solid">
+          <a-radio-button v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
+            {{ item.nameCN }}
+          </a-radio-button>
+        </a-radio-group>
+        <s-table
+          style="margin-top: 5px"
+          ref="table"
+          size="default"
+          rowKey="id"
+          bordered
+          :columns="columns"
+          :data="loadData"
+          :alert="false"
+          showPagination="auto"
+        >
           <thead>
             <tr>
               <th style="width: 10%">科目</th>
@@ -31,7 +46,7 @@
               <td></td>
             </tr>
           </tbody>
-        </table>
+        </s-table>
       </a-col>
     </a-row>
   </a-form>
@@ -39,17 +54,77 @@
 
 <script>
 import { ContractService } from '@/views/contract/contract.service'
+import { fixedList } from '@/utils/util'
+import { Ellipsis, STable } from '@/components'
+
+const columns = [
+  {
+    title: '科目',
+    dataIndex: 'elementName'
+  },
+  {
+    title: '行业',
+    dataIndex: 'itemTypeName'
+  },
+  {
+    title: '业态',
+    dataIndex: 'costCenterName'
+  },
+  {
+    title: '预算余额(a)',
+    dataIndex: 'generalTradeAmount'
+  },
+  {
+    title: '行业预算(b)',
+    dataIndex: 'budgetPlanDetailAmount'
+  },
+  {
+    title: '合同金额(c)',
+    dataIndex: 'contractSplitAmount',
+    scopedSlots: { customRender: 'contractSplitAmount' }
+  },
+  {
+    title: '定标盈余(d)',
+    dataIndex: 'tenderSurplus',
+    scopedSlots: { customRender: 'tenderSurplus' }
+  },
+  {
+    title: '预计变更(e)',
+    dataIndex: 'alterPlan',
+    scopedSlots: { customRender: 'alterPlan' }
+  },
+  {
+    title: '差额(f)',
+    dataIndex: 'balanceAmount',
+    scopedSlots: { customRender: 'balanceAmount' }
+  }
+]
 
 export default {
   name: 'BudgetList',
+  components: {
+    STable,
+    Ellipsis
+  },
   data () {
     return {
-      items:[],
+      items: [],
+      columns: columns,
+      selection: {},
+      useStore: null,
+      queryParam: { contractGuid: this.data.contract.contractGuid },
+      loadData: parameter => {
+        const requestParameters = Object.assign({}, parameter, this.queryParam)
+        return ContractService.viewBudgets(requestParameters).then(res => {
+          return fixedList(res, parameter)
+        })
+      }
     }
   },
   created () {
-    ContractService.viewBudgets(this.data.contract.contractGuid).then(res => {
-      console.log(res)
+    ContractService.storeTypes().then(res => {
+      this.selection.storeTypes = res.result.data
+      this.useStore = res.result.data[0].id
     })
   },
   props: {

@@ -88,12 +88,12 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" v-if="type != 'view'" @click="startUp">启动审批流程</a-button>
+            <a-button type="success" :loading="startUpLoading" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startUp">启动审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" v-if="type != 'view'" @click="save">储存</a-button>
+            <a-button type="success" :loading="loading" v-if="type != 'view'" @click="save">储存</a-button>
             <a-button type="danger" v-if="form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
@@ -124,7 +124,8 @@
         loading: false,
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
-        project: null
+        project: null,
+        startUpLoading : false
       }
     },
     created () {
@@ -133,6 +134,7 @@
         console.log('change.item.cntract', this.contract)
         ProjectService.view2(this.contract.projectID).then((res) => {
           this.project = res.result.data
+          console.log('change.project',this.project)
         })
       })
       if (this.type !== 'add') {
@@ -204,6 +206,7 @@
         if (isValid) {
           this.form.contractNo = this.contract.contractNo
           console.log('saveData', this.form)
+          this.loading = true
           if (this.type == 'add') {
             if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
               this.form.fileMasterId = 0
@@ -217,6 +220,7 @@
                 this.$router.push({ path: `/change/pmi` })
               }
             }).catch(() => {
+              this.loading = false
               this.$message.error('创建失败，表单未填写完整')
             })
           } else if (this.type == 'edit') {
@@ -229,13 +233,22 @@
                 this.$router.push({ path: `/change/pmi` })
               }
             }).catch(() => {
+              this.loading = false
               this.$message.error('修改失败，表单未填写完整')
             })
           }
         }
       },
       startUp () {
-        this.$message.warn('功能尚未实现')
+        this.startUpLoading = true
+        ChangeService.startBMP({ guid : this.form.voMasterInfo.voGuid, sProjectCode : this.project.projectCode}).then(res => {
+          if(res.result.statusCode === 200){
+            window.open(res.result.data)
+            window.location.reload()
+          }
+        }).catch(() =>{
+          this.startUpLoading = false
+        })
       },
       back () {
         this.$router.push({ path: `/change/pmi` })
@@ -267,7 +280,6 @@
         // this.$forceUpdate()
       },
       handleTabChange(activieKey){
-        console.log('进入tab变更',this.preActiveKey,activieKey)
         if(this.preActiveKey == 2 && activieKey != this.preActiveKey){
           //验证造价估算
           if(!this.checkBqList()){

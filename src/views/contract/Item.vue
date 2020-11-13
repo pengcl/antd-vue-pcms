@@ -74,21 +74,21 @@
         </a-tab-pane>
       </a-tabs>
       <a-row :gutter="48">
-        <a-col v-if="type !== 'view'" :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="activeKey === 3">
-            <a-button @click="approve" type="success">
-              预算确认
-            </a-button>
-          </a-button-group>
+        <a-col v-if="type === 'update'" :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group>
-            <a-button @click="approve" type="success">
+            <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
+          <a-button-group v-if="type === 'view'">
+            <a-button :loading="loading.view" @click="view" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
           <a-button-group>
-            <a-button :loading="loading" v-if="type !== 'view'" @click="save" type="success">
+            <a-button :loading="loading.save" v-if="type !== 'view'" @click="save()" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -126,10 +126,11 @@ import PayInfo from '@/views/contract/components/PayInfo'
 import ContractList from '@/views/contract/components/ContractList'
 import BudgetList from '@/views/contract/components/BudgetList'
 import AttachmentList from '@/views/contract/components/AttachmentList'
+import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 import { ContractService } from '@/views/contract/contract.service'
 import { SwaggerService } from '@/api/swagger.service'
 import { ProjectService } from '@/views/project/project.service'
-import { DIALOGCONFIG } from '@/api/base'
+
 import { Company as CompanyService } from '@/api/company'
 import ContractComputeBudgets from '@/views/contract/components/computeBudgets/index'
 
@@ -138,9 +139,14 @@ export default {
   components: { ContractComputeBudgets, AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
   data () {
     return {
+      isBpm: false,
       disabled: true,
       activeKey: 1,
-      loading: false,
+      loading: {
+        bpm: false,
+        save: false,
+        view: false
+      },
       project: null,
       dialog: DIALOGCONFIG,
       selection: {},
@@ -227,14 +233,28 @@ export default {
         })
       }
     },
-    approve () {
-      console.log('approve')
-      ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
-        console.log(res)
+    view () {
+      this.loading.view = true
+      BaseService.viewBpm(this.form.contract.contractGuid).then(res => {
+        this.loading.view = false
         window.location.href = res.result.data
       })
     },
-    save () {
+    bpm () {
+      this.save(true)
+      /* this.loading.bpm = true
+      ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
+        this.loading.bpm = false
+        window.location.href = res.result.data
+      }) */
+    },
+    save (isBpm) {
+      if (isBpm) {
+        this.isBpm = true
+      } else {
+        this.isBpm = false
+      }
+      console.log(isBpm)
       let isValid = true
       const validateForms = [
         {
@@ -274,9 +294,9 @@ export default {
         let items = JSON.parse(JSON.stringify(this.form.contractBQlst))
         items = items.filter(item => item.isCarryData)
         if (items.length > 0) {
-          this.loading = true
+          this.loading.save = true
           ContractService[this.type](this.form).then((res, err) => {
-            this.loading = false
+            this.loading.save = false
             if (res.result.statusCode === 200) {
               this.contractGuid = res.result.data
               this.showBudgets()
@@ -288,7 +308,7 @@ export default {
               confirmText: '我知道了',
               cancelText: ''
             }, () => {
-              this.loading = false
+              this.loading.save = false
             })
           })
         } else {
@@ -320,21 +340,29 @@ export default {
           }
           ContractService.updateBudgets(form).then(res => {
             if (res.result.statusCode === 200) {
-              this.dialog.show({
-                content: this.type === 'update' ? '修改成功' : '添加成功',
-                title: '',
-                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
-                cancelText: '返回上一页'
-              }, (state) => {
-                this.show = false
-                if (state) {
-                  if (this.type === 'create') {
-                    this.getData()
+              if (this.isBpm) {
+                this.loading.bpm = true
+                ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
+                  this.loading.bpm = false
+                  window.location.href = res.result.data
+                })
+              } else {
+                this.dialog.show({
+                  content: this.type === 'update' ? '修改成功' : '添加成功',
+                  title: '',
+                  confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+                  cancelText: '返回上一页'
+                }, (state) => {
+                  this.show = false
+                  if (state) {
+                    if (this.type === 'create') {
+                      this.getData()
+                    }
+                  } else {
+                    this.$router.push('/contract/list')
                   }
-                } else {
-                  this.$router.push('/contract/list')
-                }
-              })
+                })
+              }
             }
           })
         }

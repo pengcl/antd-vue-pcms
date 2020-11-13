@@ -12,7 +12,8 @@ const API = {
   fileList: '/api/services/app/UploadAppservice/GetFileList',
   removeFile: '/api/services/app/UploadAppservice/FileDeleteByID',
   centerTags: '/api/services/app/PropertyType/GetPropertyTypeTree',
-  centerTypes: '/api/services/app/GeneralType/GetDevPurposeGeneralTypes'
+  centerTypes: '/api/services/app/GeneralType/GetDevPurposeGeneralTypes',
+  viewBpm: '/api/services/app/Bpm/GetBPMAuditInfo'
 }
 
 const Base = {}
@@ -105,6 +106,14 @@ Base.removeFile = function (ifileDetialID) {
   })
 }
 
+Base.viewBpm = function (BusinessID) {
+  return request({
+    url: API.viewBpm,
+    method: 'GET',
+    params: { BusinessID }
+  })
+}
+
 function addItem (obj, items) {
   items.push(Object.assign(obj, { isTemp: true, isDeleted: false }))
 }
@@ -116,8 +125,8 @@ function removeItem (index, items) {
     items[index].isDeleted = true
   }
 }
-//update by huya 2020-11-13 增加返回
-//因使用data[target] 传参方式后，本方法进行修改赋值不会同步修改data[target]，所以增加返回进行外部覆盖
+// update by huya 2020-11-13 增加返回
+// 因使用data[target] 传参方式后，本方法进行修改赋值不会同步修改data[target]，所以增加返回进行外部覆盖
 function clearItems (items) {
   const list = []
   items.forEach(item => {

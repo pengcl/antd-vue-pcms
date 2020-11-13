@@ -21,7 +21,8 @@ const API = {
   materialQualityGuaranteeList : '/api/services/app/Contract/GetContractMaterialQualityGuaranteelstByContractGuid',
   paymentTermsList : '/api/services/app/Contract/GetContractPaymentTermslstByContractGuid',
   fileTypes : '/api/services/app/GeneralType/GetVOFileTypes',
-  delete : '/api/services/app/VO/DeleteVOAllInfo'
+  delete : '/api/services/app/VO/DeleteVOAllInfo',
+  startBMP : '/api/services/app/VO/StartBPM'
 }
 
 const ChangeService = {}
@@ -256,7 +257,6 @@ ChangeService.fileTypes = function(){
 	  })
 }
 
-
 /**
  * 废弃变更信息
  */
@@ -265,6 +265,17 @@ ChangeService.delete = function(voguid){
 	    url: API.delete,
 	    method: 'delete',
 	    params: {voguid}
+	  })
+}
+
+/**
+ * 发起流程
+ */
+ChangeService.startBMP = function(parameter){
+	return request({
+	    url: API.startBMP,
+	    method: 'post',
+	    params: parameter
 	  })
 }
 
