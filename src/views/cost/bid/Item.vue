@@ -86,6 +86,7 @@
                   </td>
                   <td>
                     <a-form-model-item
+                      class="simple"
                       :prop="'tenderPackages.' + index"
                       :rules="[{required: true, message: '请选择行业分判包', trigger: 'change' }]"
                     >
@@ -117,57 +118,58 @@
           <a-col :md="24" :sm="24">
             <table>
               <thead>
-                <tr>
-                  <th colspan="5">
-                    <a-button :disabled="type === 'view'" @click="addPlan()" icon="plus" type="success">
-                      招投标计划
-                    </a-button>
-                  </th>
-                </tr>
-                <tr>
-                  <th style="width: 10%">操作</th>
-                  <th style="width: 25%">工作项</th>
-                  <th style="width: 20%">计划开始时间</th>
-                  <th style="width: 20%">计划完成时间</th>
-                  <th style="width: 25%">备注</th>
-                </tr>
+              <tr>
+                <th colspan="5">
+                  <a-button :disabled="type === 'view'" @click="addPlan()" icon="plus" type="success">
+                    招投标计划
+                  </a-button>
+                </th>
+              </tr>
+              <tr>
+                <th style="width: 10%">操作</th>
+                <th style="width: 25%">工作项</th>
+                <th style="width: 20%">计划开始时间</th>
+                <th style="width: 20%">计划完成时间</th>
+                <th style="width: 25%">备注</th>
+              </tr>
               </thead>
               <tbody>
-                <tr v-for="(item,index) in form.plans" :key="index">
-                  <td>
-                    <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>
-                  </td>
-                  <td>
-                    <a-form-model-item
-                      :prop="'plans.' + index +'.planTitle'"
-                      :rules="[{required: true, message: '请填写工作项', trigger: 'blur' }]">
-                      <a-input
-                        :disabled="type === 'view'"
-                        v-model="form.plans[index].planTitle"></a-input>
-                    </a-form-model-item>
-                  </td>
-                  <td>
-                    <a-form-model-item
-                      :prop="'plans.' + index +'.planStartDate'"
-                      :rules="[{required: true, message: '请填写计划开始时间', trigger: 'blur' }]">
-                      <a-date-picker
-                        :disabled="type === 'view'"
-                        v-model="form.plans[index].planStartDate"></a-date-picker>
-                    </a-form-model-item>
-                  </td>
-                  <td>
-                    <a-form-model-item
-                      :prop="'plans.' + index +'.planEndDate'"
-                      :rules="[{required: true, message: '请填写计划完成时间', trigger: 'blur' }]">
-                      <a-date-picker
-                        :disabled="type === 'view'"
-                        v-model="form.plans[index].planEndDate"></a-date-picker>
-                    </a-form-model-item>
-                  </td>
-                  <td>
-                    <a-input :disabled="type === 'view'" v-model="item.remarks"></a-input>
-                  </td>
-                </tr>
+              <tr v-for="(item,index) in form.plans" :key="index">
+                <td>
+                  <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>
+                </td>
+                <td>
+                  <a-form-model-item
+                    class="simple"
+                    :prop="'plans.' + index +'.planTitle'"
+                    :rules="[{required: true, message: '请填写工作项', trigger: 'blur' }]">
+                    <a-input
+                      :disabled="type === 'view'"
+                      v-model="form.plans[index].planTitle"></a-input>
+                  </a-form-model-item>
+                </td>
+                <td>
+                  <a-form-model-item
+                    :prop="'plans.' + index +'.planStartDate'"
+                    :rules="[{required: true, message: '请填写计划开始时间', trigger: 'blur' }]">
+                  <a-date-picker
+                    :disabled="type === 'view'"
+                    v-model="form.plans[index].planStartDate"></a-date-picker>
+                  </a-form-model-item>
+                </td>
+                <td>
+                  <a-form-model-item
+                    :prop="'plans.' + index +'.planEndDate'"
+                    :rules="[{required: true, message: '请填写计划完成时间', trigger: 'blur' }]">
+                  <a-date-picker
+                    :disabled="type === 'view'"
+                    v-model="form.plans[index].planEndDate"></a-date-picker>
+                  </a-form-model-item>
+                </td>
+                <td>
+                  <a-input :disabled="type === 'view'" v-model="item.remarks"></a-input>
+                </td>
+              </tr>
               </tbody>
             </table>
           </a-col>
@@ -243,9 +245,9 @@
       if (this.type !== 'add') {
         CostService.bidItem({ Id: this.id }).then(res => {
           this.form = res.result.data
-          if (this.form.tenderPackages) {
+          if(this.form.tenderPackages){
             const packages = []
-            this.form.tenderPackages.forEach(item => {
+            this.form.tenderPackages.forEach(item =>{
               packages.push(item.id)
             })
             this.form.tenderPackages = packages
@@ -274,7 +276,7 @@
           planTitle: '',
           planStartDate: '',
           planEndDate: '',
-          remarks: ''
+          remarks:''
         }
         addItem(item, this.form.plans)
       },
@@ -294,10 +296,11 @@
         this.$router.push({ path: `/cost/bid/list` })
       },
       delIndustry (index) {
-        this.form.tenderPackages.splice(index, 1)
+        const items = this.tenderPackages
+        removeItem(index, items)
       },
       delPlan (index) {
-        const items = this.form.plans
+        const items = this.plans
         removeItem(index, items)
       }
     }
@@ -356,4 +359,11 @@
   .ant-btn-group {
     margin-right: 8px;
   }
+
+  .simple{
+    /deep/ .ant-form-item-control-wrapper.ant-col-16{
+      width: 100%!important;
+    }
+  }
+
 </style>
