@@ -17,6 +17,7 @@ const API = {
   bidItems: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',//根据项目ID获取招投标列表
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
   bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage',//新增招投标分判包
+  bidBudgetCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算
   //行业预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
@@ -27,7 +28,12 @@ const API = {
   budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
   budegetTreeItem: '/api/services/app/TenderPackage/TenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
   addBudgetItem : '/api/services/app/TenderPackage/TenderPackageAddBudgetItem',//行业分判包添加行业预算
-  removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem'//行业分判包移除行业预算
+  removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem',//行业分判包移除行业预算
+  //行业类型
+  typyItems: '/api/services/app/ElementTradeType/GetElementTradeTypes' ,//获取预算科目下的行业类型集合
+  typeCreate: '/api/services/app/ElementTradeType/Create',//添加预算科目的行业类型
+  typeItem: '/api/services/app/ElementTradeType/GetById',//返回预算科目行业类型实体对象
+  typeUpdate: '/api/services/app/ElementTradeType/Update' //对预算行业类型进行编辑更新
 }
 
 const CostService = {}
@@ -144,6 +150,14 @@ CostService.bidCreate = function (parameter) {
   })
 }
 
+CostService.bidBudgetCreate = function (parameter) {
+  return request({
+    url: API.bidBudgetCreate,
+    method: 'POST',
+    data: parameter
+  })
+}
+
 CostService.bidItem = function (parameter) {
   return request({
     url: API.bidItem,
@@ -219,6 +233,38 @@ CostService.removeBudgetItem = function (parameter) {
 CostService.createGT = function (parameter) {
   return request({
     url: API.createGT,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.typyItems = function (parameter) {
+  return request({
+    url: API.typyItems,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.typeItem = function (parameter) {
+  return request({
+    url: API.typeItem,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.typeCreate = function (parameter) {
+  return request({
+    url: API.typeCreate,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.typeUpdate = function (parameter) {
+  return request({
+    url: API.typeUpdate,
     method: 'POST',
     data: parameter
   })
