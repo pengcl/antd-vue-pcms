@@ -123,7 +123,8 @@
             this.form.costCenterItems.push(center)
           })
         })
-        CostService.bidCreate(this.form).then(res => {
+        console.log(this.form)
+        CostService.bidBudgetCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
           }

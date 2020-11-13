@@ -104,6 +104,20 @@
         obj.children = obj.childs
       }
       list.push(obj)
+      if(item.tradeBudgetItems && item.tradeBudgetItems.length>0){
+        item.tradeBudgetItems.forEach((center,index) => {
+          const budgetItem = {}
+          costCenters.forEach((center,index) => {
+            budgetItem.elementInfoId = item.elementInfoId+new Date().getTime()
+            budgetItem.TradeTypeNameCN = 'General Trade'
+            budgetItem.BudgetTitle = ''
+            const costName = 'cost' + center.costCenterId
+            budgetItem[costName] = item.tradeBudgetInfo.budgetValue
+          })
+          list.push(budgetItem)
+        })
+      }
+
       //插入General Trade行
       if( item.tradeBudgetInfo && item.childs && item.childs.length==0){
         const gt = {}
@@ -252,18 +266,18 @@
           this.$refs.resolveModal.show(record)
         })
       },
-      handleOk(e) {
-        this.ModalText = 'The modal will be closed after two seconds';
-        this.confirmLoading = true;
-        setTimeout(() => {
-          this.visible = false;
-          this.confirmLoading = false;
-        }, 2000);
-      },
-      handleCancel(e) {
-        console.log('Clicked cancel button');
-        this.visible = false;
-      },
+      // handleOk(e) {
+      //   this.ModalText = 'The modal will be closed after two seconds';
+      //   this.confirmLoading = true;
+      //   setTimeout(() => {
+      //     this.visible = false;
+      //     this.confirmLoading = false;
+      //   }, 2000);
+      // },
+      // handleCancel(e) {
+      //   console.log('Clicked cancel button');
+      //   this.visible = false;
+      // },
       createGT() {
         CostService.createGT({projectGUID: this.ProjectGUID, planPackageGUID : this.ProjectGUID}).then(res => {
           if (res.result.statusCode === 200) {
