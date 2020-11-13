@@ -628,7 +628,6 @@
     },
     filters: {
       filterDeleted (items) {
-        console.log(items)
         return items.filter(item => !item.isDeleted)
       },
       getValue (item, index) {
@@ -737,6 +736,7 @@
             'contractBQlst.' + index + '.costCenter',
             'contractBQlst.' + index + '.itemType'], valid => {
             if (valid) {
+              alert(valid)
               isValid = false
             }
           })

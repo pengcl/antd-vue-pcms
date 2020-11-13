@@ -57,17 +57,18 @@ const locale = {
   'menu.cost.bid.list': 'Bid List',
   'menu.cost.bid.edit': 'Bid Edit',
   'menu.cost.bid.item': 'Bid Detail',
+  'menu.cost.type.list': 'Cost Type List',
+  'menu.cost.type.item': 'Cost Type Detail',
 
   'menu.pay': 'Pay',
   'menu.pay.signed.list': 'Pay Signed',
   'menu.pay.signed.item': 'Pay Signed detail',
-  'menu.pay.signed.invoice':'Pay Invoice',
+  'menu.pay.signed.invoice': 'Pay Invoice',
   'menu.pay.unsigned.list': 'Pay Unsigned',
   'menu.pay.unsigned.edit': 'Pay Unsigned Edit',
   'menu.pay.unsigned.item': 'Pay unsigned detail',
-  'menu.pay.fundplan.list':'Pay fundplan',
-  'menu.pay.fundplan.item':'Pay fundplan detail',
-
+  'menu.pay.fundplan.list': 'Pay fundplan',
+  'menu.pay.fundplan.item': 'Pay fundplan detail',
 
   'menu.checkout': 'Checkout',
   'menu.checkout.contract.list': 'Checkout contract list',

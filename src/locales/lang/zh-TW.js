@@ -55,6 +55,8 @@ const locale = {
   'menu.cost.bid.list': '招投标分判包',
   'menu.cost.bid.edit': '新增招投标分判包',
   'menu.cost.bid.item': '招投标分判包详细',
+  'menu.cost.type.list': '行业预算类型管理',
+  'menu.cost.type.item': '行业预算类型详情',
 
   'menu.pay': '付款管理',
   'menu.pay.signed.list': '合同付款申请',
@@ -66,8 +68,8 @@ const locale = {
   'menu.pay.signed.apply': '付款申请',
   'menu.pay.account.list': '付款台账',
   'menu.pay.account.item': '付款详情页',
-  'menu.pay.fundplan.list':'资金计划',
-  'menu.pay.fundplan.item':'资金计划详情',
+  'menu.pay.fundplan.list': '资金计划',
+  'menu.pay.fundplan.item': '资金计划详情',
 
   'menu.checkout': '结算管理',
   'menu.checkout.contract.list': '合同结算',
