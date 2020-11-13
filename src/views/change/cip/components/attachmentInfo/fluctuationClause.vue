@@ -59,6 +59,7 @@
   </div>
 </template>
 <script>
+  import { Base as BaseService , removeItem , clearItems} from '@/api/base'
   import { ChangeService } from '@/views/change/change.service'
   export default {
     name: 'AttachmentInfoFluctuationClause',
@@ -102,20 +103,10 @@
         this.data.voFlucationClauselst.push(item)
       },
       del (item,index) {
-        if(item.isTemp){
-          this.data.voFlucationClauselst.splice(index,1)
-        }else{
-          item.isDeleted = true
-        }
+        removeItem(index,this.data.voFlucationClauselst)
       },
       clear () {
-        this.data.voFlucationClauselst.forEach((item,index) => {
-          if(item.isTemp){
-            this.data.voFlucationClauselst.splice(index,1)
-          }else{
-            item.isDeleted = true
-          }
-        })
+        clearItems(this.data.voFlucationClauselst)
       },
       replaceByContract(){
         this.clear()

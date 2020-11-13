@@ -64,7 +64,7 @@
   </div>
 </template>
 <script>
-  import { Base as BaseService } from '@/api/base'
+  import { Base as BaseService , removeItem , clearItems} from '@/api/base'
   import { ChangeService } from '@/views/change/change.service'
   export default {
     name: 'AttachmentInfoPaymentTerms',
@@ -115,20 +115,10 @@
         this.data.voPaymentTermslst.push(item)
       },
       del (item,index) {
-        if(item.isTemp){
-          this.data.voPaymentTermslst.splice(index,1)
-        }else{
-          item.isDeleted = true
-        }
+        removeItem(index,this.data.voPaymentTermslst)
       },
       clear () {
-        this.data.voPaymentTermslst.forEach((item,index) => {
-          if(item.isTemp){
-            this.data.voPaymentTermslst.splice(index,1)
-          }else{
-            item.isDeleted = true
-          }
-        })
+        clearItems(this.data.voPaymentTermslst)
       },
       replaceByContract(){
         this.clear()
