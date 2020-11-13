@@ -142,31 +142,31 @@
                 :type="record.isCarryData ? 'check-square' : 'border'"/>
             </template>
             <template slot="srNo" slot-scope="text, record">
-              <a-input style="width:100px" :disabled="true" :value="record.srNo"></a-input>
+              <a-input style="width:100%" :disabled="true" :value="record.srNo"></a-input>
             </template>
             <template slot="section" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.section"></a-input>
+              <a-input style="width:100%" :value="record.section"></a-input>
             </template>
             <template slot="building" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.building"></a-input>
+              <a-input style="width:100%" :value="record.building"></a-input>
             </template>
             <template slot="subsection" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.subsection"></a-input>
+              <a-input style="width:100%" :value="record.subsection"></a-input>
             </template>
             <template slot="segmentation" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.segmentation"></a-input>
+              <a-input style="width:100%" :value="record.segmentation"></a-input>
             </template>
             <template slot="segmentation" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.segmentation"></a-input>
+              <a-input style="width:100%" :value="record.segmentation"></a-input>
             </template>
             <template slot="remark1" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.remark1"></a-input>
+              <a-input style="width:100%" :value="record.remark1"></a-input>
             </template>
             <template slot="remark2" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.remark2"></a-input>
+              <a-input style="width:100%" :value="record.remark2"></a-input>
             </template>
             <template slot="description" slot-scope="text, record">
-              <a-input style="width:100px" :value="record.description"></a-input>
+              <a-input style="width:100%" :value="record.description"></a-input>
             </template>
             <template slot="costCenter" slot-scope="text, record, index">
               <a-form-model-item
@@ -199,7 +199,7 @@
                 <a-select
                   :disabled="type === 'view'"
                   placeholder="请选择"
-                  style="margin-top: 15px"
+                  style="margin-top: 15px;width: 160px"
                   v-model="record.itemType">
                   <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">
                     {{ item.nameCN }}
@@ -437,7 +437,7 @@
       title: '清单项类别',
       dataIndex: 'itemType',
       scopedSlots: { customRender: 'itemType' },
-      width: 160
+      width: 210
     },
     {
       title: '供应',
