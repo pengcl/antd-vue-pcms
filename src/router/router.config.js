@@ -190,6 +190,19 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/cost/bid/Item'),
             meta: { title: 'menu.cost.bid.item', keepAlive: true, permission: ['budget'] }
+          },
+          {
+            path: '/cost/type/list',
+            name: 'CostTypeList',
+            component: () => import('@/views/cost/type/List'),
+            meta: { title: 'menu.cost.type.list', keepAlive: true, permission: ['budget'] }
+          },
+          {
+            path: '/cost/type/item/:id',
+            name: 'CostTypeItem',
+            hidden: true,
+            component: () => import('@/views/cost/bid/Item'),
+            meta: { title: 'menu.cost.type.item', keepAlive: true, permission: ['budget'] }
           }
         ]
       },
@@ -311,21 +324,21 @@ export const asyncRouterMap = [
             path: '/pay/signed/list',
             name: 'PaySignedList',
             component: () => import('@/views/pay/signed/List'),
-            meta: { title: 'menu.pay.signed.list', keepAlive: true, permission: ['pay'] },
+            meta: { title: 'menu.pay.signed.list', keepAlive: true, permission: ['pay'] }
           },
           {
             path: '/pay/signed/item/:id',
             name: 'PaySignedItem',
             hidden: true,
             component: () => import('@/views/pay/signed/Item'),
-            meta: { title: 'menu.pay.signed.item', keepAlive: true, permission: ['pay'] },
+            meta: { title: 'menu.pay.signed.item', keepAlive: true, permission: ['pay'] }
           },
           {
             path: '/pay/signed/invoice/list',
             name: 'PaySignedInvoiceList',
             hidden: true,
             component: () => import('@/views/pay/signed/invoice/List'),
-            meta: { title: 'menu.pay.signed.invoice', keepAlive: true, permission: ['pay'] },
+            meta: { title: 'menu.pay.signed.invoice', keepAlive: true, permission: ['pay'] }
           },
           {
             path: '/pay/unsigned/list',
@@ -338,7 +351,7 @@ export const asyncRouterMap = [
             name: 'PayUnsignedEdit',
             hidden: true,
             component: () => import('@/views/pay/unsigned/Edit'),
-            meta: { title: 'menu.pay.unsigned.edit', keepAlive: true, permission: ['pay'] },
+            meta: { title: 'menu.pay.unsigned.edit', keepAlive: true, permission: ['pay'] }
           },
           {
             path: '/pay/unsigned/item/:id',
@@ -489,7 +502,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.settings.notification', hidden: true, keepAlive: true, permission: ['settings'] }
           }
         ]
-      },
+      }
 
       // budget
       /* {
