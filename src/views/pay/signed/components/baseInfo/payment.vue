@@ -52,7 +52,7 @@
                               :disabled="type === 'view'"
                               v-model="item.paymentAmount"
                               :min="0"
-                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :formatter="value => `${0-value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                               :precision="2"
                               v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input-number>

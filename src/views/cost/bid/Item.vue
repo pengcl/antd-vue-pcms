@@ -86,6 +86,7 @@
                   </td>
                   <td>
                     <a-form-model-item
+                      class="simple"
                       :prop="'tenderPackages.' + index"
                       :rules="[{required: true, message: '请选择行业分判包', trigger: 'change' }]"
                     >
@@ -139,6 +140,7 @@
                 </td>
                 <td>
                   <a-form-model-item
+                    class="simple"
                     :prop="'plans.' + index +'.planTitle'"
                     :rules="[{required: true, message: '请填写工作项', trigger: 'blur' }]">
                     <a-input
@@ -357,4 +359,11 @@
   .ant-btn-group {
     margin-right: 8px;
   }
+
+  .simple{
+    /deep/ .ant-form-item-control-wrapper.ant-col-16{
+      width: 100%!important;
+    }
+  }
+
 </style>
