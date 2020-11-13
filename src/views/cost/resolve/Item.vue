@@ -37,7 +37,7 @@
           <template>
             <a-button v-if="record.isCreate" @click="showModal(record,'add')" type="success" icon="form" title="新增">
             </a-button>
-            {{record.BudgetTitle}}
+            {{record.elementInfoNameCN}}
           </template>
         </span>
           </s-table>
@@ -92,7 +92,7 @@
       const obj = {}
       obj.elementInfoId = item.elementInfoId
       obj.elementInfoCode = item.elementInfoCode
-      obj.BudgetTitle = item.elementInfoNameCN
+      obj.elementInfoNameCN = item.elementInfoNameCN
 
       costCenters.forEach(center => {
         const costName = 'cost' + center.costCenterId
@@ -105,15 +105,13 @@
       }
       list.push(obj)
       if(item.tradeBudgetItems && item.tradeBudgetItems.length>0){
-        item.tradeBudgetItems.forEach((center,index) => {
+        item.tradeBudgetItems.forEach((budget,index) => {
           const budgetItem = {}
-          costCenters.forEach((center,index) => {
-            budgetItem.elementInfoId = item.elementInfoId+new Date().getTime()
-            budgetItem.TradeTypeNameCN = 'General Trade'
-            budgetItem.BudgetTitle = ''
-            const costName = 'cost' + center.costCenterId
-            budgetItem[costName] = item.tradeBudgetInfo.budgetValue
-          })
+          budgetItem.elementInfoId = budget.elementInfoId+new Date().getTime()
+          budgetItem.BudgetTitle = budget.budgetTitle
+          budgetItem.elementInfoNameCN = budget.elementInfoNameCN
+          const costName = 'cost' + budget.costCenterId
+          budgetItem[costName] = budget.budgetValue
           list.push(budgetItem)
         })
       }
@@ -123,8 +121,8 @@
         const gt = {}
         costCenters.forEach((center,index) => {
           gt.elementInfoId = item.elementInfoId+new Date().getTime()
-          gt.TradeTypeNameCN = 'General Trade'
-          gt.BudgetTitle = ''
+          gt.BudgetTitle = 'General Trade'
+          gt.elementInfoNameCN = ''
           const costName = 'cost' + center.costCenterId
           gt[costName] = item.tradeBudgetInfo.budgetValue
         })
@@ -143,13 +141,13 @@
     {
       title: '行业名称',
       width: '350px',
-      dataIndex: 'BudgetTitle',
+      dataIndex: 'elementInfoNameCN',
       scopedSlots: { customRender: 'action' }
     },
     {
       title: '行业名称',
       width: '300px',
-      dataIndex: 'TradeTypeNameCN'
+      dataIndex: 'BudgetTitle'
     }
   ]
 
