@@ -82,6 +82,11 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
+          <a-button-group v-if="type === 'view'">
+            <a-button :loading="loading.view" @click="view" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
           <a-button-group>
             <a-button :loading="loading.save" v-if="type !== 'view'" @click="save" type="success">
               储存
@@ -137,7 +142,8 @@ export default {
       activeKey: 1,
       loading: {
         bpm: false,
-        save: false
+        save: false,
+        view: false
       },
       project: null,
       dialog: DIALOGCONFIG,
@@ -224,6 +230,13 @@ export default {
           this.getCompanies()
         })
       }
+    },
+    view () {
+      this.loading.bpm = true
+      ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
+        this.loading.bpm = false
+        window.location.href = res.result.data
+      })
     },
     bpm () {
       this.loading.bpm = true

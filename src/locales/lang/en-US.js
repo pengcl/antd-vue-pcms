@@ -82,7 +82,9 @@ const locale = {
   'menu.checkout.finance.item': 'Checkout finance detail',
 
   'menu.report': 'Report',
-  'menu.data': 'Data',
+
+  'menu.data.list': 'Data List',
+  'menu.data.item': 'Data Item',
 
   'menu.settings': 'Settings',
   'menu.settings.base': 'Settings base',
