@@ -50,7 +50,7 @@
                 ref="baseInfo"
               ></base-info>
             </a-tab-pane>
-            <a-tab-pane :key="2" tab="造价估算">
+            <a-tab-pane :key="2" tab="造价估算" forceRender>
               <cost-estimates
                 title="造价估算"
                 :data="form"
@@ -62,10 +62,10 @@
                 ref="costEstimates"
               ></cost-estimates>
             </a-tab-pane>
-            <a-tab-pane :key="3" tab="预算调整">
+            <a-tab-pane :key="3" tab="预算调整" >
               <budget-list title="预算调整" :data="form" :type="type" :id="id"></budget-list>
             </a-tab-pane>
-            <a-tab-pane :key="4" tab="附加资料">
+            <a-tab-pane :key="4" tab="附加资料" >
               <attachment-data
                 title="附加资料"
                 :data="form"
@@ -75,12 +75,12 @@
                 :stage="stage"
               ></attachment-data>
             </a-tab-pane>
-            <a-tab-pane :key="5" tab="附件">
+            <a-tab-pane :key="5" tab="附件" >
               <attachment-list :data="form" :type="type" :id="id" :stage="stage"></attachment-list>
             </a-tab-pane>
-            <a-tab-pane :key="6" tab="流程">
+            <!-- <a-tab-pane :key="6" tab="流程" >
               <process :data="form" :type="type" :id="id"></process>
-            </a-tab-pane>
+            </a-tab-pane> -->
           </a-tabs>
         </a-form>
       </div>
@@ -88,13 +88,14 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="startUpLoading" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startUp">启动审批流程</a-button>
+            <a-button type="success" :loading="startBPMLoading" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="showBPMLoading" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中'" @click="showBPM">查看审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
             <a-button type="success" :loading="loading" v-if="type != 'view'" @click="save">储存</a-button>
-            <a-button type="danger" v-if="form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
+            <a-button type="danger" v-if="type != 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -113,6 +114,7 @@
   import { ChangeService } from '@/views/change/change.service'
   import { ProjectService } from '@/views/project/project.service'
   import { SwaggerService } from '@/api/swagger.service'
+  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
   export default {
     name: 'ChangeItem',
@@ -125,7 +127,8 @@
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
         project: null,
-        startUpLoading : false
+        startBPMLoading : false,
+        showBPMLoading : false,
       }
     },
     created () {
@@ -186,6 +189,7 @@
         ]
         for (let i = 0; i < validateForms.length; i++) {
           const item = validateForms[i]
+          console.log('refs',this.$refs[item.key],item.key,this.$refs)
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
               isValid = false
@@ -208,6 +212,7 @@
           console.log('saveData', this.form)
           this.loading = true
           if (this.type == 'add') {
+            this.form.voMasterInfo.stage = this.stage // 为VO时则为cip转vo
             if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
               this.form.fileMasterId = 0
             }
@@ -239,15 +244,22 @@
           }
         }
       },
-      startUp () {
-        this.startUpLoading = true
+      startBPM () {
+        this.startBPMLoading = true
         ChangeService.startBMP({ guid : this.form.voMasterInfo.voGuid, sProjectCode : this.project.projectCode}).then(res => {
           if(res.result.statusCode === 200){
             window.open(res.result.data)
             window.location.reload()
           }
         }).catch(() =>{
-          this.startUpLoading = false
+          this.startBPMLoading = false
+        })
+      },
+      showBPM(){
+        this.showBPMLoading = true
+        BaseService.viewBpm(this.form.voMasterInfo.voGuid).then(res => {
+          this.showBPMLoading= false
+          window.location.href = res.result.data
         })
       },
       back () {
