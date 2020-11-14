@@ -86,9 +86,41 @@
     return list
   }
 
+  function getBudgetItems(elementInfoId,list,item){
+    if(item.tradeBudgetItems && item.tradeBudgetItems.length>0){
+      if(item.elementInfoId===elementInfoId){
+        list = item.tradeBudgetItems
+      }
+    }
+    return list
+  }
+
+  function getBudgetList(budgetId,items) {
+    const obj = {}
+    items.forEach(item => {
+      if (item.childs && item.childs.length>0) {
+        getBudgetList(budgetId,item.childs)
+      }
+      if(item.elementItem && item.elementItem.childs){
+        getBudgetList(budgetId,item.elementItem.childs)
+      }
+      if(item.tradeBudgetItems && item.tradeBudgetItems.length>0){
+        item.tradeBudgetItems.forEach((budget,index) => {
+          if(budget.id === budgetId){
+            obj['name'] = 'cost' + budget.costCenterId
+            obj['value'] = budget.budgetValue
+            return false
+          }
+        })
+      }
+    })
+    return obj
+  }
+
   function getList(items,costCenters){
     const list = []
     items.forEach(item => {
+      //插入科目
       const obj = {}
       obj.elementInfoId = item.elementInfoId
       obj.elementInfoCode = item.elementInfoCode
@@ -104,14 +136,19 @@
         obj.children = obj.childs
       }
       list.push(obj)
+      //插入行业预算
       if(item.tradeBudgetItems && item.tradeBudgetItems.length>0){
         item.tradeBudgetItems.forEach((budget,index) => {
           const budgetItem = {}
           budgetItem.elementInfoId = budget.elementInfoId+new Date().getTime()
           budgetItem.BudgetTitle = budget.budgetTitle
           budgetItem.elementInfoNameCN = budget.elementInfoNameCN
-          const costName = 'cost' + budget.costCenterId
-          budgetItem[costName] = budget.budgetValue
+          costCenters.forEach(center =>{
+            const result = getBudgetList(budget.id,center.elementItem.childs)
+            if(result!==null){
+              budgetItem[result['name']] = result['value']
+            }
+          })
           list.push(budgetItem)
         })
       }
@@ -182,7 +219,6 @@
             }
           }
           return CostService.resolveTreeItems(requestParameters).then(res => {
-            console.log(res.result.data)
             if(res.result.data){
               res.result.data.forEach(item => {
                 //组装动态列
@@ -205,7 +241,6 @@
               this.columns = _columns
               this.$forceUpdate()
             }
-            console.log(result)
             return fixedList(result, parameter)
           })
         }
@@ -254,7 +289,7 @@
         this.auditStatus = option.dataRef.auditStatus
       },
       back () {
-        this.$router.push({ path: `/cost/enact/list?ProjectGUID=${this.ProjectGUID}` })
+        this.$router.push({ path: `/cost/enact/list` })
       },
       showModal(record,type) {
         CostService.elementTradeTypes({Id:record.elementInfoId}).then(res => {
