@@ -48,26 +48,17 @@
 <script>
   import { CostService } from '@/views/cost/cost.service'
   import { SwaggerService } from '@/api/swagger.service'
-  import { addItem, removeItem } from '@/api/base'
+  import {SupplierService} from "@/views/supplier/supplier.service";
 
   export default {
     name: 'Edit',
     data () {
       return {
-        centers: [],
-        costCenters: [],
-        industryItems: [],
-        budgetTypeItems: [],
-        tenderPackages: [],
-        plans: [],
-        form: SwaggerService.getForm('ProjectTenderPackageCreateInputDto'),
+        form: SwaggerService.getForm('ElementTradeTypeListOutputDtoListResultModel'),
         rules: {
           nameCN: [{ required: true, message: '请选择日期', trigger: 'blur' }],
           nameEN: [{ required: true, message: '请输入工程名称', trigger: 'blur' }],
           description: [{ required: false, message: '请输入描述', trigger: 'change' }],
-          tenderPackages: [],
-          plans: []
-
         }
       }
     },
@@ -85,48 +76,19 @@
     filters: {},
     created () {
       if (this.type !== 'add') {
-        CostService.bidItem({ Id: this.id }).then(res => {
+        CostService.typeItem({ Id: this.id }).then(res => {
           this.form = res.result.data
-          if(this.form.tenderPackages){
-            const packages = []
-            this.form.tenderPackages.forEach(item =>{
-              packages.push(item.id)
-            })
-            this.form.tenderPackages = packages
-          }
-          console.log(this.form)
           this.$forceUpdate()
         })
       }
     },
     methods: {
-      getIndustryItem (index) {
-        let industryItem = {}
-        const value = this.form.tenderPackages[index]
-        this.industryItems.forEach((item) => {
-          if (item.id === value) {
-            industryItem = item
-          }
-        })
-        return industryItem
-      },
-      addIndustry () {
-        this.form.tenderPackages.push('')
-      },
-      addPlan () {
-        const item = {
-          planTitle: '',
-          planStartDate: '',
-          planEndDate: '',
-          remarks:''
-        }
-        addItem(item, this.form.plans)
-      },
       handleToSave () {
         this.form.projectGUID = this.ProjectGUID
         this.$refs.form.validate(valid => {
           if (valid) {
-            CostService.bidCreate(this.form).then(res => {
+            const buttonType = this.type==='add' : 'typeCreate' ? 'typeUpdate'
+              CostService[buttonType](this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
               }
@@ -135,15 +97,7 @@
         })
       },
       back () {
-        this.$router.push({ path: `/cost/bid/list` })
-      },
-      delIndustry (index) {
-        const items = this.tenderPackages
-        removeItem(index, items)
-      },
-      delPlan (index) {
-        const items = this.plans
-        removeItem(index, items)
+        this.$router.push({ path: `/cost/type/list` })
       }
     }
   }
