@@ -50,7 +50,7 @@
                 ref="baseInfo"
               ></base-info>
             </a-tab-pane>
-            <a-tab-pane :key="2" tab="造价估算">
+            <a-tab-pane :key="2" tab="造价估算" forceRender>
               <cost-estimates
                 title="造价估算"
                 :data="form"
@@ -62,10 +62,10 @@
                 ref="costEstimates"
               ></cost-estimates>
             </a-tab-pane>
-            <a-tab-pane :key="3" tab="预算调整">
+            <a-tab-pane :key="3" tab="预算调整" >
               <budget-list title="预算调整" :data="form" :type="type" :id="id"></budget-list>
             </a-tab-pane>
-            <a-tab-pane :key="4" tab="附加资料">
+            <a-tab-pane :key="4" tab="附加资料" >
               <attachment-data
                 title="附加资料"
                 :data="form"
@@ -75,10 +75,10 @@
                 :stage="stage"
               ></attachment-data>
             </a-tab-pane>
-            <a-tab-pane :key="5" tab="附件">
+            <a-tab-pane :key="5" tab="附件" >
               <attachment-list :data="form" :type="type" :id="id" :stage="stage"></attachment-list>
             </a-tab-pane>
-            <a-tab-pane :key="6" tab="流程">
+            <a-tab-pane :key="6" tab="流程" >
               <process :data="form" :type="type" :id="id"></process>
             </a-tab-pane>
           </a-tabs>
@@ -186,6 +186,7 @@
         ]
         for (let i = 0; i < validateForms.length; i++) {
           const item = validateForms[i]
+          console.log('refs',this.$refs[item.key],item.key,this.$refs)
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
               isValid = false
@@ -208,6 +209,7 @@
           console.log('saveData', this.form)
           this.loading = true
           if (this.type == 'add') {
+            this.form.voMasterInfo.stage = this.stage // 为VO时则为cip转vo
             if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
               this.form.fileMasterId = 0
             }
