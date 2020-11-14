@@ -482,7 +482,49 @@
                 }
             }
         },
-        watch: {},
+        watch: {
+            'data.contractMasterInfo.paymentRequestAmount' (value) {
+                if (this.data.contractMasterInfo.paymentRequestAmount) {
+                    this.paymentRequestAmount['0'] = this.data.contractMasterInfo.paymentRequestAmount
+                }
+            },
+            'data.contractMasterInfo.detailList' (value) {
+                if (this.data.contractMasterInfo.detailList.length > 0) {
+                    let paymentAmount = 0
+                    this.data.contractMasterInfo.detailList.forEach(item => {
+                        if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                            paymentAmount += item.paymentAmount
+                        } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                            paymentAmount -= Math.abs(item.paymentAmount)
+                        }
+                    })
+                    this.paymentAmount['0'] = paymentAmount
+                }
+            },
+            'data.contractNSCInfoList' (value) {
+                if (this.data.contractNSCInfoList.length > 0) {
+                    const list = this.data.contractNSCInfoList
+                    for (const key in list) {
+                        const _key = Number(key)
+                        if (list[_key].paymentRequestAmount) {
+                            this.paymentRequestAmount['' + (_key + 1)] = list[_key].paymentRequestAmount
+                        }
+                        if (list[_key].detailList) {
+                            let paymentAmount = 0
+                            list[_key].detailList.forEach(item => {
+                                if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                                    paymentAmount += item.paymentAmount
+                                } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                                    paymentAmount -= Math.abs(item.paymentAmount)
+                                }
+                            })
+                            this.paymentAmount['' + (_key + 1)] = paymentAmount
+                        }
+                    }
+
+                }
+            }
+        },
         created () {
             SignedService.paymentTypes().then(res => {
                     this.paymentTypes = res.result.data
@@ -494,6 +536,45 @@
             SignedService.billList().then(res => {
                 this.billTypeList = res.result.data
             })
+            /*if (this.data.contractMasterInfo.paymentRequestAmount) {
+                this.paymentRequestAmount['0'] = this.data.contractMasterInfo.paymentRequestAmount
+                console.log('paymentRequestAmount:', this.paymentRequestAmount)
+            }*/
+            /*if (this.data.contractMasterInfo.detailList.length > 0) {
+                let paymentAmount = 0
+                this.data.contractMasterInfo.detailList.forEach(item => {
+                    if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                        paymentAmount += item.paymentAmount
+                    } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                        paymentAmount -= Math.abs(item.paymentAmount)
+                    }
+                })
+                this.paymentAmount['0'] = paymentAmount
+                console.log('paymentAmount:', this.paymentAmount)
+            }*/
+            if (this.data.contractNSCInfoList.length > 0) {
+                const list = this.data.contractNSCInfoList
+                for (const key in list) {
+                    console.log(typeof key)
+                    const _key = Number(key)
+                    if (list[_key].paymentRequestAmount) {
+                        this.paymentRequestAmount['' + (_key + 1)] = list[_key].paymentRequestAmount
+                    }
+                    if (list[_key].detailList) {
+                        let paymentAmount = 0
+                        list[_key].detailList.forEach(item => {
+                            if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                                paymentAmount += item.paymentAmount
+                            } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                                paymentAmount -= Math.abs(item.paymentAmount)
+                            }
+                        })
+                        this.paymentAmount['' + (_key + 1)] = paymentAmount
+                    }
+                }
+
+            }
+
         },
         props: {
             data: {
@@ -652,7 +733,7 @@
                         this.data.billList[this.index].billFileID = response.result.data.id
                         this.data.billList[this.index].billFileName = response.result.data.fileName
                         this.data.billList[this.index].billFileUrl = response.result.data.fileUrl
-                        this.masterID = response.result.data.masterID
+                        this.data.masterID = response.result.data.masterID
                         this.$forceUpdate()
                         _this.$message.success('上传成功')
                         _this.$emit('ok', response.url)

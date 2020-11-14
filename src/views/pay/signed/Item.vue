@@ -127,13 +127,13 @@
                             if (item.detailList) {
                                 item.detailList.forEach(v => {
                                     v.detailContractType = '分合同'
-                                    v.mainContractGID = item.contractGID
+                                    v.mainContractGID = this.id
                                     v.secondaryContractGID = item.contractGID
                                 })
                             }
                             const params = {
                                 contractType: '分合同',
-                                mainContractGID: item.contractGID,
+                                mainContractGID: this.id,
                                 secondaryContractGID: item.contractGID,
                                 paymentRequestAmount: item.paymentRequestAmount,
                                 progressSendDate: item.progressSendDate,
@@ -186,6 +186,22 @@
                         }
                     })
                 } else {
+                    if (this.form.contractNSCInfoList.length > 0) {
+                        this.form.contractNSCInfoList.forEach(item => {
+                            if (item.detailList) {
+                                item.detailList.forEach(v => {
+                                    v.mainContractGID = this.form.contractGID
+                                    v.secondaryContractGID = item.contractGID
+                                })
+                            }
+                        })
+                    }
+                    if (this.form.billList.length > 0) {
+                        this.form.billList.forEach(item => {
+                            item.contractGID = this.form.contractGID
+                            item.paymentGID = this.id
+                        })
+                    }
                     SignedService.update(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('修改成功')
@@ -204,12 +220,14 @@
                         }
                     })
                 }
-            },
+            }
+            ,
             back () {
                 this.$router.push({
                     path: '/pay/signed/list'
                 })
-            },
+            }
+            ,
             approve () {
                 this.approveStatus = true
                 this.save()
