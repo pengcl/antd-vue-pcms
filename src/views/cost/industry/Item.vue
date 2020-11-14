@@ -59,6 +59,19 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
+            <a-form-model-item prop="elementTypeId" label="科目类型">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="form.elementTypeId"
+              >
+                <a-select-option v-for="option in elementItems" :key="JSON.stringify(option)" :value="option.id">
+                  {{ option.nameCN }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
             <a-form-model-item prop="budgetAmount" label="金额">
               <a-input :disabled="true" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
             </a-form-model-item>
@@ -133,12 +146,14 @@
         centers: [],
         costCenters: [],
         budgetTypeItems: [],
+        elementItems: [],
         form: SwaggerService.getForm('TenderPackageCreateInputDto'),
         rules: {
           packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
           packageTitle: [{ required: true, message: '请输入分判包描述', trigger: 'blur' }],
           costCenters: [{ required: true, message: '请选择范围', trigger: 'change' }],
-          itemTypeId: [{ required: true, message: '请选择分判包类型', trigger: 'change' }]
+          itemTypeId: [{ required: true, message: '请选择分判包类型', trigger: 'change' }],
+          elementTypeId: [{ required: true, message: '请选择科目类型', trigger: 'change' }]
         }
       }
     },
@@ -164,10 +179,17 @@
       }
     },
     created () {
+      //分判包类型
       CostService.budgetTypeItems().then(res => {
         this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
       })
+      //科目类型
+      CostService.items().then(res => {
+        this.elementItems = JSON.parse(JSON.stringify(res.result.data))
+        this.$forceUpdate()
+      })
+
       const requestParameters = Object.assign({ Id: this.ProjectGUID })
       CostService.centers(requestParameters).then(res => {
         this.costCenters = JSON.parse(JSON.stringify(res.result.data))
