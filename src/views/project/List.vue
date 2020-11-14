@@ -8,10 +8,12 @@
               <a-form-item label="城市">
                 <a-select
                   placeholder="请选择城市"
+                  @change="onChange"
                   v-model="queryParam.Id">
                   <a-select-option
-                    v-for="city in cities"
+                    v-for="(city,index) in cities"
                     :key="city.city.id"
+                    :index="index"
                     :value="city.city.id">{{ city.city.nameCN }}
                   </a-select-option>
                 </a-select>
@@ -63,7 +65,7 @@
               title="编辑">
             </a-button>
             <a-button
-              v-if="!record.isEndNode"
+              v-if="record.projectDataType !== 'Stage'"
               @click="handleToAdd(record)"
               type="primary"
               class="btn-info"
@@ -83,6 +85,8 @@
 import { STable, Ellipsis } from '@/components'
 // import { getRoleList } from '@/api/manage'
 import { ProjectService } from '@/views/project/project.service'
+import storage from 'store'
+import { getPosValue } from '@/utils/util'
 
 function fixedList (res, params) {
   const result = {}
@@ -184,7 +188,7 @@ export default {
       // 城市
       cities: [],
       // 查询参数
-      queryParam: { Id: 14 },
+      queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         if (this.queryParam.Id) {
@@ -192,8 +196,6 @@ export default {
           return ProjectService.items(requestParameters).then(res => {
             return fixedList(res, parameter)
           })
-        } else {
-          return []
         }
       }
     }
@@ -202,25 +204,24 @@ export default {
     // getRoleList({ t: new Date() })
     ProjectService.tree().then(res => {
       this.cities = res.result.data.citys
-      console.log(this.cities)
+      const value = getPosValue(this.cities)
+      this.queryParam.Id = value.city.id
+      this.$refs.table.refresh()
     })
-  },
-  watch: {
-    'queryParam.Id' () {
-      this.$refs.table.refresh(true)
-    }
   },
   methods: {
     getCity (id) {
-      console.log(typeof id)
       let city = {}
       this.cities.forEach(item => {
-        console.log(item)
         if (item.city.id === id) {
           city = item.city
         }
       })
       return city.nameCN
+    },
+    onChange (value, option) {
+      storage.set('POS', '0-' + option.data.attrs.index + '-0-0-0')
+      this.$refs.table.refresh()
     },
     handleToItem (record) {
       this.$router.push({ path: `/project/item/${record.id}?type=view&stage=${record.projectDataType}` })

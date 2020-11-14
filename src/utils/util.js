@@ -166,7 +166,7 @@ export function getPosValue (cities) {
         value = value[index]
       }
     } else {
-      if (value.children[index]) {
+      if (value.children && value.children[index]) {
         value = value.children[index]
       }
     }

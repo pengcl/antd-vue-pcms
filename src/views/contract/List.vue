@@ -193,9 +193,11 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return ContractService.items(requestParameters).then(res => {
-            return fixedList(res, requestParameters)
-          })
+          if (this.queryParam.ProjectGUID) {
+            return ContractService.items(requestParameters).then(res => {
+              return fixedList(res, requestParameters)
+            })
+          }
         }
       }
     },
@@ -217,7 +219,7 @@
         this.queryParam.ProjectID = value.projectCode
         this.projectType = value.type
         this.queryParam.ProjectGUID = value.projectGUID
-        console.log(this.queryParam)
+        this.$refs.table.refresh()
         this.$forceUpdate()
       })
     },

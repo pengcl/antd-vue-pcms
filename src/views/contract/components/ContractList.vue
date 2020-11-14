@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-bottom:15px">
     <a-form-model
       ref="form"
       :model="data.contract"
