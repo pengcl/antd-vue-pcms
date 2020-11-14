@@ -49,7 +49,7 @@
         </span>
 
         <span slot="beginDate" slot-scope="text">
-          {{ text | moment }}
+          {{ text | moment('yyyy-MM-dd') }}
         </span>
 
         <span slot="action" slot-scope="text, record">
