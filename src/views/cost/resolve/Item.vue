@@ -100,16 +100,19 @@
     items.forEach(item => {
       if (item.childs && item.childs.length>0) {
         getBudgetList(budgetId,item.childs)
+          return false
       }
       if(item.elementItem && item.elementItem.childs){
         getBudgetList(budgetId,item.elementItem.childs)
+        return false
       }
       if(item.tradeBudgetItems && item.tradeBudgetItems.length>0){
         item.tradeBudgetItems.forEach((budget,index) => {
           if(budget.id === budgetId){
-            obj['name'] = 'cost' + budget.costCenterId
-            obj['value'] = budget.budgetValue
-            return false
+            if(!obj.name){
+              obj['name'] = 'cost' + budget.costCenterId
+              obj['value'] = budget.budgetValue
+            }
           }
         })
       }
@@ -145,6 +148,7 @@
           budgetItem.elementInfoNameCN = budget.elementInfoNameCN
           costCenters.forEach(center =>{
             const result = getBudgetList(budget.id,center.elementItem.childs)
+            console.log(result)
             if(result!==null){
               budgetItem[result['name']] = result['value']
             }
