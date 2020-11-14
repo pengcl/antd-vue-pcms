@@ -1,5 +1,5 @@
 <template>
-  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" style="margin-bottom: 16px">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
         <a-radio-group v-model="useStore" button-style="solid">
