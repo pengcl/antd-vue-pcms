@@ -178,13 +178,14 @@
                                           amount: itemA.amount,
                                           percentage: itemA.percentage
                                         }
-                                      }else{
+                                      }
+                                    })
+                                    if(!obj[costName]){
                                         obj[costName] = {
                                           amount: 0,
                                           percentage: 0
                                         }
-                                      }
-                                    })
+                                    }
                                   })
                                 }
                                 result.result.data.push(obj)
