@@ -18,9 +18,21 @@
         :alert="false"
         :pagination="false"
       >
-      <span slot="elementInfoId" slot-scope="text,record">
-        <a-checkbox >测试一下{{record.cost1}}</a-checkbox>
-      </span>
+      <template
+        v-for ="col in slots"
+        :slot="col"
+        slot-scope="text, record, index"
+      >
+        <span :key="JSON.stringify(col)" v-if="text && text.length > 0">
+          <a-checkbox 
+            v-for ="budgetItem in text"
+            :key="JSON.stringify(budgetItem)"
+            @change="value => checkChange(value,budgetItem)" >{{budgetItem.amount}}</a-checkbox>
+        </span>
+        <span :key="JSON.stringify(col)" v-if="text == undefined || text.length < 1">
+          0
+        </span>
+      </template>
       </a-table>
     </div>
   </a-modal>
@@ -29,6 +41,7 @@
 <script>
     import { STable, Ellipsis } from '@/components'
     import { CostService } from '@/views/cost/cost.service'
+    import { data as testData } from '@/views/cost/industry/modal/testData'
     import { formatList } from '../../../../mock/util'
     import { fixedList } from '@/utils/util'
 
@@ -53,6 +66,7 @@
                 visible: false,
                 columnDatas : [],
                 confirmLoading: false,
+                slots : [],
                 mdl: null,
                 // 高级搜索 展开/关闭
                 advanced: false,
@@ -63,9 +77,11 @@
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if(this.queryParam.id){
+                      this.slots = []
                       return CostService.budegetTree(requestParameters).then(res => {
-                        return CostService.budegetTreeItem(requestParameters)
-                          .then(res2 => {
+                        // return CostService.budegetTreeItem(requestParameters)
+                        //   .then(res2 => {
+                          const res2 = testData
                             var result = {
                               result : {
                                 data : []
@@ -74,24 +90,12 @@
                             if (res2.result.data != null) {
                               //追加列
                               res2.result.data.forEach(column => {
+                                var costName = 'cost'+column.costCenterId
+                                this.slots.push(costName)
                                 _columns.push({
                                   title : column.costCenterName,
-                                  dataIndex : 'cost'+column.costCenterId,
-                                  customRender : (text,row,index) =>{
-                                    if(row.childs.length < 1 && row.id){
-                                      const budgetItemCheckId = 'budgetItemId'+column.costCenterId
-                                      const myChangeEvent = (e) =>{
-                                        this.checkChange(e,row,budgetItemCheckId)
-                                      }
-                                      const content = (<a-checkbox onClick={myChangeEvent}>{text}</a-checkbox>)
-                                      const obj = {
-                                        children : content
-                                      }
-                                      return obj
-                                    }else{
-                                      return text
-                                    }
-                                  }
+                                  dataIndex : costName,
+                                  scopedSlots: { customRender: costName }
                                 })
                               })
                               this.columns = _columns
@@ -100,10 +104,11 @@
                               const rows = [res.result.data]
                               forEachRow(rows,res2.result.data)
                               this.columnDatas = rows
+                      console.log('slots',this.slots)
                               // console.log('rows',JSON.stringify(rows))
                             }
                             // return fixedList(result, parameter)
-                          })
+                          // })
                       })
                     }
                     //根据elementId 获取bugetTreeItem中element数据
@@ -132,9 +137,11 @@
                           var costName = 'cost'+item.costCenterId
                           if(item.elementBudgetItemTree ){
                             var costColumn = forEachBugetItem([item.elementBudgetItemTree],data.elementInfoId)
-                            if(costColumn != null){
-                              data[costName] = costColumn.amount
-                              data['budgetItemId'+item.costCenterId] = costColumn.id
+                            if(costColumn != null && costColumn.tradeBudgetItems.length > 0){
+                              data[costName] = []
+                              costColumn.tradeBudgetItems.forEach(temp => {
+                                data[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
+                              })
                             }
                           }
                         })
@@ -200,12 +207,10 @@
             this.visible = false
             this.$forceUpdate()
           },
-          checkChange(obj,record,budgetItemId){
-            if(obj.target.checked){
-              record['budgetItemCheck'+record[budgetItemId]] = true
-            }else{
-              record['budgetItemCheck'+record[budgetItemId]] = false
-            }
+          checkChange(obj,item){
+            // console.log('checked',value,item)
+            item.checked = obj.target.checked;
+            console.log('columnDatas',this.columnDatas)
           }
         }
     }

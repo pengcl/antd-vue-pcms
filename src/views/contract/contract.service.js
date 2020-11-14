@@ -153,7 +153,7 @@ ContractService.bpm = function (ContractGuid, sProjectCode) {
   return request({
     url: API.bpm,
     method: 'POST',
-    data: { ContractGuid, sProjectCode }
+    params: { ContractGuid, sProjectCode }
   })
 }
 

@@ -141,6 +141,7 @@ export const asyncRouterMap = [
           {
             path: '/cost/resolve/list',
             name: 'CostResolveList',
+            hidden: true,
             component: () => import('@/views/cost/resolve/List'),
             meta: { title: 'menu.cost.resolve.list', keepAlive: true, permission: ['budget'] }
           },
@@ -457,10 +458,17 @@ export const asyncRouterMap = [
       },
       // data
       {
-        path: '/data',
-        name: 'data',
+        path: '/data/list',
+        name: 'DataList',
+        component: () => import('@/views/data/List'),
+        meta: { title: 'menu.data.list', icon: 'database', permission: ['data'] }
+      },
+      {
+        path: '/data/item/:id',
+        name: 'DataItem',
+        hidden: true,
         component: () => import('@/views/data/Item'),
-        meta: { title: 'menu.data', icon: 'database', permission: ['data'] }
+        meta: { title: 'menu.data.item', icon: 'database', permission: ['data'] }
       },
       // settings
       {

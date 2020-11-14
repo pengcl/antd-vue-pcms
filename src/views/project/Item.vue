@@ -1,5 +1,5 @@
 <template>
-  <page-header-wrapper :title="type === 'view' ? '项目详情' : id === '0' ? '新增项目' : '编辑项目'">
+  <page-header-wrapper :title="type === 'view' ? '查看' : (type === 'create' ? '添加' : '编辑') + name">
     <a-card :bordered="false">
       <div v-if="id !== '0' && info" class="table-page-search-wrapper">
         <a-form
@@ -73,14 +73,13 @@
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
-                  label="项目状态"
+                  :label="name + '状态'"
                   prop="projStatus"
                 >
                   <a-select
-                    :disabled="type === 'view' || stage !== 'Project'"
-                    placeholder="请选择项目状态"
-                    v-model="form.projStatus"
-                    v-decorator="['form.projStatus', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                    :disabled="type === 'view'"
+                    placeholder="请选择"
+                    v-model="form.projStatus">
                     <a-select-option
                       v-for="state in selection.types"
                       :key="state.nameCN"
@@ -91,7 +90,7 @@
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
-                  :label="'房产' + name + '(中文)'"
+                  :label="'房产' + name + '名称(中文)'"
                   prop="projectShortName"
                 >
                   <a-input
@@ -102,22 +101,22 @@
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
-                  :label="'房产' + name + '(英文)'"
+                  :label="'房产' + name + '名称(英文)'"
                   prop="projectEnName"
                 >
                   <a-input
                     :disabled="type === 'view'"
-                    :placeholder="'请填写房产' + name + '(英文)'"
+                    :placeholder="'请填写房产' + name + '名称(英文)'"
                     v-model="form.projectEnName"/>
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
                 <a-form-model-item
-                  :label="'项目地址'"
+                  :label="name + '地址'"
                   prop="projAddress"
                 >
                   <a-input
-                    :disabled="type === 'view' || stage !== 'Project'"
+                    :disabled="type === 'view'"
                     :placeholder="'请填写' + name + '地址'"
                     v-model="form.projAddress"/>
                 </a-form-model-item>
@@ -128,7 +127,7 @@
                   prop="description"
                 >
                   <a-textarea
-                    :disabled="type === 'view' || stage !== 'Project'"
+                    :disabled="type === 'view'"
                     rows="4"
                     placeholder="请输入总体描述"
                     v-model="form.description"
@@ -147,7 +146,7 @@
                     :disabled="type === 'view' || stage !== 'Project'"
                     placeholder="请选择币种"
                     v-model="form.currencyCode">
-                    <a-select-option v-for="currency in selection.currencies" :key="currency.id + ''" :value="currency.id + ''">
+                    <a-select-option v-for="currency in selection.currencies" :key="currency.code" :value="currency.code">
                       {{ currency.nameCN }}
                     </a-select-option>
                   </a-select>
@@ -183,8 +182,12 @@
                   prop="builtUpArea"
                 >
                   <a-input-number
-                    :disabled="type === 'view' || stage !== 'Project'"
+                    :disabled="type === 'view'"
                     v-model="form.builtUpArea"
+                    :min="0"
+                    :formatter="value => `${value}平方`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\平方\s?|(,*)/g, '')"
+                    :precision="2"
                     placeholder="请填写工地面积"/>
                 </a-form-model-item>
               </a-col>
@@ -493,6 +496,12 @@ export default {
           const value = SwaggerService.getValue(valueDto, data)
           value.projectShortCode = ''
           value.projectShortName = ''
+          value.projectEnName = ''
+          value.projStatus = ''
+          value.companyCode = ''
+          value.builtUpArea = ''
+          value.projAddress = ''
+          value.description = ''
           value.parentCode = data.projectCode
           value.parentId = this.id
           this.form = value
@@ -504,6 +513,7 @@ export default {
     this.form.cityID = this.$route.query.cityID ? parseInt(this.$route.query.cityID, 10) : ''
     ProjectService.types().then(res => {
       this.selection.types = res.result.data
+      this.$forceUpdate()
     })
     ProjectService.tree().then(res => {
       this.selection.cities = res.result.data.citys
@@ -511,6 +521,7 @@ export default {
     })
     CurrencyService.list().then(res => {
       this.selection.currencies = res.result.data.items
+      this.$forceUpdate()
     })
   },
   watch: {
@@ -532,7 +543,7 @@ export default {
     },
     name () {
       const stage = this.$route.query.stage
-      const name = stage === 'Project' ? '项目名称' : (stage === 'Stages' ? '分期名称' : '阶段名称')
+      const name = stage === 'Project' ? '项目' : (stage === 'Stages' ? '分期' : '阶段')
       return name
     },
     stage () {

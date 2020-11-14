@@ -152,7 +152,6 @@
           <a-input-number
             :disabled="type === 'view'"
             v-model="data.contract.liquidatedDamagesDailyAmount"
-            :min="0"
             :formatter="value => `${value}元/日`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :parser="value => value.replace(/\元\/日\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
