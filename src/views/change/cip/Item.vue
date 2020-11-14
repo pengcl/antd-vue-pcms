@@ -78,9 +78,9 @@
             <a-tab-pane :key="5" tab="附件" >
               <attachment-list :data="form" :type="type" :id="id" :stage="stage"></attachment-list>
             </a-tab-pane>
-            <a-tab-pane :key="6" tab="流程" >
+            <!-- <a-tab-pane :key="6" tab="流程" >
               <process :data="form" :type="type" :id="id"></process>
-            </a-tab-pane>
+            </a-tab-pane> -->
           </a-tabs>
         </a-form>
       </div>
@@ -88,13 +88,14 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="startUpLoading" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startUp">启动审批流程</a-button>
+            <a-button type="success" :loading="startBPMLoading" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="showBPMLoading" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中'" @click="showBPM">查看审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
             <a-button type="success" :loading="loading" v-if="type != 'view'" @click="save">储存</a-button>
-            <a-button type="danger" v-if="form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
+            <a-button type="danger" v-if="type != 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -113,6 +114,7 @@
   import { ChangeService } from '@/views/change/change.service'
   import { ProjectService } from '@/views/project/project.service'
   import { SwaggerService } from '@/api/swagger.service'
+  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
   export default {
     name: 'ChangeItem',
@@ -125,7 +127,8 @@
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
         project: null,
-        startUpLoading : false
+        startBPMLoading : false,
+        showBPMLoading : false,
       }
     },
     created () {
@@ -241,15 +244,22 @@
           }
         }
       },
-      startUp () {
-        this.startUpLoading = true
+      startBPM () {
+        this.startBPMLoading = true
         ChangeService.startBMP({ guid : this.form.voMasterInfo.voGuid, sProjectCode : this.project.projectCode}).then(res => {
           if(res.result.statusCode === 200){
             window.open(res.result.data)
             window.location.reload()
           }
         }).catch(() =>{
-          this.startUpLoading = false
+          this.startBPMLoading = false
+        })
+      },
+      showBPM(){
+        this.showBPMLoading = true
+        BaseService.viewBpm(this.form.voMasterInfo.voGuid).then(res => {
+          this.showBPMLoading= false
+          window.location.href = res.result.data
         })
       },
       back () {
