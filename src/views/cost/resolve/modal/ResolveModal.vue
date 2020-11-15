@@ -33,7 +33,7 @@
                     <a-button @click="del(index)" icon="delete" type="danger"></a-button>
                   </td>
                   <td>
-                    {{item.BudgetTitle}}
+                    {{item.elementInfoNameCN}}
                   </td>
                   <td>
                     <a-select
@@ -110,6 +110,7 @@
         this.ProjectGUID = record.ProjectGUID
         this.elementTradeTypes = record.elementTradeTypes
         this.costCenters = record.costCenters
+        console.log(this.resolveItem)
         this.loadData()
         this.$forceUpdate()
       },
@@ -123,7 +124,8 @@
             this.form.costCenterItems.push(center)
           })
         })
-        CostService.bidCreate(this.form).then(res => {
+        console.log(this.form)
+        CostService.bidBudgetCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
           }
@@ -142,7 +144,7 @@
           _id: new Date().getTime(),
           resolveItemID: this.id === '0' ? '' : this.id,
           id: '',
-          BudgetTitle: this.resolveItem.BudgetTitle,
+          elementInfoNameCN: this.resolveItem.elementInfoNameCN,
           tradeTypeId: '',
           costCenterItems: centers
         }

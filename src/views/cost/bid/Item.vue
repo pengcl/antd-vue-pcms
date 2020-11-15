@@ -150,8 +150,9 @@
                 </td>
                 <td>
                   <a-form-model-item
+                    class="simple"
                     :prop="'plans.' + index +'.planStartDate'"
-                    :rules="[{required: true, message: '请填写计划开始时间', trigger: 'blur' }]">
+                    :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
                   <a-date-picker
                     :disabled="type === 'view'"
                     v-model="form.plans[index].planStartDate"></a-date-picker>
@@ -159,8 +160,9 @@
                 </td>
                 <td>
                   <a-form-model-item
+                    class="simple"
                     :prop="'plans.' + index +'.planEndDate'"
-                    :rules="[{required: true, message: '请填写计划完成时间', trigger: 'blur' }]">
+                    :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
                   <a-date-picker
                     :disabled="type === 'view'"
                     v-model="form.plans[index].planEndDate"></a-date-picker>

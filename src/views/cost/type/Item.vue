@@ -1,15 +1,165 @@
 <template>
-  <div>
-    CostTypeItem
-  </div>
+  <page-header-wrapper>
+    <a-card :bordered="false">
+      <a-form-model
+        ref="form"
+        :model="form"
+        :rules="rules"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }">
+        <a-row :gutter="48">
+          <a-col :md="12" :sm="24">
+            <a-form-model-item label="类型中文名" prop="nameCN">
+              <a-input v-model="form.nameCN"></a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="类型英文名" prop="nameEN">
+              <a-input
+                :disabled="type === 'view'"
+                v-model="form.nameEN"
+              >
+              </a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="描述" prop="description">
+              <a-input
+                :disabled="type === 'view'"
+                v-model="form.description"
+              >
+              </a-input>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-form-model>
+      <a-row>
+        <a-col :md="12" :sm="24">
+          <a-button-group style="float: right">
+            <a-button :disabled="type === 'view'" type="success" @click="handleToSave">储存</a-button>
+            <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
+          </a-button-group>
+        </a-col>
+      </a-row>
+    </a-card>
+  </page-header-wrapper>
 </template>
 
 <script>
-export default {
-  name: 'CostTypeItem'
-}
+  import { CostService } from '@/views/cost/cost.service'
+  import { SwaggerService } from '@/api/swagger.service'
+  import {SupplierService} from "@/views/supplier/supplier.service";
+
+  export default {
+    name: 'Edit',
+    data () {
+      return {
+        form: SwaggerService.getForm('ElementTradeTypeListOutputDtoListResultModel'),
+        rules: {
+          nameCN: [{ required: true, message: '请选择日期', trigger: 'blur' }],
+          nameEN: [{ required: true, message: '请输入工程名称', trigger: 'blur' }],
+          description: [{ required: false, message: '请输入描述', trigger: 'change' }],
+        }
+      }
+    },
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      ProjectGUID () {
+        return this.$route.query.ProjectGUID
+      }
+    },
+    filters: {},
+    created () {
+      if (this.type !== 'add') {
+        CostService.typeItem({ Id: this.id }).then(res => {
+          this.form = res.result.data
+          this.$forceUpdate()
+        })
+      }
+    },
+    methods: {
+      handleToSave () {
+        this.form.projectGUID = this.ProjectGUID
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            const buttonType = this.type==='add' : 'typeCreate' ? 'typeUpdate'
+              CostService[buttonType](this.form).then(res => {
+              if (res.result.statusCode === 200) {
+                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+              }
+            })
+          }
+        })
+      },
+      back () {
+        this.$router.push({ path: `/cost/type/list` })
+      }
+    }
+  }
+
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+  table {
+    margin: 15px 0;
+    width: 100%;
+    border-width: 1px 1px 0 0;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-color: #ccc;
+
+    thead {
+      tr {
+        &:first-child {
+          th {
+            background-color: #f5f5f5;
+          }
+        }
+
+        th {
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          padding: 0.5em 0.6em 0.4em 0.6em !important;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  .ant-btn-group {
+    margin-right: 8px;
+  }
+
+  .simple{
+    /deep/ .ant-form-item-control-wrapper.ant-col-16{
+      width: 100%!important;
+    }
+  }
 
 </style>
