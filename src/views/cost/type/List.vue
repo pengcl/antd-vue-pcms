@@ -86,6 +86,7 @@
       if (item.id === id) {
         CostService.typyItems({Id: id}).then(res => {
           item.childs = res.result.data.childs
+          item.children = res.result.data.childs
         })
       }
       if (item.childs) {
