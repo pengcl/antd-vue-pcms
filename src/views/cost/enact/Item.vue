@@ -71,21 +71,6 @@
 
   const columns = defaultColumns
 
-  function formatList (items, isRoot) {
-    const list = []
-    items.forEach(item => {
-      item.isRoot = isRoot
-      if (item.childs) {
-        item.children = formatList(item.childs, false)
-      } else {
-        item.children = null
-        item.isEndNode = true
-      }
-      list.push(item)
-    })
-    return list
-  }
-
   export default {
     name: 'Table',
     components: {
