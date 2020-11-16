@@ -70,25 +70,49 @@
 
 <script>
   import {STable, Ellipsis} from '@/components'
-  import {getRoleList} from '@/api/manage'
-
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
   import {ProjectService} from '@/views/project/project.service'
   import {CostService} from '@/views/cost/cost.service'
-  import {formatList} from '../../../mock/util'
-  import {fixedList, getPosValue, nullFixedList} from '@/utils/util'
+  import { formatList } from '../../../mock/util'
+  import {getPosValue, nullFixedList} from "@/utils/util";
   import storage from "store";
 
-  function getList(items,id) {
+  function fixedList(res, params) {
+    const result = {}
+    result.pageSize = params.pageSize
+    result.pageNo = params.pageNo
+    if (res.result.data) {
+      result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
+      result.totalCount = res.result.data.length
+      result.data = getList(res.result.data)
+    } else {
+      result.totalPage = 0
+      result.totalCount = 0
+      result.data = []
+    }
+    console.log(result)
+    return result
+  }
+
+  function dataFormatList(items) {
     const list = []
     items.forEach(item => {
-      if (item.id === id) {
-        CostService.typyItems({Id: id}).then(res => {
-          item.childs = res.result.data.childs
-          item.children = res.result.data.childs
-        })
+      if (item.childs) {
+        item.children = dataFormatList(item.childs)
       }
+      list.push(item)
+    })
+    return list
+  }
+
+  function getList(items) {
+    const list = []
+    items.forEach(item => {
+      CostService.typyItems({Id: item.id}).then(res => {
+        item.childs = res.result.data.childs
+        item.children = res.result.data.childs
+      })
       if (item.childs) {
         item.children = getList(item.childs)
       }
@@ -102,8 +126,7 @@
     {
       title: '科目代码',
       dataIndex: 'code',
-      width: '200px',
-      scopedSlots: {customRender: 'action'}
+      width: '200px'
     },
     {
       title: '科目名称',
@@ -144,9 +167,17 @@
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           if (this.queryParam.ProjectGUID) {
             return CostService.items(requestParameters).then(res => {
-              return fixedList(res, parameter)
+              const result = {
+                result: {
+                  data: []
+                }
+              }
+              // result.result.data = getList(res.result.data)
+              // console.log(result)
+              // this.$forceUpdate()
+              return fixedList(res, requestParameters)
             })
-          } else {
+          }else {
             return nullFixedList(requestParameters)
           }
         },
@@ -206,9 +237,10 @@
         CostService.items(requestParameters).then(res => {
           result.result.data = getList(res.result.data,record.id)
           console.log(result)
+          this.$forceUpdate()
           return fixedList(result, requestParameters)
         })
-        this.$forceUpdate()
+
       },
       onSelect(value, option) {
         storage.set('POS', option.pos)
