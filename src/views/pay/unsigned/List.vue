@@ -134,10 +134,11 @@
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList } from '@/utils/util'
+    import { fixedList, getPosValue } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import { UnSignedService } from './unsigned.service'
+    import storage from 'store'
 
     const columns = [
         {
@@ -224,10 +225,10 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: { ProjectGUID: '19a6f5a0-d192-4875-8397-7945e5a33b8a', ProjectID: 'NWSC.LNXM.LN3.CC01' },
+                queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
+                    if (this.queryParam.ProjectGUID) {
                         const requestParameters = Object.assign({}, parameter, this.queryParam)
                         return UnSignedService.items(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
@@ -261,6 +262,11 @@
                     })
                 })
                 this.cities = cities
+                const value = getPosValue(this.cities)
+                this.queryParam.ProjectID = value.projectCode
+                this.projectType = value.type
+                this.queryParam.ProjectGUID = value.projectGUID
+                this.$refs.table.refresh()
                 this.$forceUpdate()
             })
             UnSignedService.moneyTypes().then(res => {
@@ -300,6 +306,7 @@
                 this.$refs.table.refresh(true)
             },
             onSelect (value, option) {
+                storage.set('POS', option.pos)
                 this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
                 this.projectType = option.$options.propsData.dataRef.type
                 if (typeof value === 'number') {

@@ -169,11 +169,12 @@
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList } from '@/utils/util'
+    import { fixedList, getPosValue } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import { SignedService } from './signed.service'
     import { nullFixedList } from '@/utils/util'
+    import storage from 'store'
 
     const columns = [
         {
@@ -300,7 +301,7 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
-                queryParam2: { ProjectGUID: '19a6f5a0-d192-4875-8397-7945e5a33b8a', ProjectID: 'NWSC.LNXM.LN3.CC01' },
+                queryParam2: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -313,7 +314,7 @@
                     }
                 },
                 loadData2: parameter => {
-                    if (this.queryParam2.ProjectGUID && this.queryParam2.ProjectID) {
+                    if (this.queryParam2.ProjectGUID) {
                         const requestParameters = Object.assign({}, parameter, this.queryParam2)
                         return SignedService.items(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
@@ -349,6 +350,11 @@
                     })
                 })
                 this.cities = cities
+                const value = getPosValue(this.cities)
+                this.queryParam2.ProjectID = value.projectCode
+                this.projectType = value.type
+                this.queryParam2.ProjectGUID = value.projectGUID
+                this.$refs.contractTable.refresh()
                 this.$forceUpdate()
             })
 
@@ -409,6 +415,7 @@
                 this.$refs.contractTable.refresh(true)
             },
             onSelect (value, option) {
+                storage.set('POS', option.pos)
                 this.queryParam2.ProjectID = option.$options.propsData.dataRef.projectCode
                 this.projectType = option.$options.propsData.dataRef.type
                 if (typeof value === 'number') {
@@ -420,8 +427,8 @@
                 this.contractAmt = {}
                 this.id = ''
                 this.$refs.contractTable.clearSelected()
-                this.$refs.table.refresh(true)
-                this.$refs.contractTable.refresh(true)
+                this.$refs.table.refresh()
+                this.$refs.contractTable.refresh()
                 this.$forceUpdate()
             },
             handleOk (e) {
