@@ -12,26 +12,27 @@
         ref="table"
         size="default"
         rowKey="elementInfoId"
+        v-if="columnDatas.length > 0"
         bordered
         :columns="columns"
         :data-source="columnDatas"
         :alert="false"
         :pagination="false"
+        :default-expand-all-rows="true"
       >
       <template
         v-for ="col in slots"
         :slot="col"
-        slot-scope="text, record, index"
+        slot-scope="text"
       >
-        <span :key="JSON.stringify(col)" v-if="text && text.length > 0">
+        <template  v-if="text && text.length > 0">
           <a-checkbox 
             v-for ="budgetItem in text"
-            :key="JSON.stringify(budgetItem)"
             @change="value => checkChange(value,budgetItem)" >{{budgetItem.amount}}</a-checkbox>
-        </span>
-        <span :key="JSON.stringify(col)" v-if="text == undefined || text.length < 1">
+        </template>
+        <template v-if="text == undefined || text.length < 1">
           0
-        </span>
+        </template>
       </template>
       </a-table>
     </div>
@@ -75,13 +76,13 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
+                    this.columnDatas = []
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if(this.queryParam.id){
                       this.slots = []
                       return CostService.budegetTree(requestParameters).then(res => {
-                        // return CostService.budegetTreeItem(requestParameters)
-                        //   .then(res2 => {
-                          const res2 = testData
+                        return CostService.budegetTreeItem(requestParameters)
+                          .then(res2 => {
                             var result = {
                               result : {
                                 data : []
@@ -90,7 +91,7 @@
                             if (res2.result.data != null) {
                               //追加列
                               res2.result.data.forEach(column => {
-                                var costName = 'cost'+column.costCenterId
+                                var costName = 'cost_'+column.costCenterId
                                 this.slots.push(costName)
                                 _columns.push({
                                   title : column.costCenterName,
@@ -104,11 +105,8 @@
                               const rows = [res.result.data]
                               forEachRow(rows,res2.result.data)
                               this.columnDatas = rows
-                      console.log('slots',this.slots)
-                              // console.log('rows',JSON.stringify(rows))
                             }
-                            // return fixedList(result, parameter)
-                          // })
+                          })
                       })
                     }
                     //根据elementId 获取bugetTreeItem中element数据
@@ -134,7 +132,7 @@
                       for(var i in datas){
                         var data = datas[i]
                         columnDatas.forEach(item =>{
-                          var costName = 'cost'+item.costCenterId
+                          var costName = 'cost_'+item.costCenterId
                           if(item.elementBudgetItemTree ){
                             var costColumn = forEachBugetItem([item.elementBudgetItemTree],data.elementInfoId)
                             if(costColumn != null && costColumn.tradeBudgetItems.length > 0){
@@ -167,32 +165,38 @@
             this.loadData()
             this.$forceUpdate()
           },
+          //取消
           handleCancel(){
             this.visible = false
           },
+          //确定
           handleOk(){
-            var result = []
-            var that = this
+            const result = []
+            const that = this
+            //获取选中行业预算
             getResults(this.columnDatas)
             function getResults(datas){
               datas.forEach(item => {
                 for(var i in item){
-                  if(i.indexOf('budgetItemCheck') > -1 && item[i]){
-                    console.log('itemId',i)
-                    result.push({packageId : that.queryParam.id, budgetItemId : item['budgetItemId'+(i.replace('budgetItemCheck',''))] })
+                  if(i.indexOf('cost_') > -1 && item[i].length > 0){
+                    item[i].forEach(budgetItem => {
+                      if(budgetItem.checked){
+                        result.push({packageId : that.queryParam.id, budgetItemId : budgetItem.id })
+                      }
+                    })
                   }
-                  if(item.children && item.children.length > 0){
-                    getResults(item.children)
-                  }
+                }
+                if(item.children && item.children.length > 0){
+                  getResults(item.children)
                 }
               })
             }
-            console.log('result',result)
+            //若选中的行业预算大于0，进行添加操作
             if(result.length > 0){
               result.forEach(item => {
                 CostService.addBudgetItem(item).then(res =>{
                   if(res.result.statusCode === 200){
-                    this.$message.info('添加行业预算成功')
+                    // this.$message.info('添加行业预算'++'成功')
                     this.closeModal()
                   }
                 })
@@ -207,10 +211,10 @@
             this.visible = false
             this.$forceUpdate()
           },
+          //监听行业预算checkbox变更
           checkChange(obj,item){
-            // console.log('checked',value,item)
-            item.checked = obj.target.checked;
-            console.log('columnDatas',this.columnDatas)
+            let myChecked = obj.target.checked
+            item.checked = myChecked
           }
         }
     }
