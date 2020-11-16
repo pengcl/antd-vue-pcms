@@ -37,8 +37,8 @@
 
         <span slot="cost" slot-scope="text">
           <p style="text-align: center">
-            <span style="font-weight: bold;padding-right: 10px">{{text.amount}}</span>
-            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>
+            <span style="font-weight: bold;padding-right: 10px">{{ text.amount }}</span>
+            <span style="color: #b3b3ca">{{ text.percentage + '%' }}</span>
           </p>
         </span>
 
@@ -69,30 +69,29 @@
 </template>
 
 <script>
-  import {STable, Ellipsis} from '@/components'
-  import {getRoleList} from '@/api/manage'
+  import { STable, Ellipsis } from '@/components'
+  import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
-  import {ProjectService} from '@/views/project/project.service'
-  import {CostService} from '@/views/cost/cost.service'
-  import {formatList} from '../../../mock/util'
-  import {fixedList, getPosValue, nullFixedList} from '@/utils/util'
-  import storage from "store";
+  import { ProjectService } from '@/views/project/project.service'
+  import { CostService } from '@/views/cost/cost.service'
+  import { formatList } from '../../../mock/util'
+  import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
+  import storage from 'store'
 
-  function getList(items,id) {
+  async function getList (items, id) {
     const list = []
-    items.forEach(item => {
+    await items.forEach(item => {
       if (item.id === id) {
-        CostService.typyItems({Id: id}).then(res => {
+        CostService.typyItems({ Id: id }).then(res => {
           item.childs = res.result.data.childs
-          item.children = res.result.data.childs
+          if (item.childs) {
+            item.children = res.result.data.childs
+          }
+          list.push(item)
         })
       }
-      if (item.childs) {
-        item.children = getList(item.childs)
-      }
-      list.push(item)
     })
     return list
   }
@@ -103,7 +102,7 @@
       title: '科目代码',
       dataIndex: 'code',
       width: '200px',
-      scopedSlots: {customRender: 'action'}
+      scopedSlots: { customRender: 'action' }
     },
     {
       title: '科目名称',
@@ -125,7 +124,7 @@
       CreateForm,
       StepByStepModal
     },
-    data() {
+    data () {
       this.columns = columns
       return {
         titleIds: [],
@@ -144,6 +143,12 @@
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           if (this.queryParam.ProjectGUID) {
             return CostService.items(requestParameters).then(res => {
+              res.result.data.forEach(item => {
+                if (item.childs) {
+                  item.children = getList(item.childs, item.id)
+                }
+              })
+              console.log(fixedList(res, parameter))
               return fixedList(res, parameter)
             })
           } else {
@@ -154,11 +159,11 @@
         selectedRows: []
       }
     },
-    created() {
+    created () {
       ProjectService.tree().then(res => {
         const cities = []
         res.result.data.citys.forEach(item => {
-          const children = formatList(item.projects.items, {key: 'type', value: 'project'})
+          const children = formatList(item.projects.items, { key: 'type', value: 'project' })
           cities.push({
             selectable: false,
             label: item.city.nameCN,
@@ -176,7 +181,7 @@
       })
     },
     computed: {
-      rowSelection() {
+      rowSelection () {
         return {
           selectedRowKeys: this.selectedRowKeys,
           onChange: this.onSelectChange
@@ -184,19 +189,19 @@
       }
     },
     methods: {
-      handleToItem(record) {
-        this.$router.push({path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}`})
+      handleToItem (record) {
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
-      handleToEdit(record) {
-        this.$router.push({path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}`})
+      handleToEdit (record) {
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
-      handleToAdd() {
-        this.$router.push({path: `/cost/enact/item/0?type=add`})
+      handleToAdd () {
+        this.$router.push({ path: `/cost/enact/item/0?type=add` })
       },
-      handleToResolve(record) {
-        this.$router.push({path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}`})
+      handleToResolve (record) {
+        this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
-      loadTypeItems(record) {
+      loadTypeItems (record) {
         const result = {
           result: {
             data: []
@@ -204,14 +209,13 @@
         }
         const requestParameters = Object.assign(this.queryParam)
         CostService.items(requestParameters).then(res => {
-          result.result.data = getList(res.result.data,record.id)
+          result.result.data = getList(res.result.data, record.id)
           console.log(result)
           this.$forceUpdate()
           return fixedList(result, requestParameters)
         })
-
       },
-      onSelect(value, option) {
+      onSelect (value, option) {
         storage.set('POS', option.pos)
         this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
         if (typeof value === 'number') {

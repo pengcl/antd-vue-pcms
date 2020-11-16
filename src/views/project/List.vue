@@ -44,6 +44,10 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
+        <span slot="regionalOfficeId" slot-scope="text">
+          {{ text }}
+        </span>
+
         <span slot="cityID" slot-scope="text">
           {{ getCity(text) }}
         </span>
@@ -85,6 +89,7 @@
 import { STable, Ellipsis } from '@/components'
 // import { getRoleList } from '@/api/manage'
 import { ProjectService } from '@/views/project/project.service'
+import { City as CityService } from '@/api/city'
 import storage from 'store'
 import { getPosValue } from '@/utils/util'
 
@@ -137,8 +142,8 @@ const columns = [
   },
   {
     title: '地区',
-    dataIndex: 'projAddress',
-    scopedSlots: { customRender: 'projAddress' }
+    dataIndex: 'regionalOfficeId',
+    scopedSlots: { customRender: 'regionalOfficeId' }
   },
   {
     title: '城市',
@@ -187,6 +192,7 @@ export default {
     return {
       // 城市
       cities: [],
+      selection: {},
       // 查询参数
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
@@ -208,6 +214,10 @@ export default {
       this.queryParam.Id = value.city.id
       this.$refs.table.refresh()
     })
+
+    CityService.regionals().then(res => {
+      this.selection.regionals = res.result.data.items
+    })
   },
   methods: {
     getCity (id) {
@@ -219,8 +229,12 @@ export default {
       })
       return city.nameCN
     },
+    getRegional (id) {
+
+    },
     onChange (value, option) {
       storage.set('POS', '0-' + option.data.attrs.index + '-0-0-0')
+      this.$forceUpdate()
       this.$refs.table.refresh()
     },
     handleToItem (record) {
