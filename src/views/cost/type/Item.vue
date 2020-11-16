@@ -10,7 +10,11 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-model-item label="类型中文名" prop="nameCN">
-              <a-input v-model="form.nameCN"></a-input>
+              <a-input
+                :disabled="type === 'view'"
+                v-model="form.nameCN"
+              >
+              </a-input>
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -35,7 +39,7 @@
       </a-form-model>
       <a-row>
         <a-col :md="12" :sm="24">
-          <a-button-group style="float: right">
+          <a-button-group style="float: left">
             <a-button :disabled="type === 'view'" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
@@ -51,13 +55,13 @@
   import {SupplierService} from "@/views/supplier/supplier.service";
 
   export default {
-    name: 'Edit',
+    name: 'CostTypeItem',
     data () {
       return {
         form: SwaggerService.getForm('ElementTradeTypeListOutputDtoListResultModel'),
         rules: {
-          nameCN: [{ required: true, message: '请选择日期', trigger: 'blur' }],
-          nameEN: [{ required: true, message: '请输入工程名称', trigger: 'blur' }],
+          nameCN: [{ required: true, message: '请输入类型中文名', trigger: 'blur' }],
+          nameEN: [{ required: true, message: '请输入类型英文名', trigger: 'blur' }],
           description: [{ required: false, message: '请输入描述', trigger: 'change' }],
         }
       }
@@ -69,8 +73,8 @@
       type () {
         return this.$route.query.type
       },
-      ProjectGUID () {
-        return this.$route.query.ProjectGUID
+      elementId () {
+        return this.$route.query.elementId
       }
     },
     filters: {},
@@ -84,11 +88,11 @@
     },
     methods: {
       handleToSave () {
-        this.form.projectGUID = this.ProjectGUID
         this.$refs.form.validate(valid => {
           if (valid) {
-            const buttonType = this.type==='add' : 'typeCreate' ? 'typeUpdate'
-              CostService[buttonType](this.form).then(res => {
+            const buttonType = this.type==='add' ? 'typeCreate' : 'typeUpdate'
+            this.form.elementId = this.elementId
+            CostService[buttonType](this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
               }

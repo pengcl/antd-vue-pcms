@@ -202,7 +202,7 @@ export const asyncRouterMap = [
             path: '/cost/type/item/:id',
             name: 'CostTypeItem',
             hidden: true,
-            component: () => import('@/views/cost/bid/Item'),
+            component: () => import('@/views/cost/type/Item'),
             meta: { title: 'menu.cost.type.item', keepAlive: true, permission: ['budget'] }
           }
         ]

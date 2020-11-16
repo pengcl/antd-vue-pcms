@@ -107,7 +107,7 @@
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button type="success"  v-if="pid" @click="hanldeAddBugetItem">新增预算</a-button>
-          <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button>
+          <!-- <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button> -->
         </a-col>
         <!-- <a-col :md="12" :sm="24">
           <a-form :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
@@ -135,21 +135,15 @@
         :columns="_columns"
         :data="loadData2"
         :alert="false"
-        showPagination="auto"
-        :rowSelection="rowSelection2"
+        :showPagination="false"
       >
         <span slot="itemAction" slot-scope="text, record">
           <template>
             <a-button
-              type="primary"
-              icon="form"
-              style="margin-left: 4px"
-              title="保存"
-              @click="handleToEdit(record)"></a-button>
-            <a-button
               type="danger"
               icon="delete"
               style="margin-left: 4px"
+              @click="handleRemoveBudgetItem(record)"
               title="删除"></a-button>
           </template>
         </span>
@@ -162,10 +156,7 @@
 <script>
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
-
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import {CostService} from "@/views/cost/cost.service";
@@ -206,27 +197,27 @@
     ]
 
     const _columns = [
-        // {
-        //   title: '操作',
-        //   dataIndex: 'action',
-        //   width: '150px',
-        //   scopedSlots: { customRender: 'itemAction' }
-        // },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '150px',
+          scopedSlots: { customRender: 'itemAction' }
+        },
         {
             title: '业态成本中心',
             dataIndex: 'costCenterName',
         },
         {
             title: '科目名称',
-            dataIndex: 'no'
+            dataIndex: 'elementInfoNameCN'
         },
         {
             title: '行业',
-            dataIndex: 'industry',
+            dataIndex: 'budgetTitle',
         },
         {
             title: '金额',
-            dataIndex: 'callNo',
+            dataIndex: 'budgetValue',
             scopedSlots: { customRender: 'callNo' }
         },
         {
@@ -243,7 +234,6 @@
         components: {
             STable,
             Ellipsis,
-            CreateForm,
             StepByStepModal,
             IndustryModal
         },
@@ -269,7 +259,6 @@
                       return CostService.industryItems(requestParameters)
                         .then(res => {
                           if(res.result.data!=null) {
-                            console.log(fixedList(res, requestParameters))
                             return fixedList(res, requestParameters)
                           }
                         })
@@ -283,11 +272,13 @@
                     return CostService.budgetItems({ Id: this.pid })
                       .then(res => {
                         if(res.result.data!=null) {
-                          return fixedList(res, requestParameters)
+                          return res.result
                         }
                       })
                   }else{
-                    return nullFixedList(requestParameters)
+                    return new Promise((resolve, reject) => {
+                      resolve({data : []})
+                    })
                   }
                 },
                 selectedRowKeys: [],
@@ -345,15 +336,6 @@
                   selectedRowKeys: this.selectedRowKeys,
                   onChange: this.onSelectChange
               }
-          },
-          rowSelection2 (){
-            const that = this
-            return {
-              type: 'radio',
-              onSelect: function (record, selected, selectRows, nativeEvent) {
-                that.budgetId = record.id
-              }
-            }
           }
         },
         methods: {
@@ -478,25 +460,25 @@
                 this.$refs.industryModal.show(this.pid)
               }
             },
-            handleRemoveBudgetItem(){
-              if(this.budgetId){
-                var that = this
-                this.$confirm({
-                  title : '删除预算',
-                  content : '是否确定删除选中预算?',
-                  onOK (){
-                    CostService.removeBudgetItem({packageId : that.queryParam.id,budgetItemId : that.budgetItemId}).then(res =>{
-                      if(res.result.statusCode === 200){
-                        that.$message.info('预算删除成功')
-                        this.$refs.table2.refresh()
-                      }
-                    })
-                  },
-                  onCancel (){
+            handleRemoveBudgetItem(record){
+              const that = this
+              this.$confirm({
+                title : '删除预算',
+                content : '是否确定删除选中预算?',
+                onOk () {
+                  console.log('record',record,that.pid)
+                  CostService.removeBudgetItem({packageId : that.pid , budgetItemId : record.id}).then(res =>{
+                    if(res.result.statusCode === 200){
+                      that.$message.info('预算删除成功').then(() =>{
+                        that.$refs.table2.refresh()
+                      })
+                    }
+                  })
+                },
+                onCancel(){
 
-                  }
-                })
-              }
+                }
+              })
             }
         }
     }

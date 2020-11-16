@@ -87,6 +87,7 @@
                   <td>
                     <a-form-model-item
                       class="simple"
+                      style="margin-top: 20px"
                       :prop="'tenderPackages.' + index"
                       :rules="[{required: true, message: '请选择行业分判包', trigger: 'change' }]"
                     >
@@ -141,6 +142,7 @@
                 <td>
                   <a-form-model-item
                     class="simple"
+                    style="margin-top: 20px"
                     :prop="'plans.' + index +'.planTitle'"
                     :rules="[{required: true, message: '请填写工作项', trigger: 'blur' }]">
                     <a-input
@@ -151,6 +153,7 @@
                 <td>
                   <a-form-model-item
                     class="simple"
+                    style="margin-top: 20px"
                     :prop="'plans.' + index +'.planStartDate'"
                     :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
                   <a-date-picker
@@ -161,6 +164,7 @@
                 <td>
                   <a-form-model-item
                     class="simple"
+                    style="margin-top: 20px"
                     :prop="'plans.' + index +'.planEndDate'"
                     :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
                   <a-date-picker
@@ -169,7 +173,13 @@
                   </a-form-model-item>
                 </td>
                 <td>
-                  <a-input :disabled="type === 'view'" v-model="item.remarks"></a-input>
+                  <a-form-model-item
+                    class="simple"
+                    style="margin-top: 20px"
+                    :prop="'plans.' + index +'.remarks'"
+                    :rules="[{required: false, message: '请填写描述', trigger: 'blur' }]">
+                    <a-input :disabled="type === 'view'" v-model="form.plans[index].remarks"></a-input>
+                  </a-form-model-item>
                 </td>
               </tr>
               </tbody>
@@ -234,7 +244,6 @@
     },
     filters: {},
     created () {
-      console.log(this.form)
       CostService.budgetTypeItems().then(res => {
         this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
@@ -254,7 +263,6 @@
             })
             this.form.tenderPackages = packages
           }
-          console.log(this.form)
           this.$forceUpdate()
         })
       }

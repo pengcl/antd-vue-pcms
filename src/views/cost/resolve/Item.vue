@@ -35,7 +35,11 @@
             </span>
             <span slot="action" slot-scope="text, record">
               <template>
-                <a-button v-if="record.isCreate" @click="showModal(record,'add')" type="success" icon="form" title="新增">
+                <a-button
+                  v-if="record.isCreate"
+                  @click="showModal(record,'add')"
+                  type="primary"
+                  icon="plus-square" title="新增">
                 </a-button>
                 {{ record.elementInfoNameCN }}
               </template>
@@ -130,12 +134,12 @@
         obj.childs = childrenList
         obj.children = obj.childs
       }
-      list.push(obj)
       // 插入行业预算
       if (item.tradeBudgetItems && item.tradeBudgetItems.length > 0) {
+        const objItems = []
         item.tradeBudgetItems.forEach((budget, index) => {
           const budgetItem = {}
-          budgetItem.elementInfoId = budget.elementInfoId + new Date().getTime()
+          budgetItem.elementInfoId = budget.elementInfoId + budget.id
           budgetItem.BudgetTitle = budget.budgetTitle
           budgetItem.elementInfoNameCN = ''
           costCenters.forEach(center => {
@@ -144,12 +148,16 @@
               budgetItem[result['name']] = result['value']
             }
           })
-          list.push(budgetItem)
+          objItems.push(budgetItem)
         })
+        if(objItems.length>0){
+          obj.children = objItems
+        }
       }
+      list.push(obj)
 
       // 插入General Trade行
-      if (item.tradeBudgetInfo && item.childs && item.childs.length == 0) {
+      if (item.tradeBudgetInfo && item.childs && item.childs.length === 0) {
         const gt = {}
         costCenters.forEach((center, index) => {
           gt.elementInfoId = item.elementInfoId + new Date().getTime()
@@ -298,18 +306,6 @@
           this.$refs.resolveModal.show(record)
         })
       },
-      // handleOk(e) {
-      //   this.ModalText = 'The modal will be closed after two seconds';
-      //   this.confirmLoading = true;
-      //   setTimeout(() => {
-      //     this.visible = false;
-      //     this.confirmLoading = false;
-      //   }, 2000);
-      // },
-      // handleCancel(e) {
-      //   console.log('Clicked cancel button');
-      //   this.visible = false;
-      // },
       createGT() {
         CostService.createGT({projectGUID: this.ProjectGUID, planPackageGUID: this.ProjectGUID}).then(res => {
           if (res.result.statusCode === 200) {
@@ -368,4 +364,7 @@
       }
     }
   }
+   /deep/ .ant-table-row-level-2{
+     background: #d7f4ff !important;
+   }
 </style>

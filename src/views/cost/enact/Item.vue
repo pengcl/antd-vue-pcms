@@ -112,7 +112,6 @@
             const rows = res.result.data[0].elementItem.childs
             forEachRow(rows, res.result.data)
             this.datas = rows
-            console.log(this.datas)
           })
 
           function forEachItem (datas, elementId) {

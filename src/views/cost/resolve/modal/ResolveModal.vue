@@ -110,7 +110,6 @@
         this.ProjectGUID = record.ProjectGUID
         this.elementTradeTypes = record.elementTradeTypes
         this.costCenters = record.costCenters
-        console.log(this.resolveItem)
         this.loadData()
         this.$forceUpdate()
       },
@@ -124,7 +123,6 @@
             this.form.costCenterItems.push(center)
           })
         })
-        console.log(this.form)
         CostService.bidBudgetCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')

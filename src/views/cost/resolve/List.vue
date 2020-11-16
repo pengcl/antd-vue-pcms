@@ -72,7 +72,6 @@
   import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import CreateForm from '@/views/list/modules/CreateForm'
   import { ProjectService } from '@/views/project/project.service'
   import { CostService } from '@/views/cost/cost.service'
   import { formatList } from '../../../mock/util'
@@ -99,7 +98,6 @@
     components: {
       STable,
       Ellipsis,
-      CreateForm,
       StepByStepModal
     },
     data () {
@@ -118,7 +116,6 @@
         loadData: parameter => {
           const _columns = JSON.parse(JSON.stringify(defaultColumns))
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          // console.log('loadData request parameters:', requestParameters)
           const result = {
             result: {
               data: []
@@ -184,7 +181,6 @@
         const cities = []
         res.result.data.citys.forEach(item => {
           const children = formatList(item.projects.items)
-          // console.log(children)
           cities.push({
             label: item.city.nameCN,
             value: item.city.id,
@@ -223,7 +219,6 @@
         }
       },
       onSelect (value,option) {
-        console.log(option.dataRef.auditStatus)
         this.auditStatus = option.dataRef.auditStatus
       }
     }

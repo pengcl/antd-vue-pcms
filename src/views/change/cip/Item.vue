@@ -55,6 +55,7 @@
                 title="造价估算"
                 :data="form"
                 :contract="contract"
+                v-if="contract.contractGuid && project"
                 :project="project"
                 :type="type"
                 :id="id"
@@ -88,14 +89,17 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="startBPMLoading" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
-            <a-button type="success" :loading="showBPMLoading" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中'" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中'" @click="showBPM">查看审批流程</a-button>
+
+            <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !this.pmiUrl" @click="createPMI">生成项目指令</a-button>
+            <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl " @click="showPMI">查看项目指令</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading" v-if="type != 'view'" @click="save">储存</a-button>
-            <a-button type="danger" v-if="type != 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type != 'view'" @click="save">储存</a-button>
+            <a-button type="danger" :loading="loading.cancel" v-if="type != 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -123,12 +127,18 @@
       return {
         tabActiveKey: 1,
         preActiveKey : 1,
-        loading: false,
+        pmiUrl : '',
+        loading: {
+          startBPM : false,
+          save : false,
+          cancel : false,
+          showBPM : false,
+          createPMI : false,
+          showPMI : false
+        },
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
         project: null,
-        startBPMLoading : false,
-        showBPMLoading : false,
       }
     },
     created () {
@@ -145,6 +155,13 @@
           this.form = res.result.data
           console.log('change.item.data', this.form)
         })
+        if(this.stage === 'CIP' && this.type === 'view'){
+          ChangeService.viewPMI(this.id).then(res => {
+            if(res.result.data){
+              this.pmiUrl = res.result.data
+            }
+          })
+        }
       } else {
         if (this.stage === 'VO') {
           ChangeService.voItem(this.id).then((res) => {
@@ -216,49 +233,49 @@
             if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
               this.form.fileMasterId = 0
             }
-            this.loading = true
+            this.loading.save = true
             ChangeService.create(this.form).then((res) => {
-              this.loading = false
+              this.loading.save = false
               console.log(res)
               if (res.result.statusCode === 200) {
                 this.$message.info('创建成功')
                 this.$router.push({ path: `/change/pmi` })
               }
             }).catch(() => {
-              this.loading = false
+              this.loading.save = false
               this.$message.error('创建失败，表单未填写完整')
             })
           } else if (this.type == 'edit') {
-            this.loading = true
+            this.loading.save = true
             ChangeService.update(this.form).then((res) => {
-              this.loading = false
+              this.loading.save = false
               console.log(res)
               if (res.result.statusCode === 200) {
                 this.$message.info('修改成功')
                 this.$router.push({ path: `/change/pmi` })
               }
             }).catch(() => {
-              this.loading = false
+              this.loading.save = false
               this.$message.error('修改失败，表单未填写完整')
             })
           }
         }
       },
       startBPM () {
-        this.startBPMLoading = true
+        this.loading.startBPM = true
         ChangeService.startBMP({ guid : this.form.voMasterInfo.voGuid, sProjectCode : this.project.projectCode}).then(res => {
           if(res.result.statusCode === 200){
             window.open(res.result.data)
             window.location.reload()
           }
         }).catch(() =>{
-          this.startBPMLoading = false
+          this.loading.startBPM = false
         })
       },
       showBPM(){
-        this.showBPMLoading = true
+        this.loading.showBPM = true
         BaseService.viewBpm(this.form.voMasterInfo.voGuid).then(res => {
-          this.showBPMLoading= false
+          this.loading.showBPM= false
           window.open(res.result.data)
         })
       },
@@ -325,12 +342,16 @@
           title : '废弃提醒',
           content : '是否确认废弃该变更？',
           onOk () {
+            that.loading.cancel = true
             ChangeService.delete(that.form.voMasterInfo.voGuid).then(res =>{
+              this.loading.cancel = false
               if(res.result.statusCode === 200){
                 that.$message.info('废弃成功').then(() =>{
                   that.$router.push({ path: `/change/pmi` })
                 })
               }
+            }).catch(() =>{
+              this.loading.cancel = false
             })
             //调用废弃接口
             console.log('进入废弃功能按钮点击事件')
@@ -339,7 +360,27 @@
 
           }
         })
-      }
+      },
+      //生成项目指令
+      createPMI () {
+        this.loading.createPMI = true
+        ChangeService.createPMI({ CIPGuid : this.form.voMasterInfo.voGuid}).then(res => {
+          this.loading.createPMI = false
+          if(res.result.statusCode === 200){
+            // console.log('res',res.result.data,window)
+            // setTimeout(function(){
+              window.open(res.result.data)
+            // },0)
+            this.pmiUrl = res.result.data
+          }
+        }).catch(() =>{
+          this.loading.createPMI = false
+        })
+        this.$message.info('生成文档所需时间1-2分钟左右，请稍等...')
+      },
+      showPMI(){
+        window.open(this.pmiUrl)
+      },
     }
   }
 </script>

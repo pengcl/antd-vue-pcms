@@ -27,10 +27,10 @@ const API = {
   //新增预算界面
   budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
   budegetTreeItem: '/api/services/app/TenderPackage/GetTenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
-  addBudgetItem : '/api/services/app/TenderPackage/TenderPackageAddBudgetItem',//行业分判包添加行业预算
+  addBudgetItem : '/api/services/app/TenderPackage/TenderPackageBatchAddBudgetItem',//行业分判包添加行业预算
   removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem',//行业分判包移除行业预算
   //行业类型
-  typyItems: '/api/services/app/ElementTradeType/GetElementTradeTypeTree' ,//获取预算科目下的行业类型集合
+  typyItems: '/api/services/app/ElementTradeType/GetFullElementTradeTypeTree' ,//获取预算科目下的行业类型集合
   typeCreate: '/api/services/app/ElementTradeType/Create',//添加预算科目的行业类型
   typeItem: '/api/services/app/ElementTradeType/GetById',//返回预算科目行业类型实体对象
   typeUpdate: '/api/services/app/ElementTradeType/Update' //对预算行业类型进行编辑更新
@@ -218,7 +218,7 @@ CostService.addBudgetItem = function (parameter) {
   return request({
     url: API.addBudgetItem,
     method: 'POST',
-    data: parameter
+    params : parameter
   })
 }
 
