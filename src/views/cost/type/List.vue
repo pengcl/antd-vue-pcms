@@ -35,13 +35,6 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="cost" slot-scope="text">
-          <p style="text-align: center">
-            <span style="font-weight: bold;padding-right: 10px">{{text.amount}}</span>
-            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>
-          </p>
-        </span>
-
         <span slot="action" slot-scope="text, record">
           <template>
             {{ record.code }}
