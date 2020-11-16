@@ -1,24 +1,6 @@
 <template>
   <page-header-wrapper :property="{}">
     <a-card :bordered="false">
-      <div class="table-page-search-wrapper">
-        <a-form layout="inline">
-          <a-row :gutter="48">
-            <a-col :md="12" :sm="24">
-              <a-form-item label="项目">
-                <a-tree-select
-                  style="width: 100%"
-                  :tree-data="cities"
-                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
-                  search-placeholder="请选择"
-                  v-model="queryParam.ProjectGUID"
-                  @select="onSelect"
-                />
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
 
       <s-table
         style="margin-top: 5px"
@@ -37,30 +19,31 @@
 
         <span slot="cost" slot-scope="text">
           <p style="text-align: center">
-            <span style="font-weight: bold;padding-right: 10px">{{ text.amount }}</span>
-            <span style="color: #b3b3ca">{{ text.percentage + '%' }}</span>
+            <span style="font-weight: bold;padding-right: 10px">{{text.amount}}</span>
+            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>
           </p>
         </span>
 
         <span slot="action" slot-scope="text, record">
           <template>
-            {{ record.code }}
-            <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
-            </a-button>
+            <a-button v-if="record.isEdit" type="success" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
+<!--            <a-button-->
+<!--              v-if="record.isEdit"-->
+<!--              @click="handleToAdd(record)"-->
+<!--              type="primary"-->
+<!--              icon="form"-->
+<!--              style="margin-left: 4px"-->
+<!--              title="编辑科目类型">-->
+<!--            </a-button>-->
             <a-button
-              @click="handleToEdit(record)"
-              type="primary"
-              icon="form"
-              style="margin-left: 4px"
-              title="编辑">
-            </a-button>
-            <a-button
-              @click="loadTypeItems(record)"
+              v-if="record.isCreate"
+              @click="handleToAdd(record)"
               type="primary"
               icon="plus-square"
               style="margin-left: 4px"
-              title="查看科目类型">
+              title="新增科目类型">
             </a-button>
+            {{ record.nameCN }}
           </template>
         </span>
       </s-table>
@@ -69,62 +52,68 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
-
+  import {STable, Ellipsis} from '@/components'
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import CreateForm from '@/views/list/modules/CreateForm'
-  import { ProjectService } from '@/views/project/project.service'
-  import { CostService } from '@/views/cost/cost.service'
-  import { formatList } from '../../../mock/util'
-  import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
-  import storage from 'store'
+  import {CostService} from '@/views/cost/cost.service'
+  import {fixedList, nullFixedList} from '@/utils/util'
+  import storage from "store";
 
-  async function getList (items, id) {
+  function getList(items) {
     const list = []
-    await items.forEach(item => {
-      if (item.id === id) {
-        CostService.typyItems({ Id: id }).then(res => {
-          item.childs = res.result.data.childs
-          if (item.childs) {
-            item.children = res.result.data.childs
-          }
-          list.push(item)
+    items.forEach(item => {
+      if (item.childs) {
+        item.children = getList(item.childs)
+      }
+      list.push(item)
+      // 插入行业预算行
+      if (item.tradeTypeList && item.childs && item.childs.length === 0) {
+        item.tradeTypeList.forEach(budgetItem =>{
+          const budget = {}
+          budget.elementId = item.id
+          budget.code = budgetItem.code
+          budget.tradeTypeId = budgetItem.id
+          budget.nameCN = budgetItem.nameCN
+          budget.typeName = budgetItem.nameCN
+          budget.description = budgetItem.description
+          budget.isEdit = true
+          item.isCreate = true
+          list.push(budget)
         })
       }
     })
     return list
   }
 
-  const defaultColumns = [
+  const columns = [
 
     {
       title: '科目代码',
       dataIndex: 'code',
-      width: '200px',
-      scopedSlots: { customRender: 'action' }
+      width: '200px'
     },
     {
       title: '科目名称',
-      dataIndex: 'nameCN'
+      dataIndex: 'nameCN',
+      scopedSlots: {customRender: 'action'}
     },
     {
       title: '类型名称',
       dataIndex: 'typeName'
+    },
+    {
+      title: '类型描述',
+      dataIndex: 'description'
     }
   ]
 
-  const columns = defaultColumns
-
   export default {
-    name: 'CostEnactList',
+    name: 'CostTypeList',
     components: {
       STable,
       Ellipsis,
-      CreateForm,
       StepByStepModal
     },
-    data () {
+    data() {
       this.columns = columns
       return {
         titleIds: [],
@@ -139,49 +128,25 @@
         queryParam: {},
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-          const _columns = JSON.parse(JSON.stringify(defaultColumns))
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          if (this.queryParam.ProjectGUID) {
-            return CostService.items(requestParameters).then(res => {
-              res.result.data.forEach(item => {
-                if (item.childs) {
-                  item.children = getList(item.childs, item.id)
+            return CostService.typyItems().then(res => {
+              const result = {
+                result: {
+                  data: []
                 }
-              })
-              console.log(fixedList(res, parameter))
-              return fixedList(res, parameter)
+              }
+              result.result.data = getList(res.result.data.childs)
+              console.log(fixedList(result, parameter))
+              return fixedList(result, parameter)
             })
-          } else {
-            return nullFixedList(requestParameters)
-          }
         },
         selectedRowKeys: [],
         selectedRows: []
       }
     },
-    created () {
-      ProjectService.tree().then(res => {
-        const cities = []
-        res.result.data.citys.forEach(item => {
-          const children = formatList(item.projects.items, { key: 'type', value: 'project' })
-          cities.push({
-            selectable: false,
-            label: item.city.nameCN,
-            value: item.city.id,
-            children: children
-          })
-        })
-        this.cities = cities
-        const value = getPosValue(this.cities)
-        this.queryParam.ProjectID = value.projectCode
-        this.queryParam.ProjectGUID = value.projectGUID
-        this.auditStatus = value.auditStatus
-        this.$forceUpdate()
-        this.$refs.table.refresh(true)
-      })
+    created() {
     },
     computed: {
-      rowSelection () {
+      rowSelection() {
         return {
           selectedRowKeys: this.selectedRowKeys,
           onChange: this.onSelectChange
@@ -189,45 +154,20 @@
       }
     },
     methods: {
-      handleToItem (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
+      handleToItem(record) {
+        this.$router.push({path: `/cost/type/item/${record.tradeTypeId}?type=view&elementId=${record.elementId}`})
       },
-      handleToEdit (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
+      handleToEdit(record) {
+        this.$router.push({path: `/cost/type/item/${record.tradeTypeId}?type=edit&elementId=${record.elementId}`})
       },
-      handleToAdd () {
-        this.$router.push({ path: `/cost/enact/item/0?type=add` })
-      },
-      handleToResolve (record) {
-        this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
-      },
-      loadTypeItems (record) {
-        const result = {
-          result: {
-            data: []
-          }
-        }
-        const requestParameters = Object.assign(this.queryParam)
-        CostService.items(requestParameters).then(res => {
-          result.result.data = getList(res.result.data, record.id)
-          console.log(result)
-          this.$forceUpdate()
-          return fixedList(result, requestParameters)
-        })
-      },
-      onSelect (value, option) {
-        storage.set('POS', option.pos)
-        this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
-        if (typeof value === 'number') {
-          this.city = value
-          this.queryParam.ProjectGUID = ''
-        } else {
-          this.queryParam.ProjectGUID = value
-        }
-        this.auditStatus = option.dataRef.auditStatus
-        this.$refs.table.refresh()
-        this.$forceUpdate()
+      handleToAdd(record) {
+        this.$router.push({path: `/cost/type/item/0?type=add&elementId=${record.id}`})
       }
     }
   }
 </script>
+<style lang="less" scoped>
+  /deep/ .ant-table-row ant-table-row-level-2{
+    background: #d7f4ff !important;
+  }
+</style>
