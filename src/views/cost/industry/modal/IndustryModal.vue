@@ -170,8 +170,8 @@
           },
           //确定
           handleOk(){
-            const result = []
             const that = this
+            const result = {packageId : that.queryParam.id, budgtItmIdList : []}
             //获取选中行业预算
             getResults(this.columnDatas)
             function getResults(datas){
@@ -180,7 +180,7 @@
                   if(i.indexOf('cost_') > -1 && item[i].length > 0){
                     item[i].forEach(budgetItem => {
                       if(budgetItem.checked){
-                        result.push({packageId : that.queryParam.id, budgetItemId : budgetItem.id })
+                        result.budgtItmIdList.push( budgetItem.id )
                       }
                     })
                   }
@@ -191,14 +191,14 @@
               })
             }
             //若选中的行业预算大于0，进行添加操作
-            if(result.length > 0){
-              result.forEach(item => {
-                CostService.addBudgetItem(item).then(res =>{
-                  if(res.result.statusCode === 200){
-                    // this.$message.info('添加行业预算'++'成功')
-                    this.closeModal()
-                  }
-                })
+            if(result.budgtItmIdList.length > 0){
+              CostService.addBudgetItem(result).then(res =>{
+                if(res.result.statusCode === 200){
+                  const that = this
+                  this.$message.info('添加行业预算成功').then(() =>{
+                    that.closeModal()
+                  })
+                }
               })
             }else{
               this.closeModal()
