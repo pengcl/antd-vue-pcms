@@ -113,7 +113,7 @@ function formatList (items, isRoot) {
   const list = []
   items.forEach(item => {
     item.isRoot = isRoot
-    if (item.childs) {
+    if (item.childs && item.childs.items.length > 0) {
       item.children = formatList(item.childs.items, false)
     } else {
       item.children = null

@@ -7,7 +7,7 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  v-model="value"
+                  v-model="queryParam.ProjectGUID"
                   style="width: 100%"
                   :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
@@ -31,19 +31,39 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="contractGuid"
+        rowKey="gid"
         bordered
         :columns="columns"
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :expandIconColumnIndex="1"
       >
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
+        <span slot="courseName" slot-scope="text, record">
+          <template>
+            <span>
+              <span :style="{fontWeight: record.isRoot ? 'bold' : '' }">{{record.title}}</span>
+              <em style="color: #1e66ca;font-style: normal">{{record.yearVersionAuditStatus ? '（年度：' + record.yearVersionAuditStatus+record.yearVersion + '）' : ''}}</em>
+              <em style="color: #1e66ca;font-style: normal">{{record.monthLastVersionAuditStatus ? '（月度：' + record.monthLastVersionAuditStatus+record.monthLastVersion + '）' : ''}}</em>
+            </span>
+          </template>
+        </span>
+
+
+        <span slot="lastModificationTime" slot-scope="text">
+          {{text | moment}}
+        </span>
+
         <span slot="action" slot-scope="text, record">
           <template>
+            <a-button-group v-if="record.isRoot">
+              <a-button>发起审批</a-button>
+            </a-button-group>
+            <a-button-group v-if="!record.isRoot">
             <a-button
               class="btn-success"
               type="primary"
@@ -63,6 +83,7 @@
               icon="edit"
               style="margin-left: 4px"
               title="月度修订"></a-button>
+              </a-button-group>
           </template>
         </span>
       </s-table>
@@ -85,34 +106,70 @@
     import { getRoleList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import { fixedList } from '@/utils/util'
+    import { getPosValue } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
-    import { UnSignedService } from '@/views/pay/unsigned/unsigned.service'
     import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
+    import { FundPlanService } from './fundplan.service'
+    import storage from 'store'
+
+    function fixedList (res, params) {
+        const result = {}
+        result.pageSize = params.pageSize
+        result.pageNo = params.pageNo
+        if (res.result.data) {
+            result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
+            result.totalCount = res.result.data.length
+            result.data = _formatList(res.result.data, true)
+        } else {
+            result.totalPage = 0
+            result.totalCount = 0
+            result.data = []
+        }
+        return result
+    }
+
+    function _formatList (items, isRoot) {
+        const list = []
+        items.forEach(item => {
+            item.isRoot = isRoot
+            if (item.elementList && item.elementList.length > 0) {
+                item.children = _formatList(item.elementList, false)
+                item.children.forEach(child => {
+                    child.title = child.elementCode + '-' + child.elementName
+                })
+            } else {
+                item.children = null
+                item.isEndNode = true
+            }
+            list.push(item)
+        })
+        return list
+    }
 
     const columns = [
         {
             title: '操作',
             dataIndex: 'action',
+            width: '139px',
             scopedSlots: { customRender: 'action' }
         },
         {
             title: '科目名称',
-            dataIndex: 'paymentOtherCode'
+            scopedSlots: { customRender: 'courseName' }
         },
         {
             title: '金额',
-            dataIndex: 'paymentAmount',
+            dataIndex: 'fundingPlanAmountTotal',
         },
         {
             title: '最后修改时间',
-            dataIndex: 'requestDate'
+            dataIndex: 'lastModificationTime',
+            scopedSlots: { customRender: 'lastModificationTime' }
         },
         {
             title: '最后修改人',
-            dataIndex: 'requestUserName',
-            scopedSlots: { customRender: 'requestUserName' }
+            dataIndex: 'lastModifierUser'
         },
     ]
 
@@ -150,6 +207,7 @@
                 value: '',
                 city: '',
                 projectType: '',
+                currentFiscalYear: [],
                 cities: [],
                 visible: false,
                 confirmLoading: false,
@@ -160,10 +218,15 @@
                 queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return UnSignedService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
+                    if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
+                        const requestParameters = Object.assign({}, parameter, this.queryParam)
+                        return FundPlanService.fundingPlanYearList(this.queryParam.ProjectID).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    } else {
+                        return []
+                    }
+
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -190,7 +253,15 @@
                     })
                 })
                 this.cities = cities
+                const value = getPosValue(this.cities)
+                this.queryParam.ProjectID = value.projectCode
+                this.projectType = value.type
+                this.queryParam.ProjectGUID = value.projectGUID
+                this.$refs.table.refresh()
                 this.$forceUpdate()
+            })
+            FundPlanService.currentFiscalYear().then(res => {
+                this.currentFiscalYear = res.result.data
             })
         },
         computed: {
@@ -209,7 +280,7 @@
                 this.$router.push({ path: `/pay/fundplan/item/${record.gid}?type=update` })
             },
             handleToAdd () {
-                this.$router.push({ path: '/pay/unsigned/item/0?type=create' })
+                this.$router.push({ path: '/pay/fundplan/item/0?type=create' })
             },
             handleAdd () {
                 this.mdl = null
@@ -225,6 +296,7 @@
                 this.$refs.table.refresh(true)
             },
             onSelect (value, option) {
+                storage.set('POS', option.pos)
                 this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
                 this.projectType = option.$options.propsData.dataRef.type
                 if (typeof value === 'number') {
