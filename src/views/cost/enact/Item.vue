@@ -19,8 +19,11 @@
               <a-input-number
                 :disabled="type === 'view'"
                 v-if="record.childs.length ==0"
-                :value="record['cost' + item.costCenterId]"
+                v-model="record['cost' + item.costCenterId]"
                 @change="e => checkChange(e, record, item.costCenterId)"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
               />
               <template v-else>
                 {{ record['cost' + item.costCenterId] }}
@@ -203,9 +206,8 @@
         })
       },
       checkChange (value, record, costCenterId) {
-        console.log(record['cost' + costCenterId])
         // 找到如果数据内存在旧数据，先移除，再添加
-         this.isUpdate = false
+        this.isUpdate = false
         record.costCenters.forEach(center => {
           if (center.costCenterId === costCenterId) {
             center.amount = value
@@ -219,7 +221,6 @@
           item['amount'] = value
           record.costCenters.push(item)
         }
-        record['cost' + costCenterId] = value
         this.$forceUpdate()
       }
     }
