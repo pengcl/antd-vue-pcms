@@ -90,7 +90,6 @@
     import { getRoleList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { CostService } from '@/views/cost/cost.service'
     import { formatList } from '../../../mock/util'
@@ -118,7 +117,6 @@
         components: {
             STable,
             Ellipsis,
-            CreateForm,
             StepByStepModal
         },
         data () {

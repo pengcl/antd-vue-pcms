@@ -162,10 +162,7 @@
 <script>
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
-
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import {CostService} from "@/views/cost/cost.service";
@@ -243,7 +240,6 @@
         components: {
             STable,
             Ellipsis,
-            CreateForm,
             StepByStepModal,
             IndustryModal
         },
@@ -269,7 +265,6 @@
                       return CostService.industryItems(requestParameters)
                         .then(res => {
                           if(res.result.data!=null) {
-                            console.log(fixedList(res, requestParameters))
                             return fixedList(res, requestParameters)
                           }
                         })

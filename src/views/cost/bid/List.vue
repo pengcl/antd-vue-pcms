@@ -61,7 +61,7 @@
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         bordered
         :columns="columns"
         :data="loadData"
@@ -95,16 +95,6 @@
           </template>
         </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -115,7 +105,6 @@
     import { getRoleList, getServiceList } from '@/api/manage'
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import {CostService} from "@/views/cost/cost.service";
@@ -176,7 +165,6 @@
         components: {
             STable,
             Ellipsis,
-            CreateForm,
             StepByStepModal
         },
         data () {
@@ -278,7 +266,6 @@
                 this.confirmLoading = true
                 form.validateFields((errors, values) => {
                     if (!errors) {
-                        console.log('values', values)
                         if (values.id > 0) {
                             // 修改 e.g.
                             new Promise((resolve, reject) => {
@@ -319,16 +306,8 @@
             },
             handleCancel () {
                 this.visible = false
-
                 const form = this.$refs.createModal.form
                 form.resetFields() // 清理表单数据（可不做）
-            },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys

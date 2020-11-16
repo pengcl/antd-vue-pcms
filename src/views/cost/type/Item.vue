@@ -82,7 +82,6 @@
       if (this.type !== 'add') {
         CostService.typeItem({ Id: this.id }).then(res => {
           this.form = res.result.data
-          console.log(this.form)
           this.$forceUpdate()
         })
       }

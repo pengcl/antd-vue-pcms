@@ -169,7 +169,6 @@
             })
           },
           handleToSave () {
-            // console.log(this.form)
             this.form.projectGUID = this.ProjectGUID
             CostService.createIndustry(this.form).then(res => {
               if (res.result.statusCode === 200) {

@@ -160,7 +160,6 @@
           // 搜索
           show(id) {
             this.visible = true
-            console.log('调用展示窗口',id)
             this.queryParam.id = id
             this.loadData()
             this.$forceUpdate()
