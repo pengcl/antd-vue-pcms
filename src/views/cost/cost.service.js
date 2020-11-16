@@ -26,7 +26,7 @@ const API = {
   createGT: '/api/services/app/TradeBudget/BudgetAuotCreateGeneralTrade',//审批完成后对项目的所有预算科目进行产生GeneralTrade的操作
   //新增预算界面
   budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
-  budegetTreeItem: '/api/services/app/TenderPackage/TenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
+  budegetTreeItem: '/api/services/app/TenderPackage/GetTenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
   addBudgetItem : '/api/services/app/TenderPackage/TenderPackageAddBudgetItem',//行业分判包添加行业预算
   removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem',//行业分判包移除行业预算
   //行业类型
@@ -193,8 +193,8 @@ CostService.budegetTree = function (parameter) {
 CostService.budegetTreeItem = function (parameter) {
   return request({
     url: API.budegetTreeItem,
-    method: 'POST',
-    data: parameter
+    method: 'get',
+    params: parameter
   })
 }
 
