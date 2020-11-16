@@ -15,6 +15,7 @@ const API = {
   tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',
   viewBudgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid',
   computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid',
+  createBudgets: '/api/services/app/Contract/CreateContractBudget',
   updateBudgets: '/api/services/app/Contract/UpdateContractBudget',
   bpm: '/api/services/app/Contract/StartBPM'
 }
@@ -138,6 +139,14 @@ ContractService.computeBudgets = function (params) {
     url: API.computeBudgets,
     method: 'POST',
     params: params
+  })
+}
+
+ContractService.createBudgets = function (params) {
+  return request({
+    url: API.createBudgets,
+    method: 'POST',
+    data: params
   })
 }
 

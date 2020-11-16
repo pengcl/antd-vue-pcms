@@ -94,6 +94,7 @@ import { STable, Ellipsis } from '@/components'
 import { CostService } from '@/views/project/cost/cost.service'
 import { fixedList, getPosValue } from '@/utils/util'
 import { ProjectService } from '@/views/project/project.service'
+import storage from 'store'
 
 const columns = [
   {
@@ -171,10 +172,12 @@ export default {
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const requestParameters = Object.assign({}, parameter, this.queryParam)
-        return CostService.list(requestParameters).then(res => {
-          return fixedList(res, requestParameters)
-        })
+        if (this.queryParam.ProjectGUID) {
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          return CostService.list(requestParameters).then(res => {
+            return fixedList(res, requestParameters)
+          })
+        }
       }
     }
   },
@@ -193,8 +196,10 @@ export default {
       })
       this.cities = cities
       const value = getPosValue(this.cities)
-      this.queryParam.ProjectGUID = value.projectGUID
-      console.log(this.queryParam)
+      if (value.type !== 'project') {
+        this.queryParam.ProjectGUID = value.projectGUID
+      }
+      this.$refs.table.refresh()
       this.$forceUpdate()
     })
   },
@@ -209,13 +214,8 @@ export default {
       this.$router.push({ path: `/project/cost/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
     },
     onSelect (value, option) {
-      this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
-      this.projectType = option.$options.propsData.dataRef.type
-      if (typeof value === 'number') {
-        this.queryParam.ProjectGUID = ''
-      } else {
-        this.queryParam.ProjectGUID = value
-      }
+      storage.set('POS', option.pos)
+      this.queryParam.ProjectGUID = value
       this.$refs.table.refresh()
       this.$forceUpdate()
     },
