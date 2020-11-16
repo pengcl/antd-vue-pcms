@@ -11,6 +11,7 @@ const API = {
   create: '/api/services/app/PaymentOther/CreatePaymentOther',
   update: '/api/services/app/PaymentOther/UpdatePaymentOther',
   delete: '/api/services/app/PaymentOther/DeletePaymentOther',
+  approve: '/api/services/app/PaymentOther/StartBPM',
 }
 
 const UnSignedService = {}
@@ -98,6 +99,14 @@ UnSignedService.delete = function (gid) {
   return request({
     url: API.delete,
     method: 'DELETE',
+    params: { gid }
+  })
+}
+
+UnSignedService.approve = function (gid) {
+  return request({
+    url: API.approve,
+    method: 'POST',
     params: { gid }
   })
 }

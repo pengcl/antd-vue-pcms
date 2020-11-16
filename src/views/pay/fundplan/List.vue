@@ -7,7 +7,7 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  v-model="value"
+                  v-model="queryParam.ProjectGUID"
                   style="width: 100%"
                   :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
@@ -40,6 +40,21 @@
       >
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+        </span>
+
+        <span slot="courseName" slot-scope="record">
+          <template>
+            <span>
+              <b>{{record.title + '资金计划'}}</b>
+              <em style="color: #1e66ca;font-style: normal">{{record.yearVersionAuditStatus ? '（年度：' + record.yearVersionAuditStatus+record.yearVersion + '）' : ''}}</em>
+              <em style="color: #1e66ca;font-style: normal">{{record.monthLastVersionAuditStatus ? '（月度：' + record.monthLastVersionAuditStatus+record.monthLastVersion + '）' : ''}}</em>
+            </span>
+          </template>
+        </span>
+
+
+        <span slot="lastModificationTime" slot-scope="text">
+          {{text | moment}}
         </span>
 
         <span slot="action" slot-scope="text, record">
@@ -88,31 +103,32 @@
     import { fixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
-    import { UnSignedService } from '@/views/pay/unsigned/unsigned.service'
     import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
+    import { FundPlanService } from './fundplan.service'
 
     const columns = [
         {
             title: '操作',
             dataIndex: 'action',
+            width: '139px',
             scopedSlots: { customRender: 'action' }
         },
         {
             title: '科目名称',
-            dataIndex: 'paymentOtherCode'
+            scopedSlots: { customRender: 'courseName' }
         },
         {
             title: '金额',
-            dataIndex: 'paymentAmount',
+            dataIndex: 'fundingPlanAmountTotal',
         },
         {
             title: '最后修改时间',
-            dataIndex: 'requestDate'
+            dataIndex: 'lastModificationTime',
+            scopedSlots: { customRender: 'lastModificationTime' }
         },
         {
             title: '最后修改人',
-            dataIndex: 'requestUserName',
-            scopedSlots: { customRender: 'requestUserName' }
+            dataIndex: 'lastModifierUser'
         },
     ]
 
@@ -157,13 +173,18 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: {},
+                queryParam: { ProjectGUID: '19a6f5a0-d192-4875-8397-7945e5a33b8a', ProjectID: 'NWSC.LNXM.LN3.CC01' },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return UnSignedService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
+                    if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
+                        const requestParameters = Object.assign({}, parameter, this.queryParam)
+                        return FundPlanService.fundingPlanYearList(this.queryParam.ProjectID).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    } else {
+                        return []
+                    }
+
                 },
                 selectedRowKeys: [],
                 selectedRows: []
