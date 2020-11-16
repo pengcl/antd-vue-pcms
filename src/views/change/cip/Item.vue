@@ -365,8 +365,8 @@
       createPMI () {
         this.loading.createPMI = true
         ChangeService.createPMI({ CIPGuid : this.form.voMasterInfo.voGuid}).then(res => {
+          this.loading.createPMI = false
           if(res.result.statusCode === 200){
-            this.loading.createPMI = false
             // console.log('res',res.result.data,window)
             // setTimeout(function(){
               window.open(res.result.data)
