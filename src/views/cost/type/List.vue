@@ -1,178 +1,123 @@
 <template>
-  <page-header-wrapper>
+  <page-header-wrapper :property="{}">
     <a-card :bordered="false">
-<!--      <div class="table-page-search-wrapper">-->
-<!--        <a-form layout="inline">-->
-<!--          <a-row :gutter="48">-->
-<!--            <a-col :md="12" :sm="24">-->
-<!--              <a-form-item label="项目">-->
-<!--                <a-tree-select-->
-<!--                  style="width: 100%"-->
-<!--                  :tree-data="cities"-->
-<!--                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"-->
-<!--                  search-placeholder="请选择"-->
-<!--                  v-model="queryParam.ProjectGUID"-->
-<!--                  @select="onSelect"-->
-<!--                />-->
-<!--              </a-form-item>-->
-<!--            </a-col>-->
-<!--          </a-row>-->
-<!--        </a-form>-->
-<!--      </div>-->
-
-      <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增类型</a-button>
-<!--        <a-button type="primary" style="margin-left: 5px" @click="show = !show">-->
-<!--          <a-icon type="search"></a-icon>-->
-<!--        </a-button>-->
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="12" :sm="24">
+              <a-form-item label="项目">
+                <a-tree-select
+                  style="width: 100%"
+                  :tree-data="cities"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  search-placeholder="请选择"
+                  v-model="queryParam.ProjectGUID"
+                  @select="onSelect"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
       </div>
-
-<!--      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">-->
-<!--        <a-row :gutter="48">-->
-<!--          <a-col :md="12" :sm="24">-->
-<!--            <a-form-item label="编号">-->
-<!--              <a-input v-model="queryParam.ContractNo"></a-input>-->
-<!--            </a-form-item>-->
-<!--          </a-col>-->
-<!--          <a-col :md="12" :sm="24">-->
-<!--            <a-form-item label="工程名称">-->
-<!--              <a-input v-model="queryParam.PackageTitle"></a-input>-->
-<!--            </a-form-item>-->
-<!--          </a-col>-->
-<!--          <a-col :md="12" :sm="24">-->
-<!--            <a-form-item label="提交状态">-->
-<!--              <a-select-->
-<!--                placeholder="请选择"-->
-<!--                v-model="queryParam.AuditStatus"-->
-<!--                v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">-->
-<!--                <a-select-option value="1">草拟中</a-select-option>-->
-<!--                <a-select-option value="2">已审批</a-select-option>-->
-<!--              </a-select>-->
-<!--            </a-form-item>-->
-<!--          </a-col>-->
-<!--          <a-col :md="24" :sm="24">-->
-<!--            <a-button type="success" @click="search()">搜索</a-button>-->
-<!--            <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>-->
-<!--          </a-col>-->
-<!--        </a-row>-->
-<!--      </a-form>-->
 
       <s-table
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="code"
         bordered
         :columns="columns"
         :data="loadData"
         :alert="false"
         showPagination="auto"
       >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
-        </span>
         <span slot="description" slot-scope="text">
-          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action" slot-scope="text,record">
+        <span slot="cost" slot-scope="text">
+          <p style="text-align: center">
+            <span style="font-weight: bold;padding-right: 10px">{{ text.amount }}</span>
+            <span style="color: #b3b3ca">{{ text.percentage + '%' }}</span>
+          </p>
+        </span>
+
+        <span slot="action" slot-scope="text, record">
           <template>
-            <a-button type="success" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
+            {{ record.code }}
+            <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
+            </a-button>
             <a-button
+              @click="handleToEdit(record)"
               type="primary"
               icon="form"
               style="margin-left: 4px"
-              title="编辑"
-              @click="handleToEdit(record)"></a-button>
+              title="编辑">
+            </a-button>
             <a-button
-              type="danger"
-              icon="delete"
+              @click="loadTypeItems(record)"
+              type="primary"
+              icon="plus-square"
               style="margin-left: 4px"
-              title="删除"></a-button>
+              title="查看科目类型">
+            </a-button>
           </template>
         </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-  import moment from 'moment'
   import { STable, Ellipsis } from '@/components'
-  import { getRoleList, getServiceList } from '@/api/manage'
+  import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
   import { ProjectService } from '@/views/project/project.service'
+  import { CostService } from '@/views/cost/cost.service'
   import { formatList } from '../../../mock/util'
-  import {CostService} from "@/views/cost/cost.service";
-  import {fixedList, getPosValue, nullFixedList} from "@/utils/util";
-  import storage from "store";
+  import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
+  import storage from 'store'
 
-  const columns = [
+  async function getList (items, id) {
+    const list = []
+    await items.forEach(item => {
+      if (item.id === id) {
+        CostService.typyItems({ Id: id }).then(res => {
+          item.childs = res.result.data.childs
+          if (item.childs) {
+            item.children = res.result.data.childs
+          }
+          list.push(item)
+        })
+      }
+    })
+    return list
+  }
+
+  const defaultColumns = [
+
     {
-      title: '操作',
-      dataIndex: 'action',
-      width: '150px',
+      title: '科目代码',
+      dataIndex: 'code',
+      width: '200px',
       scopedSlots: { customRender: 'action' }
     },
     {
-      title: '编号',
-      dataIndex: 'code'
-    },
-    {
-      title: '名称',
+      title: '科目名称',
       dataIndex: 'nameCN'
     },
     {
-      title: '预算金额',
-      dataIndex: 'budgetAmount',
-      scopedSlots: { customRender: 'contractAmount' }
-    },
-    {
-      title: '经办人',
-      dataIndex: 'creatorUser'
-    },
-    {
-      title: '状态',
-      dataIndex: 'auditStatus'
+      title: '类型名称',
+      dataIndex: 'typeName'
     }
   ]
 
-  const statusMap = {
-    0: {
-      status: 'default',
-      text: '关闭'
-    },
-    1: {
-      status: 'processing',
-      text: '运行中'
-    },
-    2: {
-      status: 'success',
-      text: '已上线'
-    },
-    3: {
-      status: 'error',
-      text: '异常'
-    }
-  }
+  const columns = defaultColumns
 
   export default {
-    name: 'CostBidList',
+    name: 'CostEnactList',
     components: {
       STable,
       Ellipsis,
@@ -182,40 +127,36 @@
     data () {
       this.columns = columns
       return {
-        // create model
+        titleIds: [],
+        auditStatus: '',
         cities: [],
-        show: false,
         visible: false,
         confirmLoading: false,
         mdl: null,
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
-        queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
+        queryParam: {},
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
-          if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID!='') {
-            return CostService.bidItems(requestParameters)
-              .then(res => {
-                if(res.result.data.items) {
-                  return fixedList(res, requestParameters)
+          const _columns = JSON.parse(JSON.stringify(defaultColumns))
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          if (this.queryParam.ProjectGUID) {
+            return CostService.items(requestParameters).then(res => {
+              res.result.data.forEach(item => {
+                if (item.childs) {
+                  item.children = getList(item.childs, item.id)
                 }
               })
+              console.log(fixedList(res, parameter))
+              return fixedList(res, parameter)
+            })
           } else {
             return nullFixedList(requestParameters)
           }
         },
         selectedRowKeys: [],
         selectedRows: []
-      }
-    },
-    filters: {
-      statusFilter (type) {
-        return statusMap[type].text
-      },
-      statusTypeFilter (type) {
-        return statusMap[type].status
       }
     },
     created () {
@@ -234,14 +175,10 @@
         const value = getPosValue(this.cities)
         this.queryParam.ProjectID = value.projectCode
         this.queryParam.ProjectGUID = value.projectGUID
+        this.auditStatus = value.auditStatus
+        this.$forceUpdate()
         this.$refs.table.refresh(true)
       })
-    },
-    props: {
-      type: {
-        type: String,
-        default: 'view'
-      }
     },
     computed: {
       rowSelection () {
@@ -253,94 +190,30 @@
     },
     methods: {
       handleToItem (record) {
-        this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
       handleToEdit (record) {
-        this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
+        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
-      handleToAdd (record) {
-        if (this.queryParam.ProjectGUID === '') {
-          this.$message.error(`请选择项目`)
-        } else {
-          this.$router.push({ path: `/cost/bid/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
-        }
+      handleToAdd () {
+        this.$router.push({ path: `/cost/enact/item/0?type=add` })
       },
-      handleAdd () {
-        this.mdl = null
-        this.visible = true
+      handleToResolve (record) {
+        this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
-      handleEdit (record) {
-        this.visible = true
-        this.mdl = { ...record }
-      },
-      handleOk () {
-        const form = this.$refs.createModal.form
-        this.confirmLoading = true
-        form.validateFields((errors, values) => {
-          if (!errors) {
-            console.log('values', values)
-            if (values.id > 0) {
-              // 修改 e.g.
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-
-                this.$message.info('修改成功')
-              })
-            } else {
-              // 新增
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-
-                this.$message.info('新增成功')
-              })
-            }
-          } else {
-            this.confirmLoading = false
+      loadTypeItems (record) {
+        const result = {
+          result: {
+            data: []
           }
+        }
+        const requestParameters = Object.assign(this.queryParam)
+        CostService.items(requestParameters).then(res => {
+          result.result.data = getList(res.result.data, record.id)
+          console.log(result)
+          this.$forceUpdate()
+          return fixedList(result, requestParameters)
         })
-      },
-      handleCancel () {
-        this.visible = false
-
-        const form = this.$refs.createModal.form
-        form.resetFields() // 清理表单数据（可不做）
-      },
-      handleSub (record) {
-        if (record.status !== 0) {
-          this.$message.info(`${record.no} 订阅成功`)
-        } else {
-          this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-        }
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
-      },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
-      },
-      resetSearchForm () {
-        this.queryParam = {
-          date: moment(new Date())
-        }
       },
       onSelect (value, option) {
         storage.set('POS', option.pos)
@@ -358,15 +231,3 @@
     }
   }
 </script>
-
-<style lang="less" scoped>
-  .search-form {
-    background-color: #1E9FF2;
-    padding: 20px;
-    border-radius: 0.35rem;
-
-    /deep/ .ant-form-item-label label {
-      color: #fff;
-    }
-  }
-</style>

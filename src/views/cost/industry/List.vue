@@ -109,7 +109,7 @@
           <a-button type="success"  v-if="pid" @click="hanldeAddBugetItem">新增预算</a-button>
           <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button>
         </a-col>
-        <a-col :md="12" :sm="24">
+        <!-- <a-col :md="12" :sm="24">
           <a-form :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
             <a-row>
               <a-col :md="12" :sm="24">
@@ -124,7 +124,7 @@
               </a-col>
             </a-row>
           </a-form>
-        </a-col>
+        </a-col> -->
       </a-row>
       <s-table
         style="margin-top: 5px"

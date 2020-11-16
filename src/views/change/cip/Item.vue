@@ -259,7 +259,7 @@
         this.showBPMLoading = true
         BaseService.viewBpm(this.form.voMasterInfo.voGuid).then(res => {
           this.showBPMLoading= false
-          window.location.href = res.result.data
+          window.open(res.result.data)
         })
       },
       back () {

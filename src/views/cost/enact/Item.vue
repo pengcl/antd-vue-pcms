@@ -16,18 +16,19 @@
             :pagination="false"
           >
             <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId" slot-scope="text, record">
-            <a-input-number
-              :disabled="type === 'view'"
-              v-if="record.childs.length ==0"
-              v-model="record['cost' + item.costCenterId]"
-              @change="e => checkChange(e.target.value, record, item.costCenterId)"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-            />
-            <template v-else>
-              {{ record['cost' + item.costCenterId] }}
-            </template>
-          </span>
+              <a-input-number
+                :disabled="type === 'view'"
+                v-if="record.childs.length ==0"
+                v-model="record['cost' + item.costCenterId]"
+                @change="e => checkChange(e, record, item.costCenterId)"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              />
+              <template v-else>
+                {{ record['cost' + item.costCenterId] }}
+              </template>
+            </span>
           </a-table>
         </a-col>
       </a-row>
@@ -70,21 +71,6 @@
   ]
 
   const columns = defaultColumns
-
-  function formatList (items, isRoot) {
-    const list = []
-    items.forEach(item => {
-      item.isRoot = isRoot
-      if (item.childs) {
-        item.children = formatList(item.childs, false)
-      } else {
-        item.children = null
-        item.isEndNode = true
-      }
-      list.push(item)
-    })
-    return list
-  }
 
   export default {
     name: 'Table',
@@ -235,6 +221,7 @@
           item['amount'] = value
           record.costCenters.push(item)
         }
+        this.$forceUpdate()
       }
     }
   }

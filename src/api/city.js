@@ -18,7 +18,8 @@ export function formatCities (data) {
 const API = {
   list: '/api/services/app/City/GetRegionalOfficeCitys',
   full: '/api/services/app/City/GetProvinceCityAreaTree',
-  cities: '/api/services/app/City/GetProvinceCityTree'
+  cities: '/api/services/app/City/GetProvinceCityTree',
+  regionals: '/api/services/app/RegionalOffice/GetAllList'
 }
 
 const City = {}
@@ -49,6 +50,14 @@ City.full = function list () {
 City.cities = function list () {
   return request({
     url: API.cities,
+    method: 'GET',
+    params: {}
+  })
+}
+
+City.regionals = function list () {
+  return request({
+    url: API.regionals,
     method: 'GET',
     params: {}
   })
