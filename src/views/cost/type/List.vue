@@ -41,7 +41,7 @@
               type="primary"
               icon="plus-square"
               style="margin-left: 4px"
-              title="新增科目类型">
+              title="新增科目">
             </a-button>
             {{ record.nameCN }}
           </template>
@@ -77,7 +77,6 @@
           budget.code = budgetItem.code
           budget.tradeTypeId = budgetItem.id
           budget.nameCN = budgetItem.nameCN
-          budget.typeName = budgetItem.nameCN
           budget.description = budgetItem.description
           budget.isEdit = true
           objItems.push(budget)
@@ -102,12 +101,9 @@
       dataIndex: 'nameCN',
       scopedSlots: {customRender: 'action'}
     },
+
     {
-      title: '类型名称',
-      dataIndex: 'typeName'
-    },
-    {
-      title: '类型描述',
+      title: '描述',
       dataIndex: 'description'
     }
   ]

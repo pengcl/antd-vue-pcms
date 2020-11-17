@@ -27,10 +27,11 @@
             :data="loadData"
             :alert="false"
             showPagination="auto"
+            :scroll="{ y: 500 }"
           >
             <span slot="cost" slot-scope="text">
               <p style="text-align: center">
-                <span style="font-weight: bold;padding-right: 10px">{{ text }}</span>
+                <span style="font-weight: bold;padding-right: 10px">{{ text|amountFormat }}</span>
               </p>
             </span>
             <span slot="action" slot-scope="text, record">
@@ -41,7 +42,7 @@
                   type="primary"
                   icon="plus-square" title="新增">
                 </a-button>
-                {{ record.elementInfoNameCN }}
+                {{ record.code }}
               </template>
             </span>
           </s-table>
@@ -116,6 +117,24 @@
     return obj
   }
 
+  function getCostAmount(elementInfoId,items){
+    let amount = null
+    items.forEach(item => {
+      if(elementInfoId ===  item.elementInfoId){
+        const temp = item.amount
+        if (temp) {
+          amount = temp
+        }
+      }else if(item.childs){
+        const temp = getCostAmount(elementInfoId,item.childs)
+        if (temp) {
+          amount = temp
+        }
+      }
+    })
+    return amount
+  }
+
   function getList(items, costCenters) {
     const list = []
     items.forEach(item => {
@@ -124,10 +143,10 @@
       obj.elementInfoId = item.elementInfoId
       obj.elementInfoCode = item.elementInfoCode
       obj.elementInfoNameCN = item.elementInfoNameCN
-
+      obj.code = item.elementInfoCode
       costCenters.forEach(center => {
         const costName = 'cost' + center.costCenterId
-        obj[costName] = item.amount
+        obj[costName] = getCostAmount(item.elementInfoId, center.elementItem.childs)
       })
       if (item.childs && item.childs.length > 0) {
         const childrenList = getList(item.childs, costCenters)
@@ -142,6 +161,7 @@
           budgetItem.elementInfoId = budget.elementInfoId + budget.id
           budgetItem.BudgetTitle = budget.budgetTitle
           budgetItem.elementInfoNameCN = ''
+          budgetItem.code = budget.code
           costCenters.forEach(center => {
             const result = getBudgetList(budget.groupId, center.elementItem.childs)
             if (result !== null) {
@@ -179,14 +199,19 @@
 
   const defaultColumns = [
     {
-      title: '行业名称',
-      width: '350px',
-      dataIndex: 'elementInfoNameCN',
+      title: '科目代码',
+      width: 200,
+      dataIndex: 'code',
       scopedSlots: {customRender: 'action'}
     },
     {
       title: '行业名称',
-      width: '300px',
+      width: 250,
+      dataIndex: 'elementInfoNameCN'
+    },
+    {
+      title: '行业名称',
+      width: 300,
       dataIndex: 'BudgetTitle'
     }
   ]
@@ -253,14 +278,22 @@
         }
       }
     },
+    filters: {
+      amountFormat (value) {
+        if(value){
+          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        }else{
+          return 0
+        }
+      },
+    },
     created() {
 
     },
     computed: {
       rowSelection() {
         return {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
+          selectedRowKeys: this.selectedRowKeys
         }
       },
       id() {
@@ -274,29 +307,8 @@
       }
     },
     methods: {
-      handleToItem(record) {
-        this.$router.push({path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}`})
-      },
-      handleToEdit(record) {
-        this.$router.push({path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}`})
-      },
-      handleToAdd() {
-        this.$router.push({path: `/cost/enact/item/0?type=add`})
-      },
-      onChange(value, option) {
-        if (value.length >= 2) {
-          this.queryParam.ProjectGUID = value
-          this.$refs.table.refresh(true)
-        } else {
-          this.queryParam.ProjectGUID = ''
-          this.$refs.table.refresh(true)
-        }
-      },
-      onSelect(value, option) {
-        this.auditStatus = option.dataRef.auditStatus
-      },
       back() {
-        this.$router.push({path: `/cost/enact/list`})
+        this.$router.push({path: `/cost/resolve/list`})
       },
       showModal(record, type) {
         CostService.elementTradeTypes({Id: record.elementInfoId}).then(res => {

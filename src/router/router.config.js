@@ -141,7 +141,6 @@ export const asyncRouterMap = [
           {
             path: '/cost/resolve/list',
             name: 'CostResolveList',
-            hidden: true,
             component: () => import('@/views/cost/resolve/List'),
             meta: { title: 'menu.cost.resolve.list', keepAlive: true, permission: ['budget'] }
           },

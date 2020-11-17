@@ -47,7 +47,7 @@
 
         <span slot="cost" slot-scope="text">
           <p style="text-align: center">
-            <span style="font-weight: bold;padding-right: 10px">{{text.amount}}</span>
+            <span style="font-weight: bold;padding-right: 10px">{{text.amount|amountFormat}}</span>
             <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>
           </p>
         </span>
@@ -63,13 +63,6 @@
               icon="form"
               style="margin-left: 4px"
               title="编辑">
-            </a-button>
-            <a-button
-              @click="handleToResolve(record)"
-              type="primary"
-              icon="snippets"
-              style="margin-left: 4px"
-              title="预算分解">
             </a-button>
             <a-button
               @click="handleToItem(record)"
@@ -200,6 +193,11 @@
                 selectedRows: []
             }
         },
+        filters: {
+          amountFormat (value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+          },
+        },
         created () {
             ProjectService.tree().then(res => {
               const cities = []
@@ -238,9 +236,6 @@
             },
             handleToAdd () {
                 this.$router.push({ path: `/cost/enact/item/0?type=add` })
-            },
-            handleToResolve (record) {
-              this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
             },
             onSelect (value, option) {
               storage.set('POS', option.pos)

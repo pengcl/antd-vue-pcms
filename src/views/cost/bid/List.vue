@@ -68,16 +68,9 @@
         :alert="false"
         showPagination="auto"
       >
-        <span slot="serial" slot-scope="text, record, index">
-          {{ index + 1 }}
+        <span slot="budgetAmount" slot-scope="text,record">
+            {{record.budgetAmount|amountFormat}}
         </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-        </span>
-
         <span slot="action" slot-scope="text,record">
           <template>
             <a-button type="success" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
@@ -129,7 +122,7 @@
         {
             title: '预算金额',
             dataIndex: 'budgetAmount',
-          scopedSlots: { customRender: 'contractAmount' }
+          scopedSlots: { customRender: 'budgetAmount' }
         },
         {
             title: '经办人',
@@ -140,25 +133,6 @@
             dataIndex: 'auditStatus'
         }
     ]
-
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
 
     export default {
         name: 'CostBidList',
@@ -199,11 +173,8 @@
             }
         },
         filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
+            amountFormat (value) {
+              return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             }
         },
         created () {

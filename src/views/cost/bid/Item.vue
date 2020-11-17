@@ -31,11 +31,12 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-model-item label="说明" prop="description">
-              <a-input
+              <a-textarea
                 :disabled="type === 'view'"
+                rows="3"
                 v-model="form.description"
               >
-              </a-input>
+              </a-textarea>
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -208,6 +209,7 @@
   import { CostService } from '@/views/cost/cost.service'
   import { SwaggerService } from '@/api/swagger.service'
   import { addItem, removeItem } from '@/api/base'
+  import moment from "moment";
 
   export default {
     name: 'Edit',
@@ -265,6 +267,8 @@
           }
           this.$forceUpdate()
         })
+      }else{
+        this.form.packageDate = moment(new Date())
       }
     },
     methods: {
@@ -297,6 +301,7 @@
             CostService.bidCreate(this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+                this.back()
               }
             })
           }
