@@ -145,8 +145,8 @@
       </a-modal>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
-            <a-button v-if="type === 'view' && !form.vendor.logGID" @click="askUpdate()" type="success">
+          <a-button-group v-if="type === 'view' && !form.vendor.logGID">
+            <a-button @click="askUpdate()" type="success">
               供应商信息变更
             </a-button>
           </a-button-group>
