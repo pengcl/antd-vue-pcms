@@ -68,36 +68,6 @@
             title="编辑"
             @click="handleToEdit(record)"></a-button>
         </template>
-        <template slot="vendorAbbreviation" slot-scope="text">
-          <div class="vendor">
-            <ellipsis :length="8" tooltip>{{ text }}</ellipsis>
-          </div>
-        </template>
-        <template slot="detail" slot-scope="text, record">
-          <p>{{ record.vendorName }}</p>
-          <p>
-            <a-button-group v-if="record.vendorStatus">
-              <span class="label-primary">{{ record.vendorStatus }}</span>
-            </a-button-group>
-            <a-button-group v-if="record.legalRep">
-              <span class="label-orange">{{ record.legalRep }}</span>
-            </a-button-group>
-            <a-button-group v-if="record.registerType">
-              <span class="label-orange">{{ record.registerType }}</span>
-            </a-button-group>
-          </p>
-          <a-row>
-            <a-col :span="12">
-              准入时间：{{ record.date }}
-            </a-col>
-            <a-col :span="12">
-              供应商类别：{{ record.packageName }}
-            </a-col>
-            <a-col :span="24">
-              公司地址：{{ record.registerAddress }}
-            </a-col>
-          </a-row>
-        </template>
       </s-table>
     </a-card>
   </page-header-wrapper>
@@ -117,29 +87,35 @@
         },
         data () {
             const columns = [
+              {
+                title: '操作',
+                dataIndex: 'action',
+                scopedSlots: { customRender: 'action' }
+              },
                 {
                     title: '供应商信息',
-                    colSpan: 4,
-                    dataIndex: 'action',
-                    scopedSlots: { customRender: 'action' }
+                    dataIndex: 'vendorName',
+                    scopedSlots: { customRender: 'vendorName' }
                 },
                 {
-                    title: '供应商简称',
-                    colSpan: 0,
-                    dataIndex: 'vendorAbbreviation',
-                    scopedSlots: { customRender: 'vendorAbbreviation' }
+                    title: '供应商类别',
+                    dataIndex: 'packageName',
+                    scopedSlots: { customRender: 'packageName' }
                 },
                 {
-                    title: '详情',
-                    dataIndex: 'id',
-                    colSpan: 0,
-                    scopedSlots: { customRender: 'detail' }
+                    title: '供应商地址',
+                    dataIndex: 'registerAddress',
+                    scopedSlots: { customRender: 'registerAddress' }
                 },
+              {
+                title: '联系人',
+                dataIndex: 'vendorStatus',
+                scopedSlots: { customRender: 'vendorStatus' }
+              },
                 {
-                    title: '审批状态',
-                    dataIndex: 'vendorStatus',
-                    colSpan: 0,
-                    scopedSlots: { customRender: 'vendorStatus' }
+                    title: '准入时间',
+                    dataIndex: 'zrDate',
+                    scopedSlots: { customRender: 'zrDate' }
                 }
             ]
 
