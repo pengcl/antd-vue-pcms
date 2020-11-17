@@ -225,6 +225,7 @@
             CostService.industryCreate(this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+                this.back()
               }
             })
           }
