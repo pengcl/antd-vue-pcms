@@ -5,9 +5,9 @@ export const data = {
         "msg":"请求(或处理)成功",
         "data":[
             {
-                "costCenterId":1,
-                "costCenterCode":"NWSC.LNXM.LN3.CC01.CC01",
-                "costCenterName":"成本中心1",
+                "costCenterId":2,
+                "costCenterCode":"NWSC.LNXM.LN3.CC01.CC02",
+                "costCenterName":"成本中心2",
                 "elementBudgetItemTree":{
                     "elementInfoId":0,
                     "elementInfoCode":"NWCL",
@@ -19,91 +19,184 @@ export const data = {
                     "planDetailId":0,
                     "childs":[
                         {
-                            "elementInfoId":36,
-                            "elementInfoCode":"C",
-                            "elementInfoNameCN":"建安费",
+                            "elementInfoId":156,
+                            "elementInfoCode":"D",
+                            "elementInfoNameCN":"大市政配套",
                             "parentID":0,
-                            "orderSeq":35,
+                            "orderSeq":155,
                             "amount":0,
                             "percentage":0,
                             "planDetailId":0,
                             "childs":[
                                 {
-                                    "elementInfoId":38,
-                                    "elementInfoCode":"TempBACKUP_C-1-1",
-                                    "elementInfoNameCN":"開辦費",
-                                    "parentID":36,
-                                    "orderSeq":37,
-                                    "amount":0,
+                                    "elementInfoId":157,
+                                    "elementInfoCode":"D-1",
+                                    "elementInfoNameCN":"大市政配套设施 ",
+                                    "parentID":156,
+                                    "orderSeq":156,
+                                    "amount":4000,
                                     "percentage":0,
-                                    "planDetailId":0,
+                                    "planDetailId":398,
                                     "childs":[
+                                        {
+                                            "elementInfoId":158,
+                                            "elementInfoCode":"D-1-1",
+                                            "elementInfoNameCN":"道路工程",
+                                            "parentID":157,
+                                            "orderSeq":157,
+                                            "amount":200,
+                                            "percentage":0,
+                                            "planDetailId":401,
+                                            "childs":[
 
-                                    ],
-                                    "tradeBudgetItems":[
-										
-                                        {
-                                            "budgetValue":1,
-                                            "id":1
+                                            ],
+                                            "tradeBudgetItems":[
+												{
+												                                            "budgetValue":1,
+												                                            "id":1
+												                                        },
+												                                        {
+												                                            "budgetValue":2,
+												                                            "id":2
+												                                        },
+												                                        {
+												                                            "budgetValue":3,
+												                                            "id":3
+												                                        },
+												                                        {
+												                                            "budgetValue":4,
+												                                            "id":4
+												                                        },
+												                                        {
+												                                            "budgetValue":5,
+												                                            "id":5
+												                                        },
+												                                        {
+												                                            "budgetValue":6,
+												                                            "id":6
+												                                        },
+												                                        {
+												                                            "budgetValue":7,
+												                                            "id":7
+												                                        },
+												                                        {
+												                                            "budgetValue":8,
+												                                            "id":8
+												                                        },
+												                                        {
+												                                            "budgetValue":9,
+												                                            "id":9
+												                                        },
+												                                        {
+												                                            "budgetValue":10,
+												                                            "id":10
+												                                        }
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
                                         },
                                         {
-                                            "budgetValue":2,
-                                            "id":2
+                                            "elementInfoId":159,
+                                            "elementInfoCode":"D-1-2",
+                                            "elementInfoNameCN":"供水工程",
+                                            "parentID":157,
+                                            "orderSeq":158,
+                                            "amount":200,
+                                            "percentage":0,
+                                            "planDetailId":404,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
                                         },
                                         {
-                                            "budgetValue":3,
-                                            "id":3
+                                            "elementInfoId":160,
+                                            "elementInfoCode":"D-1-3",
+                                            "elementInfoNameCN":"供电工程",
+                                            "parentID":157,
+                                            "orderSeq":159,
+                                            "amount":200,
+                                            "percentage":0,
+                                            "planDetailId":407,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
                                         },
                                         {
-                                            "budgetValue":4,
-                                            "id":4
+                                            "elementInfoId":161,
+                                            "elementInfoCode":"D-1-4",
+                                            "elementInfoNameCN":"排水、排污工程",
+                                            "parentID":157,
+                                            "orderSeq":160,
+                                            "amount":200,
+                                            "percentage":0,
+                                            "planDetailId":410,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
                                         },
                                         {
-                                            "budgetValue":5,
-                                            "id":5
-                                        },
-                                        {
-                                            "budgetValue":6,
-                                            "id":6
-                                        },
-                                        {
-                                            "budgetValue":7,
-                                            "id":7
-                                        },
-                                        {
-                                            "budgetValue":8,
-                                            "id":8
-                                        },
-                                        {
-                                            "budgetValue":9,
-                                            "id":9
-                                        },
-                                        {
-                                            "budgetValue":10,
-                                            "id":10
+                                            "elementInfoId":162,
+                                            "elementInfoCode":"D-1-5",
+                                            "elementInfoNameCN":"其它 (请注明)",
+                                            "parentID":157,
+                                            "orderSeq":161,
+                                            "amount":200,
+                                            "percentage":0,
+                                            "planDetailId":413,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
                                         }
-										
-                                    ],
-                                    "creatorUser":null,
-                                    "creationTime":"0001-01-01T00:00:00",
-                                    "lastModifierUser":null,
-                                    "lastModificationTime":null,
-                                    "isAudit":false,
-                                    "auditStatus":null,
-                                    "auditTime":null,
-                                    "id":0
-                                },
-                                {
-                                    "elementInfoId":40,
-                                    "elementInfoCode":"TempBACKUP_C-1-2",
-                                    "elementInfoNameCN":"结构及土建工程",
-                                    "parentID":36,
-                                    "orderSeq":39,
-                                    "amount":0,
-                                    "percentage":0,
-                                    "planDetailId":0,
-                                    "childs":[
-
                                     ],
                                     "tradeBudgetItems":[
 
@@ -118,156 +211,282 @@ export const data = {
                                     "id":0
                                 },
                                 {
-                                    "elementInfoId":46,
-                                    "elementInfoCode":"TempBACKUP_C-1-3",
-                                    "elementInfoNameCN":"外立饰面工程",
-                                    "parentID":36,
-                                    "orderSeq":45,
+                                    "elementInfoId":163,
+                                    "elementInfoCode":"D-2",
+                                    "elementInfoNameCN":"政府部门收费",
+                                    "parentID":156,
+                                    "orderSeq":162,
                                     "amount":0,
                                     "percentage":0,
                                     "planDetailId":0,
                                     "childs":[
+                                        {
+                                            "elementInfoId":164,
+                                            "elementInfoCode":"D-2-1",
+                                            "elementInfoNameCN":"放线及验线费",
+                                            "parentID":163,
+                                            "orderSeq":163,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
 
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":165,
+                                            "elementInfoCode":"D-2-2",
+                                            "elementInfoNameCN":"报建费",
+                                            "parentID":163,
+                                            "orderSeq":164,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":166,
+                                            "elementInfoCode":"D-2-3",
+                                            "elementInfoNameCN":"建设用地及工程规划许可证费",
+                                            "parentID":163,
+                                            "orderSeq":165,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":167,
+                                            "elementInfoCode":"D-2-4",
+                                            "elementInfoNameCN":"配套设施建设费",
+                                            "parentID":163,
+                                            "orderSeq":166,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":168,
+                                            "elementInfoCode":"D-2-5",
+                                            "elementInfoNameCN":"城建档案保证金",
+                                            "parentID":163,
+                                            "orderSeq":167,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":169,
+                                            "elementInfoCode":"D-2-6",
+                                            "elementInfoNameCN":"工程保险金",
+                                            "parentID":163,
+                                            "orderSeq":168,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":170,
+                                            "elementInfoCode":"D-2-7",
+                                            "elementInfoNameCN":"劳动保险金",
+                                            "parentID":163,
+                                            "orderSeq":169,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":171,
+                                            "elementInfoCode":"D-2-8",
+                                            "elementInfoNameCN":"人防保证金",
+                                            "parentID":163,
+                                            "orderSeq":170,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":172,
+                                            "elementInfoCode":"D-2-9",
+                                            "elementInfoNameCN":"防雷检测费",
+                                            "parentID":163,
+                                            "orderSeq":171,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":173,
+                                            "elementInfoCode":"D-2-10",
+                                            "elementInfoNameCN":"其它(沉降观测、桩基检测、基坑检测等)",
+                                            "parentID":163,
+                                            "orderSeq":172,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        },
+                                        {
+                                            "elementInfoId":174,
+                                            "elementInfoCode":"D-2-11",
+                                            "elementInfoNameCN":"政府部门收费之不可预见费",
+                                            "parentID":163,
+                                            "orderSeq":173,
+                                            "amount":0,
+                                            "percentage":0,
+                                            "planDetailId":0,
+                                            "childs":[
+
+                                            ],
+                                            "tradeBudgetItems":[
+
+                                            ],
+                                            "creatorUser":null,
+                                            "creationTime":"0001-01-01T00:00:00",
+                                            "lastModifierUser":null,
+                                            "lastModificationTime":null,
+                                            "isAudit":false,
+                                            "auditStatus":null,
+                                            "auditTime":null,
+                                            "id":0
+                                        }
                                     ],
                                     "tradeBudgetItems":[
 
-                                    ],
-                                    "creatorUser":null,
-                                    "creationTime":"0001-01-01T00:00:00",
-                                    "lastModifierUser":null,
-                                    "lastModificationTime":null,
-                                    "isAudit":false,
-                                    "auditStatus":null,
-                                    "auditTime":null,
-                                    "id":0
-                                },
-                                {
-                                    "elementInfoId":61,
-                                    "elementInfoCode":"TempBACKUP_C-1-4",
-                                    "elementInfoNameCN":"室内装饰及精裝修工程(包括精裝及粗装修)#",
-                                    "parentID":36,
-                                    "orderSeq":60,
-                                    "amount":0,
-                                    "percentage":0,
-                                    "planDetailId":0,
-                                    "childs":[
-
-                                    ],
-                                    "tradeBudgetItems":[
-
-                                    ],
-                                    "creatorUser":null,
-                                    "creationTime":"0001-01-01T00:00:00",
-                                    "lastModifierUser":null,
-                                    "lastModificationTime":null,
-                                    "isAudit":false,
-                                    "auditStatus":null,
-                                    "auditTime":null,
-                                    "id":0
-                                },
-                                {
-                                    "elementInfoId":68,
-                                    "elementInfoCode":"TempBACKUP_C-1-5",
-                                    "elementInfoNameCN":"机电工程",
-                                    "parentID":36,
-                                    "orderSeq":67,
-                                    "amount":0,
-                                    "percentage":0,
-                                    "planDetailId":0,
-                                    "childs":[
-
-                                    ],
-                                    "tradeBudgetItems":[
-
-                                    ],
-                                    "creatorUser":null,
-                                    "creationTime":"0001-01-01T00:00:00",
-                                    "lastModifierUser":null,
-                                    "lastModificationTime":null,
-                                    "isAudit":false,
-                                    "auditStatus":null,
-                                    "auditTime":null,
-                                    "id":0
-                                },
-                                {
-                                    "elementInfoId":88,
-                                    "elementInfoCode":"TempBACKUP_C-1-6",
-                                    "elementInfoNameCN":"LEED及绿色建筑所需費用",
-                                    "parentID":36,
-                                    "orderSeq":87,
-                                    "amount":0,
-                                    "percentage":0,
-                                    "planDetailId":0,
-                                    "childs":[
-
-                                    ],
-                                    "tradeBudgetItems":[
-
-                                    ],
-                                    "creatorUser":null,
-                                    "creationTime":"0001-01-01T00:00:00",
-                                    "lastModifierUser":null,
-                                    "lastModificationTime":null,
-                                    "isAudit":false,
-                                    "auditStatus":null,
-                                    "auditTime":null,
-                                    "id":0
-                                },
-                                {
-                                    "elementInfoId":90,
-                                    "elementInfoCode":"TempBACKUP_C-1-7",
-                                    "elementInfoNameCN":"營運單位所需預算項目(请按需要再分列细项):",
-                                    "parentID":36,
-                                    "orderSeq":89,
-                                    "amount":0,
-                                    "percentage":0,
-                                    "planDetailId":0,
-                                    "childs":[
-
-                                    ],
-                                    "tradeBudgetItems":[
-										
-										    {
-										        "budgetValue":11,
-										        "id":11
-										    },
-										    {
-										        "budgetValue":12,
-										        "id":12
-										    },
-										    {
-										        "budgetValue":13,
-										        "id":13
-										    },
-										    {
-										        "budgetValue":14,
-										        "id":14
-										    },
-										    {
-										        "budgetValue":15,
-										        "id":15
-										    },
-										    {
-										        "budgetValue":16,
-										        "id":16
-										    },
-										    {
-										        "budgetValue":17,
-										        "id":17
-										    },
-										    {
-										        "budgetValue":18,
-										        "id":18
-										    },
-										    {
-										        "budgetValue":19,
-										        "id":19
-										    },
-										    {
-										        "budgetValue":20,
-										        "id":20
-										    }
-										
                                     ],
                                     "creatorUser":null,
                                     "creationTime":"0001-01-01T00:00:00",

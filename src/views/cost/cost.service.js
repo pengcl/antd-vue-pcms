@@ -218,7 +218,7 @@ CostService.addBudgetItem = function (parameter) {
   return request({
     url: API.addBudgetItem,
     method: 'POST',
-    params : parameter
+    data : parameter
   })
 }
 

@@ -119,12 +119,12 @@
         </a-row>
       <a-row>
         <a-col :md="12" :sm="24">
-          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
+          <a-button type="success" style="margin-right: 20px" :loading="loading.startBPM" @click="startBPM">启动审批流程</a-button>
 
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button :disabled="type === 'view'" type="success" @click="handleToSave">储存</a-button>
+            <a-button :disabled="type === 'view'" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -148,6 +148,10 @@
         costCenters: [],
         budgetTypeItems: [],
         elementItems: [],
+        loading : {
+          save : false,
+          startBPM : false
+        },
         form: SwaggerService.getForm('TenderPackageCreateInputDto'),
         rules: {
           packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
@@ -222,17 +226,33 @@
         this.$refs.form.validate(valid => {
           if(valid){
             this.form.projectGUID = this.ProjectGUID
-            CostService.industryCreate(this.form).then(res => {
-              if (res.result.statusCode === 200) {
-                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
-              }
-            })
+            if(this.type === 'add'){
+              this.loading.save = true
+              CostService.industryCreate(this.form).then(res => {
+                if (res.result.statusCode === 200) {
+                  const that = this
+                  this.loading.save = false
+                  this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
+                    that.$router.push({ path: `/cost/industry/list`})
+                  })
+                }
+              }).catch(() => {
+                this.loading.save = false
+              })
+            }else if(this.type === 'edit'){
+              this.$message.warn('暂无接口，无法实现该功能')
+            }
           }
         })
 
       },
       back () {
         this.$router.push({ path: `/cost/industry/list`})
+      },
+      startBPM(){
+        this.loading.startBPM = true
+        this.$message.warn('暂无接口，无法实现该功能')
+        this.loading.startBPM = false
       }
     }
   }

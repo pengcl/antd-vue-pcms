@@ -91,6 +91,7 @@
               type="danger"
               icon="delete"
               style="margin-left: 4px"
+              @click="handleToRemove(record)"
               title="删除"></a-button>
           </template>
         </span>
@@ -106,7 +107,7 @@
 
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success"  v-if="pid" @click="hanldeAddBugetItem">新增预算</a-button>
+          <a-button type="success"  :disabeld="!pid || selectedPackage.contractGUID" @click="hanldeAddBugetItem">新增预算</a-button>
           <!-- <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button> -->
         </a-col>
         <!-- <a-col :md="12" :sm="24">
@@ -142,11 +143,14 @@
             <a-button
               type="danger"
               icon="delete"
+              :disabled="!pid || selectedPackage.projectTenderPackageId || selectedPackage.contractGUID"
               style="margin-left: 4px"
               @click="handleRemoveBudgetItem(record)"
               title="删除"></a-button>
           </template>
         </span>
+        <a slot="contractGUID" slot-scope="text, record" @click="jumpToContract" >{{selectedPackage.contractGUID}}</a>
+        <a slot="projectTenderPackage" slot-scope="text, record" @click="jumpToProjectTenderPackage" >{{selectedPackage.projectTenderPackage}}</a>
       </s-table>
     </a-card>
     <industry-modal ref="industryModal"></industry-modal>
@@ -187,8 +191,7 @@
         },
         {
             title: '日期',
-            dataIndex: 'packageDate',
-          scopedSlots: { customRender: 'dateAction'}
+            dataIndex: 'packageDate'
         },
         {
             title: '状态',
@@ -222,11 +225,13 @@
         },
         {
             title: '招投标包',
-            dataIndex: 'createAt',
+            dataIndex: 'ss',
+            scopedSlots: { customRender: 'projectTenderPackageId' }
         },
         {
             title: '合同',
-            dataIndex: 'approvalStatus',
+            dataIndex: 'aa',
+            scopedSlots: { customRender: 'contractGUID' }
         }
     ]
     export default {
@@ -248,12 +253,15 @@
                 confirmLoading: false,
                 mdl: null,
                 budgetId : '',
+                selectedPackage : null,
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
                 queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                    this.selectedPackage = null
+                    this.pid = ''
                     const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
                     if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID!='') {
                       return CostService.industryItems(requestParameters)
@@ -340,6 +348,7 @@
         },
         methods: {
             getBudgetAmt (record) {
+              this.selectedPackage = record
               this.pid = record.id
               this.$refs.table2.refresh(true)
               // CostService.budgetItems({ Id: this.pid }).then(res => {
@@ -419,12 +428,8 @@
                 const form = this.$refs.createModal.form
                 form.resetFields() // 清理表单数据（可不做）
             },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
+            handleToRemove (record){
+              this.$message.warn('暂无接口，无法实现该功能')
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
@@ -479,6 +484,12 @@
 
                 }
               })
+            },
+            jumpToContract(){
+              this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGuid}?type=view` })
+            },
+            jumpToProjectTenderPackage(){
+              this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackage}&type=view` })
             }
         }
     }
