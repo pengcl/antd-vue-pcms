@@ -38,6 +38,7 @@
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :defaultExpandAllRows="true"
         :expandIconColumnIndex="2"
       >
         <span slot="description" slot-scope="text">
@@ -100,7 +101,7 @@ function fixedList (res, params) {
   if (res.result.data) {
     result.totalPage = Math.ceil(res.result.data.projects.items.length / params.pageSize)
     result.totalCount = res.result.data.projects.items.length
-    result.data = formatList(res.result.data.projects.items, true)
+    result.data = formatList(res.result.data.projects.items, true, res.result.data.city.regionalOfficeNameCN)
   } else {
     result.totalPage = 0
     result.totalCount = 0
@@ -109,12 +110,13 @@ function fixedList (res, params) {
   return result
 }
 
-function formatList (items, isRoot) {
+function formatList (items, isRoot, area) {
   const list = []
   items.forEach(item => {
     item.isRoot = isRoot
+    item.area = area
     if (item.childs && item.childs.items.length > 0) {
-      item.children = formatList(item.childs.items, false)
+      item.children = formatList(item.childs.items, false, area)
     } else {
       item.children = null
       item.isEndNode = true
@@ -142,8 +144,8 @@ const columns = [
   },
   {
     title: '地区',
-    dataIndex: 'regionalOfficeId',
-    scopedSlots: { customRender: 'regionalOfficeId' }
+    dataIndex: 'area',
+    scopedSlots: { customRender: 'area' }
   },
   {
     title: '城市',
