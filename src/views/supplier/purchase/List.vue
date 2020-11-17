@@ -108,9 +108,9 @@
                     scopedSlots: { customRender: 'registerAddress' }
                 },
               {
-                title: '联系人',
-                dataIndex: 'vendorStatus',
-                scopedSlots: { customRender: 'vendorStatus' }
+                title: '法人',
+                dataIndex: 'legalRep',
+                scopedSlots: { customRender: 'legalRep' }
               },
                 {
                     title: '准入时间',
