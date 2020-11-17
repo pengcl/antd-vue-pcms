@@ -67,6 +67,7 @@
                 visible: false,
                 columnDatas : [],
                 confirmLoading: false,
+                showColumnCodes : ['NWCL'],//存储可展示列code
                 slots : [],
                 mdl: null,
                 // 高级搜索 展开/关闭
@@ -77,17 +78,13 @@
                 loadData: parameter => {
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
                     this.columnDatas = []
+                    this.showColumnCodes = ['NWCL']
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if(this.queryParam.id){
                       this.slots = []
                       return CostService.budegetTree(requestParameters).then(res => {
                         return CostService.budegetTreeItem(requestParameters)
                           .then(res2 => {
-                            var result = {
-                              result : {
-                                data : []
-                              }
-                            }
                             if (res2.result.data != null) {
                               //追加列
                               res2.result.data.forEach(column => {
@@ -104,7 +101,9 @@
                               //整理数据
                               const rows = [res.result.data]
                               forEachRow(rows,res2.result.data)
-                              this.columnDatas = rows
+                      console.log('this.showColumnCodes',this.showColumnCodes)
+                              const showRows = this.filterRows(rows)
+                              this.columnDatas = showRows
                             }
                           })
                       })
@@ -137,6 +136,7 @@
                             var costColumn = forEachBugetItem([item.elementBudgetItemTree],data.elementInfoId)
                             if(costColumn != null && costColumn.tradeBudgetItems.length > 0){
                               data[costName] = []
+                              this.showColumnCodes.push(data.elementInfoCode)
                               costColumn.tradeBudgetItems.forEach(temp => {
                                 data[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
                               })
@@ -145,10 +145,12 @@
                         })
                         if(data.childs && data.childs.length > 0){
                           forEachRow(data.childs,columnDatas)
-                          data.children = data.childs
+                          data.children = Object.assign([],data.childs)
+                          data.childs = undefined
                         }
                       }
                     }
+                    
                 }
             }
         },
@@ -214,6 +216,26 @@
           checkChange(obj,item){
             let myChecked = obj.target.checked
             item.checked = myChecked
+          },
+          filterRows(datas){
+            const rows = []
+            datas.forEach(item => {
+              let show = false
+              for(let i in this.showColumnCodes){
+                const showCode = this.showColumnCodes[i]
+                if(item.elementInfoCode.indexOf(showCode) === 0){
+                  show = true
+                  break
+                }
+              }
+              if(show){
+                rows.push(item)
+                if(item.children && item.children.length > 0){
+                  item.children = this.filterRows(item.children)
+                }
+              }
+            })
+            return rows
           }
         }
     }
