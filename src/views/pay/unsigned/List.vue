@@ -69,7 +69,7 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd">新增付款</a-button>
+          <a-button type="success" @click="handleToAdd" v-if="queryParam.ProjectGUID">新增付款</a-button>
         </a-col>
       </a-row>
       <s-table

@@ -93,6 +93,7 @@
         :visible="visible"
         :loading="confirmLoading"
         :model="mdl"
+        :project="projectValue"
         @cancel="handleCancel"
         @ok="handleOk"
       />
@@ -207,7 +208,6 @@
                 value: '',
                 city: '',
                 projectType: '',
-                currentFiscalYear: [],
                 cities: [],
                 visible: false,
                 confirmLoading: false,
@@ -216,6 +216,7 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
+                projectValue: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
@@ -257,11 +258,9 @@
                 this.queryParam.ProjectID = value.projectCode
                 this.projectType = value.type
                 this.queryParam.ProjectGUID = value.projectGUID
+                this.projectValue = { projectName: value.projectName, projectCode: value.projectCode }
                 this.$refs.table.refresh()
                 this.$forceUpdate()
-            })
-            FundPlanService.currentFiscalYear().then(res => {
-                this.currentFiscalYear = res.result.data
             })
         },
         computed: {
@@ -305,6 +304,10 @@
                 } else {
                     this.queryParam.ProjectGUID = value
                 }
+                this.projectValue = {
+                    projectName: option.$options.propsData.dataRef.projectName,
+                    projectCode: this.queryParam.ProjectID
+                }
                 this.$refs.table.refresh()
                 this.$forceUpdate()
             },
@@ -312,41 +315,32 @@
                 const form = this.$refs.createModal.form
                 this.confirmLoading = true
                 form.validateFields((errors, values) => {
+                    console.log(values)
                     if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
+                        FundPlanService.createFundingPlanYear(values).then(res => {
+                            if (res.result.data) {
+                                new Promise((resolve, reject) => {
+                                    setTimeout(() => {
+                                        resolve()
+                                    }, 1000)
+                                }).then(res => {
+                                    this.visible = false
+                                    this.confirmLoading = false
+                                    // 重置表单数据
+                                    form.resetFields()
+                                    // 刷新表格
+                                    this.$refs.table.refresh()
+
+                                    this.$message.info('新增成功')
+                                })
+                            } else {
                                 this.visible = false
                                 this.confirmLoading = false
-                                // 重置表单数据
                                 form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
+                            }
+                        })
+                        // 新增
 
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
                     } else {
                         this.confirmLoading = false
                     }

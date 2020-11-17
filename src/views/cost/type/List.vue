@@ -167,7 +167,7 @@
   }
 </script>
 <style lang="less" scoped>
-  /deep/ .ant-table-row ant-table-row-level-2{
+  /deep/ .ant-table-row-level-2{
     background: #d7f4ff !important;
   }
 </style>
