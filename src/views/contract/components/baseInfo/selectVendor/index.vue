@@ -1,12 +1,12 @@
 <template>
   <a-modal
-    title="请选择招投标分判包"
+    title="请选择供应商"
     :width="800"
     :visible="visible"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
-    <a-input-search v-model="searchKey" @change="change" placeholder="按合同名称/编号进行搜索" />
+    <a-input-search v-model="searchKey" @change="change" placeholder="按合供应商名称搜索" />
     <a-table
       style="margin-top: 5px"
       ref="table"
@@ -14,7 +14,7 @@
       rowKey="id"
       bordered
       :columns="columns"
-      :data-source="data"
+      :data-source="data | filterVendors(searchKey)"
       :alert="false"
       showPagination="auto"
       :rowSelection="rowSelection"
@@ -80,6 +80,15 @@
       visible: {
         type: Boolean,
         required: true
+      }
+    },
+    filters: {
+      filterVendors (vendors, searchKey) {
+        let result = []
+        if (vendors) {
+          result = vendors.filter(item => item.vendorName.indexOf(searchKey) !== -1)
+        }
+        return result
       }
     },
     methods: {
