@@ -22,7 +22,9 @@ const API = {
   paymentTermsList : '/api/services/app/Contract/GetContractPaymentTermslstByContractGuid',
   fileTypes : '/api/services/app/GeneralType/GetVOFileTypes',
   delete : '/api/services/app/VO/DeleteVOAllInfo',
-  startBMP : '/api/services/app/VO/StartBPM'
+  startBMP : '/api/services/app/VO/StartBPM',
+  createPMI : '/api/services/app/VO/CreatePMIFile',
+  viewPMI : '/api/services/app/VO/PMIIsCreate'
 }
 
 const ChangeService = {}
@@ -273,9 +275,33 @@ ChangeService.delete = function(voguid){
  */
 ChangeService.startBMP = function(parameter){
 	return request({
-	    url: API.startBMP,
+		url: API.startBMP,
+		method: 'post',
+		params: parameter
+	})
+}
+
+
+/**
+ * 通过cip生成pmi
+ */
+ChangeService.createPMI = function(parameter){
+	return request({
+	    url: API.createPMI,
 	    method: 'post',
 	    params: parameter
+	  })
+}
+
+
+/**
+ * 通过cip生成pmi
+ */
+ChangeService.viewPMI = function(CIPGuid){
+	return request({
+	    url: API.viewPMI,
+	    method: 'post',
+	    params: {CIPGuid}
 	  })
 }
 

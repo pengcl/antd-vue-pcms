@@ -338,7 +338,7 @@ export default {
             budgetIsConfirm: true,
             contractBudgetAdjustlst: this.$refs.budgets.$refs.table.localDataSource
           }
-          ContractService.updateBudgets(form).then(res => {
+          ContractService[this.type + 'Budgets'](form).then(res => {
             if (res.result.statusCode === 200) {
               if (this.isBpm) {
                 this.loading.bpm = true

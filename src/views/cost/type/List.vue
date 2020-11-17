@@ -64,9 +64,13 @@
       if (item.childs) {
         item.children = getList(item.childs)
       }
+      if(item.childs && item.childs.length === 0){
+        item.isCreate = true
+      }
       list.push(item)
       // 插入行业预算行
-      if (item.tradeTypeList && item.childs && item.childs.length === 0) {
+      if (item.tradeTypeList) {
+        const objItems = []
         item.tradeTypeList.forEach(budgetItem =>{
           const budget = {}
           budget.elementId = item.id
@@ -76,9 +80,11 @@
           budget.typeName = budgetItem.nameCN
           budget.description = budgetItem.description
           budget.isEdit = true
-          item.isCreate = true
-          list.push(budget)
+          objItems.push(budget)
         })
+        if(objItems.length>0){
+          item.children = objItems
+        }
       }
     })
     return list
@@ -135,7 +141,6 @@
                 }
               }
               result.result.data = getList(res.result.data.childs)
-              console.log(fixedList(result, parameter))
               return fixedList(result, parameter)
             })
         },
@@ -167,7 +172,7 @@
   }
 </script>
 <style lang="less" scoped>
-  /deep/ .ant-table-row-level-2{
+  /deep/ .ant-table-row-level-3{
     background: #d7f4ff !important;
   }
 </style>
