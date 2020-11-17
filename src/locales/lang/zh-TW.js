@@ -55,7 +55,7 @@ const locale = {
   'menu.cost.bid.list': '招投标分判包',
   'menu.cost.bid.edit': '新增招投标分判包',
   'menu.cost.bid.item': '招投标分判包详细',
-  'menu.cost.type.list': '行业预算类型管理',
+  'menu.cost.type.list': '管理',
   'menu.cost.type.item': '行业预算类型详情',
 
   'menu.pay': '付款管理',

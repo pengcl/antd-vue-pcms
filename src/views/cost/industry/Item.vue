@@ -138,6 +138,7 @@
 <script>
   import { CostService } from '@/views/cost/cost.service'
   import { SwaggerService } from '@/api/swagger.service'
+  import moment from "moment";
 
   export default {
     name: 'Edit',
@@ -206,6 +207,8 @@
           this.form.costCenters = values
           this.centers = values
         })
+      }else{
+        this.form.packageDate = moment(new Date())
       }
     },
     methods: {

@@ -9,7 +9,7 @@
         :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="类型中文名" prop="nameCN">
+            <a-form-model-item label="科目名称" prop="nameCN">
               <a-input
                 :disabled="type === 'view'"
                 v-model="form.nameCN"
@@ -18,7 +18,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="类型英文名" prop="nameEN">
+            <a-form-model-item label="科目名称tradeName" prop="nameEN">
               <a-input
                 :disabled="type === 'view'"
                 v-model="form.nameEN"
@@ -28,11 +28,12 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-model-item label="描述" prop="description">
-              <a-input
+              <a-textarea
+                rows="4"
                 :disabled="type === 'view'"
                 v-model="form.description"
               >
-              </a-input>
+              </a-textarea>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -95,6 +96,7 @@
             CostService[buttonType](this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+                this.back()
               }
             })
           }
