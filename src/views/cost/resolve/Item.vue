@@ -61,7 +61,7 @@
         </a-col>
       </a-row>
     </a-card>
-    <resolve-modal :afterClose="refreshTable()" ref="resolveModal"></resolve-modal>
+    <resolve-modal  ref="resolveModal" :refreshParent="refreshTable"></resolve-modal>
   </page-header-wrapper>
 </template>
 
@@ -353,7 +353,8 @@
         })
       },
       refreshTable(){
-        console.log("12321321321321")
+        console.log('JINJKSJKSKSKSKSKSKSK')
+        this.$refs.table.refresh()
       }
     }
   }

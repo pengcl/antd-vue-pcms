@@ -6,9 +6,15 @@
     @cancel="handleCancel"
     @ok="handleOk"
     @afterClose="refreshTable"
+    :ok-button-props="{ props: { disabled: defaultSave } }"
   >
     <a-card :bordered="false">
-      <a-form :form="form">
+      <a-form-model
+        ref="form"
+        :model="form"
+        :rules="rules"
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }">
         <a-col :md="24" :sm="24">
           <table>
             <thead>
@@ -37,7 +43,7 @@
                 {{costCenterItem.amount|amountFormat}}
               </td>
             </tr>
-            <tr v-for="(item,index) in resolveItems" :key="index">
+            <tr v-for="(item,index) in form.costCenterItems" :key="index">
               <td>
                 <a-button @click="del(index)" icon="delete" type="danger"></a-button>
               </td>
@@ -45,34 +51,49 @@
 
               </td>
               <td>
-                <a-select
-                  placeholder="请选择"
-                  v-model="item.tradeTypeId"
-                  @change="onChange"
+                <a-form-model-item
+                  class="simple"
+                  style="margin-top: 20px"
+                  :prop="'costCenterItems.' + index + '.tradeTypeId'"
+                  :rules="[{required: true, message: '请选择行业类型', trigger: 'change' }]"
                 >
-                  <a-select-option
-                    v-for="option in elementTradeTypes"
-                    :key="index + '#&' + JSON.stringify(option)"
-                    :value="option.id"
+                  <a-select
+                    placeholder="请选择"
+                    v-model="form.costCenterItems[index].tradeTypeId"
                   >
-                    {{ option.nameCN }}
-                  </a-select-option>
-                </a-select>
+                    <a-select-option
+                      v-for="option in elementTradeTypes"
+                      :key="option.id"
+                      :value="option.id"
+                    >
+                      {{ option.nameCN }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-model-item>
               </td>
-              <td v-for="(costCenterItem,index) in item.costCenterItems" :key="index">
-                <a-input-number
-                  :disabled="costCenterItem.disabled"
-                  v-model="item.costCenterItems[index].amount"
-                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              <td v-for="(costCenterItem,aIndex) in form.costCenterItems[index].centers" :key="aIndex">
+                <a-form-model-item
+                  class="simple"
+                  style="margin-top: 20px"
+                  :prop="'costCenterItems.' + index +'.centers.' + aIndex +'.amount'"
+                  :rules="[
+                    {validator: (rule,value,callback) => {checkTo(rule,value,callback,form.costCenterItems[index].centers[aIndex].disabled)},  type : 'number', trigger: 'change',required : true }
+                   ]"
                 >
-                </a-input-number>
+                  <a-input-number
+                    :disabled="form.costCenterItems[index].centers[aIndex].disabled"
+                    v-model="form.costCenterItems[index].centers[aIndex].amount"
+                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  >
+                  </a-input-number>
+                </a-form-model-item>
               </td>
             </tr>
             </tbody>
           </table>
         </a-col>
-      </a-form>
+      </a-form-model>
     </a-card>
   </a-modal>
 </template>
@@ -89,13 +110,25 @@
       STable,
       Ellipsis
     },
+    watch: {
+      // 去掉表单验证信息二次打开残留
+      visible(val, newVal) {    //监听的是控制模态框显示或影藏开关的布尔值
+        // 监视dialog状态（打开、关闭）
+        if (val) {
+          try {
+            this.$refs['form'].resetFields() // 重置编辑表单
+            // addForm 为ref指向的表单
+          } catch (e) {
+          }
+        }
+      }
+    },
     data() {
       return {
+        defaultSave: true,
         visible: false,
-        ProjectGUID: '',
         elementInfoNameCN: '',
         resolveItem: {},
-        resolveItems: [],
         columnLength: 3,
         elementTradeTypes: [],
         costCenterItems: [],
@@ -103,6 +136,9 @@
         record: {},
         type: '',
         form: SwaggerService.getForm('TradeBudgetItemProjectCreateInputDto'),
+        rules: {
+          costCenterItems: []
+        },
         loadData: parameter => {
           this.form.projectGUID = this.resolveItem.ProjectGUID
           this.form.elementInfoId = this.resolveItem.elementInfoId
@@ -121,6 +157,11 @@
         }
       },
     },
+    props: {
+      refreshParent: {
+        type: Function
+      }
+    },
     created() {
 
     },
@@ -128,22 +169,27 @@
     methods: {
       // 搜索
       show(record) {
+        console.log(record)
         this.record = record
-        this.resolveItems = []
+        this.form.costCenterItems = []
         this.visible = true
         this.resolveItem = record
-        this.ProjectGUID = record.ProjectGUID
         this.elementTradeTypes = record.elementTradeTypes
         const centers = []
+        let isCanSave = true
         record.costCenters.forEach(item => {
           const obj = {}
           obj.costCenterId = item.costCenterId
           const costName = 'cost' + item.costCenterId
           const amount = record[costName]
+          if (amount && amount !== 0) {
+            isCanSave = false
+          }
           obj.amount = amount
           obj.costCenterName = item.costCenterName
           centers.push(obj)
         })
+        this.defaultSave = isCanSave
         this.costCenters = centers
         this.elementInfoNameCN = record.elementInfoNameCN
         this.loadData()
@@ -153,25 +199,42 @@
         this.visible = false
       },
       handleOk() {
-        this.form.costCenterItems = []
-        this.resolveItems.forEach(item => {
-          item.costCenterItems.forEach(center => {
-            this.form.costCenterItems.push(center)
+        console.log(this.form)
+        this.$refs.form.validate(valid => {
+          const result = []
+          const resultForm = Object.assign({},this.form)
+          const costCenterItems = Object.assign([],this.form.costCenterItems)
+          if (costCenterItems) {
+            costCenterItems.forEach(item => {
+              item.centers.forEach(centerItem => {
+                if (centerItem.amount && centerItem.amount !== 0) {
+                  const obj = {}
+                  obj.tradeTypeId = item.tradeTypeId
+                  obj.costCenterId = centerItem.costCenterId
+                  obj.amount = centerItem.amount
+                  result.push(obj)
+                }
+              })
+            })
+          }
+          resultForm.costCenterItems = result
+          console.log('this.form', this.form,resultForm)
+          CostService.bidBudgetCreate(resultForm).then(res => {
+            if (res.result.statusCode === 200) {
+              const that = this
+              this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() =>{
+                that.refreshParent()
+                this.visible = false
+              })
+            }
           })
         })
-        CostService.bidBudgetCreate(this.form).then(res => {
-          if (res.result.statusCode === 200) {
-            this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
-          }
-          this.visible = false
-        })
       },
-      refreshTable(){
-        console.log("12321321321321")
+      refreshTable() {
+
       },
       addResolve() {
         const centers = []
-        console.log(this.costCenters)
         this.costCenters.forEach(item => {
           const obj = {}
           const costName = 'cost' + item.costCenterId
@@ -180,32 +243,28 @@
           } else {
             obj.disabled = true
           }
-          console.log(this.record[costName])
           obj.costCenterId = item.costCenterId
           obj.amount = 0
           centers.push(obj)
         })
         const item = {
-          _id: new Date().getTime(),
-          resolveItemID: this.id === '0' ? '' : this.id,
-          id: '',
-          elementInfoNameCN: this.resolveItem.elementInfoNameCN,
           tradeTypeId: '',
-          costCenterItems: centers
+          centers: centers
         }
-        addItem(item, this.resolveItems)
+        addItem(item, this.form.costCenterItems)
       },
       del(index) {
-        const items = this.resolveItems
+        const items = this.form.costCenterItems
         removeItem(index, items)
       },
-      onChange(value, option) {
-        const optionValue = option.data.key
-        const index = optionValue.split('#&')[0]
-        this.resolveItems[index].costCenterItems.forEach(item => {
-          item.tradeTypeId = value
-        })
-      }
+      checkTo(rule, value, callback, isDisabled) {
+        value = value || ''
+        if (!isDisabled && !value) {
+          callback(new Error('请输入金额'))
+        } else {
+          callback()
+        }
+      },
     }
   }
 </script>
@@ -259,5 +318,11 @@
 
   .ant-btn-group {
     margin-right: 8px;
+  }
+
+  .simple {
+    /deep/ .ant-form-item-control-wrapper.ant-col-16 {
+      width: 100% !important;
+    }
   }
 </style>
