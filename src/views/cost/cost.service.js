@@ -20,6 +20,8 @@ const API = {
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
   bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage',//新增招投标分判包
   bidBudgetCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算
+  matterItems: 'api/services/app/ProjectTenderPackage/GetPlanMatterModelList',//工作项列表
+  bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//行业分判包下拉列表
   //行业预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
@@ -269,6 +271,22 @@ CostService.typeUpdate = function (parameter) {
     url: API.typeUpdate,
     method: 'POST',
     data: parameter
+  })
+}
+
+CostService.matterItems = function (parameter) {
+  return request({
+    url: API.matterItems,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.bidIndustryItems = function (parameter) {
+  return request({
+    url: API.bidIndustryItems,
+    method: 'get',
+    params: parameter
   })
 }
 

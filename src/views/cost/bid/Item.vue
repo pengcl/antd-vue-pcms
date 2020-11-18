@@ -94,6 +94,9 @@
                     >
                       <a-select
                         :disabled="type === 'view'"
+                        showSearch
+                        option-filter-prop="children"
+                        :filter-option="filterOption"
                         placeholder="请选择"
                         v-model="form.tenderPackages[index]"
                       >
@@ -144,11 +147,21 @@
                   <a-form-model-item
                     class="simple"
                     style="margin-top: 20px"
-                    :prop="'plans.' + index +'.planTitle'"
-                    :rules="[{required: true, message: '请填写工作项', trigger: 'blur' }]">
-                    <a-input
+                    :prop="'plans.' + index"
+                    :rules="[{required: true, message: '请选择工作项', trigger: 'change' }]"
+                  >
+                    <a-select
                       :disabled="type === 'view'"
-                      v-model="form.plans[index].planTitle"></a-input>
+                      placeholder="请选择"
+                      v-model="form.plans[index].planTitle"
+                    >
+                      <a-select-option
+                        v-for="option in matterItems"
+                        :key="option.id"
+                        :value="option.matterValue">
+                        {{ option.matterValue }}
+                      </a-select-option>
+                    </a-select>
                   </a-form-model-item>
                 </td>
                 <td>
@@ -220,6 +233,7 @@
         industryItems: [],
         budgetTypeItems: [],
         tenderPackages: [],
+        matterItems: [],
         plans: [],
         form: SwaggerService.getForm('ProjectTenderPackageCreateInputDto'),
         rules: {
@@ -250,11 +264,14 @@
         this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
       })
-      CostService.industryItems({ MaxResultCount: 1000, ProjectGUID: this.ProjectGUID })
-        .then(res => {
-          this.industryItems = JSON.parse(JSON.stringify(res.result.data.items))
+      CostService.bidIndustryItems({ MaxResultCount: 1000, ProjectGUID: this.ProjectGUID }).then(res => {
+          this.industryItems = JSON.parse(JSON.stringify(res.result.data))
           this.$forceUpdate()
-        })
+      })
+      CostService.matterItems().then(res => {
+        this.matterItems = JSON.parse(JSON.stringify(res.result.data))
+        this.$forceUpdate()
+      })
       if (this.type !== 'add') {
         CostService.bidItem({ Id: this.id }).then(res => {
           this.form = res.result.data
@@ -295,6 +312,7 @@
         addItem(item, this.form.plans)
       },
       handleToSave () {
+        console.log(this.form)
         this.form.projectGUID = this.ProjectGUID
         this.$refs.form.validate(valid => {
           if (valid) {
@@ -317,6 +335,11 @@
       delPlan (index) {
         const items = this.plans
         removeItem(index, items)
+      },
+      filterOption(input, option) {
+        return (
+          option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        )
       }
     }
   }
