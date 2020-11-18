@@ -44,11 +44,29 @@
                   <a-input v-model="item.employeeName"/>
                 </td>
                 <td><a-input v-model="item.jobPosition"/></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>
+                  <a-select v-model="item.isPrimary">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option value="是">是</a-select-option>
+                    <a-select-option value="否">否</a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-select v-model="item.isRecipients">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option value="是">是</a-select-option>
+                    <a-select-option value="否">否</a-select-option>
+                  </a-select>
+                </td>
+                <td>
+                  <a-select v-model="item.isPlanFlag">
+                    <a-select-option value="">请选择</a-select-option>
+                    <a-select-option value="是">是</a-select-option>
+                    <a-select-option value="否">否</a-select-option>
+                  </a-select>
+                </td>
                 <td><a-input v-model="item.officePhone"/></td>
-                <td><a-input v-model="item.fox"/></td>
+                <td><a-input v-model="item.fax"/></td>
                 <td><a-input v-model="item.mobilePhone"/></td>
                 <td><a-input v-model="item.email"/></td>
                 <td><a-input v-model="item.isIncumbent"/></td>
@@ -65,10 +83,11 @@
 <script>
 
 import { SwaggerService } from '@/api/swagger.service'
+import TagSelectOption from '@/components/TagSelect/TagSelectOption'
 
 export default {
   name: 'CompanyStaff',
-  components: { },
+  components: { TagSelectOption },
   props: {
     vendor: {
       type: Object,

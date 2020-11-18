@@ -52,6 +52,17 @@
         :data="loadData"
         :alert="false"
         showPagination="auto">
+        <template slot="vendorName", slot-scope="text, record">
+          <p>{{ text }}</p>
+          <p>
+            <a-button-group v-if="record.vendorStatus">
+              <span class="label-primary">{{ record.vendorStatus }}</span>
+            </a-button-group>
+            <a-button-group v-if="record.legalRep">
+              <span class="label-orange">{{ record.taxpayerName }}</span>
+            </a-button-group>
+          </p>
+        </template>
         <template slot="action" slot-scope="text, record">
           <a-button
             class="btn-success"
@@ -74,7 +85,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import { fixedList, formatTree } from '@/utils/util'
 import { TreeSelect } from 'ant-design-vue'
@@ -133,26 +143,15 @@ const SHOW_PARENT = TreeSelect.SHOW_PARENT
             return SupplierService.items(requestParameters).then(res => {
               return fixedList(res, requestParameters)
             })
-          },
-          selectedRowKeys: [],
-          selectedRows: []
+          }
         }
       },
-      filters: {},
       created () {
         // getRoleList({ t: new Date() })
         SupplierService.types().then(res => {
           this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
           this.$forceUpdate()
         })
-      },
-      computed: {
-        rowSelection () {
-          return {
-            selectedRowKeys: this.selectedRowKeys,
-            onChange: this.onSelectChange
-          }
-        }
       },
       methods: {
         search () {
@@ -166,54 +165,6 @@ const SHOW_PARENT = TreeSelect.SHOW_PARENT
         },
         handleToAdd () {
           this.$router.push({ path: `/supplier/other/item/0?type=create` })
-        },
-        handleOk () {
-          const form = this.$refs.createModal.form
-          this.confirmLoading = true
-          form.validateFields((errors, values) => {
-            if (!errors) {
-              console.log('values', values)
-              if (values.id > 0) {
-                // 修改 e.g.
-                new Promise((resolve, reject) => {
-                  setTimeout(() => {
-                    resolve()
-                  }, 1000)
-                }).then(res => {
-                  this.visible = false
-                  this.confirmLoading = false
-                  // 重置表单数据
-                  form.resetFields()
-                  // 刷新表格
-                  this.$refs.table.refresh()
-
-                  this.$message.info('修改成功')
-                })
-              } else {
-                // 新增
-                new Promise((resolve, reject) => {
-                  setTimeout(() => {
-                    resolve()
-                  }, 1000)
-                }).then(res => {
-                  this.visible = false
-                  this.confirmLoading = false
-                  // 重置表单数据
-                  form.resetFields()
-                  // 刷新表格
-                  this.$refs.table.refresh()
-
-                  this.$message.info('新增成功')
-                })
-              }
-            } else {
-              this.confirmLoading = false
-            }
-          })
-        },
-        onSelectChange (selectedRowKeys, selectedRows) {
-          this.selectedRowKeys = selectedRowKeys
-          this.selectedRows = selectedRows
         }
       }
     }

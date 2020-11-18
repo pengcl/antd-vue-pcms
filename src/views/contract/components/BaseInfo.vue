@@ -119,6 +119,22 @@
           </a-select>
         </a-form-model-item>
       </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="专业分类"
+          prop="contractTypeCode"
+        >
+          <a-select
+            :disabled="type === 'view'"
+            placeholder="请选择专业分类"
+            v-model="data.contract.contractProfession">
+            <a-select-option :key="-1" :value="0">请选择专业分类</a-select-option>
+            <a-select-option v-for="(option,index) in selection.professions" :key="index" :value="option.id">
+              {{ option.nameCN }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+      </a-col>
       <a-col :md="24" :sm="24">
         合同甲方：
       </a-col>
@@ -372,6 +388,10 @@ export default {
     })
     ContractService.vendors().then(res => {
       this.selection.vendors = res.result.data
+      this.$forceUpdate()
+    })
+    BaseService.professionTypes().then(res => {
+      this.selection.professions = res.result.data
       this.$forceUpdate()
     })
     ContractService.tenders({ ProjectGUID: this.project.projectGUID, MaxResultCount: 999 }).then(res => {

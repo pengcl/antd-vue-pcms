@@ -25,8 +25,8 @@ const locale = {
   'menu.supplier.purchase.item': 'Supplier detail',
   'menu.supplier.purchase.edit': 'Supplier Edit',
   'menu.supplier.other': 'Other supplier',
-  'menu.supplier.other.list': 'Supplier list',
-  'menu.supplier.other.item': 'Supplier detail',
+  'menu.supplier.other.list': 'Other Supplier list',
+  'menu.supplier.other.item': 'Other Supplier detail',
 
   'menu.contract': 'Contract',
   'menu.contract.list': 'Contracts',

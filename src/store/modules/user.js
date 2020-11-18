@@ -52,7 +52,7 @@ const user = {
     // 获取用户信息
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-        const response = INFO
+         const response = INFO
         const result = response.result
 
         if (result.role && result.role.permissions.length > 0) {
@@ -75,7 +75,7 @@ const user = {
         commit('SET_AVATAR', result.avatar)
 
         resolve(response)
-        /* getInfo().then(response => {
+         /* getInfo().then(response => {
           console.log(response.result.data)
           const result = response.result.data
 

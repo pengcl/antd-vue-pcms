@@ -52,6 +52,17 @@
         :data="loadData"
         :alert="false"
         showPagination="auto">
+        <template slot="vendorName", slot-scope="text, record">
+          <p>{{ text }}</p>
+          <p>
+            <a-button-group v-if="record.vendorStatus">
+              <span class="label-primary">{{ record.vendorStatus }}</span>
+            </a-button-group>
+            <a-button-group v-if="record.legalRep">
+              <span class="label-orange">{{ record.taxpayerName }}</span>
+            </a-button-group>
+          </p>
+        </template>
         <template slot="action" slot-scope="text, record">
           <a-button
             class="btn-success"
@@ -74,139 +85,95 @@
 </template>
 
 <script>
-    import { STable, Ellipsis } from '@/components'
-    import { fixedList, formatTree } from '@/utils/util'
-    import { TreeSelect } from 'ant-design-vue'
-    import { SupplierService } from '@/views/supplier/supplier.service'
-    const SHOW_PARENT = TreeSelect.SHOW_PARENT
-    export default {
-        name: 'SupplierPurchaseList',
-        components: {
-            STable,
-            Ellipsis
-        },
-        data () {
-            const columns = [
-              {
-                title: '操作',
-                dataIndex: 'action',
-                scopedSlots: { customRender: 'action' }
-              },
-                {
-                    title: '供应商信息',
-                    dataIndex: 'vendorName',
-                    scopedSlots: { customRender: 'vendorName' }
-                },
-                {
-                    title: '供应商类别',
-                    dataIndex: 'packageName',
-                    scopedSlots: { customRender: 'packageName' }
-                },
-                {
-                    title: '供应商地址',
-                    dataIndex: 'registerAddress',
-                    scopedSlots: { customRender: 'registerAddress' }
-                },
-              {
-                title: '法人',
-                dataIndex: 'legalRep',
-                scopedSlots: { customRender: 'legalRep' }
-              },
-                {
-                    title: '准入时间',
-                    dataIndex: 'zrDate',
-                    scopedSlots: { customRender: 'zrDate' }
-                }
-            ]
+  import { STable, Ellipsis } from '@/components'
+  import { fixedList, formatTree } from '@/utils/util'
+  import { TreeSelect } from 'ant-design-vue'
+  import { SupplierService } from '@/views/supplier/supplier.service'
 
-            this.columns = columns
-            return {
-              SHOW_PARENT,
-                show: false,
-                queryParam: { RegisterType: 0 },
-              types: [],
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return SupplierService.items(requestParameters).then(res => {
-                        console.log(res)
-                        return fixedList(res, requestParameters)
-                    })
-                },
-                selectedRowKeys: [],
-                selectedRows: []
-            }
+  const SHOW_PARENT = TreeSelect.SHOW_PARENT
+  export default {
+    name: 'SupplierPurchaseList',
+    components: {
+      STable,
+      Ellipsis
+    },
+    data () {
+      const columns = [
+        {
+          title: '操作',
+          dataIndex: 'action',
+          scopedSlots: { customRender: 'action' }
         },
-        filters: {},
-        created () {
-            // getRoleList({ t: new Date() })
-          SupplierService.types().then(res => {
-            this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
-            this.$forceUpdate()
+        {
+          title: '供应商信息',
+          dataIndex: 'vendorName',
+          scopedSlots: { customRender: 'vendorName' }
+        },
+        {
+          title: '供应商类别',
+          dataIndex: 'packageName',
+          scopedSlots: { customRender: 'packageName' }
+        },
+        {
+          title: '供应商地址',
+          dataIndex: 'registerAddress',
+          scopedSlots: { customRender: 'registerAddress' }
+        },
+        {
+          title: '法人',
+          dataIndex: 'legalRep',
+          scopedSlots: { customRender: 'legalRep' }
+        },
+        {
+          title: '准入时间',
+          dataIndex: 'zrDate',
+          scopedSlots: { customRender: 'zrDate' }
+        }
+      ]
+
+      this.columns = columns
+      return {
+        SHOW_PARENT,
+        show: false,
+        queryParam: { RegisterType: 0 },
+        types: [],
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const requestParameters = Object.assign({}, parameter, this.queryParam)
+          console.log('loadData request parameters:', requestParameters)
+          return SupplierService.items(requestParameters).then(res => {
+            console.log(res)
+            return fixedList(res, requestParameters)
           })
         },
-        methods: {
-          search () {
-            this.$refs.table.refresh()
-          },
-            handleToItem (record) {
-                console.log(record)
-                this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })
-            },
-            handleToEdit (record) {
-                console.log(record)
-                this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
-            },
-            handleToAdd () {
-                this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
-            },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading = false
-                    }
-                })
-            }
-        }
+        selectedRowKeys: [],
+        selectedRows: []
+      }
+    },
+    created () {
+      // getRoleList({ t: new Date() })
+      SupplierService.types().then(res => {
+        this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
+        this.$forceUpdate()
+      })
+    },
+    methods: {
+      search () {
+        this.$refs.table.refresh()
+      },
+      handleToItem (record) {
+        console.log(record)
+        this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })
+      },
+      handleToEdit (record) {
+        console.log(record)
+        this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
+      },
+      handleToAdd () {
+        this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
+      }
     }
+  }
 </script>
 
 <style lang="less" scoped>
@@ -249,7 +216,7 @@
     border-radius: 5px;
   }
 
-  .vendor{
+  .vendor {
     background-color: #778fc5;
     width: 90px;
     height: 90px;
