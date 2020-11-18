@@ -18,9 +18,19 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-button-group style="float: right">
-                <a-button type="success" style="margin-right: 10px" @click="handleAdd">新增年度资金计划</a-button>
-                <a-button type="success" style="margin-right: 10px">新增月度资金计划</a-button>
-                <a-button type="success">查看历史版本（V1.0）</a-button>
+                <a-button type="success"
+                          style="margin-right: 10px"
+                          v-if="queryParam.ProjectID"
+                          @click="handleAdd">新增年度资金计划
+                </a-button>
+                <a-button type="success"
+                          style="margin-right: 10px"
+                          @click="addMonthPlan">新增月度资金计划
+                </a-button>
+                <a-button type="success"
+                          v-if="queryParam.ProjectID"
+                          @click="visible2 = true">查看历史版本（V1.0）
+                </a-button>
               </a-button-group>
             </a-col>
           </a-row>
@@ -61,7 +71,7 @@
         <span slot="action" slot-scope="text, record">
           <template>
             <a-button-group v-if="record.isRoot">
-              <a-button>发起审批</a-button>
+              <a-button @click="startBPM(record)">发起审批</a-button>
             </a-button-group>
             <a-button-group v-if="!record.isRoot">
             <a-button
@@ -82,7 +92,8 @@
               class="btn-info"
               icon="edit"
               style="margin-left: 4px"
-              title="月度修订"></a-button>
+              title="月度修订"
+              @click="handToMonthEdit(record)"></a-button>
               </a-button-group>
           </template>
         </span>
@@ -96,6 +107,15 @@
         :project="projectValue"
         @cancel="handleCancel"
         @ok="handleOk"
+      />
+      <create-view-history-version
+        ref="createViewHistoryModal"
+        :visible="visible2"
+        :loading="confirmLoading2"
+        :model="mdl2"
+        :projectCode="queryParam.ProjectID"
+        @cancel="handleCancel2"
+        @ok="handleOk2"
       />
     </a-card>
   </page-header-wrapper>
@@ -111,6 +131,7 @@
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
+    import CreateViewHistoryVersion from '@/views/pay/fundplan/modules/CreateViewHistoryVersion'
     import { FundPlanService } from './fundplan.service'
     import storage from 'store'
 
@@ -138,6 +159,8 @@
                 item.children = _formatList(item.elementList, false)
                 item.children.forEach(child => {
                     child.title = child.elementCode + '-' + child.elementName
+                    child.projectCode = item.projectCode
+                    child.year = item.year
                 })
             } else {
                 item.children = null
@@ -199,7 +222,8 @@
             CreateAnnualFundingPlan,
             STable,
             Ellipsis,
-            StepByStepModal
+            StepByStepModal,
+            CreateViewHistoryVersion
         },
         data () {
             this.columns = columns
@@ -209,8 +233,12 @@
                 city: '',
                 projectType: '',
                 cities: [],
+                fundingPlanYearList: [],
                 visible: false,
                 confirmLoading: false,
+                visible2: false,
+                confirmLoading2: false,
+                mdl2: null,
                 mdl: null,
                 // 高级搜索 展开/关闭
                 advanced: false,
@@ -222,6 +250,7 @@
                     if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
                         const requestParameters = Object.assign({}, parameter, this.queryParam)
                         return FundPlanService.fundingPlanYearList(this.queryParam.ProjectID).then(res => {
+                            this.fundingPlanYearList = res.result.data
                             return fixedList(res, requestParameters)
                         })
                     } else {
@@ -273,13 +302,13 @@
         },
         methods: {
             handleToItem (record) {
-                this.$router.push({ path: `/pay/fundplan/item/${record.gid}?type=view` })
+                this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=view&projectCode=` + record.projectCode + `&year=` + record.year })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/pay/fundplan/item/${record.gid}?type=update` })
+                this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&projectCode=` + record.projectCode + `&year=` + record.year })
             },
-            handleToAdd () {
-                this.$router.push({ path: '/pay/fundplan/item/0?type=create' })
+            handToMonthEdit (record) {
+                this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&status=month&projectCode=` + record.projectCode + `&year=` + record.year })
             },
             handleAdd () {
                 this.mdl = null
@@ -315,7 +344,6 @@
                 const form = this.$refs.createModal.form
                 this.confirmLoading = true
                 form.validateFields((errors, values) => {
-                    console.log(values)
                     if (!errors) {
                         FundPlanService.createFundingPlanYear(values).then(res => {
                             if (res.result.data) {
@@ -370,6 +398,51 @@
                 this.queryParam = {
                     date: moment(new Date())
                 }
+            },
+            handleOk2 () {
+                const history = this.$refs.createViewHistoryModal.selected
+                this.$router.push({ path: `/pay/fundplan/item/0?type=view&projectCode=` + this.queryParam.ProjectID + `&year=` + history.yearNum })
+                this.visible2 = false
+            },
+            handleCancel2 () {
+                this.visible2 = false
+
+                const form = this.$refs.createViewHistoryModal.form
+                form.resetFields() // 清理表单数据（可不做）
+            },
+            addMonthPlan () {
+                const body = {
+                    projectCode: this.queryParam.ProjectID,
+                    month: 0
+                }
+                for (let i = 0; i < this.fundingPlanYearList.length; i++) {
+                    if (i === this.fundingPlanYearList.length - 1) {
+                        body.year = this.fundingPlanYearList[i].year
+                    }
+                }
+                FundPlanService.createFundingPlanMonth(body).then(res => {
+                    console.log(res)
+                })
+            },
+            startBPM (record) {
+                if (record.yearVersionAuditStatus === '未审核') {
+                    FundPlanService.startBPM_Year(record.gid).then(res => {
+                        if (res.result.data) {
+                            this.$message.success('已启动审批流程')
+                            window.location.href = res.result.data
+                        }
+                    })
+                } else {
+                    if (!record.monthLastVersionAuditStatus || record.monthLastVersionAuditStatus === '未审核') {
+                        FundPlanService.startBPM_Month(record.monthLastVersionGID).then(res => {
+                            if (res.result.data) {
+                                this.$message.success('已启动审批流程')
+                                window.location.href = res.result.data
+                            }
+                        })
+                    }
+                }
+
             }
         }
     }

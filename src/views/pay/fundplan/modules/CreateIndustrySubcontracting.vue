@@ -1,8 +1,9 @@
 <template>
   <a-modal
     title="引入行业分判包"
-    :width="640"
+    :width="900"
     :visible="visible"
+    :ok-button-props="{ props: { disabled: selectedRows.length < 1 } }"
     :confirmLoading="loading"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
@@ -11,23 +12,25 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">可按分判包名称关键词查找</a-col>
         <a-col :md="12" :sm="24">
-          <a-input></a-input>
+          <a-input v-model="queryParam.PackageTitle"
+                   placeholder="请输入分判包名称关键词"></a-input>
         </a-col>
         <a-col :md="12" :sm="24">
-          <a-button type="primary">查找</a-button>
+          <a-button type="primary" @click="search">查找</a-button>
         </a-col>
       </a-row>
       <s-table
         style="margin-top: 10px"
-        ref="table"
+        ref="tenderPacakge"
         size="default"
-        rowKey="contractGuid"
+        rowKey="gid"
         bordered
         :columns="columns"
         :data="loadData"
         :alert="false"
         :rowSelection="rowSelection"
         showPagination="auto"
+        :scroll="{ y:200 }"
       >
       </s-table>
     </a-spin>
@@ -37,29 +40,31 @@
 <script>
     import pick from 'lodash.pick'
     import { STable } from '@/components'
-    import { UnSignedService } from '@/views/pay/unsigned/unsigned.service'
-    import { fixedList } from '@/utils/util'
+    import { fixedList, getPosValue } from '@/utils/util'
+    import { FundPlanService } from '@/views/pay/fundplan/fundplan.service'
+    import { ProjectService } from '@/views/project/project.service'
+    import { formatList } from '@/mock/util'
 
     const columns = [
         {
             title: '行业分辨判包编号',
-            dataIndex: 'action',
+            dataIndex: 'tradePackageCode',
         },
         {
             title: '行业分辨判包名称',
-            dataIndex: 'paymentOtherCode'
+            dataIndex: 'packageTitle'
         },
         {
             title: '类型',
-            dataIndex: 'paymentAmount',
+            dataIndex: 'elementInfoNameCN',
         },
         {
             title: '预算金额',
-            dataIndex: 'requestDate'
+            dataIndex: 'budgetAmount'
         },
         {
             title: '描述',
-            dataIndex: 'requestUserName',
+            dataIndex: 'description',
         },
     ]
     const fields = []
@@ -79,22 +84,32 @@
             model: {
                 type: Object,
                 default: () => null
+            },
+            elementID: {
+                type: Number,
+                default: 0
             }
         },
         data () {
             this.columns = columns
             return {
                 form: this.$form.createForm(this),
-                queryParam: {},
+                queryParam: { IsToContract: false },
                 selectedRowKeys: [],
                 selectedRows: [],
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return UnSignedService.items(requestParameters).then(res => {
+                    return FundPlanService.tenderPacakges(requestParameters).then(res => {
                         return fixedList(res, requestParameters)
                     })
                 },
+            }
+        },
+        watch: {
+            'elementID' (value) {
+                this.queryParam.elementTypeId = value
+                this.$refs.tenderPacakge.refresh()
             }
         },
         created () {
@@ -105,12 +120,27 @@
             this.$watch('model', () => {
                 this.model && this.form.setFieldsValue(pick(this.model, fields))
             })
+            ProjectService.tree().then(res => {
+                const cities = []
+                res.result.data.citys.forEach(item => {
+                    const children = formatList(item.projects.items)
+                    cities.push({
+                        label: item.city.nameCN,
+                        value: item.city.id,
+                        children: children
+                    })
+                })
+                const value = getPosValue(cities)
+                this.queryParam.ProjectGUID = value.projectGUID
+                this.$refs.tenderPacakge.refresh(true)
+                this.$forceUpdate()
+            })
         },
         computed: {
             rowSelection () {
                 return {
                     selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
+                    onChange: this.onSelectChange,
                 }
             }
         },
@@ -119,6 +149,9 @@
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
             },
+            search () {
+                this.$refs.tenderPacakge.refresh(true)
+            }
         }
     }
 </script>
