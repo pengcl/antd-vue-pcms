@@ -91,13 +91,14 @@
               type="danger"
               icon="delete"
               style="margin-left: 4px"
+            :disabled="!!record.contractGUID  || !!record.projectTenderPackageId  || !!record.budgetAmount "
               @click="handleToRemove(record)"
               title="删除"></a-button>
           </template>
         </span>
 
-        <span slot="dateAction" slot-scope="text, record">
-          {{record.packageDate | date}}
+        <span slot="packageDate" slot-scope="text, record">
+          {{record.packageDate | moment}}
         </span>
 
         <span slot="tradePackageCode" slot-scope="text, record">
@@ -107,7 +108,7 @@
 
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success"  :disabeld="!pid || selectedPackage.contractGUID" @click="hanldeAddBugetItem">新增预算</a-button>
+          <a-button type="success"  :disabled="selectedPackage === null || (!!selectedPackage.contractGUID)" @click="hanldeAddBugetItem">新增预算</a-button>
           <!-- <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button> -->
         </a-col>
         <!-- <a-col :md="12" :sm="24">
@@ -143,11 +144,12 @@
             <a-button
               type="danger"
               icon="delete"
-              :disabled="!pid || selectedPackage.projectTenderPackageId || selectedPackage.contractGUID"
+              :disabled="selectedPackage === null || !!selectedPackage.projectTenderPackageId || !!selectedPackage.contractGUID "
               style="margin-left: 4px"
               @click="handleRemoveBudgetItem(record)"
               title="删除"></a-button>
           </template>
+          
         </span>
         <a slot="contractGUID" slot-scope="text, record" @click="jumpToContract" >{{selectedPackage.contractGUID}}</a>
         <a slot="projectTenderPackage" slot-scope="text, record" @click="jumpToProjectTenderPackage" >{{selectedPackage.projectTenderPackage}}</a>
@@ -191,7 +193,8 @@
         },
         {
             title: '日期',
-            dataIndex: 'packageDate'
+            dataIndex: 'packageDate',
+            scopedSlots: { customRender : 'packageDate'}
         },
         {
             title: '状态',
@@ -429,7 +432,25 @@
                 form.resetFields() // 清理表单数据（可不做）
             },
             handleToRemove (record){
-              this.$message.warn('暂无接口，无法实现该功能')
+              const that = this
+              this.$confirm({
+                title : '删除行业分判包',
+                content : '是否确定删除选中分判包?',
+                onOk () {
+                  CostService.industryRemove(record.id).then(res =>{
+                    if(res.result.statusCode === 200){
+                      that.$message.info('行业分判包删除成功').then(() =>{
+                        that.$refs.table.refresh()
+                      })
+                    }
+                  }).catch(() =>{
+                    that.$message.error(res.rseult.msg)
+                  })
+                },
+                onCancel(){
+
+                }
+              })
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys

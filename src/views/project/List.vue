@@ -9,6 +9,7 @@
                 <a-select
                   placeholder="请选择城市"
                   @change="onChange"
+                  :suffixIcon="cities ? '' : '加载中...'">
                   v-model="queryParam.Id">
                   <a-select-option
                     v-for="(city,index) in cities"
@@ -193,7 +194,7 @@ export default {
     this.columns = columns
     return {
       // 城市
-      cities: [],
+      cities: null,
       selection: {},
       // 查询参数
       queryParam: {},

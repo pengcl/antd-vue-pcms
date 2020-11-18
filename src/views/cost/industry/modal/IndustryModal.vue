@@ -141,7 +141,7 @@
                   if(i.indexOf('cost_') > -1 && item[i].length > 0){
                     item[i].forEach(budgetItem => {
                       if(budgetItem.checked){
-                        result.budgtItmIdList.push( budgetItem.id )
+                        result.budgtItmIdList.push( { tradeBudgeItemId : budgetItem.id })
                       }
                     })
                   }

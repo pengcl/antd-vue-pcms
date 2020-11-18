@@ -13,7 +13,8 @@
                   search-placeholder="请选择"
                   v-model="queryParam.ProjectGUID"
                   @select="onSelect"
-                />
+                  :suffixIcon="cities ? '' : '加载中...'">
+                </a-tree-select>
                 <!--<a-cascader
                   :options="cities"
                   placeholder="请选择"
@@ -183,7 +184,7 @@
       this.columns = columns
       return {
         // create model
-        cities: [],
+        cities: null,
         city: '',
         value: '',
         show: false,

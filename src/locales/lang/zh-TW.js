@@ -24,8 +24,8 @@ const locale = {
   'menu.supplier.purchase.list': '供应商列表',
   'menu.supplier.purchase.item': '供应商详情',
   'menu.supplier.other': '其他类供应商',
-  'menu.supplier.other.list': '供应商列表',
-  'menu.supplier.other.item': '供应商详情',
+  'menu.supplier.other.list': '其他类供应商',
+  'menu.supplier.other.item': '其他类供应商详情',
 
   'menu.contract': '合同及成本控制',
   'menu.contract.list': '合同信息及成本控制',

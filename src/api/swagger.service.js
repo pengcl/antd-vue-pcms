@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import { isArray } from 'ant-design-vue/lib/_util/vue-types/utils'
 
 const API = {
-  swagger: '/swagger/v1/swagger.json?v=' + Date.parse(new Date().toString())
+  swagger: '/swagger.json?v=' + Date.parse(new Date().toString())
 }
 
 const SwaggerService = { CONFIG: null }

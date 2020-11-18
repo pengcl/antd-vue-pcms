@@ -13,7 +13,7 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="业态标签">
-                {{ form.propertyTypeID }}
+                {{ getName(selection.tagTree,form.propertyTypeID) }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -23,7 +23,7 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="产品业态属性">
-                {{ form.developmentPurposeID }}
+                {{ getName(selection.types,form.developmentPurposeID) }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -86,6 +86,7 @@
                     <a-select-option value="1">ant-design@alipay.com</a-select-option>
                   </a-select>-->
                   <a-tree-select
+                    :disabled="type === 'view'"
                     v-model="form.propertyTypeID"
                     style="width: 100%"
                     :tree-data="selection.tagTree"
@@ -553,10 +554,29 @@ import { SwaggerService } from '@/api/swagger.service'
 import { CostService } from '@/views/project/cost/cost.service'
 import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
-const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+function getName (items, id) {
+  let name = ''
+  if (items) {
+    items.forEach(item => {
+      if (!name) {
+        if (item.id === id) {
+          name = item.nameCN
+            name = item.nameCN
+        } else {
+          if (item.children && item.children.length > 0) {
+              name = getName(item.children, id)
+          }
+        }
+      }
+    })
+  }
+  return name
+}
+
 const DTO = {
   create: 'ProjectCostCenterCreateInputDto',
-  update: 'ProjectCostCenterEditInputDto'
+  update: 'ProjectCostCenterEditInputDto',
+  view: 'ProjectCostCenterEditInputDto'
 }
 
 const formatList = (items) => {
@@ -617,6 +637,9 @@ export default {
     }
   },
   methods: {
+    getName (items, id) {
+      return getName(items, id)
+    },
     getData () {
       this.form = SwaggerService.getForm(DTO[this.type])
       this.form.status = 0

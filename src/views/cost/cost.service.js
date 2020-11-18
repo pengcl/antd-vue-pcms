@@ -13,6 +13,8 @@ const API = {
   industryItem: '/api/services/app/TenderPackage/GetTenderPackageById',//通过主键获取行业分判包数据
   budgetItems: '/api/services/app/TenderPackage/GetTenderPackageBudgetItemsById',//行业分判包预算列表
   budgetTypeItems: '/api/services/app/GeneralType/GetBudgetItemTypeTypes',//获取科目类型集合
+  industryUpdate : '/api/services/app/TenderPackage/UpdateTenderPackage',//修改行业分判包
+  industryRemove : '/api/services/app/TenderPackage/DeleteTenderPackage',//删除行业分判包
   //招投标分判包
   bidItems: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',//根据项目ID获取招投标列表
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
@@ -24,7 +26,6 @@ const API = {
   elementTradeTypes: '/api/services/app/ElementTradeType/GetElementTradeTypes',//获取预算科目下的行业类型集合
   resolveCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算分解
   createGT: '/api/services/app/TradeBudget/BudgetAuotCreateGeneralTrade',//审批完成后对项目的所有预算科目进行产生GeneralTrade的操作
-  removeTradeBudget: '/api/services/app/TradeBudget/ProjectCostCenterDeleteTradeBudgetItems',//删除预算分解
   //新增预算界面
   budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
   budegetTreeItem: '/api/services/app/TenderPackage/GetTenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
@@ -266,14 +267,6 @@ CostService.typeCreate = function (parameter) {
 CostService.typeUpdate = function (parameter) {
   return request({
     url: API.typeUpdate,
-    method: 'POST',
-    data: parameter
-  })
-}
-
-CostService.removeTradeBudget = function (parameter) {
-  return request({
-    url: API.removeTradeBudget,
     method: 'POST',
     data: parameter
   })
