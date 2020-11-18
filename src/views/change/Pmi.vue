@@ -115,7 +115,6 @@
                 :disabled="record.auditStatus !== '未审核'"
                 @click="handleToEdit(record)"
               ></a-button>
-              </a-button>
             </template>
           </span>
         </s-table>

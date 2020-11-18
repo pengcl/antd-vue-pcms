@@ -85,6 +85,7 @@
                       return CostService.budegetTree(requestParameters).then(res => {
                         return CostService.budegetTreeItem(requestParameters)
                           .then(res2 => {
+                          // const res2 = testData  //测试数据
                             if (res2.result.data != null) {
                               //追加列
                               res2.result.data.forEach(column => {
@@ -100,57 +101,15 @@
                               this.$forceUpdate()
                               //整理数据
                               const rows = [res.result.data]
-                              forEachRow(rows,res2.result.data)
-                      console.log('this.showColumnCodes',this.showColumnCodes)
+                              this.forEachRow(rows,res2.result.data)
+                              console.log('rows',rows)
                               const showRows = this.filterRows(rows)
                               this.columnDatas = showRows
+                              console.log('result',showRows,this.showColumnCodes)
                             }
                           })
                       })
                     }
-                    //根据elementId 获取bugetTreeItem中element数据
-                    function forEachBugetItem (datas,elementId){
-                      let result = null
-                      for(var i in datas){
-                        let data = datas[i]
-                        if(data.elementInfoId === elementId){
-                          result = data
-                          break
-                        }
-                        if(data.childs && data.childs.length > 0){
-                          result = forEachBugetItem(data.childs,elementId)
-                          if(result != null){
-                            break
-                          }
-                        }
-                      }
-                      return result
-                    }
-
-                    function forEachRow (datas,columnDatas){
-                      for(var i in datas){
-                        var data = datas[i]
-                        columnDatas.forEach(item =>{
-                          var costName = 'cost_'+item.costCenterId
-                          if(item.elementBudgetItemTree ){
-                            var costColumn = forEachBugetItem([item.elementBudgetItemTree],data.elementInfoId)
-                            if(costColumn != null && costColumn.tradeBudgetItems.length > 0){
-                              data[costName] = []
-                              this.showColumnCodes.push(data.elementInfoCode)
-                              costColumn.tradeBudgetItems.forEach(temp => {
-                                data[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
-                              })
-                            }
-                          }
-                        })
-                        if(data.childs && data.childs.length > 0){
-                          forEachRow(data.childs,columnDatas)
-                          data.children = Object.assign([],data.childs)
-                          data.childs = undefined
-                        }
-                      }
-                    }
-                    
                 }
             }
         },
@@ -217,13 +176,54 @@
             let myChecked = obj.target.checked
             item.checked = myChecked
           },
+          //根据elementId 获取bugetTreeItem中element数据
+          forEachBugetItem (datas,elementId){
+            let result = null
+            for(var i in datas){
+              let data = datas[i]
+              if(data.elementInfoId === elementId){
+                result = data
+                break
+              }
+              if(data.childs && data.childs.length > 0){
+                result = this.forEachBugetItem(data.childs,elementId)
+                if(result != null){
+                  break
+                }
+              }
+            }
+            return result
+          },
+          forEachRow (datas,columnDatas){
+            for(var i in datas){
+              var data = datas[i]
+              columnDatas.forEach(item =>{
+                var costName = 'cost_'+item.costCenterId
+                if(item.elementBudgetItemTree ){
+                  var costColumn = this.forEachBugetItem([item.elementBudgetItemTree],data.elementInfoId)
+                  if(costColumn != null && costColumn.tradeBudgetItems.length > 0){
+                    data[costName] = []
+                    this.showColumnCodes.push(data.elementInfoCode)
+                    costColumn.tradeBudgetItems.forEach(temp => {
+                      data[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
+                    })
+                  }
+                }
+              })
+              if(data.childs && data.childs.length > 0){
+                this.forEachRow(data.childs,columnDatas)
+                data.children = Object.assign([],data.childs)
+                data.childs = undefined
+              }
+            }
+          },
           filterRows(datas){
             const rows = []
             datas.forEach(item => {
               let show = false
               for(let i in this.showColumnCodes){
                 const showCode = this.showColumnCodes[i]
-                if(item.elementInfoCode.indexOf(showCode) === 0){
+                if(showCode.indexOf(item.elementInfoCode) === 0){
                   show = true
                   break
                 }

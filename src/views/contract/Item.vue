@@ -132,6 +132,7 @@ import { SwaggerService } from '@/api/swagger.service'
 import { ProjectService } from '@/views/project/project.service'
 
 import { Company as CompanyService } from '@/api/company'
+import { compare } from '@/utils/util'
 import ContractComputeBudgets from '@/views/contract/components/computeBudgets/index'
 
 export default {
@@ -152,7 +153,8 @@ export default {
       selection: {},
       contractGuid: null,
       show: false,
-      form: SwaggerService.getForm('ContractAllInfoDto')
+      form: SwaggerService.getForm('ContractAllInfoDto'),
+      contractSourceBQList: null
     }
   },
   created () {
@@ -197,17 +199,35 @@ export default {
         this.activeKey = 1
       })
     },
-    showBudgets () {
+    showBudgets (items, sourceItems) {
+      /* const keys = []
+      items.sort((a, b) => {
+        return compare(b.srNo, a.srNo)
+      })
+      sourceItems.sort((a, b) => {
+        return compare(b.srNo, a.srNo)
+      })
+      if (items.length !== sourceItems.length) {
+        this.show = true
+      } else {
+        items.forEach((item, index) => {
+          for (const key in item) {
+            console.log(key)
+          }
+        })
+      } */
       this.show = true
     },
     getData () {
       this.form = SwaggerService.getForm('ContractAllInfoDto')
+      this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQlst))
       if (this.$refs.baseInfo) {
         this.$refs.baseInfo.tender = {}
       }
       if (this.id !== '0') {
         ContractService.item(this.id).then(res => {
           this.form = res.result.data
+          this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQlst))
           this.form.master = {}
           this.form.contract.useStore = 2
           ProjectService.view2(this.form.contract.projectID).then(res => {
@@ -292,14 +312,16 @@ export default {
 
       if (isValid) {
         let items = JSON.parse(JSON.stringify(this.form.contractBQlst))
-        items = items.filter(item => item.isCarryData)
+        items = items.filter(item => item.isCarryData && !item.isDeleted)
+        let sourceItems = JSON.parse(JSON.stringify(this.contractSourceBQList))
+        sourceItems = sourceItems.filter(item => item.isCarryData && !item.isDeleted)
         if (items.length > 0) {
           this.loading.save = true
           ContractService[this.type](this.form).then((res, err) => {
             this.loading.save = false
             if (res.result.statusCode === 200) {
               this.contractGuid = res.result.data
-              this.showBudgets()
+              this.showBudgets(items, sourceItems)
             }
           }).catch(() => {
             this.dialog.show({
