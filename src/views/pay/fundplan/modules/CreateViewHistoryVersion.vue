@@ -12,7 +12,7 @@
         style="margin-top: 10px"
         ref="table"
         size="default"
-        rowKey="contractGuid"
+        rowKey="gid"
         bordered
         :columns="columns"
         :data="loadData"
@@ -20,6 +20,9 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
+        <span slot="lastModificationTime" slot-scope="text">
+          {{text | date}}
+        </span>
       </s-table>
     </a-spin>
   </a-modal>
@@ -28,21 +31,26 @@
 <script>
     import pick from 'lodash.pick'
     import { STable } from '@/components'
-    import { UnSignedService } from '@/views/pay/unsigned/unsigned.service'
     import { fixedList } from '@/utils/util'
+    import { FundPlanService } from '@/views/pay/fundplan/fundplan.service'
 
     const columns = [
         {
+            title: '财年',
+            dataIndex: 'title'
+        },
+        {
             title: '版本号',
-            dataIndex: 'paymentOtherCode'
+            dataIndex: 'version'
         },
         {
             title: '编制日期',
-            dataIndex: 'paymentAmount',
+            dataIndex: 'lastModificationTime',
+            scopedSlots: { customRender: 'lastModificationTime' }
         },
         {
             title: '编制人',
-            dataIndex: 'requestUserName',
+            dataIndex: 'lastModifierUser',
         },
     ]
     const fields = []
@@ -62,6 +70,10 @@
             model: {
                 type: Object,
                 default: () => null
+            },
+            projectCode: {
+                type: String,
+                default: null
             }
         },
         data () {
@@ -71,10 +83,12 @@
                 queryParam: {},
                 selectedRowKeys: [],
                 selectedRows: [],
+                year: 0,
+                selected: null,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return UnSignedService.items(requestParameters).then(res => {
+                    return FundPlanService.versionList(this.projectCode, 0).then(res => {
                         return fixedList(res, requestParameters)
                     })
                 },
@@ -91,9 +105,14 @@
         },
         computed: {
             rowSelection () {
+                const that = this
                 return {
                     selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
+                    onChange: this.onSelectChange,
+                    type: 'radio',
+                    onSelect: function (record, selected, selectRows, nativeEvent) {
+                        that.selected = record
+                    }
                 }
             }
         },

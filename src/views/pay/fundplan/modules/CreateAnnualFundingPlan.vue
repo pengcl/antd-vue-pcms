@@ -52,7 +52,6 @@
     import pick from 'lodash.pick'
     import { FundPlanService } from '@/views/pay/fundplan/fundplan.service'
 
-
     const fields = []
     export default {
         name: 'CreateAnnualFundingPlan',
@@ -92,7 +91,9 @@
                 this.model && this.form.setFieldsValue(pick(this.model, fields))
             })
             FundPlanService.currentFiscalYear().then(res => {
-                this.currentFiscalYear = res.result.data
+                if (res.result.data) {
+                    this.currentFiscalYear = res.result.data
+                }
             })
         },
         methods: {
