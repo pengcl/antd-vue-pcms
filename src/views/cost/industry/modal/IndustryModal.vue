@@ -44,7 +44,7 @@
     import { CostService } from '@/views/cost/cost.service'
     import { data as testData } from '@/views/cost/industry/modal/testData'
     import { formatList } from '../../../../mock/util'
-    import { fixedList } from '@/utils/util'
+    import { fixedList,formatcu } from '@/utils/util'
 
     const defaultColumns = [
         {
@@ -102,10 +102,8 @@
                               //整理数据
                               const rows = [res.result.data]
                               this.forEachRow(rows,res2.result.data)
-                              console.log('rows',rows)
                               const showRows = this.filterRows(rows)
                               this.columnDatas = showRows
-                              console.log('result',showRows,this.showColumnCodes)
                             }
                           })
                       })
@@ -114,6 +112,12 @@
             }
         },
         created () {
+        },
+        props : {
+          refreshAllTable : {
+            type : Function,
+            default : null
+          }
         },
         computed: {
         },
@@ -157,7 +161,7 @@
                 if(res.result.statusCode === 200){
                   const that = this
                   this.$message.info('添加行业预算成功').then(() =>{
-                    that.$parent.refreshAllTable()
+                  this.refreshAllTable(true)
                     that.closeModal()
                   })
                 }
@@ -170,7 +174,6 @@
             this.columns = defaultColumns
             this.columnDatas = []
             this.visible = false
-            this.$forceUpdate()
           },
           //监听行业预算checkbox变更
           checkChange(obj,item){
