@@ -44,7 +44,7 @@
     import { CostService } from '@/views/cost/cost.service'
     import { data as testData } from '@/views/cost/industry/modal/testData'
     import { formatList } from '../../../../mock/util'
-    import { fixedList } from '@/utils/util'
+    import { fixedList,formatcu } from '@/utils/util'
 
     const defaultColumns = [
         {
