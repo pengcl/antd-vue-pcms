@@ -61,7 +61,7 @@
         </a-col>
       </a-row>
     </a-card>
-    <resolve-modal ref="resolveModal"></resolve-modal>
+    <resolve-modal :afterClose="refreshTable()" ref="resolveModal"></resolve-modal>
   </page-header-wrapper>
 </template>
 
@@ -351,6 +351,9 @@
             })
           }
         })
+      },
+      refreshTable(){
+        console.log("12321321321321")
       }
     }
   }

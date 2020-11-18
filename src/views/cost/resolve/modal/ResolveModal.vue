@@ -5,6 +5,7 @@
     title="新增预算分解"
     @cancel="handleCancel"
     @ok="handleOk"
+    @afterClose="refreshTable"
   >
     <a-card :bordered="false">
       <a-form :form="form">
@@ -161,10 +162,12 @@
         CostService.bidBudgetCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
-            this.$refs.table.refresh()
           }
           this.visible = false
         })
+      },
+      refreshTable(){
+        console.log("12321321321321")
       },
       addResolve() {
         const centers = []

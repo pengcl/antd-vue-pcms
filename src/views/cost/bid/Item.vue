@@ -264,7 +264,7 @@
         this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
       })
-      CostService.bidIndustryItems({ MaxResultCount: 1000, ProjectGUID: this.ProjectGUID }).then(res => {
+      CostService.bidIndustryItems({ ProjectGUID: this.ProjectGUID }).then(res => {
           this.industryItems = JSON.parse(JSON.stringify(res.result.data))
           this.$forceUpdate()
       })
