@@ -193,7 +193,7 @@
       approve () {
         console.log('approve')
       },
-      save () {
+      save (callback) {
         let isValid = true
         const validateForms = [
           {
@@ -227,7 +227,6 @@
         if (isValid) {
           this.form.contractNo = this.contract.contractNo
           console.log('saveData', this.form)
-          this.loading = true
           if (this.type == 'add') {
             this.form.voMasterInfo.stage = this.stage // 为VO时则为cip转vo
             if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
@@ -251,26 +250,40 @@
               this.loading.save = false
               console.log(res)
               if (res.result.statusCode === 200) {
-                this.$message.info('修改成功')
-                this.$router.push({ path: `/change/pmi` })
+                 if(callback === undefined){
+                  this.$message.info('修改成功').then(() => {
+                    this.$router.push({ path: `/change/pmi` })
+                  })
+                 }else{
+                   console.log('进入sssss')
+                   callback()
+                 }
               }
-            }).catch(() => {
+            }).catch((e) => {
+              console.log('error',e)
               this.loading.save = false
               this.$message.error('修改失败，表单未填写完整')
+              if(callback !== undefined){
+                this.loading.startBPM = false
+              }
             })
           }
         }
       },
       startBPM () {
         this.loading.startBPM = true
-        ChangeService.startBMP({ guid : this.form.voMasterInfo.voGuid, sProjectCode : this.project.projectCode}).then(res => {
-          if(res.result.statusCode === 200){
-            window.open(res.result.data)
-            window.location.reload()
-          }
-        }).catch(() =>{
-          this.loading.startBPM = false
-        })
+        const that = this
+        this.save(innerStartBPM())
+        function innerStartBPM(){
+          ChangeService.startBMP({ guid : that.form.voMasterInfo.voGuid, sProjectCode : that.project.projectCode}).then(res => {
+            if(res.result.statusCode === 200){
+              window.open(res.result.data)
+              window.location.reload()
+            }
+          }).catch(() =>{
+            that.loading.startBPM = false
+          })
+        }
       },
       showBPM(){
         this.loading.showBPM = true

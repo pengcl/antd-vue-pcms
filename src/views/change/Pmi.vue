@@ -83,7 +83,8 @@
             @click="handleCipToVo"
             :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核'">CIP转VO
           </a-button>
-          <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核'">现场签证</a-button>
+          <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核' || tableSelected.voStatus !== '待确认'">现场签证</a-button>
+          <a-button type="success" style="margin-left: 20px" @click="handleDesign">施工组织设计</a-button>
         </a-col>
         <a-col :md="24" :sm="24"> 变更列表</a-col>
       </a-row>
@@ -115,15 +116,6 @@
                 :disabled="record.auditStatus !== '未审核'"
                 @click="handleToEdit(record)"
               ></a-button>
-              <a-button
-                type="danger"
-                icon="delete"
-                :disabled="record.auditStatus !== '未审核'"
-                style="margin-left: 4px"
-                title="编辑"
-                @click="handleToDel(record)"
-              >
-              </a-button>
             </template>
           </span>
         </s-table>
@@ -275,7 +267,9 @@
         totalChangeAmt: 0,
         totalChangeRate: 0,
         // 记录变更列表选中行信息
-        tableSelected: {}
+        tableSelected: {},
+        //记录合同选择行信息
+        contractSelected : {}
       }
     },
     created () {
@@ -315,6 +309,7 @@
             // 修改合同列表中‘累计变更金额’，‘变更比例’值
             that.totalChangeAmt = record.sumVOAmount
             that.totalChangeRate = record.voRate
+            that.contractSelected = record
             // 刷新变更列表
             that.$refs.table2.refresh()
             // 清空变更列表选中数据
@@ -398,24 +393,8 @@
       handleToContractInfo(record){
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },
-      handleToDel(record){
-        const that = this
-        this.$confirm({
-          title : '废弃提醒',
-          content : '是否确认废弃该变更？',
-          onOk () {
-            ChangeService.delete(record.cipGuid).then(res =>{
-              if(res.result.statusCode === 200){
-                that.$message.info('废弃成功').then(() =>{
-                  that.$refs.table2.refresh()
-                })
-              }
-            })
-          },
-          onCancel(){
-
-          }
-        })
+      handleDesign(){
+        this.$router.push({path : `/change/cip/constructionOrganizeDesign/${this.contractSelected.contractGuid}`})
       }
     }
   }

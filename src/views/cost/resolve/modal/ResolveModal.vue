@@ -6,65 +6,78 @@
     @cancel="handleCancel"
     @ok="handleOk"
   >
-      <a-card :bordered="false">
-        <a-form :form="form">
-          <a-col :md="24" :sm="24">
-            <table>
-              <thead>
-                <tr>
-                  <th :colspan="columnLength">
-                    <a-button @click="addResolve()" icon="plus" type="success">
-                      新增
-                    </a-button>
-                  </th>
-                </tr>
-                <tr>
-                  <th style="width: 15%">操作</th>
-                  <th style="width: 20%">科目</th>
-                  <th style="width: 20%">行业类型</th>
-                  <th v-for="(costCenterItem,index) in costCenters" :key="index">
-                    {{costCenterItem.costCenterName}}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item,index) in resolveItems" :key="index">
-                  <td>
-                    <a-button @click="del(index)" icon="delete" type="danger"></a-button>
-                  </td>
-                  <td>
-                    {{item.elementInfoNameCN}}
-                  </td>
-                  <td>
-                    <a-select
-                      placeholder="请选择"
-                      v-model="item.tradeTypeId"
-                      @change="onChange"
-                    >
-                    <a-select-option v-for="option in elementTradeTypes" :key="index + '#&' + JSON.stringify(option)" :value="option.id">
-                      {{ option.nameCN }}
-                    </a-select-option>
-                    </a-select>
-                  </td>
-                  <td v-for="(costCenterItem,index) in item.costCenterItems" :key="index">
-                    <a-input-number
-                      v-model="item.costCenterItems[index].amount"
-                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                    >
-                    </a-input-number>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </a-col>
-        </a-form>
-      </a-card>
+    <a-card :bordered="false">
+      <a-form :form="form">
+        <a-col :md="24" :sm="24">
+          <table>
+            <thead>
+            <tr>
+              <th :colspan="columnLength">
+                <a-button @click="addResolve()" icon="plus" type="success">
+                  新增
+                </a-button>
+              </th>
+            </tr>
+            <tr>
+              <th style="width: 15%">操作</th>
+              <th style="width: 20%">科目</th>
+              <th style="width: 20%">行业类型</th>
+              <th v-for="(costCenterItem,index) in costCenters" :key="index">
+                {{costCenterItem.costCenterName}}
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td></td>
+              <td>{{this.elementInfoNameCN}}</td>
+              <td></td>
+              <td v-for="(costCenterItem,index) in costCenters" :key="index">
+                {{costCenterItem.amount|amountFormat}}
+              </td>
+            </tr>
+            <tr v-for="(item,index) in resolveItems" :key="index">
+              <td>
+                <a-button @click="del(index)" icon="delete" type="danger"></a-button>
+              </td>
+              <td>
+
+              </td>
+              <td>
+                <a-select
+                  placeholder="请选择"
+                  v-model="item.tradeTypeId"
+                  @change="onChange"
+                >
+                  <a-select-option
+                    v-for="option in elementTradeTypes"
+                    :key="index + '#&' + JSON.stringify(option)"
+                    :value="option.id"
+                  >
+                    {{ option.nameCN }}
+                  </a-select-option>
+                </a-select>
+              </td>
+              <td v-for="(costCenterItem,index) in item.costCenterItems" :key="index">
+                <a-input-number
+                  :disabled="costCenterItem.disabled"
+                  v-model="item.costCenterItems[index].amount"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                >
+                </a-input-number>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </a-col>
+      </a-form>
+    </a-card>
   </a-modal>
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
+  import {STable, Ellipsis} from '@/components'
   import {SwaggerService} from "@/api/swagger.service";
   import {addItem, removeItem} from "@/api/base";
   import {CostService} from "@/views/cost/cost.service";
@@ -75,17 +88,19 @@
       STable,
       Ellipsis
     },
-    data () {
+    data() {
       return {
         visible: false,
-        ProjectGUID:'',
+        ProjectGUID: '',
+        elementInfoNameCN: '',
         resolveItem: {},
         resolveItems: [],
-        columnLength:3,
-        elementTradeTypes:[],
-        costCenterItems:[],
-        costCenters:[],
-        type:'',
+        columnLength: 3,
+        elementTradeTypes: [],
+        costCenterItems: [],
+        costCenters: [],
+        record: {},
+        type: '',
         form: SwaggerService.getForm('TradeBudgetItemProjectCreateInputDto'),
         loadData: parameter => {
           this.form.projectGUID = this.resolveItem.ProjectGUID
@@ -96,30 +111,46 @@
         }
       }
     },
-    created () {
+    filters: {
+      amountFormat (value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      },
+    },
+    created() {
 
     },
-    computed: {
-    },
+    computed: {},
     methods: {
       // 搜索
       show(record) {
+        this.record = record
         this.resolveItems = []
         this.visible = true
         this.resolveItem = record
         this.ProjectGUID = record.ProjectGUID
         this.elementTradeTypes = record.elementTradeTypes
-        this.costCenters = record.costCenters
+        const centers = []
+        record.costCenters.forEach(item => {
+          const obj = {}
+          obj.costCenterId = item.costCenterId
+          const costName = 'cost' + item.costCenterId
+          const amount = record[costName]
+          obj.amount = amount
+          obj.costCenterName = item.costCenterName
+          centers.push(obj)
+        })
+        this.costCenters = centers
+        this.elementInfoNameCN = record.elementInfoNameCN
         this.loadData()
         this.$forceUpdate()
       },
-      handleCancel(){
+      handleCancel() {
         this.visible = false
       },
-      handleOk(){
+      handleOk() {
         this.form.costCenterItems = []
-        this.resolveItems.forEach(item =>{
-          item.costCenterItems.forEach(center =>{
+        this.resolveItems.forEach(item => {
+          item.costCenterItems.forEach(center => {
             this.form.costCenterItems.push(center)
           })
         })
@@ -131,9 +162,13 @@
         })
       },
       addResolve() {
-        const centers =[]
-        this.costCenters.forEach(item =>{
+        const centers = []
+        this.costCenters.forEach(item => {
           const obj = {}
+          const costName = 'cost' + item.costCenterId
+          if (this.record[costName] === 0) {
+            obj.disabled = true
+          }
           obj.costCenterId = item.costCenterId
           obj.amount = 0
           centers.push(obj)
@@ -148,17 +183,17 @@
         }
         addItem(item, this.resolveItems)
       },
-      del (index) {
+      del(index) {
         const items = this.resolveItems
         removeItem(index, items)
       },
-      onChange (value, option) {
+      onChange(value, option) {
         const optionValue = option.data.key
         const index = optionValue.split('#&')[0]
-        this.resolveItems[index].costCenterItems.forEach(item =>{
+        this.resolveItems[index].costCenterItems.forEach(item => {
           item.tradeTypeId = value
         })
-      },
+      }
     }
   }
 </script>
@@ -173,11 +208,12 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;
@@ -208,6 +244,7 @@
       }
     }
   }
+
   .ant-btn-group {
     margin-right: 8px;
   }

@@ -125,7 +125,8 @@
             :data-source="data.contractBQlst | filterDeleted"
             size="default"
             rowKey="srNo"
-            :scroll="{ x : '1500px',y : '300px' }"
+            :scroll="{ x : '1500px',y : '600px' }"
+            :pagination="false"
             bordered>
             <template slot="action" slot-scope="text, record">
               <a-button @click="add(record.srNo)" :disabled="type === 'view'" icon="plus">
@@ -145,35 +146,32 @@
               <a-input style="width:100%" :disabled="true" :value="record.srNo"></a-input>
             </template>
             <template slot="section" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.section"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" :value="record.section"></a-input>
             </template>
             <template slot="building" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.building"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" :value="record.building"></a-input>
             </template>
             <template slot="subsection" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.subsection"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" :value="record.subsection"></a-input>
             </template>
             <template slot="segmentation" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.segmentation"></a-input>
-            </template>
-            <template slot="segmentation" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.segmentation"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" :value="record.segmentation"></a-input>
             </template>
             <template slot="remark1" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.remark1"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" :value="record.remark1"></a-input>
             </template>
             <template slot="remark2" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.remark2"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" :value="record.remark2"></a-input>
             </template>
             <template slot="description" slot-scope="text, record">
-              <a-input style="width:100%" :value="record.description"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" :value="record.description"></a-input>
             </template>
             <template slot="costCenter" slot-scope="text, record, index">
               <a-form-model-item
                 :prop="'contractBQlst.' + index + '.costCenter'"
                 :rules="[{required: !record.isDeleted, message: '请选择成本中心' }]"
               >
-                <a-input :hidden="true" v-model="record.costCenter"/>
+                <a-input :disabled="type === 'view'" :hidden="true" v-model="record.costCenter"/>
                 <a-select
                   :disabled="type === 'view'"
                   :default-value="record | getValue(index)"
@@ -389,7 +387,8 @@
       title: '带数项目',
       dataIndex: 'isCarryData',
       scopedSlots: { customRender: 'isCarryData' },
-      width: 160
+      width: 80,
+      align: 'center'
     },
     {
       title: '清单编号',
@@ -407,6 +406,18 @@
       title: '楼栋',
       dataIndex: 'building',
       scopedSlots: { customRender: 'building' },
+      width: 160
+    },
+    {
+      title: '分部',
+      dataIndex: 'subsection',
+      scopedSlots: { customRender: 'subsection' },
+      width: 160
+    },
+    {
+      title: '分项',
+      dataIndex: 'segmentation',
+      scopedSlots: { customRender: 'segmentation' },
       width: 160
     },
     {

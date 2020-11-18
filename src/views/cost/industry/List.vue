@@ -91,12 +91,14 @@
               type="danger"
               icon="delete"
               style="margin-left: 4px"
+            :disabled="!!record.contractGUID  || !!record.projectTenderPackageId  || !!record.budgetAmount "
+              @click="handleToRemove(record)"
               title="删除"></a-button>
           </template>
         </span>
 
-        <span slot="dateAction" slot-scope="text, record">
-          {{record.packageDate | date}}
+        <span slot="packageDate" slot-scope="text, record">
+          {{record.packageDate | moment}}
         </span>
 
         <span slot="tradePackageCode" slot-scope="text, record">
@@ -106,7 +108,7 @@
 
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success"  v-if="pid" @click="hanldeAddBugetItem">新增预算</a-button>
+          <a-button type="success"  :disabled="selectedPackage === null || (!!selectedPackage.contractGUID)" @click="hanldeAddBugetItem">新增预算</a-button>
           <!-- <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button> -->
         </a-col>
         <!-- <a-col :md="12" :sm="24">
@@ -142,11 +144,15 @@
             <a-button
               type="danger"
               icon="delete"
+              :disabled="selectedPackage === null || !!selectedPackage.projectTenderPackageId || !!selectedPackage.contractGUID "
               style="margin-left: 4px"
               @click="handleRemoveBudgetItem(record)"
               title="删除"></a-button>
           </template>
+          
         </span>
+        <a slot="contractGUID" slot-scope="text, record" @click="jumpToContract" >{{selectedPackage.contractGUID}}</a>
+        <a slot="projectTenderPackage" slot-scope="text, record" @click="jumpToProjectTenderPackage" >{{selectedPackage.projectTenderPackage}}</a>
       </s-table>
     </a-card>
     <industry-modal ref="industryModal"></industry-modal>
@@ -188,7 +194,7 @@
         {
             title: '日期',
             dataIndex: 'packageDate',
-          scopedSlots: { customRender: 'dateAction'}
+            scopedSlots: { customRender : 'packageDate'}
         },
         {
             title: '状态',
@@ -222,11 +228,13 @@
         },
         {
             title: '招投标包',
-            dataIndex: 'createAt',
+            dataIndex: 'ss',
+            scopedSlots: { customRender: 'projectTenderPackageId' }
         },
         {
             title: '合同',
-            dataIndex: 'approvalStatus',
+            dataIndex: 'aa',
+            scopedSlots: { customRender: 'contractGUID' }
         }
     ]
     export default {
@@ -248,12 +256,15 @@
                 confirmLoading: false,
                 mdl: null,
                 budgetId : '',
+                selectedPackage : null,
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
                 queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                    this.selectedPackage = null
+                    this.pid = ''
                     const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
                     if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID!='') {
                       return CostService.industryItems(requestParameters)
@@ -340,6 +351,7 @@
         },
         methods: {
             getBudgetAmt (record) {
+              this.selectedPackage = record
               this.pid = record.id
               this.$refs.table2.refresh(true)
               // CostService.budgetItems({ Id: this.pid }).then(res => {
@@ -419,12 +431,26 @@
                 const form = this.$refs.createModal.form
                 form.resetFields() // 清理表单数据（可不做）
             },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
+            handleToRemove (record){
+              const that = this
+              this.$confirm({
+                title : '删除行业分判包',
+                content : '是否确定删除选中分判包?',
+                onOk () {
+                  CostService.industryRemove(record.id).then(res =>{
+                    if(res.result.statusCode === 200){
+                      that.$message.info('行业分判包删除成功').then(() =>{
+                        that.$refs.table.refresh()
+                      })
+                    }
+                  }).catch(() =>{
+                    that.$message.error(res.rseult.msg)
+                  })
+                },
+                onCancel(){
+
                 }
+              })
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
@@ -479,6 +505,12 @@
 
                 }
               })
+            },
+            jumpToContract(){
+              this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGuid}?type=view` })
+            },
+            jumpToProjectTenderPackage(){
+              this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackage}&type=view` })
             }
         }
     }

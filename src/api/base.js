@@ -13,7 +13,8 @@ const API = {
   removeFile: '/api/services/app/UploadAppservice/FileDeleteByID',
   centerTags: '/api/services/app/PropertyType/GetPropertyTypeTree',
   centerTypes: '/api/services/app/GeneralType/GetDevPurposeGeneralTypes',
-  viewBpm: '/api/services/app/Bpm/GetBPMAuditInfo'
+  viewBpm: '/api/services/app/Bpm/GetBPMAuditInfo',
+  professionTypes: '/api/services/app/GeneralType/GetProfessionTypes'
 }
 
 const Base = {}
@@ -111,6 +112,14 @@ Base.viewBpm = function (BusinessID) {
     url: API.viewBpm,
     method: 'GET',
     params: { BusinessID }
+  })
+}
+
+Base.professionTypes = function (params) {
+  return request({
+    url: API.professionTypes,
+    method: 'GET',
+    params: params
   })
 }
 

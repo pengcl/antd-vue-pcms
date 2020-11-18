@@ -41,7 +41,7 @@
           <a-col :md="12" :sm="24">
             <a-form-model-item label="供应商类别" prop="packageCodeList">
               <a-tree-select
-                :disabled="type === 'view'"
+                :disabled="true"
                 v-model="form.vendor.packageCodeList"
                 style="width: 100%"
                 :tree-data="selection.types"
@@ -99,7 +99,7 @@
           <a-col :md="24" :sm="24">
             <a-form-model-item label="变更备注" prop="logRemark">
               <a-textarea
-                :disabled="type === 'view' || type === 'create'"
+                :disabled="type === 'view' || type === 'create' || form.vendor.vendorStatus === '未准入'"
                 placeholder="请填写变更备注"
                 v-model="form.vendor.logRemark"></a-textarea>
             </a-form-model-item>
@@ -145,8 +145,8 @@
       </a-modal>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
-            <a-button v-if="type === 'view' && !form.vendor.logGID" @click="askUpdate()" type="success">
+          <a-button-group v-if="type === 'view' && !form.vendor.logGID">
+            <a-button @click="askUpdate()" type="success">
               供应商信息变更
             </a-button>
           </a-button-group>
@@ -181,10 +181,27 @@ import BankInfo from '../components/BankInfo'
 import AttachmentInfo from '../components/AttachmentInfo'
 import { SwaggerService } from '@/api/swagger.service'
 import { SupplierService } from '@/views/supplier/supplier.service'
-import { formatTree } from '@/utils/util'
 import { TreeSelect } from 'ant-design-vue'
 import { City as CitySvc, formatCities } from '@/api/city'
 import { DIALOGCONFIG } from '@/api/base'
+
+function formatTree (data, keys) {
+  const items = []
+  data.forEach(item => {
+    if (item.packageCode !== '9') {
+      item.disabled = true
+    }
+    keys.forEach(key => {
+      const keyArr = key.split(':')
+      item[keyArr[0]] = item[keyArr[1]]
+    })
+    items.push(item)
+    if (item.children) {
+      item.children = formatTree(item.children, keys)
+    }
+  })
+  return items
+}
 
 const DTO = {
   create: 'ChangeVendorZRInputDto',

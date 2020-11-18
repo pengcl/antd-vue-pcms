@@ -141,7 +141,6 @@ export const asyncRouterMap = [
           {
             path: '/cost/resolve/list',
             name: 'CostResolveList',
-            hidden: true,
             component: () => import('@/views/cost/resolve/List'),
             meta: { title: 'menu.cost.resolve.list', keepAlive: true, permission: ['budget'] }
           },
@@ -310,6 +309,13 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/change/Certificate'),
             meta: { title: 'menu.change.certificate', keepAlive: true, permission: ['change'] }
+          },
+          {
+            path: '/change/cip/constructionOrganizeDesign/:contractGuid',
+            name: 'ChangeConstructionOrganizeDesign',
+            hidden: true,
+            component: () => import('@/views/change/cip/components/ConstructionOrganizeDesign'),
+            meta: { title: 'menu.change.constructionOrganizeDesign', keepAlive: true, permission: ['change'] }
           }
         ]
       },

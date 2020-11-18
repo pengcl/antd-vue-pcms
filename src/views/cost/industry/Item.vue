@@ -51,8 +51,9 @@
                 :disabled="type === 'view'"
                 placeholder="请选择"
                 v-model="form.itemTypeId"
+                @change="itemTypeChange"
               >
-                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">
+                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :nameCN="option.nameCN"  :value="option.id">
                   {{ option.nameCN }}
                 </a-select-option>
               </a-select>
@@ -76,55 +77,15 @@
               <a-input :disabled="true" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
             </a-form-model-item>
           </a-col>
-          <!--          <a-col :md="24" :sm="24">-->
-          <!--            <table>-->
-          <!--              <thead>-->
-          <!--                <tr>-->
-          <!--                  <th colspan="6">-->
-          <!--                    <a-button :disabled="type === 'view'">-->
-          <!--                      新增行业预算-->
-          <!--                    </a-button>-->
-          <!--                  </th>-->
-          <!--                </tr>-->
-          <!--                <tr>-->
-          <!--                  <th style="width: 10%">操作</th>-->
-          <!--                  <th style="width: 18%">科目</th>-->
-          <!--                  <th style="width: 18%">行业</th>-->
-          <!--                  <th style="width: 18%">子行业</th>-->
-          <!--                  <th style="width: 18%">金额</th>-->
-          <!--                  <th style="width: 18%">成本中心</th>-->
-          <!--                </tr>-->
-          <!--              </thead>-->
-          <!--              <tbody>-->
-          <!--                <tr>-->
-          <!--                  <td>-->
-          <!--                    <a-button :disabled="type === 'view'" icon="delete" type="danger"></a-button>-->
-          <!--                  </td>-->
-          <!--                  <td>-->
-          <!--                    <a-select-->
-          <!--                      :disabled="type === 'view'"-->
-          <!--                      placeholder="请选择"-->
-          <!--                    >-->
-          <!--                      <a-select-option value="1">广州永沛房地产开发有限公司</a-select-option>-->
-          <!--                    </a-select>-->
-          <!--                  </td>-->
-          <!--                  <td></td>-->
-          <!--                  <td></td>-->
-          <!--                  <td></td>-->
-          <!--                  <td></td>-->
-          <!--                </tr>-->
-          <!--              </tbody>-->
-          <!--            </table>-->
-          <!--          </a-col>-->
         </a-row>
       <a-row>
         <a-col :md="12" :sm="24">
-          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
+          <a-button type="success" style="margin-right: 20px" :loading="loading.startBPM" @click="startBPM">启动审批流程</a-button>
 
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button :disabled="type === 'view'" type="success" @click="handleToSave">储存</a-button>
+            <a-button :disabled="type === 'view'" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -138,6 +99,7 @@
 <script>
   import { CostService } from '@/views/cost/cost.service'
   import { SwaggerService } from '@/api/swagger.service'
+  import moment from "moment";
 
   export default {
     name: 'Edit',
@@ -147,6 +109,10 @@
         costCenters: [],
         budgetTypeItems: [],
         elementItems: [],
+        loading : {
+          save : false,
+          startBPM : false
+        },
         form: SwaggerService.getForm('TenderPackageCreateInputDto'),
         rules: {
           packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
@@ -206,6 +172,8 @@
           this.form.costCenters = values
           this.centers = values
         })
+      }else{
+        this.form.packageDate = moment(new Date())
       }
     },
     methods: {
@@ -216,13 +184,24 @@
         })
       },
       handleToSave () {
+        let action = 'industryCreate'
+        if(this.type === 'edit'){
+          action = 'industryUpdate'
+        }
         this.$refs.form.validate(valid => {
           if(valid){
             this.form.projectGUID = this.ProjectGUID
-            CostService.industryCreate(this.form).then(res => {
+            this.loading.save = true
+            CostService[action](this.form).then(res => {
               if (res.result.statusCode === 200) {
-                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+                const that = this
+                this.loading.save = false
+                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
+                  that.$router.push({ path: `/cost/industry/list`})
+                })
               }
+            }).catch(() => {
+              this.loading.save = false
             })
           }
         })
@@ -230,6 +209,15 @@
       },
       back () {
         this.$router.push({ path: `/cost/industry/list`})
+      },
+      startBPM(){
+        this.loading.startBPM = true
+        this.$message.warn('暂无接口，无法实现该功能')
+        this.loading.startBPM = false
+      },
+      itemTypeChange(value,option){
+        console.log('option',option.$options,option)
+        this.form.itemTypeNameCN = JSON.parse(option.key).nameCN
       }
     }
   }

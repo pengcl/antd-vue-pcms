@@ -14,6 +14,7 @@
             :data-source="datas"
             :alert="false"
             :pagination="false"
+            :scroll="{ y: 500 }"
           >
             <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId" slot-scope="text, record">
               <a-input-number
@@ -58,13 +59,13 @@
   const defaultColumns = [
     {
       title: '科目代码',
-      width: '150px',
+      width: 150,
       dataIndex: 'elementInfoCode',
       key: 'elementInfoCode'
     },
     {
       title: '科目名称',
-      width: '350px',
+      width: 250,
       dataIndex: 'elementInfoNameCN',
       key: 'elementInfoNameCN'
     }
@@ -201,6 +202,7 @@
         CostService.update(result).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info('修改成功')
+            this.back()
           }
         })
       },
@@ -266,5 +268,9 @@
         }
       }
     }
+  }
+
+  /deep/ .ant-table-row-level-1{
+    background: #d7f4ff !important;
   }
 </style>

@@ -55,8 +55,11 @@
         :class="'no-border'"
         showPagination="auto"
       >
-        <span slot="description" slot-scope="text" v-html="text">
-          {{ text }}
+        <span slot="project" slot-scope="text,record">
+          <span>{{ record.workflowTitle }}</span>
+        </span>
+        <span slot="detail" slot-scope="text,record">
+          {{ record.taskStartTime | moment }}
         </span>
 
         <span slot="action" slot-scope="record">
@@ -86,12 +89,18 @@
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
+  import { TaskService } from '@/views/dashboard/task.service'
 
   const columns = [
     {
       title: '项目',
-      dataIndex: 'description',
-      scopedSlots: { customRender: 'description' }
+      dataIndex: 'project',
+      scopedSlots: { customRender: 'project' }
+    },
+    {
+      title: '',
+      dataIndex: 'detail',
+      scopedSlots: { customRender: 'detail' }
     },
     {
       title: '操作',
@@ -123,9 +132,9 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
-          return getServiceList(requestParameters)
+          return TaskService.tasks(requestParameters)
             .then(res => {
+              console.log(res)
               return res.result
             })
         },

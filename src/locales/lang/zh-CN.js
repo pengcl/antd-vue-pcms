@@ -26,7 +26,7 @@ const locale = {
   'menu.supplier.purchase.edit': '供应商信息编辑',
   'menu.supplier.other': '其他类供应商',
   'menu.supplier.other.list': '其他类供应商',
-  'menu.supplier.other.item': '供应商详情',
+  'menu.supplier.other.item': '其他类供应商详情',
 
   'menu.contract': '合同及成本控制',
   'menu.contract.list': '合同信息及成本控制',
@@ -45,6 +45,7 @@ const locale = {
   'menu.change.vo.item': '变更指令详细',
   'menu.change.vo.edit': '变更指令编辑',
   'menu.change.certificate': '现场签证',
+  'menu.change.constructionOrganizeDesign' : '施工组织设计',
 
   'menu.cost': '成本预算管理',
   'menu.cost.enact.list': '成本预算制定',
@@ -57,8 +58,8 @@ const locale = {
   'menu.cost.bid.list': '招投标分判包',
   'menu.cost.bid.edit': '新增招投标分判包',
   'menu.cost.bid.item': '招投标分判包详细',
-  'menu.cost.type.list': '行业预算类型管理',
-  'menu.cost.type.item': '行业预算类型详情',
+  'menu.cost.type.list': '行业档案管理',
+  'menu.cost.type.item': '行业档案详情',
 
   'menu.pay': '付款管理',
   'menu.pay.signed.list': '合同付款申请',

@@ -7,12 +7,18 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  :treeData="cities"
-                  placeholder="请选择"
                   style="width: 100%"
+                  :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
-                  @change="onChange"
-                  @select="onSelect"/>
+                  search-placeholder="请选择"
+                  v-model="queryParam.ProjectGUID"
+                  @select="onSelect"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="状态">
+                {{ auditStatus }}
               </a-form-item>
             </a-col>
           </a-row>
@@ -36,7 +42,7 @@
 
         <span slot="cost" slot-scope="text">
           <p style="text-align: center">
-            <span style="font-weight: bold;padding-right: 10px">{{text.amount}}</span>
+            <span style="font-weight: bold;padding-right: 10px">{{text.amount|amountFormat}}</span>
             <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>
           </p>
         </span>
@@ -44,21 +50,12 @@
         <span slot="action" slot-scope="text, record">
           <template>
             {{ record.code }}
-            <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
-            </a-button>
             <a-button
-              @click="handleToEdit(record)"
+              @click="handleToResolve(record)"
               type="primary"
-              icon="form"
+              icon="snippets"
               style="margin-left: 4px"
-              title="编辑">
-            </a-button>
-            <a-button
-              @click="handleToItem(record)"
-              type="primary"
-              icon="plus-square"
-              style="margin-left: 4px"
-              title="审批记录">
+              title="预算分解">
             </a-button>
           </template>
         </span>
@@ -75,14 +72,15 @@
   import { ProjectService } from '@/views/project/project.service'
   import { CostService } from '@/views/cost/cost.service'
   import { formatList } from '../../../mock/util'
-  import { fixedList } from '@/utils/util'
+  import {fixedList, getPosValue, nullFixedList} from '@/utils/util'
+  import storage from "store";
 
   const defaultColumns = [
 
     {
       title: '科目代码',
       dataIndex: 'action',
-      width: '180px',
+      width: '200px',
       scopedSlots: { customRender: 'action' }
     },
     {
@@ -103,6 +101,7 @@
     data () {
       this.columns = columns
       return {
+        titleIds:[],
         auditStatus: '',
         cities: [],
         visible: false,
@@ -111,11 +110,12 @@
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
-        queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
+        queryParam: {},
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const _columns = JSON.parse(JSON.stringify(defaultColumns))
           const requestParameters = Object.assign({}, parameter, this.queryParam)
+          // console.log('loadData request parameters:', requestParameters)
           const result = {
             result: {
               data: []
@@ -135,32 +135,35 @@
                           scopedSlots: { customRender: 'cost' }
                         }
                       )
+                      this.titleIds.push('cost' + subjectItem1.costCenterId)
                     })
                     this.columns = _columns
                     this.$forceUpdate()
                     res.result.data.forEach(item => {
                       const obj = {}
+                      obj['id'] = item.id
+                      obj['code'] = item.code
+                      obj['name'] = item.nameCN
+
                       if (res2.result.data != null) {
                         res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
                           // 加载成本
                           const costName = 'cost' + subjectItem2.costCenterId
                           subjectItem2.mainElements.forEach(itemA => {
                             if (item.id === itemA.elementTypeId) {
-                              obj['id'] = item.id
-                              obj['code'] = item.code
-                              obj['name'] = item.nameCN
-                              // obj[costName] = itemA.amount + '  ' + itemA.percentage + '%'
                               obj[costName] = {
                                 amount: itemA.amount,
                                 percentage: itemA.percentage
                               }
                             }
                           })
+                          if(!obj[costName]){
+                            obj[costName] = {
+                              amount: 0,
+                              percentage: 0
+                            }
+                          }
                         })
-                      } else {
-                        obj['id'] = item.id
-                        obj['code'] = item.code
-                        obj['name'] = item.nameCN
                       }
                       result.result.data.push(obj)
                     })
@@ -168,27 +171,38 @@
                   return fixedList(result, parameter)
                 })
             })
+          }else {
+            return nullFixedList(requestParameters)
           }
         },
         selectedRowKeys: [],
         selectedRows: []
       }
     },
+    filters: {
+      amountFormat (value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      },
+    },
     created () {
-      getRoleList({ t: new Date() })
-
       ProjectService.tree().then(res => {
         const cities = []
         res.result.data.citys.forEach(item => {
-          const children = formatList(item.projects.items)
+          const children = formatList(item.projects.items, { key: 'type', value: 'project' })
           cities.push({
+            selectable: false,
             label: item.city.nameCN,
             value: item.city.id,
             children: children
           })
         })
         this.cities = cities
+        const value = getPosValue(this.cities)
+        this.queryParam.ProjectID = value.projectCode
+        this.queryParam.ProjectGUID = value.projectGUID
+        this.auditStatus = value.auditStatus
         this.$forceUpdate()
+        this.$refs.table.refresh(true)
       })
     },
     computed: {
@@ -200,26 +214,21 @@
       }
     },
     methods: {
-      handleToItem (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
+      handleToResolve (record) {
+        this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
       },
-      handleToEdit (record) {
-        this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
-      },
-      handleToAdd () {
-        this.$router.push({ path: `/cost/enact/item/0?type=add` })
-      },
-      onChange (value,option) {
-        if (value.length >= 2) {
-          this.queryParam.ProjectGUID = value
-          this.$refs.table.refresh(true)
-        } else {
+      onSelect (value, option) {
+        storage.set('POS', option.pos)
+        this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
+        if (typeof value === 'number') {
+          this.city = value
           this.queryParam.ProjectGUID = ''
-          this.$refs.table.refresh(true)
+        } else {
+          this.queryParam.ProjectGUID = value
         }
-      },
-      onSelect (value,option) {
         this.auditStatus = option.dataRef.auditStatus
+        this.$refs.table.refresh()
+        this.$forceUpdate()
       }
     }
   }

@@ -170,7 +170,7 @@ ContractService.filterParties = function (partyType, list) {
   const items = []
   if (list.forEach) {
     list.forEach(item => {
-      if (item.partyType === partyType) {
+      if (item.partyType === partyType && !item.isDeleted) {
         items.push(item)
       }
     })

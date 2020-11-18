@@ -99,7 +99,7 @@
           <a-col :md="24" :sm="24">
             <a-form-model-item label="变更备注" prop="logRemark">
               <a-textarea
-                :disabled="type === 'view' || type === 'create'"
+                :disabled="type === 'view' || type === 'create' || form.vendor.vendorStatus === '未准入'"
                 placeholder="请填写变更备注"
                 v-model="form.vendor.logRemark"></a-textarea>
             </a-form-model-item>
@@ -143,10 +143,10 @@
       >
         <p>{{ dialog.content }}</p>
       </a-modal>
-      <a-row :gutter="48">
+      <a-row :gutter="48" style="margin-top: 15px;">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
-            <a-button v-if="type === 'view' && !form.vendor.logGID" @click="askUpdate()" type="success">
+          <a-button-group v-if="type === 'view' && !form.vendor.logGID">
+            <a-button @click="askUpdate()" type="success">
               供应商信息变更
             </a-button>
           </a-button-group>

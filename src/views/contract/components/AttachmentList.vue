@@ -27,7 +27,7 @@
                 <a-button :disabled="type === 'view'" :loadding="loading" @click="del(file.id)" type="danger" icon="delete"></a-button>
               </td>
               <td>{{ file.name }}</td>
-              <td>{{ file.creator }}</td>
+              <td>{{ file.remark }}</td>
               <td>{{ file.date | moment }}</td>
             </tr>
           </tbody>
@@ -83,6 +83,7 @@
                 creator: item.creatorUser,
                 name: item.fileName,
                 file: item.fileUrl,
+                remark: item.remark,
                 id: item.id,
                 masterID: item.masterID
               })
@@ -136,6 +137,7 @@
                 name: data.fileName,
                 file: data.fileUrl,
                 id: data.id,
+                remark: data.remark,
                 masterID: data.masterID
               })
               _this.data.fileMasterId = data.masterID
@@ -196,14 +198,6 @@
           }
         }
       }
-    }
-  }
-
-  .ant-upload-disabled {
-    button {
-      color: rgba(0, 0, 0, 0.25);
-      background-color: #f5f5f5;
-      border-color: #d9d9d9;
     }
   }
 </style>
