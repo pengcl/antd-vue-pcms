@@ -45,6 +45,7 @@ const locale = {
   'menu.change.vo.item': '变更指令详细',
   'menu.change.vo.edit': '变更指令编辑',
   'menu.change.certificate': '现场签证',
+  'menu.change.constructionOrganizeDesign' : '施工组织设计',
 
   'menu.cost': '成本预算管理',
   'menu.cost.enact.list': '成本预算制定',

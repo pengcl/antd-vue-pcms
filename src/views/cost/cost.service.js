@@ -13,6 +13,8 @@ const API = {
   industryItem: '/api/services/app/TenderPackage/GetTenderPackageById',//通过主键获取行业分判包数据
   budgetItems: '/api/services/app/TenderPackage/GetTenderPackageBudgetItemsById',//行业分判包预算列表
   budgetTypeItems: '/api/services/app/GeneralType/GetBudgetItemTypeTypes',//获取科目类型集合
+  industryUpdate : '/api/services/app/TenderPackage/UpdateTenderPackage',//修改行业分判包
+  industryRemove : '/api/services/app/TenderPackage/DeleteTenderPackage',//删除行业分判包
   //招投标分判包
   bidItems: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',//根据项目ID获取招投标列表
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
@@ -267,6 +269,24 @@ CostService.typeUpdate = function (parameter) {
     url: API.typeUpdate,
     method: 'POST',
     data: parameter
+  })
+}
+
+
+CostService.industryUpdate = function (parameter) {
+  return request({
+    url: API.industryUpdate,
+    method: 'put',
+    data: parameter
+  })
+}
+
+
+CostService.industryRemove = function (TenderPackageId) {
+  return request({
+    url: API.industryRemove,
+    method: 'delete',
+    params : {TenderPackageId}
   })
 }
 
