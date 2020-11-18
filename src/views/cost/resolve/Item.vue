@@ -21,7 +21,7 @@
             style="margin-top: 5px"
             ref="table"
             size="default"
-            rowKey="elementInfoId"
+            rowKey="key"
             bordered
             :columns="columns"
             :data="loadData"
@@ -42,6 +42,13 @@
                   type="primary"
                   icon="plus-square" title="新增">
                 </a-button>
+                <a-popconfirm v-if="record.isDelete && !record.isUsed" title="是否要删除此行？" @confirm="handleToRemove(record)">
+                  <a-button
+                    type="danger"
+                    icon="delete"
+                    style="margin-left: 4px"
+                    title="删除"></a-button>
+                </a-popconfirm>
                 {{ record.code }}
               </template>
             </span>
@@ -140,6 +147,7 @@
     items.forEach(item => {
       // 插入科目
       const obj = {}
+      obj.key = Number(Math.random().toString() + Date.now()).toString(36)
       obj.elementInfoId = item.elementInfoId
       obj.elementInfoCode = item.elementInfoCode
       obj.elementInfoNameCN = item.elementInfoNameCN
@@ -158,16 +166,20 @@
         const objItems = []
         item.tradeBudgetItems.forEach((budget, index) => {
           const budgetItem = {}
-          budgetItem.elementInfoId = budget.elementInfoId + budget.id
+          budgetItem.key = Number(Math.random().toString() + Date.now()).toString(36)
+          budgetItem.elementInfoId = budget.elementInfoId
           budgetItem.BudgetTitle = budget.budgetTitle
           budgetItem.elementInfoNameCN = ''
           budgetItem.code = budget.code
+          budgetItem.groupId = budget.groupId
           costCenters.forEach(center => {
             const result = getBudgetList(budget.groupId, center.elementItem.childs)
             if (result !== null) {
               budgetItem[result['name']] = result['value']
             }
           })
+          budgetItem.isUsed = budget.isUsed
+          budgetItem.isDelete = true
           objItems.push(budgetItem)
         })
         if(objItems.length>0){
@@ -180,7 +192,8 @@
       if (item.tradeBudgetInfo && item.childs && item.childs.length === 0) {
         const gt = {}
         costCenters.forEach((center, index) => {
-          gt.elementInfoId = item.elementInfoId + new Date().getTime()
+          gt.key = Number(Math.random().toString() + Date.now()).toString(36)
+          gt.elementInfoId = item.elementInfoId
           gt.BudgetTitle = 'General Trade'
           gt.elementInfoNameCN = ''
           const costName = 'cost' + center.costCenterId
@@ -322,6 +335,20 @@
         CostService.createGT({projectGUID: this.ProjectGUID, planPackageGUID: this.ProjectGUID}).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info('GeneralTrade已触发生成')
+          }
+        })
+      },
+      handleToRemove(record){
+        const requestParameters = Object.assign({
+          ProjectGUID: this.ProjectGUID,
+          ElementInfoId: record.elementInfoId,
+          ItemGroupId: record.groupId
+        })
+        CostService.removeTradeBudget(requestParameters).then(res =>{
+          if(res.result.statusCode === 200){
+            this.$message.info('预算分解删除成功').then(() =>{
+              this.$refs.table.refresh()
+            })
           }
         })
       }

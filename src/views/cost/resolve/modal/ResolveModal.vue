@@ -112,10 +112,10 @@
       }
     },
     filters: {
-      amountFormat (value) {
-        if(value){
+      amountFormat(value) {
+        if (value) {
           return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        }else{
+        } else {
           return 0
         }
       },
@@ -161,18 +161,23 @@
         CostService.bidBudgetCreate(this.form).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+            this.$refs.table.refresh()
           }
           this.visible = false
         })
       },
       addResolve() {
         const centers = []
+        console.log(this.costCenters)
         this.costCenters.forEach(item => {
           const obj = {}
           const costName = 'cost' + item.costCenterId
-          if (this.record[costName] === 0) {
+          if (this.record[costName]) {
+            obj.disabled = false
+          } else {
             obj.disabled = true
           }
+          console.log(this.record[costName])
           obj.costCenterId = item.costCenterId
           obj.amount = 0
           centers.push(obj)

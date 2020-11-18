@@ -24,6 +24,7 @@ const API = {
   elementTradeTypes: '/api/services/app/ElementTradeType/GetElementTradeTypes',//获取预算科目下的行业类型集合
   resolveCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算分解
   createGT: '/api/services/app/TradeBudget/BudgetAuotCreateGeneralTrade',//审批完成后对项目的所有预算科目进行产生GeneralTrade的操作
+  removeTradeBudget: '/api/services/app/TradeBudget/ProjectCostCenterDeleteTradeBudgetItems',//删除预算分解
   //新增预算界面
   budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
   budegetTreeItem: '/api/services/app/TenderPackage/GetTenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
@@ -265,6 +266,14 @@ CostService.typeCreate = function (parameter) {
 CostService.typeUpdate = function (parameter) {
   return request({
     url: API.typeUpdate,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.removeTradeBudget = function (parameter) {
+  return request({
+    url: API.removeTradeBudget,
     method: 'POST',
     data: parameter
   })
