@@ -170,8 +170,8 @@
           <a @click="jumpToProjectTenderPackage">{{ selectedPackage != null ? selectedPackage.projectTenderPackageId : ''}}</a>
         </template>
       </s-table>
+    <cost-industry-modal ref="industryModal" :refreshAllTable="refreshAllTable"></cost-industry-modal>
     </a-card>
-    <industry-modal ref="industryModal"></industry-modal>
   </page-header-wrapper>
 </template>
 
@@ -184,7 +184,7 @@ import { formatList } from '../../../mock/util'
 import { CostService } from '@/views/cost/cost.service'
 import { fixedList, getPosValue } from '@/utils/util'
 import { nullFixedList } from '@/utils/util'
-import IndustryModal from '@/views/cost/industry/modal/IndustryModal'
+import CostIndustryModal from '@/views/cost/industry/modal/IndustryModal'
 import storage from 'store'
 
 const columns = [
@@ -260,7 +260,7 @@ export default {
     STable,
     Ellipsis,
     StepByStepModal,
-    IndustryModal,
+    CostIndustryModal,
   },
   data() {
     this.columns = columns
@@ -274,22 +274,30 @@ export default {
       mdl: null,
       budgetId: '',
       selectedPackage: null,
+      handleSelected : false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
       queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
       // 加载数据方法 必须为 Promise 对象
       loadData: (parameter) => {
-        this.selectedPackage = null
-        this.pid = ''
+        console.log('handle',this.handleSelected)
+        if(!this.handleSelected){
+          this.selectedPackage = null
+          this.pid = ''
+        }else{
+          this.handleSelected = false
+        }
         const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
         if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
           return CostService.industryItems(requestParameters).then((res) => {
             if (res.result.data != null) {
+              this.$refs.table2.refresh()
               return fixedList(res, requestParameters)
             }
           })
         } else {
+          this.$refs.table2.refresh()
           return nullFixedList(requestParameters)
         }
       },
@@ -529,11 +537,13 @@ export default {
     jumpToProjectTenderPackage() {
       this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackage}&type=view` })
     },
-    refreshAllTable() {
+    refreshAllTable(args) {
+      if(args){
+        this.handleSelected = true
+      }
       this.$refs.table.refresh()
-      this.$refs.table2.refresh()
-    },
-  },
+    }
+  }
 }
 </script>
 
