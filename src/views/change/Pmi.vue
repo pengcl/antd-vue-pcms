@@ -56,9 +56,12 @@
         rowKey="contractGuid"
         :data="loadData"
         bordered
+        :scroll="{x : 1200}"
         :rowSelection="rowSelection"
         ref="table">
         <a slot="contractNo" slot-scope="text,record" href="javascript:void(0)" @click="handleToContractInfo(record)" >{{text}}</a>
+        <span slot="contractAmount" slot-scope="text">{{text | NumberFormat}}</span>
+        <span slot="preSettleAmount" slot-scope="text">{{text | NumberFormat}}</span>
         <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
@@ -73,7 +76,6 @@
 
         </template>
       </s-table>
-
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button type="success" @click="handleToAdd" :disabled="!queryParam2.contractGuid">新增CIP</a-button>
@@ -84,42 +86,42 @@
             :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核'">CIP转VO
           </a-button>
           <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核' || tableSelected.voStatus !== '待确认'">现场签证</a-button>
-          <a-button type="success" style="margin-left: 20px" @click="handleDesign">施工组织设计</a-button>
+          <a-button type="success" style="margin-left: 20px" :disabled="contractSelected.contractGuid == undefined || contractSelected.bdIsCompete" @click="handleDesign">施工组织设计</a-button>
         </a-col>
         <a-col :md="24" :sm="24"> 变更列表</a-col>
       </a-row>
-      <div>
-        <s-table
-          style="margin-top: 5px"
-          ref="table2"
-          rowKey="cipGuid"
-          bordered
-          :columns="_columns"
-          :data="loadData2"
-          :rowSelection="rowSelection2"
-        >
-          <div slot="voStatus" slot-scope="text, record">
-            <a v-if="text !== '待确认'" @click="showVO(record)">{{ text }}</a>
-            <span v-if="text === '待确认'">{{ text }}</span>
-          </div>
-
-          <span slot="action" slot-scope="text, record">
-            <template>
-              <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
-              </a-button>
-              <a-button
-                class="btn-info"
-                type="primary"
-                icon="form"
-                style="margin-left: 4px"
-                title="编辑"
-                :disabled="record.auditStatus !== '未审核'"
-                @click="handleToEdit(record)"
-              ></a-button>
-            </template>
-          </span>
-        </s-table>
-      </div>
+      <s-table
+        style="margin-top: 5px"
+        ref="table2"
+        rowKey="cipGuid"
+        bordered
+        :scroll="{x : 1400}"
+        :columns="_columns"
+        :data="loadData2"
+        :rowSelection="rowSelection2"
+      >
+        <div slot="voStatus" slot-scope="text, record">
+          <a v-if="text !== '待确认'" @click="showVO(record)">{{ text }}</a>
+          <span v-if="text === '待确认'">{{ text }}</span>
+        </div>
+        
+        <span slot="cipAmount" slot-scope="text">{{text | NumberFormat}}</span>
+        <span slot="action" slot-scope="text, record">
+          <template>
+            <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
+            </a-button>
+            <a-button
+              class="btn-info"
+              type="primary"
+              icon="form"
+              style="margin-left: 4px"
+              title="编辑"
+              :disabled="record.auditStatus !== '未审核'"
+              @click="handleToEdit(record)"
+            ></a-button>
+          </template>
+        </span>
+      </s-table>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -141,37 +143,47 @@
     {
       title: '审批状态',
       dataIndex: 'auditStatus',
-      scopedSlots: { customRender: 'auditStatus' }
+      scopedSlots: { customRender: 'auditStatus' },
+      width : 100
     },
     {
       title: '结算状态',
-      dataIndex: 'balanceStatus'
+      dataIndex: 'balanceStatus',
+      width : 100
     },
     {
       title: '合同编号',
       dataIndex: 'contractNo',
-      scopedSlots: { customRender: 'contractNo' }
+      scopedSlots: { customRender: 'contractNo' },
+      width : 250
     },
     {
       title: '合同名称',
-      dataIndex: 'contractName'
+      dataIndex: 'contractName',
+      width : 250
 
     },
     {
       title: '币种',
-      dataIndex: 'currency'
+      dataIndex: 'currency',
+      width : 80
     },
     {
       title: '合同金额',
-      dataIndex: 'contractAmount'
+      dataIndex: 'contractAmount',
+      scopedSlots: { customRender: 'contractAmount' },
+      width : 100
     },
     {
       title: '预计结算金额',
-      dataIndex: 'preSettleAmount'
+      dataIndex: 'preSettleAmount',
+      scopedSlots: { customRender: 'preSettleAmount' },
+      wdith : 100
     },
     {
       title: '签约日期',
-      dataIndex: 'signDate'
+      dataIndex: 'signDate',
+      width : 120
     }
   ]
 
@@ -185,34 +197,41 @@
     {
       title: '审核状态(CIP)',
       dataIndex: 'auditStatus',
-      scopedSlots: { customRender: 'auditStatus' }
+      scopedSlots: { customRender: 'auditStatus' },
+      width : 100
     },
     {
       title: '变更编号',
-      dataIndex: 'voNo'
+      dataIndex: 'voNo',
+      width : 320
     },
     {
       title: '申请金额',
       dataIndex: 'cipAmount',
-      scopedSlots: { customRender: 'cipAmount' }
+      scopedSlots: { customRender: 'cipAmount' },
+      width : 150
     },
     {
       title: '申报日期',
-      dataIndex: 'createTime'
+      dataIndex: 'createTime',
+      width : 120
     },
     {
       title: '变更类型',
       dataIndex: 'voType',
-      scopedSlots: { customRender: 'voType' }
+      scopedSlots: { customRender: 'voType' },
+      width : 120
     },
     {
       title: '变更确认(VO)',
       dataIndex: 'voStatus',
-      scopedSlots: { customRender: 'voStatus' }
+      scopedSlots: { customRender: 'voStatus' },
+      width : 150
     },
     {
       title: '相关现场签证',
-      dataIndex: 'signID'
+      dataIndex: 'signID',
+      width : 200
     }
   ]
 

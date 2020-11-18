@@ -48,7 +48,7 @@
           <a-col :md="24" :sm="24">
             <a-form-model-item prop="itemTypeId" label="分判包类型">
               <a-select
-                :disabled="type === 'view'"
+                :disabled="type !== 'add'"
                 placeholder="请选择"
                 v-model="form.itemTypeId"
                 @change="itemTypeChange"
@@ -62,7 +62,7 @@
           <a-col :md="24" :sm="24">
             <a-form-model-item prop="elementTypeId" label="科目类型">
               <a-select
-                :disabled="type === 'view'"
+                :disabled="type !== 'add'"
                 placeholder="请选择"
                 v-model="form.elementTypeId"
               >

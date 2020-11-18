@@ -87,6 +87,7 @@
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
+        <span slot="contractAmount" slot-scope="text">{{ text | NumberFormat}}</span>
 
         <span slot="action" slot-scope="text, record">
           <template>
@@ -235,9 +236,24 @@
         this.$router.push({ path: `/contract/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
       },
       handleToDel (record) {
-        ContractService.delete(record.contractGuid).then(res => {
-          this.$refs.table.refresh()
+        const that = this
+        this.$confirm({
+          title : '删除合同',
+          content : '是否确定删除选中合同信息?',
+          onOk () {
+            ContractService.delete(record.contractGuid).then(res => {
+              that.$message.info('删除成功').then(() =>{
+                that.$refs.table.refresh()
+              })
+            }).catch(() =>{
+              that.$message.error(res.result.msg)
+            })
+          },
+          onCancel(){
+
+          }
         })
+        
       },
       search () {
         this.show = !this.show

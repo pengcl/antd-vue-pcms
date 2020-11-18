@@ -52,7 +52,7 @@
             <a-input-number :min="1" v-model="item.filePage" @change="onFilePageChange" :disabled="item.id > 0"></a-input-number>
           </td>
           <td>
-            <a-input v-model="item.creationTime" :disabled="true"></a-input>
+            <a-input :value="item.creationTime | moment" :disabled="true"></a-input>
           </td>
         </tr>
         </tbody>

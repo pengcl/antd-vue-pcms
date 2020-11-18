@@ -132,7 +132,7 @@
           //确定
           handleOk(){
             const that = this
-            const result = {packageId : that.queryParam.id, budgtItmIdList : []}
+            const result = {packageId : that.queryParam.id, budgetItemList : []}
             //获取选中行业预算
             getResults(this.columnDatas)
             function getResults(datas){
@@ -141,7 +141,7 @@
                   if(i.indexOf('cost_') > -1 && item[i].length > 0){
                     item[i].forEach(budgetItem => {
                       if(budgetItem.checked){
-                        result.budgtItmIdList.push( { tradeBudgeItemId : budgetItem.id })
+                        result.budgetItemList.push( { tradeBudgeItemId : budgetItem.id })
                       }
                     })
                   }
@@ -152,11 +152,12 @@
               })
             }
             //若选中的行业预算大于0，进行添加操作
-            if(result.budgtItmIdList.length > 0){
+            if(result.budgetItemList.length > 0){
               CostService.addBudgetItem(result).then(res =>{
                 if(res.result.statusCode === 200){
                   const that = this
                   this.$message.info('添加行业预算成功').then(() =>{
+                    that.$parent.refreshAllTable()
                     that.closeModal()
                   })
                 }

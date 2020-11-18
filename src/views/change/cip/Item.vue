@@ -98,7 +98,7 @@
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type != 'view'" @click="save">储存</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type != 'view'" @click="save()">储存</a-button>
             <a-button type="danger" :loading="loading.cancel" v-if="type != 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
@@ -250,7 +250,7 @@
               this.loading.save = false
               console.log(res)
               if (res.result.statusCode === 200) {
-                 if(callback === undefined){
+                 if(callback == undefined){
                   this.$message.info('修改成功').then(() => {
                     this.$router.push({ path: `/change/pmi` })
                   })

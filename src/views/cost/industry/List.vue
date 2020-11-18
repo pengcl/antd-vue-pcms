@@ -77,6 +77,7 @@
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
+        <span slot="budgetAmount" slot-scope="text">{{text | NumberFormat }}</span>
 
         <span slot="action" slot-scope="text, record">
           <template>
@@ -139,6 +140,7 @@
         :alert="false"
         :showPagination="false"
       >
+        <span slot="budgetValue" slot-scope="text">{{text | NumberFormat }}</span>
         <span slot="itemAction" slot-scope="text, record">
           <template>
             <a-button
@@ -152,7 +154,7 @@
           
         </span>
         <a slot="contractGUID" slot-scope="text, record" @click="jumpToContract" >{{selectedPackage.contractGUID}}</a>
-        <a slot="projectTenderPackage" slot-scope="text, record" @click="jumpToProjectTenderPackage" >{{selectedPackage.projectTenderPackage}}</a>
+        <a slot="projectTenderPackageId" slot-scope="text, record" @click="jumpToProjectTenderPackage" >{{selectedPackage.projectTenderPackage}}</a>
       </s-table>
     </a-card>
     <industry-modal ref="industryModal"></industry-modal>
@@ -164,7 +166,7 @@
     import { STable, Ellipsis } from '@/components'
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../../mock/util'
+    import { formatList,amountFormat } from '../../../mock/util'
     import {CostService} from "@/views/cost/cost.service";
     import {fixedList, getPosValue} from "@/utils/util";
     import {nullFixedList} from "@/utils/util";
@@ -189,7 +191,9 @@
         },
         {
             title: '预算金额',
-            dataIndex: 'budgetAmount'
+            dataIndex: 'budgetAmount',
+            scopedSlots: { customRender: 'budgetAmount' }
+
         },
         {
             title: '日期',
@@ -224,16 +228,16 @@
         {
             title: '金额',
             dataIndex: 'budgetValue',
-            scopedSlots: { customRender: 'callNo' }
+            scopedSlots: { customRender: 'budgetValue' }
         },
         {
             title: '招投标包',
-            dataIndex: 'ss',
+            dataIndex: 'projectTenderPackageId',
             scopedSlots: { customRender: 'projectTenderPackageId' }
         },
         {
             title: '合同',
-            dataIndex: 'aa',
+            dataIndex: 'contractGUID',
             scopedSlots: { customRender: 'contractGUID' }
         }
     ]
@@ -511,6 +515,10 @@
             },
             jumpToProjectTenderPackage(){
               this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackage}&type=view` })
+            },
+            refreshAllTable(){
+              this.$refs.table.refresh()
+              this.$refs.table2.refresh()
             }
         }
     }

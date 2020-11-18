@@ -232,6 +232,9 @@ export default {
           _this.$forceUpdate
         })
     },
+    back (){
+        this.$router.push({ path: `/change/pmi` })
+    }
   },
 }
 </script>
