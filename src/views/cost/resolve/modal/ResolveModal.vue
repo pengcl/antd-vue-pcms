@@ -5,7 +5,6 @@
     title="新增预算分解"
     @cancel="handleCancel"
     @ok="handleOk"
-    @afterClose="refreshTable"
     :ok-button-props="{ props: { disabled: defaultSave } }"
   >
     <a-card :bordered="false">
@@ -169,7 +168,6 @@
     methods: {
       // 搜索
       show(record) {
-        console.log(record)
         this.record = record
         this.form.costCenterItems = []
         this.visible = true
@@ -199,39 +197,36 @@
         this.visible = false
       },
       handleOk() {
-        console.log(this.form)
         this.$refs.form.validate(valid => {
-          const result = []
-          const resultForm = Object.assign({},this.form)
-          const costCenterItems = Object.assign([],this.form.costCenterItems)
-          if (costCenterItems) {
-            costCenterItems.forEach(item => {
-              item.centers.forEach(centerItem => {
-                if (centerItem.amount && centerItem.amount !== 0) {
-                  const obj = {}
-                  obj.tradeTypeId = item.tradeTypeId
-                  obj.costCenterId = centerItem.costCenterId
-                  obj.amount = centerItem.amount
-                  result.push(obj)
-                }
-              })
-            })
-          }
-          resultForm.costCenterItems = result
-          console.log('this.form', this.form,resultForm)
-          CostService.bidBudgetCreate(resultForm).then(res => {
-            if (res.result.statusCode === 200) {
-              const that = this
-              this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() =>{
-                that.refreshParent()
-                this.visible = false
+          if(valid){
+            const result = []
+            const resultForm = Object.assign({},this.form)
+            const costCenterItems = Object.assign([],this.form.costCenterItems)
+            if (costCenterItems) {
+              costCenterItems.forEach(item => {
+                item.centers.forEach(centerItem => {
+                  if (centerItem.amount && centerItem.amount !== 0) {
+                    const obj = {}
+                    obj.tradeTypeId = item.tradeTypeId
+                    obj.costCenterId = centerItem.costCenterId
+                    obj.amount = centerItem.amount
+                    result.push(obj)
+                  }
+                })
               })
             }
-          })
+            resultForm.costCenterItems = result
+            CostService.bidBudgetCreate(resultForm).then(res => {
+              if (res.result.statusCode === 200) {
+                const that = this
+                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() =>{
+                  that.refreshParent()
+                  this.visible = false
+                })
+              }
+            })
+          }
         })
-      },
-      refreshTable() {
-
       },
       addResolve() {
         const centers = []
