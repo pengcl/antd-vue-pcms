@@ -61,6 +61,8 @@
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
+        <span slot="creationTime" slot-scope="text">{{ text | moment('yyyy-MM-DD') }}</span>
+        <span slot="lastModificationTime" slot-scope="text">{{ text | moment('yyyy-MM-DD') }}</span>
 
         <span slot="action" slot-scope="text, record">
           <!--<template>
@@ -119,21 +121,23 @@ const columns = [
   },
   {
     title: '创建者',
-    dataIndex: 'creator',
-    scopedSlots: { customRender: 'creator' }
+    dataIndex: 'creatorUser',
+    scopedSlots: { customRender: 'creatorUser' }
   },
   {
     title: '创建日期',
-    dataIndex: 'createAt'
+    dataIndex: 'creationTime',
+    scopedSlots: { customRender: 'creationTime' }
   },
   {
     title: '最后更新者',
-    dataIndex: 'updater',
-    scopedSlots: { customRender: 'updater' }
+    dataIndex: 'lastModifierUser',
+    scopedSlots: { customRender: 'lastModifierUser' }
   },
   {
     title: '最后更新日期',
-    dataIndex: 'updatedAt'
+    dataIndex: 'lastModificationTime',
+    scopedSlots: { customRender: 'lastModificationTime' }
   }
 ]
 

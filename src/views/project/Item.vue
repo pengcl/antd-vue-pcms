@@ -413,15 +413,20 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
+          <a-button-group v-if="type === 'update'">
             <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group>
-            <a-button :disabled="type === 'view'" @click="save" type="success">
+          <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核'">
+            <a-button @click="approve()" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type !== 'view'">
+            <a-button @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -472,7 +477,7 @@ export default {
       show: false,
       selectedItems: [],
       form: {},
-      info: null,
+      info: {},
       rules: {
         cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
         projectShortCode: [{ required: true, message: '请填写编码', trigger: 'blur' }],

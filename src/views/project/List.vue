@@ -9,7 +9,7 @@
                 <a-select
                   placeholder="请选择城市"
                   @change="onChange"
-                  :suffixIcon="cities ? '' : '加载中...'">
+                  :suffixIcon="cities ? '' : '加载中...'"
                   v-model="queryParam.Id">
                   <a-select-option
                     v-for="(city,index) in cities"
@@ -54,7 +54,7 @@
           {{ getCity(text) }}
         </span>
 
-        <span slot="beginDate" slot-scope="text">
+        <span slot="creationTime" slot-scope="text">
           {{ text | moment('yyyy-MM-DD') }}
         </span>
 
@@ -63,6 +63,7 @@
             <a-button @click="handleToItem(record)" class="btn-success" type="primary" icon="file-text" title="查看">
             </a-button>
             <a-button
+              :disabled="record.auditStatus !== '未审核'"
               @click="handleToEdit(record)"
               type="primary"
               class="btn-info"
@@ -170,8 +171,8 @@ const columns = [
   }, */
   {
     title: '创建日期',
-    dataIndex: 'beginDate',
-    scopedSlots: { customRender: 'beginDate' }
+    dataIndex: 'creationTime',
+    scopedSlots: { customRender: 'creationTime' }
   }
   /* {
     title: '最后更新者',

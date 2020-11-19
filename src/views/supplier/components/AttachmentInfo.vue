@@ -25,9 +25,9 @@
             </tr>
           </thead>
           <tbody>
-          <tr v-if="!file.isDeleted" v-for="(file, index) in fileList" :key="index">
+            <tr v-if="!file.isDeleted" v-for="(file, index) in fileList" :key="index">
               <td>
-                <a-button @click="del(file.id,index)" type="danger" icon="delete"></a-button>
+                <a-button :disabled="type === 'view'" @click="del(file.id,index)" type="danger" icon="delete"></a-button>
               </td>
               <td>{{ file.name }}</td>
               <td>{{ file.creator }}</td>
