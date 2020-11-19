@@ -28,11 +28,11 @@
             <tbody>
               <tr v-if="!item.isDeleted" v-for="(item, index) in items" :key="index">
                 <td>
-                  <a-button @click="del(index)" type="danger" icon="delete"></a-button>
+                  <a-button :disabled="type === 'view'" @click="del(index)" type="danger" icon="delete"></a-button>
                 </td>
-                <td><a-input v-model="item.bankName "/></td>
-                <td><a-input v-model="item.bankAccounts "/></td>
-                <td><a-input v-model="item.bankAddr "/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.bankName "/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.bankAccounts "/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.bankAddr "/></td>
               </tr>
             </tbody>
           </table>

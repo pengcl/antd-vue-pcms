@@ -157,8 +157,13 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group>
-            <a-button v-if="type !== 'view'" @click="save" type="success">
+          <a-button-group v-if="type === 'view' && form.vendor.vendorStatus !== '未准入'">
+            <a-button type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type !== 'view'">
+            <a-button @click="save" type="success">
               储存
             </a-button>
           </a-button-group>

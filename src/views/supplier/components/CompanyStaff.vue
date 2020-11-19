@@ -36,41 +36,38 @@
             <tbody>
               <tr v-if="!item.isDeleted" v-for="(item, index) in items" :key="index">
                 <td>
-                  <a-button @click="del(index)" icon="close">
+                  <a-button :disabled="type === 'view'" @click="del(index)" icon="close">
                     删除
                   </a-button>
                 </td>
                 <td>
-                  <a-input v-model="item.employeeName"/>
+                  <a-input :disabled="type === 'view'" v-model="item.employeeName"/>
                 </td>
-                <td><a-input v-model="item.jobPosition"/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.jobPosition"/></td>
                 <td>
-                  <a-select v-model="item.isPrimary">
-                    <a-select-option value="">请选择</a-select-option>
+                  <a-select :disabled="type === 'view'" v-model="item.isPrimary" placeholder="请选择">
                     <a-select-option value="是">是</a-select-option>
                     <a-select-option value="否">否</a-select-option>
                   </a-select>
                 </td>
                 <td>
-                  <a-select v-model="item.isRecipients">
-                    <a-select-option value="">请选择</a-select-option>
+                  <a-select :disabled="type === 'view'" v-model="item.isRecipients" placeholder="请选择">
                     <a-select-option value="是">是</a-select-option>
                     <a-select-option value="否">否</a-select-option>
                   </a-select>
                 </td>
                 <td>
-                  <a-select v-model="item.isPlanFlag">
-                    <a-select-option value="">请选择</a-select-option>
+                  <a-select :disabled="type === 'view'" v-model="item.isPlanFlag" placeholder="请选择">
                     <a-select-option value="是">是</a-select-option>
                     <a-select-option value="否">否</a-select-option>
                   </a-select>
                 </td>
-                <td><a-input v-model="item.officePhone"/></td>
-                <td><a-input v-model="item.fax"/></td>
-                <td><a-input v-model="item.mobilePhone"/></td>
-                <td><a-input v-model="item.email"/></td>
-                <td><a-input v-model="item.isIncumbent"/></td>
-                <td><a-input v-model="item.remarks"/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.officePhone"/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.fax"/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.mobilePhone"/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.email"/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.isIncumbent"/></td>
+                <td><a-input :disabled="type === 'view'" v-model="item.remarks"/></td>
               </tr>
             </tbody>
           </table>
