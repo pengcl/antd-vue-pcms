@@ -61,8 +61,8 @@
       return {
         form: SwaggerService.getForm('ElementTradeTypeListOutputDtoListResultModel'),
         rules: {
-          nameCN: [{ required: true, message: '请输入类型中文名', trigger: 'blur' }],
-          nameEN: [{ required: true, message: '请输入类型英文名', trigger: 'blur' }],
+          nameCN: [{ required: true, message: '请输入科目名称', trigger: 'blur' }],
+          nameEN: [{ required: true, message: '请输入科目名称tradeName', trigger: 'blur' }],
           description: [{ required: false, message: '请输入描述', trigger: 'change' }],
         }
       }

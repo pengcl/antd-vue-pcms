@@ -71,7 +71,7 @@
             title="查看"
             @click="handleToItem(record)"></a-button>
           <a-button
-            v-if="record.logGID"
+            :disabled="!record.logGID"
             class="btn-info"
             type="primary"
             icon="form"
