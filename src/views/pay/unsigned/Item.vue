@@ -5,22 +5,22 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="项目名称">
-              <a-input :disabled="type === 'view'" v-model="form.projectName"></a-input>
+              <a-input :disabled="true" v-model="form.projectName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="付款单位">
-              <a-input :disabled="type === 'view'" v-model="form.payerPartyName"></a-input>
+              <a-input :disabled="true" v-model="form.payerPartyName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="申请部门">
-              <a-input :disabled="type === 'view'" v-model="form.sponsorDeptName"></a-input>
+              <a-input :disabled="true" v-model="form.sponsorDeptName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="申请人">
-              <a-input :disabled="type === 'view'" v-model="form.requestUserName"></a-input>
+              <a-input :disabled="true" v-model="form.requestUserName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -63,6 +63,34 @@
           <a-col :md="12" :sm="24">
             <a-form-item label="申请付款金额">
               <a-input :disabled="type === 'view'" v-model="form.paymentAmount"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="支付方式">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="form.paymentMethod">
+                <a-select-option
+                  v-for="(type,index) in paymentMethodTypes"
+                  :value="type.code"
+                  :key="index">{{ type.code }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="币种">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="form.paymentCurrency">
+                <a-select-option
+                  v-for="(type,index) in currencyList"
+                  :value="type.nameCN"
+                  :key="index">{{ type.nameCN }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
@@ -112,6 +140,8 @@
     import { SwaggerService } from '@/api/swagger.service'
     import { UnSignedService } from './unsigned.service'
     import { Base as BaseService } from '@/api/base'
+    import { SignedService } from '@/views/pay/signed/signed.service'
+    import { Currency } from '@/api/currency'
 
     export default {
         name: 'Item',
@@ -122,7 +152,9 @@
                 loading: false,
                 form: SwaggerService.getForm('PaymentOtherDto'),
                 payTypeList: [],
-                expenseAccountTypeList: []
+                expenseAccountTypeList: [],
+                paymentMethodTypes: [],
+                currencyList: []
             }
         },
         watch: {},
@@ -134,6 +166,12 @@
             UnSignedService.expenseAccountTypeList().then(res => {
                 this.expenseAccountTypeList = res.result.data
             })
+            SignedService.paymentMethodTypes().then(res => {
+                this.paymentMethodTypes = res.result.data
+            })
+            Currency.list().then(res => {
+                this.currencyList = res.result.data.items
+            })
         },
         computed: {
             id () {
@@ -141,6 +179,9 @@
             },
             type () {
                 return this.$route.query.type
+            },
+            projectGUID () {
+                return this.$route.query.projectGUID
             }
         },
         methods: {
@@ -153,6 +194,14 @@
                         })
                     })
                 } else {
+                    UnSignedService.initData(this.projectGUID).then(res => {
+                        const initData = res.result.data
+                        this.form.projectName = initData.projectName
+                        this.form.payerPartyName = initData.companyName
+                        this.form.sponsorDeptName = initData.sponsorDeptName
+                        this.form.requestUserName = initData.requestUserName
+                    })
+                    this.form.paymentCurrency = '人民币'
                     this.form.masterID = 0
                     this.form.detailList = []
                     this.form.billList = []
@@ -175,7 +224,7 @@
                             })
                         }
                     })
-                }else {
+                } else {
                     UnSignedService.update(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('修改成功')

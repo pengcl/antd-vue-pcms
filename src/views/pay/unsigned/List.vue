@@ -290,7 +290,7 @@
                 this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=update` })
             },
             handleToAdd () {
-                this.$router.push({ path: '/pay/unsigned/item/0?type=create' })
+                this.$router.push({ path: '/pay/unsigned/item/0?type=create&projectGUID=' + this.queryParam.ProjectGUID })
             },
             handleAdd () {
                 this.mdl = null

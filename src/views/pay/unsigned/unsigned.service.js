@@ -12,6 +12,7 @@ const API = {
   update: '/api/services/app/PaymentOther/UpdatePaymentOther',
   delete: '/api/services/app/PaymentOther/DeletePaymentOther',
   approve: '/api/services/app/PaymentOther/StartBPM',
+  initData: '/api/services/app/PaymentOther/GetPaymentOtherInitData',
 }
 
 const UnSignedService = {}
@@ -36,6 +37,14 @@ UnSignedService.item = function (gid) {
     url: API.item,
     method: 'get',
     params: { gid }
+  })
+}
+
+UnSignedService.initData = function (projectGUID) {
+  return request({
+    url: API.initData,
+    method: 'get',
+    params: { projectGUID }
   })
 }
 

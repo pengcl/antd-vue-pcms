@@ -4,6 +4,7 @@
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
+    :ok-button-props="{ props: { disabled: selectedRows.length < 1 } }"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
@@ -74,6 +75,10 @@
             projectCode: {
                 type: String,
                 default: null
+            },
+            year: {
+                type: Number,
+                default: 0
             }
         },
         data () {
@@ -88,7 +93,7 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return FundPlanService.versionList(this.projectCode, 0).then(res => {
+                    return FundPlanService.versionList(this.projectCode, this.year ? this.year : 0).then(res => {
                         return fixedList(res, requestParameters)
                     })
                 },
