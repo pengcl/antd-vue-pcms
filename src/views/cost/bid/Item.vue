@@ -139,7 +139,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr v-for="(item,index) in form.plans" :key="index">
+              <tr v-if="!item.isDeleted" v-for="(item,index) in form.plans" :key="index">
                 <td>
                   <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>
                 </td>
@@ -329,12 +329,13 @@
         this.$router.push({ path: `/cost/bid/list` })
       },
       delIndustry (index) {
-        const items = this.tenderPackages
-        removeItem(index, items)
+        const items = this.form.tenderPackages
+        items.splice(index, 1)
       },
       delPlan (index) {
-        const items = this.plans
+        const items = this.form.plans
         removeItem(index, items)
+        this.$forceUpdate()
       },
       filterOption(input, option) {
         return (
