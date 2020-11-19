@@ -26,15 +26,16 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a-button v-if="record.isEdit" type="success" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
-<!--            <a-button-->
-<!--              v-if="record.isEdit"-->
-<!--              @click="handleToAdd(record)"-->
-<!--              type="primary"-->
-<!--              icon="form"-->
-<!--              style="margin-left: 4px"-->
-<!--              title="编辑科目类型">-->
-<!--            </a-button>-->
+            <a-button v-if="record.isEdit" type="success" icon="file-text" title="查看"
+                      @click="handleToItem(record)"></a-button>
+            <!--            <a-button-->
+            <!--              v-if="record.isEdit"-->
+            <!--              @click="handleToAdd(record)"-->
+            <!--              type="primary"-->
+            <!--              icon="form"-->
+            <!--              style="margin-left: 4px"-->
+            <!--              title="编辑科目类型">-->
+            <!--            </a-button>-->
             <a-button
               v-if="record.isCreate"
               @click="handleToAdd(record)"
@@ -64,14 +65,14 @@
       if (item.childs) {
         item.children = getList(item.childs)
       }
-      if(item.childs && item.childs.length === 0){
+      if (item.childs && item.childs.length === 0) {
         item.isCreate = true
       }
       list.push(item)
       // 插入行业预算行
       if (item.tradeTypeList) {
         const objItems = []
-        item.tradeTypeList.forEach(budgetItem =>{
+        item.tradeTypeList.forEach(budgetItem => {
           const budget = {}
           budget.elementId = item.id
           budget.code = budgetItem.code
@@ -81,7 +82,7 @@
           budget.isEdit = true
           objItems.push(budget)
         })
-        if(objItems.length>0){
+        if (objItems.length > 0) {
           item.children = objItems
         }
       }
@@ -130,15 +131,24 @@
         queryParam: {},
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-            return CostService.typyItems().then(res => {
-              const result = {
-                result: {
-                  data: []
-                }
+          return CostService.typyItems().then(res => {
+            const result = {
+              result: {
+                data: []
               }
-              result.result.data = getList(res.result.data.childs)
-              return fixedList(result, parameter)
-            })
+            }
+            const temp = []
+            const tempCodes = ['B', 'C', 'D', 'G']
+            if (res.result.data.childs) {
+              res.result.data.childs.forEach(item => {
+                if (tempCodes.includes(item.code)) {
+                  temp.push(item)
+                }
+              })
+            }
+            result.result.data = getList(temp)
+            return fixedList(result, parameter)
+          })
         },
         selectedRowKeys: [],
         selectedRows: []
@@ -168,7 +178,7 @@
   }
 </script>
 <style lang="less" scoped>
-  /deep/ .ant-table-row-level-3{
+  /deep/ .ant-table-row-level-3 {
     background: #d7f4ff !important;
   }
 </style>
