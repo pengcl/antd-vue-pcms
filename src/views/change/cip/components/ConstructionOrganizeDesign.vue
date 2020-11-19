@@ -1,89 +1,103 @@
 <template>
   <page-header-wrapper>
     <a-card v-if="true" :bordered="false">
-      <a-form-model ref="form" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+      <a-form-model ref="form" v-model="data" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
             <a-form-model-item label="项目名称">
-              <a-input :disabled="true" value="测试名称显示"></a-input>
+              <a-input :disabled="true" :value="project.projectName"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="施工组织文案名称" prop="s">
-              <a-input :disabled="type === 'view'"></a-input>
+            <a-form-model-item label="施工组织文案名称" prop="bdName">
+              <a-input v-model="data.bdName" :disabled="type === 'view'"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="施工单位名称" prop="a">
-              <a-input :disabled="type === 'view'"></a-input>
+            <a-form-model-item label="施工单位名称" prop="partylst">
+              <a-select 
+              :disabled="type === 'view'"
+              v-model="partylst"
+              mode="multiple"
+              placeholder="请选择"
+              @change="partyChange"
+              option-filter-prop="children"
+              >
+                <a-select-option
+                  v-for="option in selection.parties"
+                  :key="option.partID"
+                  :value="option.partID">
+                  {{ option.partName }}
+                </a-select-option>
+              </a-select>
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-row>
               <a-col :span="10">
-                <a-form-model-item label="编制日期" prop="f">
-                  <a-date-picker :disabled="type === 'view'" placeholder="请选择编制日期"> </a-date-picker>
+                <a-form-model-item label="编制日期" prop="writeDate">
+                  <a-date-picker v-model="data.writeDate" :disabled="type === 'view'" placeholder="请选择编制日期"> </a-date-picker>
                 </a-form-model-item>
               </a-col>
             </a-row>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-model-item label="备注">
-              <a-textarea :disabled="type === 'view'" placeholder="请输入备注"></a-textarea>
+              <a-textarea v-model="data.remark" :disabled="type === 'view'" placeholder="请输入备注"></a-textarea>
             </a-form-model-item>
           </a-col>
         </a-row>
-        <a-row :gutter="48">
-          <div>
-            <a-col :md="24" :sm="24">
-              <table>
-                <thead>
-                  <tr>
-                    <th colspan="5">
-                      <a-button icon="plus" @click="add" :disabled="type === 'view'"> 新增 </a-button>
-                    </th>
-                  </tr>
-                  <tr>
-                    <th>操作</th>
-                    <th>附件名称</th>
-                    <th>附件页数</th>
-                    <th>最后修改时间</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, index) in fileList" v-if="item != null" :key="index">
-                    <td>
-                      <a-upload
-                        name="file"
-                        v-if="item.filePage && item.id === 0"
-                        :multiple="false"
-                        :before-upload="beforeUpload"
-                      >
-                        <a-button @click="choose(index)">上传附件</a-button>
-                      </a-upload>
-                      <a-button @click="del(index)" :disabled="type === 'view'" icon="close"> 删除 </a-button>
-                    </td>
-                    <td>
-                      <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{ item.fileName }}</a>
-                    </td>
-                    <td>
-                      <a-input-number
-                        :min="1"
-                        v-model="item.filePage"
-                        @change="onFilePageChange"
-                        :disabled="item.id > 0"
-                      ></a-input-number>
-                    </td>
-                    <td>
-                      <a-input v-model="item.creationTime" :disabled="true"></a-input>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </a-col>
-          </div>
-        </a-row>
       </a-form-model>
+      <a-row :gutter="48">
+        <div>
+          <a-col :md="24" :sm="24">
+            <table>
+              <thead>
+                <tr>
+                  <th colspan="5">
+                    <a-button icon="plus" @click="add" :disabled="type === 'view'"> 新增 </a-button>
+                  </th>
+                </tr>
+                <tr>
+                  <th>操作</th>
+                  <th>附件名称</th>
+                  <th>附件页数</th>
+                  <th>最后修改时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in fileList" v-if="item != null" :key="index">
+                  <td>
+                    <a-upload
+                      name="file"
+                      v-if="item.filePage && item.id === 0"
+                      :multiple="false"
+                      :before-upload="beforeUpload"
+                    >
+                      <a-button @click="choose(index)">上传附件</a-button>
+                    </a-upload>
+                    <a-button @click="del(index)" :disabled="type === 'view'" icon="close"> 删除 </a-button>
+                  </td>
+                  <td>
+                    <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{ item.fileName }}</a>
+                  </td>
+                  <td>
+                    <a-input-number
+                      :min="1"
+                      v-model="item.filePage"
+                      @change="onFilePageChange"
+                      :disabled="item.id > 0"
+                    ></a-input-number>
+                  </td>
+                  <td>
+                    <a-input v-model="item.creationTime" :disabled="true"></a-input>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </a-col>
+        </div>
+      </a-row>
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
@@ -107,12 +121,18 @@
 <script>
 import { ChangeService } from '@/views/change/change.service'
 import moment from 'moment'
+import { SwaggerService } from '@/api/swagger.service'
+import { Base as BaseService } from '@/api/base'
 
 export default {
   name: 'ConstrctionOrganizeDesign',
   data() {
     return {
       selection: {},
+      partylst : [],//已选施工单位
+      project : SwaggerService.getForm('ProjectListDto'),
+      form: this.$form.createForm(this),
+      data : SwaggerService.getForm('ContractBuildingDesignDto'),
       loading: {
         save: false,
         startBPM: false,
@@ -122,9 +142,9 @@ export default {
       filePage: null,
       index: 0,
       rules: {
-        s: [{ trigger: 'change', message: '请输入施工组织文案名称', required: true }],
-        a: [{ required: true, message: '请输入施工单位名称', trigger: 'change' }],
-        f: [{ required: true, message: '请输入编制日期', trigger: 'change' }],
+        bdName: [{ trigger: 'change', message: '请输入施工组织文案名称', required: true }],
+        partylst: [{ validator : checkPartylst, trigger: 'change' }],
+        writeDate: [{ required: true, message: '请输入编制日期', trigger: 'change' }],
       },
     }
   },
@@ -135,19 +155,62 @@ export default {
     contractGuid() {
       return this.$route.params.contractGuid
     },
+    projectCode(){
+      return this.$route.query.projectCode
+    }
   },
   created() {
+    if (this.type !== 'add') {
+      ChangeService.buildingDesignItem(this.contractGuid).then((res) => {
+        this.data = res.result.data
+        console.log('change.constructionOrganizeDesign.data', this.data)
+        BaseService.masterID(this.data.bdGuid).then(res => {
+          this.data.fileMasterId = res.result.data
+          BaseService.fileList(this.data.fileMasterId, this.data.bdGuid, '', '').then(_res => {
+            this.fileList = _res.result.data
+          })
+        })
+      })
+    }
+    ProjectService.view2(this.projectCode).then((res) => {
+      this.project = res.result.data
+      console.log('change.project',this.project)
+    })
     // 获取可选抄送单位
-    ChangeService.sendCopyParty({}).then((item) => {
-      this.selection.sendCopyParties = item.result.data
+    ChangeService.contractPartyForBd(this.contractGuid).then((item) => {
+      this.selection.parties = item.result.data
     })
   },
   methods: {
     splitVal(val) {
       return val ? val.split(';') : null
     },
-    save(callback) {},
-    handleCancel() {},
+    save(callback) {
+      let isValid = true
+      this.form.validate(valid => {
+        if (!valid) {
+          isValid = false
+        }
+      })
+      if(isValid){
+        this.loading.save = true
+        let actionType = 'updateBuildingDesign'
+        if(this.type === 'add'){
+          this.initData()
+          actionType = 'createBuildingDesign'
+        }
+        ChangeService[actionType](this.data).then(res =>{
+          if(res.result.statusCode === 200){
+            if(callback != undefined){
+              callback()
+            }else{
+              this.$message.info('保存成功')
+              this.back()
+            }
+          }
+        })
+      }
+    },
     startBPM() {},
     onFilePageChange(value) {
       this.filePage = value
@@ -161,8 +224,7 @@ export default {
         fileName: '',
         fileUrl: '',
         creationTime: '',
-        creatorUser: '',
-        fileInfo: '',
+        creatorUser: ''
       }
       if (this.fileList) {
         this.fileList.push(item)
@@ -204,13 +266,12 @@ export default {
     handleUpload(file) {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('masterId', this.data.fileMasterId)
+      formData.append('masterId', this.form.fileMasterId)
       formData.append('businessID', '')
-      formData.append('businessType', this.stage)
+      formData.append('businessType', 'BuildingDesign')
       formData.append('subInfo1', '') //
       formData.append('subInfo2', '') //
       formData.append('subInfo3', '') //
-      formData.append('fileInfo', this.fileInfo) // 附件类型
       formData.append('filePage', this.filePage) // 附件页数
       this.uploading = true
       const _this = this
@@ -223,7 +284,7 @@ export default {
         .then((response) => {
           console.log('upload response:', response)
 
-          this.fileList[this.index] = Object.assign(this.fileList[this.index], response.result.data)
+          _this.fileList[this.index] = Object.assign(this.fileList[this.index], response.result.data)
           console.log('fileList[index]', this.fileList[this.index])
           _this.data.fileMasterId = response.result.data.masterID
           _this.$message.success('上传成功')
@@ -234,6 +295,70 @@ export default {
     },
     back (){
         this.$router.push({ path: `/change/pmi` })
+    },
+    partyChange(vals) {
+      var that = this
+      console.log('cc',vals)
+      // 整理抄送公司
+      // 将抄送下拉框信息放入到voPartyLst中
+      vals.forEach(item => {
+        const copySendParty = getCopyPartyByID(item)
+        if (copySendParty) {
+          var repeatData = getPartyByID(item, true)
+          if (repeatData === undefined) {
+            const temp = Object.assign({}, copySendParty)
+            temp.id = 0
+            temp.bdGuid = this.data.bdGuid
+            temp.isDeleted = false
+            temp.isTemp = true
+            this.data.voPartylst.push(temp)
+          } else {
+            repeatData.isDeleted = false
+          }
+        }
+      })
+      // 清理vopartyLst中比cc多出的公司信息
+      this.data.partylst.forEach((party, index) => {
+        if (party.isSendCopy) {
+          if (vals.indexOf(party.partID) < 0) {
+            if (party.isTemp) {
+              this.data.partylst.splice(index, 1)
+            } else {
+              party.isDeleted = true
+            }
+          }
+        }
+      })
+
+      // 根据partID及抄送与否 获取修改voPartyLst对象中的对应公司信息
+      function getPartyByID (partID) {
+        var party = that.data.partylst.filter(item => item.partID === partID )
+        if (party.length > 0) {
+          return party[0]
+        }
+      }
+
+      // 根据partID 获取抄送公司列表中的公司信息
+      function getCopyPartyByID (partID) {
+        const party = that.selection.parties.filter(item => item.partID === partID)
+        if (party.length > 0) {
+          return party[0]
+        }
+      }
+
+      this.$forceUpdate()
+    },
+    checkPartylst(rule,value,callback){
+      if(this.partylst.length < 1){
+        callback(new Error('请选择施工单位名称'))
+      }else{
+        callback()
+      }
+    },
+    initData(){
+      this.data.id = 0
+      this.isAudit = false
+      this.fileMasterId = 0
     }
   },
 }
