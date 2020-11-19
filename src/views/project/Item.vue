@@ -560,12 +560,16 @@ export default {
   },
   methods: {
     getName (code) {
+      console.log(code)
       let name = ''
       if (code && this.selection.companies) {
         this.selection.companies.forEach(item => {
-          name = item.nameCN
+          if(item.code === code){
+            name = item.nameCN
+          }
         })
       }
+      console.log(name)
       return name
     },
     approve () {
@@ -634,6 +638,7 @@ export default {
     handleOk () {
       this.show = false
       this.form.companyCode = this.$refs.company.selected.code
+      this.$forceUpdate()
     },
     handleCancel () {
       this.show = false
