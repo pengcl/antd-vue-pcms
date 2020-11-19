@@ -21,6 +21,7 @@
 
     <!--<setting-drawer :settings="settings" @change="handleSettingChange" />-->
     <template v-slot:rightContentRender>
+      <span class="uat">UAT</span>
       <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme"/>
     </template>
     <template v-slot:footerRender>
@@ -158,4 +159,8 @@
 
 <style lang="less">
   @import "./BasicLayout.less";
+  .uat {
+    font-size: 20px;
+    color: red;
+  }
 </style>
