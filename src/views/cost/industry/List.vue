@@ -289,7 +289,7 @@ export default {
           this.handleSelected = false
         }
         const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
-        if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
+        if (typeof requestParameters.ProjectGUID != 'undefined' && requestParameters.ProjectGUID != '') {
           return CostService.industryItems(requestParameters).then((res) => {
             if (res.result.data != null) {
               this.$refs.table2.refresh()
@@ -297,7 +297,6 @@ export default {
             }
           })
         } else {
-          this.$refs.table2.refresh()
           return nullFixedList(requestParameters)
         }
       },
