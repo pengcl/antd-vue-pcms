@@ -120,6 +120,7 @@
 
 <script>
 import { ChangeService } from '@/views/change/change.service'
+import { ProjectService } from '@/views/project/project.service'
 import moment from 'moment'
 import { SwaggerService } from '@/api/swagger.service'
 import { Base as BaseService } from '@/api/base'
@@ -143,7 +144,7 @@ export default {
       index: 0,
       rules: {
         bdName: [{ trigger: 'change', message: '请输入施工组织文案名称', required: true }],
-        partylst: [{ validator : checkPartylst, trigger: 'change' }],
+        partylst: [{ validator : this.checkPartylst, trigger: 'change' }],
         writeDate: [{ required: true, message: '请输入编制日期', trigger: 'change' }],
       },
     }
@@ -212,6 +213,7 @@ export default {
       }
     },
     startBPM() {},
+    showBPM(){},
     onFilePageChange(value) {
       this.filePage = value
     },
