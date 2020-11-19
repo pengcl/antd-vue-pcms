@@ -13,11 +13,11 @@ const Currency = {}
  * @returns {*}
  */
 
-Currency.list = function list (id) {
+Currency.list = function () {
   return request({
     url: API.list,
     method: 'get',
-    params: { Id: id }
+    params: {}
   })
 }
 

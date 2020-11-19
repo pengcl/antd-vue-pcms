@@ -91,7 +91,7 @@
                           :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
-      <a-col :md="24" :sm="24">
+      <a-col :md="12" :sm="24">
         <a-form-model-item
           label="付款凭证"
           prop="expenseAccountType"
@@ -104,6 +104,23 @@
               v-for="type in certificateTypes"
               :value="type"
               :key="type">{{ type }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="支付方式"
+          prop="paymentMethod"
+        >
+          <a-select
+            :disabled="type === 'view'"
+            placeholder="请选择"
+            v-model="data.paymentMethod">
+            <a-select-option
+              v-for="(type,index) in paymentMethodTypes"
+              :value="type.code"
+              :key="index">{{ type.code }}
             </a-select-option>
           </a-select>
         </a-form-model-item>
@@ -472,6 +489,7 @@
                 index: 0,
                 paymentAmount: {},
                 paymentRequestAmount: {},
+                paymentMethodTypes: [],
                 billType: '',
                 rules: {
                     paymentReceiveDate: [{ required: true, message: '请选择收到请款单日期', trigger: 'change' }],
@@ -479,6 +497,7 @@
                     paymentAmount: [{ required: true, message: '请输入本期支付金额', trigger: 'change' }],
                     expenseAccountType: [{ required: true, message: '请选择付款凭证', trigger: 'change' }],
                     paymentContent: [{ required: true, message: '请输入付款说明', trigger: 'change' }],
+                    paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }]
                 }
             }
         },
@@ -535,6 +554,9 @@
             })
             SignedService.billList().then(res => {
                 this.billTypeList = res.result.data
+            })
+            SignedService.paymentMethodTypes().then(res => {
+                this.paymentMethodTypes = res.result.data
             })
         },
         props: {

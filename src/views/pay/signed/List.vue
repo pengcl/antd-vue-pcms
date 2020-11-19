@@ -69,6 +69,11 @@
         <span slot="contractNo" slot-scope="text, record">
             <a @click="handleToContractInfo(record)">{{text}}</a>
         </span>
+
+        <span slot="contractAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
         <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
@@ -113,13 +118,25 @@
 
         <span slot="auditTime" slot-scope="text">
           <template>
-            <span>{{text | moment}}</span>
+            <span>{{text | date}}</span>
           </template>
         </span>
 
         <span slot="paymentReceiveDate" slot-scope="text">
           <template>
-            <span>{{text | moment}}</span>
+            <span>{{text | date}}</span>
+          </template>
+        </span>
+
+        <span slot="paymentRequestAmount" slot-scope="text">
+          <template>
+            <span>{{text | NumberFormat}}</span>
+          </template>
+        </span>
+
+        <span slot="paymentAmount" slot-scope="text">
+          <template>
+            <span>{{text | NumberFormat}}</span>
           </template>
         </span>
 
@@ -235,6 +252,7 @@
         {
             title: '申请批准金额',
             dataIndex: 'paymentRequestAmount',
+            scopedSlots: { customRender: 'paymentRequestAmount' }
         },
         {
             title: '支付金额',

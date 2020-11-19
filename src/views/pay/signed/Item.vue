@@ -163,6 +163,7 @@
                         paymentPhase: this.form['paymentPhase'],
                         paymentReceiveDate: this.form['paymentReceiveDate'],
                         expenseAccountType: this.form['expenseAccountType'],
+                        paymentMethod: this.form['paymentMethod'],
                         paymentContent: this.form['paymentContent'],
                         attachmentID: this.form['masterID'],
                         contractList: contractList,

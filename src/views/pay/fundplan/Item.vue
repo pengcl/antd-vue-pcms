@@ -6,8 +6,7 @@
           <a-button :disabled="type === 'view'" type="success" @click="handleAddIndustry">
             引入行业分判包
           </a-button>
-          <a-button :disabled="type === 'view'"
-                    type="success"
+          <a-button type="success"
                     style="margin-left: 10px"
                     @click="handleViewHistoryVersion">查看历史版本（V1.0）
           </a-button>
@@ -162,19 +161,14 @@
         :visible="visible2"
         :loading="confirmLoading2"
         :model="mdl2"
+        :projectCode="projectCode"
+        :year="year"
         @cancel="handleCancel2"
         @ok="handleOk2"
       />
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin: 10px 0">
-          <a-button-group v-if="type !== 'view'">
-            <a-button @click="approve" type="success">
-              启动审批流程
-            </a-button>
-          </a-button-group>
-        </a-col>
-        <a-col :md="24" :sm="24">
           <a-button-group v-if="type !== 'view'">
             <a-button @click="save" type="success">
               储存
@@ -386,7 +380,6 @@
                 mdl2: null,
                 queryParam: {},
                 originData: null,
-                afterData: null,
                 fiscalMonth: [],
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -399,9 +392,8 @@
                             return fixedList(this.originData, requestParameters)
                         })
                     } else {
-                        console.log(this.afterData)
                         return new Promise((resolve, reject) => {
-                            return resolve(fixedList(this.afterData, requestParameters))
+                            return resolve(fixedList(this.originData, requestParameters))
                         })
                     }
                 },
@@ -431,7 +423,6 @@
                     res.result.data.forEach(item => {
                         this.fiscalMonth.push(item.fieldName)
                     })
-                    console.log(this.fiscalMonth)
                 })
             }
         },
@@ -470,7 +461,6 @@
                     }
                     this.originData.result.data.elementList[0].detailList.push(params)
                 })
-                this.afterData = this.originData
                 this.visible = false
                 this.$refs.createModal.$refs.tenderPacakge.clearSelected()
                 this.$refs.table.refresh()
@@ -482,48 +472,9 @@
                 form.resetFields() // 清理表单数据（可不做）
             },
             handleOk2 () {
-                const form = this.$refs.createViewHistoryModal.form
-                this.confirmLoading2 = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible2 = false
-                                this.confirmLoading2 = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible2 = false
-                                this.confirmLoading2 = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading2 = false
-                    }
-                })
+                const history = this.$refs.createViewHistoryModal.selected
+                this.$router.push({ path: `/pay/fundplan/item/0?type=view&projectCode=` + this.projectCode + `&year=` + history.yearNum })
+                this.visible2 = false
             },
             handleCancel2 () {
                 this.visible2 = false
@@ -532,32 +483,41 @@
                 form.resetFields() // 清理表单数据（可不做）
             },
             save () {
-                if (this.afterData) {
-                    const body = this.afterData.result.data
-                    FundPlanService.update(body).then(res => {
-                        if (res.result.data) {
-                            this.$message.success('修改成功')
-                            this.$router.push({ path: '/pay/fundplan/list' })
-                        }
-                    })
-                } else {
-                    const body = this.originData.result.data
-                    FundPlanService.update(body).then(res => {
-                        if (res.result.data) {
-                            this.$message.success('修改成功')
-                            this.$router.push({ path: '/pay/fundplan/list' })
-                        }
-                    })
-                }
+                const body = this.originData.result.data
+                FundPlanService.update(body).then(res => {
+                    if (res.result.data) {
+                        this.$message.success('修改成功')
+                        this.$router.push({ path: '/pay/fundplan/list' })
+                    }
+                })
+
             },
             back () {
                 this.$router.push({ path: '/pay/fundplan/list' })
             },
-            approve () {
-
-            },
             onChange (value, record, key) {
                 record[key] = value
+                let total = {
+                    month_7: 0,
+                    month_8: 0,
+                    month_9: 0,
+                    month_10: 0,
+                    month_11: 0,
+                    month_12: 0,
+                    month_1: 0,
+                    month_2: 0,
+                    month_3: 0,
+                    month_4: 0,
+                    month_5: 0,
+                    month_6: 0
+                }
+                this.originData.result.data.elementList.forEach(item => {
+                    item.detailList.forEach(d => {
+                        total[key] += d[key]
+                    })
+                    item[key] = total[key]
+                })
+                this.$refs.table.refresh()
             }
         }
     }

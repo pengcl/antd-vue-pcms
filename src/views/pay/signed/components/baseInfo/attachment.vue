@@ -1,5 +1,6 @@
 <template>
   <div>
+    <a-col :md="24" :sm="24" style="font-size: 16px;font-weight: bold;text-decoration: underline">上传附件</a-col>
     <a-col :md="24" :sm="24">
       <div class="table-wrapper">
         <table>
