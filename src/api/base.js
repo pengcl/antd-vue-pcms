@@ -107,11 +107,11 @@ Base.removeFile = function (ifileDetialID) {
   })
 }
 
-Base.viewBpm = function (BusinessID) {
+Base.viewBpm = function (BusinessGUID) {
   return request({
     url: API.viewBpm,
     method: 'GET',
-    params: { BusinessID }
+    params: { BusinessGUID }
   })
 }
 
