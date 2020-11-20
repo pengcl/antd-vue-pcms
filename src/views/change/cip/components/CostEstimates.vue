@@ -437,7 +437,7 @@ export default {
     BaseService.itemTypes('vo').then((res) => {
       this.selection.itemTypes = res.result.data
     })
-    ContractService.centers(this.project.id).then((res) => {
+    ChangeService.getCostCenters(this.contract.contractGuid).then((res) => {
       this.selection.centers = res.result.data
       this.$forceUpdate()
     })

@@ -78,7 +78,10 @@
       </s-table>
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button type="success" @click="handleToAdd" :disabled="!queryParam2.contractGuid">新增CIP</a-button>
+          <a-button 
+            type="success" 
+            @click="handleToAdd" 
+            :disabled="!queryParam2.contractGuid || (professionType.indexOf(contractSelected.contractProfession) > -1 && !contractSelected.bdIsComplete)">新增CIP</a-button>
           <a-button
             type="success"
             style="margin-left: 20px"
@@ -86,7 +89,11 @@
             :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核'">CIP转VO
           </a-button>
           <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核' || tableSelected.voStatus !== '待确认'">现场签证</a-button>
-          <a-button type="success" style="margin-left: 20px" :disabled="contractSelected.contractGuid == undefined || contractSelected.bdIsCompete" @click="handleDesign">施工组织设计</a-button>
+          <a-button 
+          type="success" 
+          style="margin-left: 20px" 
+          :disabled="contractSelected.contractGuid == undefined || professionType.indexOf(contractSelected.contractProfession) < 0" @click="handleDesign"
+          >施工组织设计</a-button>
         </a-col>
         <a-col :md="24" :sm="24"> 变更列表</a-col>
       </a-row>
@@ -250,6 +257,7 @@
       return {
         // create model
         cities: [],
+        professionType : [111,112,113,114,126],
         show: false,
         visible: false,
         confirmLoading: false,
@@ -413,7 +421,9 @@
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },
       handleDesign(){
-        this.$router.push({path : `/change/cip/constructionOrganizeDesign/${this.contractSelected.contractGuid}`})
+        const type = this.contractSelected.bdStatus == '' || this.contractSelected.bdStatus == '未申请' ? 'add' :
+                    this.contractSelected.bdStatus == '未审核' ? 'edit' : 'view'
+        this.$router.push({path : `/change/cip/constructionOrganizeDesign/${this.contractSelected.contractGuid}?projectCode=${this.contractSelected.projectID}&type=${type}`})
       }
     }
   }
