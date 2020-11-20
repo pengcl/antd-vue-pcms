@@ -32,9 +32,9 @@
         </a-row>
       </a-form-model>
       <a-radio-group v-model="useStore" button-style="solid">
-        <a-radio-button v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
+        <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
           {{ item.nameCN }}
-        </a-radio-button>
+        </a-radio>
       </a-radio-group>
     </div>
     <s-table

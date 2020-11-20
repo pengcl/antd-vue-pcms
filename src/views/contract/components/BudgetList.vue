@@ -2,10 +2,10 @@
   <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" style="margin-bottom: 16px">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
-        <a-radio-group v-model="useStore" button-style="solid">
-          <a-radio-button v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
+        <a-radio-group :disabled="type === 'view'" v-model="useStore" button-style="solid">
+          <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
             {{ item.nameCN }}
-          </a-radio-button>
+          </a-radio>
         </a-radio-group>
         <s-table
           style="margin-top: 5px"
