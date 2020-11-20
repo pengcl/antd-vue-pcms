@@ -15,6 +15,7 @@
             :alert="false"
             :pagination="false"
             :scroll="{ y: 500 }"
+            :defaultExpandAllRows="true"
           >
             <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId"
                   slot-scope="text, record">
@@ -74,170 +75,199 @@
 
     const columns = defaultColumns
 
-    export default {
-        name: 'Table',
-        components: {
-            STable,
-            Ellipsis
-        },
-        data () {
-            this.columns = columns
-            return {
-                visible: false,
-                datas: [],
-                ars: [],
-                isUpdate: false,
-                confirmLoading: false,
-                mdl: null,
-                // 高级搜索 展开/关闭
-                advanced: false,
-                // 查询参数
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const _columns = JSON.parse(JSON.stringify(defaultColumns))
-                    const requestParameters = {
-                        MaxResultCount: 1000,
-                        ProjectGUID: this.ProjectGUID,
-                        ElementTypeId: this.id
-                    }
-                    return CostService.subjectViewItems(requestParameters).then(res => {
-                        this.ars = res.result.data
-                        this.ars.forEach(item => {
-                            // 组装动态列
-                            _columns.push(
-                                {
-                                    title: item.costCenterName,
-                                    dataIndex: 'cost' + item.costCenterId,
-                                    scopedSlots: { customRender: 'cost' + item.costCenterId }
-                                }
-                            )
-                        })
-                        this.columns = _columns
-                        this.$forceUpdate()
-                        const rows = res.result.data[0].elementItem.childs
-                        forEachRow(rows, res.result.data)
-                        this.datas = rows
-                    })
-
-                    function forEachItem (datas, elementId) {
-                        let result = null
-                        for (var i in datas) {
-                            const data = datas[i]
-                            if (data.elementInfoId === elementId) {
-                                result = data
-                                break
-                            }
-                            if (data.childs && data.childs.length > 0) {
-                                result = forEachItem(data.childs, elementId)
-                                if (result != null) {
-                                    break
-                                }
-                            }
-                        }
-                        return result
-                    }
-
-                    function forEachRow (datas, columnDatas) {
-                        for (var i in datas) {
-                            var data = datas[i]
-                            data['costCenters'] = []
-                            columnDatas.forEach(item => {
-                                if (item.elementItem) {
-                                    var costName = 'cost' + item.costCenterId
-                                    if (item.elementItem) {
-                                        var costColumn = forEachItem([item.elementItem], data.elementInfoId)
-                                        if (costColumn != null) {
-                                            data[costName] = costColumn.amount !== null ? costColumn.amount : 0
-                                        }
-                                    }
-                                }
-                            })
-                            if (data.childs && data.childs.length > 0) {
-                                forEachRow(data.childs, columnDatas)
-                                data.children = data.childs
-                            }
-                        }
-                    }
+  export default {
+    name: 'Table',
+    components: {
+      STable,
+      Ellipsis
+    },
+    data () {
+      this.columns = columns
+      return {
+        visible: false,
+        datas: [],
+        ars: [],
+        isUpdate: false,
+        confirmLoading: false,
+        mdl: null,
+        // 高级搜索 展开/关闭
+        advanced: false,
+        // 查询参数
+        queryParam: { },
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const _columns = JSON.parse(JSON.stringify(defaultColumns))
+          const requestParameters = { MaxResultCount: 1000, ProjectGUID: this.ProjectGUID, ElementTypeId: this.id }
+          return CostService.subjectViewItems(requestParameters).then(res => {
+            this.ars = res.result.data
+            this.ars.forEach(item => {
+              // 组装动态列
+              _columns.push(
+                {
+                  title: item.costCenterName,
+                  dataIndex: 'cost' + item.costCenterId,
+                  scopedSlots: { customRender: 'cost' + item.costCenterId }
                 }
-            }
-        },
-        filters: {},
-        created () {
-            this.loadData()
-        },
-        computed: {
-            id () {
-                return this.$route.params.id
-            },
-            type () {
-                return this.$route.query.type
-            },
-            ProjectGUID () {
-                return this.$route.query.ProjectGUID
-            }
-        },
-        methods: {
-            back () {
-                this.$router.push({ path: `/cost/enact/list` })
-            },
-            handleToSave () {
-                const result = {}
-                const items = []
-                // 组装保存数据
-                result['ProjectGUID'] = this.ProjectGUID
-                result['budgetBaseTypeId'] = 83
-                result['elementTypeId'] = this.id
-                getResults(this.datas)
+              )
+            })
+            this.columns = _columns
+            this.$forceUpdate()
+            const rows = res.result.data[0].elementItem.childs
+            forEachRow(rows, res.result.data)
+            const result = []
+            const obj = insertFirstRow (res.result.data[0].elementItem, res.result.data)
+            obj['childs'] = rows
+            obj['children'] = rows
+            result.push(obj)
+            this.datas = result
+          })
 
-                function getResults (datas) {
-                    datas.forEach(item => {
-                        if (item.costCenters.length > 0) {
-                            item.costCenters.forEach(center => {
-                                items.push(center)
-                            })
-                        }
-                        if (item.children && item.children.length > 0) {
-                            getResults(item.children)
-                        }
-                    })
+          function forEachItem (datas, elementId) {
+            let result = null
+            for (var i in datas) {
+              const data = datas[i]
+              if (data.elementInfoId === elementId) {
+                result = data
+                break
+              }
+              if (data.childs && data.childs.length > 0) {
+                result = forEachItem(data.childs, elementId)
+                if (result != null) {
+                  break
                 }
-
-                result['items'] = items
-                CostService.update(result).then(res => {
-                    if (res.result.statusCode === 200) {
-                        this.$message.info('修改成功')
-                        this.back()
-                    }
-                })
-            },
-            checkChange (value, record, costCenterId) {
-                // 找到如果数据内存在旧数据，先移除，再添加
-                this.isUpdate = false
-                record.costCenters.forEach(center => {
-                    if (center.costCenterId === costCenterId) {
-                        center.amount = value
-                        this.isUpdate = true
-                    }
-                })
-                console.log(this.ars)
-                /*this.ars.forEach(item => {
-                    let result = 0
-                    if (item.costCenterId === costCenterId) {
-
-                    }
-                })*/
-                if (!this.isUpdate) {
-                    const item = {}
-                    item['costCenterId'] = costCenterId
-                    item['elementInfoId'] = record.elementInfoId
-                    item['amount'] = value
-                    record.costCenters.push(item)
-                }
-                this.$forceUpdate()
+              }
             }
+            return result
+          }
+
+          function forEachRow (datas, columnDatas) {
+            for (var i in datas) {
+              var data = datas[i]
+              data['costCenters'] = []
+              columnDatas.forEach(item => {
+                if (item.elementItem) {
+                  var costName = 'cost' + item.costCenterId
+                  if (item.elementItem) {
+                    var costColumn = forEachItem([item.elementItem], data.elementInfoId)
+                    if (costColumn != null) {
+                      data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                    }
+                  }
+                }
+              })
+              if (data.childs && data.childs.length > 0) {
+                forEachRow(data.childs, columnDatas)
+                data.children = data.childs
+              }
+            }
+          }
+
+          function insertFirstRow (data, columnDatas) {
+              data['costCenters'] = []
+              columnDatas.forEach(item => {
+                var costName = 'cost' + item.costCenterId
+                if (item.elementItem) {
+                  var costColumn = forEachItem([item.elementItem], data.elementInfoId)
+                  if (costColumn != null) {
+                    data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                  }
+                }
+              })
+            return data
+            }
+          }
+      }
+    },
+    filters: {
+
+    },
+    created () {
+      this.loadData()
+    },
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      ProjectGUID () {
+        return this.$route.query.ProjectGUID
+      }
+    },
+    methods: {
+      back () {
+        this.$router.push({ path: `/cost/enact/list` })
+      },
+      handleToSave () {
+        const result = {}
+        const items = []
+        // 组装保存数据
+        result['ProjectGUID'] = this.ProjectGUID
+        result['budgetBaseTypeId'] = 83
+        result['elementTypeId'] = this.id
+        getResults(this.datas)
+        function getResults (datas) {
+          datas.forEach(item => {
+            if (item.costCenters.length > 0) {
+              item.costCenters.forEach(center => {
+                items.push(center)
+              })
+            }
+            if (item.children && item.children.length > 0) {
+              getResults(item.children)
+            }
+          })
         }
+        result['items'] = items
+        CostService.update(result).then(res => {
+          if (res.result.statusCode === 200) {
+            this.$message.info('修改成功')
+            this.back()
+          }
+        })
+      },
+      checkChange (value, record, costCenterId) {
+        // 找到如果数据内存在旧数据，先移除，再添加
+        this.isUpdate = false
+        record.costCenters.forEach(center => {
+          if (center.costCenterId === costCenterId) {
+            center.amount = value
+            this.isUpdate = true
+          }
+        })
+        if (!this.isUpdate) {
+          const item = {}
+          item['costCenterId'] = costCenterId
+          item['elementInfoId'] = record.elementInfoId
+          item['amount'] = value
+          record.costCenters.push(item)
+        }
+        //循环组装处理合计金额
+
+        this.$forceUpdate()
+      },
+      onCellChange(key, dataIndex, value, tableName) {
+        var obj = {
+          index: key.index,
+          title: key.title
+        };
+        obj[dataIndex] = value;
+        const dataSource = [...this[tableName]];
+        const target = dataSource.find(item => item.index === key.index);
+        if (target) {
+          if (target[dataIndex] !== value) {
+            target[dataIndex] = value;
+            if (!dataSource[0][dataIndex]) {
+              dataSource[0][dataIndex] = 0;
+            }
+            dataSource[0][dataIndex] += value * 1;
+            this[tableName] = dataSource;
+          }
+        }
+      }
     }
+  }
 </script>
 
 <style lang="less" scoped>
@@ -282,7 +312,7 @@
     }
   }
 
-  /deep/ .ant-table-row-level-1 {
+  /deep/ .ant-table-row-level-1{
     background: #d7f4ff !important;
   }
 </style>
