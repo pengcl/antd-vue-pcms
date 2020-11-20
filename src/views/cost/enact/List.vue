@@ -46,9 +46,9 @@
         </span>
 
         <span slot="cost" slot-scope="text">
-          <p style="text-align: center">
+          <p style="text-align: right">
             <span style="font-weight: bold;padding-right: 10px">{{text.amount|amountFormat}}</span>
-            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>
+<!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
           </p>
         </span>
 
@@ -93,12 +93,14 @@
 
     {
       title: '科目代码',
+      className: 'title-center',
       dataIndex: 'action',
       width: '200px',
       scopedSlots: {customRender: 'action'}
     },
     {
       title: '科目名称',
+      className: 'title-center',
       dataIndex: 'name'
     }
   ]
@@ -145,6 +147,7 @@
                       _columns.push(
                         {
                           title: subjectItem1.costCenterName,
+                          className: 'title-center',
                           dataIndex: 'cost' + subjectItem1.costCenterId,
                           scopedSlots: {customRender: 'cost'}
                         }
@@ -257,3 +260,10 @@
     }
   }
 </script>
+<style>
+  th.title-center,
+  td.title-center {
+    text-align: center !important;
+  }
+</style>
+
