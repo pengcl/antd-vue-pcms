@@ -15,6 +15,7 @@
             :alert="false"
             :pagination="false"
             :scroll="{ y: 500 }"
+            :defaultExpandAllRows="true"
           >
             <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId" slot-scope="text, record">
               <a-input-number
@@ -112,7 +113,12 @@
             this.$forceUpdate()
             const rows = res.result.data[0].elementItem.childs
             forEachRow(rows, res.result.data)
-            this.datas = rows
+            const result = []
+            const obj = insertFirstRow (res.result.data[0].elementItem, res.result.data)
+            obj['childs'] = rows
+            obj['children'] = rows
+            result.push(obj)
+            this.datas = result
           })
 
           function forEachItem (datas, elementId) {
@@ -141,10 +147,10 @@
                 if (item.elementItem) {
                   var costName = 'cost' + item.costCenterId
                   if (item.elementItem) {
-                      var costColumn = forEachItem([item.elementItem], data.elementInfoId)
-                      if (costColumn != null) {
-                        data[costName] = costColumn.amount !== null ? costColumn.amount : 0
-                      }
+                    var costColumn = forEachItem([item.elementItem], data.elementInfoId)
+                    if (costColumn != null) {
+                      data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                    }
                   }
                 }
               })
@@ -154,7 +160,21 @@
               }
             }
           }
-        }
+
+          function insertFirstRow (data, columnDatas) {
+              data['costCenters'] = []
+              columnDatas.forEach(item => {
+                var costName = 'cost' + item.costCenterId
+                if (item.elementItem) {
+                  var costColumn = forEachItem([item.elementItem], data.elementInfoId)
+                  if (costColumn != null) {
+                    data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                  }
+                }
+              })
+            return data
+            }
+          }
       }
     },
     filters: {
@@ -222,7 +242,28 @@
           item['amount'] = value
           record.costCenters.push(item)
         }
+        //循环组装处理合计金额
+
         this.$forceUpdate()
+      },
+      onCellChange(key, dataIndex, value, tableName) {
+        var obj = {
+          index: key.index,
+          title: key.title
+        };
+        obj[dataIndex] = value;
+        const dataSource = [...this[tableName]];
+        const target = dataSource.find(item => item.index === key.index);
+        if (target) {
+          if (target[dataIndex] !== value) {
+            target[dataIndex] = value;
+            if (!dataSource[0][dataIndex]) {
+              dataSource[0][dataIndex] = 0;
+            }
+            dataSource[0][dataIndex] += value * 1;
+            this[tableName] = dataSource;
+          }
+        }
       }
     }
   }
