@@ -179,11 +179,11 @@ import ChangeInfo from '../components/ChangeInfo'
 import ContractInfo from '../components/ContractInfo'
 import BankInfo from '../components/BankInfo'
 import AttachmentInfo from '../components/AttachmentInfo'
-import { SwaggerService } from '@/api/swagger.service'
 import { SupplierService } from '@/views/supplier/supplier.service'
 import { TreeSelect } from 'ant-design-vue'
 import { City as CitySvc, formatCities } from '@/api/city'
 import { DIALOGCONFIG } from '@/api/base'
+import notification from 'ant-design-vue/es/notification'
 
 function formatTree (data, keys) {
   const items = []
@@ -203,11 +203,6 @@ function formatTree (data, keys) {
   return items
 }
 
-const DTO = {
-  create: 'ChangeVendorZRInputDto',
-  update: 'ChangeVendorEditDto',
-  view: 'VendorViewDtoResultModel'
-}
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 export default {
   name: 'SupplierOtherItem',
@@ -302,24 +297,11 @@ export default {
         if (valid) {
           SupplierService[this.type](this.form).then(res => {
             if (res.result.statusCode === 200) {
-              this.dialog.show({
-                content: this.type === 'update' ? '修改成功' : '添加成功',
-                title: '',
-                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
-                cancelText: '返回上一页'
-              }, (state) => {
-                if (state) {
-                  if (this.type === 'create') {
-                    this.form = {
-                      vendor: SwaggerService.getForm(DTO[this.type]),
-                      vendorBankList: [],
-                      vendorEmployeeList: []
-                    }
-                  }
-                } else {
-                  this.$router.push('/supplier/other/list')
-                }
+              notification.success({
+                message: `${this.type === 'update' ? '修改' : '添加'}成功`,
+                description: `您已成功${this.type === 'update' ? '修改' : '添加'}供应商 "${this.form.vendor.vendorName}"`
               })
+              this.$router.push({ path: `/supplier/other/list` })
             }
           })
         }
