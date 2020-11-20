@@ -142,9 +142,12 @@
                 <a-form-model-item
                   label="建筑物占地面积"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.siteCoverage"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
                     placeholder="请填写建筑物占地面积"/>
                 </a-form-model-item>
               </a-col>
@@ -161,100 +164,140 @@
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="CFA地上">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写CFA地上"
-                    v-model="form.cfaUpperGround"/>
+                    v-model="form.cfaUpperGround"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="CFA(E1)地下前勤功能空间(FOH)分摊"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写CFA(E1)地下前勤功能空间(FOH)分摊"
-                    v-model="form.cfafoh"/>
+                    v-model="form.cfafoh"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="CFA(E2)地下后勤区(BOH)及机电间分摊(不含停车场机电间)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.cfaboh"
-                    placeholder="请填写CFA(E2)地下后勤区(BOH)及机电间分摊(不含停车场机电间)"/>
+                    placeholder="请填写CFA(E2)地下后勤区(BOH)及机电间分摊(不含停车场机电间)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="CFA(E3)地下停车场分摊(含停车场机电间)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.cfaCarpark"
-                    placeholder="请填写CFA(E3)地下停车场分摊(含停车场机电间)"/>
+                    placeholder="请填写CFA(E3)地下停车场分摊(含停车场机电间)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="总建筑面积(不含停车库)(CFA)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.totalCFAExcludeParking"
-                    placeholder="请填写总建筑面积(不含停车库)(CFA)"/>
+                    placeholder="请填写总建筑面积(不含停车库)(CFA)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="总建筑面积(含停车库)(CFA)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.totalCFAIncludeParking"
-                    placeholder="请填写总建筑面积(含停车库)(CFA)"/>
+                    placeholder="请填写总建筑面积(含停车库)(CFA)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="CFA Others地上"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写CFA Others地上"
-                    v-model="form.cfaOtherUpperGround"/>
+                    v-model="form.cfaOtherUpperGround"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="CFA Others地下"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.cfaOtherBasement"
-                    placeholder="请填写CFA Others地下"/>
+                    placeholder="请填写CFA Others地下"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="地上(计容地上面积 GFA)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.gfaUpperGround"
-                    placeholder="请填写地上(计容地上面积 GFA)"/>
+                    placeholder="请填写地上(计容地上面积 GFA)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="地下(计容地下面积 GFA)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.gfaBasement"
-                    placeholder="请填写地下(计容地下面积 GFA)"/>
+                    placeholder="请填写地下(计容地下面积 GFA)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
@@ -262,30 +305,42 @@
                   label="总计容面积(GFA)"
                   style="width: 50%;padding-right: 24px;"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.totalGFA"
-                    placeholder="请填写总计容面积(GFA)"/>
+                    placeholder="请填写总计容面积(GFA)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="GFA E Others 地上"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写GFA E Others 地上"
-                    v-model="form.gfaOtherUpperGround"/>
+                    v-model="form.gfaOtherUpperGround"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="GFA E Others 地下"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.gfaOtherBasement"
-                    placeholder="请填写GFA E Others 地下"/>
+                    placeholder="请填写GFA E Others 地下"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
@@ -293,49 +348,69 @@
                   label="不计容面积"
                   style="width: 50%;padding-right: 24px;"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.nonAccountableGFA"
-                    placeholder="请填写不计容面积"/>
+                    placeholder="请填写不计容面积"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="地上RA(=地上计容面积 GFA)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.raUpperGround"
-                    placeholder="请填写地上RA(=地上计容面积 GFA)"/>
+                    placeholder="请填写地上RA(=地上计容面积 GFA)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="地下RA(=地下计容面积 GFA + 不计容地下前勤建筑面积，不含后勤区及车库)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.raBasement"
-                    placeholder="请填写地下RA(=地下计容面积 GFA + 不计容地下前勤建筑面积，不含后勤区及车库)"/>
+                    placeholder="请填写地下RA(=地下计容面积 GFA + 不计容地下前勤建筑面积，不含后勤区及车库)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="总可售/可租面积(RA)"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.totalRA"
-                    placeholder="请填写总可售/可租面积(RA)"/>
+                    placeholder="请填写总可售/可租面积(RA)"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="单位/车位"
                 >
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
-                    placeholder="请填写单位/车位"/>
+                    placeholder="请填写单位/车位"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
             </a-row>
@@ -346,168 +421,216 @@
                 <a-form-model-item label="类别/品牌">
                   <a-input
                     :disabled="type === 'view'"
-                    placeholder="请填写类别/品牌"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写类别/品牌'}] }]"/>
+                    placeholder="请填写类别/品牌"/>
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="产品序号">
                   <a-input
                     :disabled="type === 'view'"
-                    placeholder="请填写产品序号"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写产品序号'}] }]"/>
+                    placeholder="请填写产品序号"/>
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
                 <a-form-model-item label="竣工年份" style="width: 50%;padding-right: 24px;">
                   <a-input
                     :disabled="type === 'view'"
-                    placeholder="请填写竣工年份"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写竣工年份'}] }]"/>
+                    placeholder="请填写竣工年份"/>
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="精装修楼面面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写精装修楼面面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写精装修楼面面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="公共区域及电梯大堂精装面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写公共区域及电梯大堂精装面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写公共区域及电梯大堂精装面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="地上及地下公共区域(不含卫生间)精装面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写地上及地下公共区域(不含卫生间)精装面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写地上及地下公共区域(不含卫生间)精装面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="地上及地下后勤精装面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写地上及地下后勤精装面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写地上及地下后勤精装面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="地上后勤及机房面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写地上后勤及机房面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写地上后勤及机房面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="地下后勤及机房面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写地下后勤及机房面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写地下后勤及机房面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="其它地上前勤精装面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写其它地上前勤精装面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写其它地上前勤精装面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="其它地下前勤精装面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写其它地下前勤精装面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写其它地下前勤精装面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="前勤(地上)面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写前勤(地上)面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写前勤(地上)面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="前勤(地下)面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写前勤(地下)面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写前勤(地下)面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
                 <a-form-model-item label="总前勤面积" style="width: 50%;padding-right: 24px;">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写总前勤面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写总前勤面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="后勤(地上)面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写后勤(地上)面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写后勤(地上)面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="后勤(地下)面积">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写后勤(地下)面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写后勤(地下)面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
                 <a-form-model-item label="总后勤面积" style="width: 50%;padding-right: 24px;">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写总后勤面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写总后勤面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
                 <a-form-model-item label="公共流通空间(商业)精装修楼面面积" style="width: 50%;padding-right: 24px;">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写公共流通空间(商业)精装修楼面面积"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写公共流通空间(商业)精装修楼面面积'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                    :precision="2"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="地上车位数目">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写地上车位数目"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写地上车位数目'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item label="地下车位数目">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写地下车位数目"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写地下车位数目'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :md="24" :sm="24">
                 <a-form-model-item label="总车位数目" style="width: 50%;padding-right: 24px;">
-                  <a-input
+                  <a-input-number
                     :disabled="type === 'view'"
                     placeholder="请填写总车位数目"
-                    v-decorator="['name', { initialValue: '', rules: [{required: false, message: '请填写总车位数目'}] }]"/>
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="value => value.replace(/\\s?|(,*)/g, '')"
+                  />
                 </a-form-model-item>
               </a-col>
             </a-row>

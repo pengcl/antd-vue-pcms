@@ -182,15 +182,12 @@
 
 <script>
     import moment from 'moment'
-    import { STable, Ellipsis } from '@/components'
-
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
+    import { STable } from '@/components'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList, getPosValue } from '@/utils/util'
+    import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../../mock/util'
+    import { formatList } from '@/mock/util'
     import { SignedService } from './signed.service'
-    import { nullFixedList } from '@/utils/util'
     import storage from 'store'
 
     const columns = [
@@ -271,32 +268,11 @@
         }
     ]
 
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
-
     export default {
         name: 'SignedList',
         components: {
             STable,
-            Ellipsis,
             CreateForm,
-            StepByStepModal
         },
         data () {
             this.columns = columns
@@ -332,13 +308,13 @@
                     }
                 },
                 loadData2: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam2)
                     if (this.queryParam2.ProjectGUID) {
-                        const requestParameters = Object.assign({}, parameter, this.queryParam2)
                         return SignedService.items(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
                         })
                     } else {
-                        return []
+                        return nullFixedList(requestParameters)
                     }
 
                 },
@@ -346,16 +322,7 @@
                 selectedRows: []
             }
         },
-        filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
-            }
-        },
         created () {
-            // getRoleList({ t: new Date() })
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {
@@ -420,14 +387,6 @@
             handleToAdd () {
                 this.$router.push({ path: `/pay/signed/item/${this.id}?type=create` })
             },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
             search () {
                 this.show = !this.show
                 this.$refs.contractTable.refresh(true)
@@ -463,25 +422,10 @@
             handleCancel (e) {
                 this.visible = false
             },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
             },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
-            },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
-                }
-            }
         }
     }
 </script>
