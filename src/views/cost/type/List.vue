@@ -181,7 +181,6 @@
   /deep/ .ant-table-row-level-3 {
     background: #d7f4ff !important;
   }
-
   /deep/ .ant-table-row-level-1{
     background: #d7f4ff !important;
   }
