@@ -134,9 +134,9 @@
 
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList, getPosValue } from '@/utils/util'
+    import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../../mock/util'
+    import { formatList } from '@/mock/util'
     import { UnSignedService } from './unsigned.service'
     import storage from 'store'
 
@@ -228,13 +228,13 @@
                 queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if (this.queryParam.ProjectGUID) {
-                        const requestParameters = Object.assign({}, parameter, this.queryParam)
                         return UnSignedService.items(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
                         })
                     } else {
-                        return []
+                        return nullFixedList(requestParameters)
                     }
                 },
                 selectedRowKeys: [],

@@ -129,11 +129,9 @@
 
 <script>
     import moment from 'moment'
-    import { STable, Ellipsis } from '@/components'
+    import { STable } from '@/components'
     import { getRoleList } from '@/api/manage'
-
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
-    import { getPosValue } from '@/utils/util'
+    import { getPosValue, nullFixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
@@ -206,32 +204,11 @@
         },
     ]
 
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
-
     export default {
-        name: 'ContractList',
+        name: 'FundPlanList',
         components: {
             CreateAnnualFundingPlan,
             STable,
-            Ellipsis,
-            StepByStepModal,
             CreateViewHistoryVersion
         },
         data () {
@@ -256,27 +233,19 @@
                 projectValue: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
-                        const requestParameters = Object.assign({}, parameter, this.queryParam)
                         return FundPlanService.fundingPlanYearList(this.queryParam.ProjectID).then(res => {
                             this.fundingPlanYearList = res.result.data
                             return fixedList(res, requestParameters)
                         })
                     } else {
-                        return []
+                        return nullFixedList(requestParameters)
                     }
 
                 },
                 selectedRowKeys: [],
                 selectedRows: []
-            }
-        },
-        filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
             }
         },
         created () {
@@ -319,16 +288,7 @@
             handToMonthEdit (record) {
                 this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&status=month&projectCode=` + record.projectCode + `&year=` + record.year })
             },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
             search () {
-                console.log('search')
                 this.show = !this.show
                 this.$refs.table.refresh(true)
             },
@@ -389,24 +349,9 @@
                 const form = this.$refs.createModal.form
                 form.resetFields() // 清理表单数据（可不做）
             },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
-            },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
-            },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
-                }
             },
             handleOk2 () {
                 const history = this.$refs.createViewHistoryModal.selected

@@ -98,10 +98,10 @@
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">预算列表</a-col>
           <budget-list :data="form" :type="type" :id="id"></budget-list>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票管理</a-col>
-          <bill-list :masterID="form.masterID" :data="form" :type="type" :id="id"
+          <bill-list :masterID="form.attachmentID" :data="form" :type="type" :id="id"
                      @on-change-masterId="changeMasterId"></bill-list>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">附件管理</a-col>
-          <attachment-list :masterID="form.masterID" :data="form" :type="type" :id="id"
+          <attachment-list :masterID="form.attachmentID" :data="form" :type="type" :id="id"
                            @on-change-masterId="changeMasterId"></attachment-list>
         </a-row>
       </a-form>
@@ -190,25 +190,30 @@
                     UnSignedService.item(this.id).then(res => {
                         this.form = res.result.data
                         BaseService.masterID(this.id).then(_res => {
-                            this.form.masterID = _res.result.data
+                            this.form.attachmentID = _res.result.data
                         })
                     })
                 } else {
                     UnSignedService.initData(this.projectGUID).then(res => {
                         const initData = res.result.data
+                        this.form.projectCode = initData.projectCode
+                        this.form.companyCode = initData.companyCode
                         this.form.projectName = initData.projectName
                         this.form.payerPartyName = initData.companyName
                         this.form.sponsorDeptName = initData.sponsorDeptName
                         this.form.requestUserName = initData.requestUserName
                     })
+                    this.form.id = 0
+                    this.form.gid = '00000000-0000-0000-0000-000000000000'
+                    this.form.isDeleted = false
                     this.form.paymentCurrency = '人民币'
-                    this.form.masterID = 0
+                    this.form.attachmentID = 0
                     this.form.detailList = []
                     this.form.billList = []
                 }
             },
             changeMasterId (val) {
-                this.form.masterID = val
+                this.form.attachmentID = val
                 this.$forceUpdate()
             },
             approve () {
