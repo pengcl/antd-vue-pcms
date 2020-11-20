@@ -52,11 +52,12 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="公司所在地" prop="city">
+            <a-form-model-item label="公司所在地" prop="cities">
               <a-cascader
                 :disabled="type === 'view'"
                 :options="selection.cities"
                 :key="form.vendor.city"
+                v-model="form.vendor.cities"
                 :default-value="[form.vendor.province,form.vendor.city]"
                 placeholder="请选择公司所在地"
                 @change="cityChange"/>
@@ -217,7 +218,7 @@ export default {
         vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
         vendorAbbreviation: [{ required: true, message: '请填写供应商别名', trigger: 'change' }],
         packageCodeList: [{ required: true, message: '请选择供应商类别', trigger: 'change' }],
-        city: [{ required: true, message: '请选择公司所在地', trigger: 'blur' }],
+        cities: [{ required: true, message: '请选择公司所在地', trigger: 'change' }],
         legalRep: [{ required: true, message: '请填写法人代表', trigger: 'blur' }],
         taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'blur' }],
         logRemark: [{ required: this.type === 'update', message: '请填写变更备注', trigger: 'blur' }]
