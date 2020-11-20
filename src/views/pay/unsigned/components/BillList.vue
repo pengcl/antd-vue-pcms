@@ -55,13 +55,28 @@
               <a-input :disabled="type === 'view'" v-model="item.billNum"></a-input>
             </td>
             <td>
-              <a-input :disabled="type === 'view'" v-model="item.billAmount"></a-input>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="item.billAmount"
+                              :min="0"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"></a-input-number>
             </td>
             <td>
-              <a-input :disabled="type === 'view'" v-model="item.taxRate"></a-input>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="item.taxRate"
+                              :min="0"
+                              :max="100"
+                              :formatter="value => `${value}%`"
+                              :parser="value => value.replace('%', '')"></a-input-number>
             </td>
             <td>
-              <a-input :disabled="type === 'view'" v-model="item.noTaxAmount"></a-input>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="item.noTaxAmount"
+                              :min="0"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"></a-input-number>
             </td>
             <td>
               <a-date-picker :disabled="type === 'view'" v-model="item.billDate" @change="dateChange"></a-date-picker>
@@ -118,7 +133,10 @@
         methods: {
             add (target) {
                 const item = {
+                    id: 0,
                     isDeleted: false,
+                    gid: '00000000-0000-0000-0000-000000000000',
+                    paymentOtherGID: '00000000-0000-0000-0000-000000000000',
                     isTemp: true,
                     billType: '',
                     billNum: '',

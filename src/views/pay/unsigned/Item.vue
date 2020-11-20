@@ -21,11 +21,12 @@
           <a-col :md="12" :sm="24">
             <a-form-model-item label="申请部门" prop="sponsorDeptName">
               <a-select v-model="form.sponsorDeptName"
+                        @change="onChange"
                         :disabled="type === 'view'"
                         placeholder="请选择">
-                <a-select-option v-for="item in payTypeList"
-                                 :value="item"
-                                 :key="item">{{item}}
+                <a-select-option v-for="(item,index) in departmentList"
+                                 :value="item.departmentName"
+                                 :key="index">{{item.departmentName}}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
@@ -75,11 +76,11 @@
           <a-col :md="12" :sm="24">
             <a-form-model-item label="申请付款金额" prop="paymentAmount">
               <a-input-number :disabled="type === 'view'"
-                       v-model="form.paymentAmount"
-                       :min="0"
-                       :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                       :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                       :precision="2"></a-input-number>
+                              v-model="form.paymentAmount"
+                              :min="0"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"></a-input-number>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -172,6 +173,8 @@
                 expenseAccountTypeList: [],
                 paymentMethodTypes: [],
                 currencyList: [],
+                departmentList: [],
+                approveStatus: false,
                 rules: {
                     sponsorDeptName: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
                     paymentBusinessType: [{ required: true, message: '请选择付款类型', trigger: 'change' }],
@@ -199,6 +202,9 @@
             Currency.list().then(res => {
                 this.currencyList = res.result.data.items
             })
+            BaseService.departmentList().then(res => {
+                this.departmentList = res.result.data
+            })
         },
         computed: {
             id () {
@@ -212,6 +218,10 @@
             }
         },
         methods: {
+            onChange (value, option) {
+                const index = option.data.key
+                this.form.sponsorDeptGID = this.departmentList[index].organizationalStructureId
+            },
             getData () {
                 if (this.id !== '0') {
                     UnSignedService.item(this.id).then(res => {
@@ -227,7 +237,6 @@
                         this.form.companyCode = initData.companyCode
                         this.form.projectName = initData.projectName
                         this.form.payerPartyName = initData.companyName
-                        this.form.sponsorDeptName = initData.sponsorDeptName
                         this.form.requestUserName = initData.requestUserName
                     })
                     this.form.id = 0
@@ -244,25 +253,44 @@
                 this.$forceUpdate()
             },
             approve () {
-
+                this.approveStatus = true
+                this.save()
             },
             save () {
                 if (this.type === 'create') {
                     UnSignedService.create(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('创建成功')
-                            this.$router.push({
-                                path: '/pay/unsigned/list'
-                            })
+                            if (this.approveStatus) {
+                                UnSignedService.approve(res.result.data).then(res => {
+                                    if (res.result.data) {
+                                        this.$message.success('已启动审批流程')
+                                        window.location.href = res.result.data
+                                    }
+                                })
+                            } else {
+                                this.$router.push({
+                                    path: '/pay/unsigned/list'
+                                })
+                            }
                         }
                     })
                 } else {
                     UnSignedService.update(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('修改成功')
-                            this.$router.push({
-                                path: '/pay/unsigned/list'
-                            })
+                            if (this.approveStatus) {
+                                UnSignedService.approve(this.id).then(res => {
+                                    if (res.result.data) {
+                                        this.$message.success('已启动审批流程')
+                                        window.location.href = res.result.data
+                                    }
+                                })
+                            } else {
+                                this.$router.push({
+                                    path: '/pay/unsigned/list'
+                                })
+                            }
                         }
                     })
                 }
