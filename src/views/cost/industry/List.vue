@@ -164,10 +164,10 @@
           </template>
         </span>
         <template slot="contractGUID">
-          <a @click="jumpToContract">{{ selectedPackage != null ? selectedPackage.contractGUID : ''}}</a>
+          <a @click="jumpToContract">{{ selectedPackage != null ? selectedPackage.contractNo : ''}}</a>
         </template>
         <template slot="projectTenderPackageId">
-          <a @click="jumpToProjectTenderPackage">{{ selectedPackage != null ? selectedPackage.projectTenderPackageId : ''}}</a>
+          <a @click="jumpToProjectTenderPackage">{{ selectedPackage != null ? selectedPackage.projectTenderPackageCode : ''}}</a>
         </template>
       </s-table>
     <cost-industry-modal ref="industryModal" :refreshAllTable="refreshAllTable"></cost-industry-modal>
@@ -289,7 +289,7 @@ export default {
           this.handleSelected = false
         }
         const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
-        if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
+        if (typeof requestParameters.ProjectGUID != 'undefined' && requestParameters.ProjectGUID != '') {
           return CostService.industryItems(requestParameters).then((res) => {
             if (res.result.data != null) {
               this.$refs.table2.refresh()
@@ -297,7 +297,6 @@ export default {
             }
           })
         } else {
-          this.$refs.table2.refresh()
           return nullFixedList(requestParameters)
         }
       },
@@ -405,56 +404,8 @@ export default {
         this.$router.push({ path: `/cost/industry/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
       }
     },
-    handleEdit(record) {
-      this.visible = true
-      this.mdl = { ...record }
-    },
-    handleOk() {
-      const form = this.$refs.createModal.form
-      this.confirmLoading = true
-      form.validateFields((errors, values) => {
-        if (!errors) {
-          if (values.id > 0) {
-            // 修改 e.g.
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then((res) => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
-            })
-          } else {
-            // 新增
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then((res) => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('新增成功')
-            })
-          }
-        } else {
-          this.confirmLoading = false
-        }
-      })
-    },
     handleCancel() {
       this.visible = false
-
       const form = this.$refs.createModal.form
       form.resetFields() // 清理表单数据（可不做）
     },
@@ -467,9 +418,8 @@ export default {
           CostService.industryRemove(record.id)
             .then((res) => {
               if (res.result.statusCode === 200) {
-                that.$message.info('行业分判包删除成功').then(() => {
-                  that.$refs.table.refresh()
-                })
+                that.$message.info('行业分判包删除成功')
+                that.$refs.table.refresh()
               }
             })
             .catch(() => {
@@ -522,9 +472,8 @@ export default {
           console.log('record', record, that.pid)
           CostService.removeBudgetItem({ packageId: that.pid, budgetItemId: record.id }).then((res) => {
             if (res.result.statusCode === 200) {
-              that.$message.info('预算删除成功').then(() => {
-                that.$refs.table2.refresh()
-              })
+              that.$message.info('预算删除成功')
+              that.$refs.table2.refresh()
             }
           })
         },
@@ -535,7 +484,7 @@ export default {
       this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGuid}?type=view` })
     },
     jumpToProjectTenderPackage() {
-      this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackage}&type=view` })
+      this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackageGUID}&type=view` })
     },
     refreshAllTable(args) {
       if(args){

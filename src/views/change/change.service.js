@@ -24,7 +24,11 @@ const API = {
   delete : '/api/services/app/VO/DeleteVOAllInfo',
   startBMP : '/api/services/app/VO/StartBPM',
   createPMI : '/api/services/app/VO/CreatePMIFile',
-  viewPMI : '/api/services/app/VO/PMIIsCreate'
+  viewPMI : '/api/services/app/VO/PMIIsCreate',
+  buildingDesignItem : '/api/services/app/Contract/GetContractBuildingDesign',//根据合同GUID获取合同施工组织设计
+  createBuildingDesign : '/api/services/app/Contract/CreateContractBuildingDesign',//新增施工组织设计
+  updateBuildingDesign : '/api/services/app/Contract/UpdateContractBuildingDesign',//修改施工组织设计
+  contractPartyForBd : '/api/services/app/Contract/GetContractPartyForBD'//获取施工单位列表（合同乙方、其他方）
 }
 
 const ChangeService = {}
@@ -281,7 +285,6 @@ ChangeService.startBMP = function(parameter){
 	})
 }
 
-
 /**
  * 通过cip生成pmi
  */
@@ -293,7 +296,6 @@ ChangeService.createPMI = function(parameter){
 	  })
 }
 
-
 /**
  * 通过cip生成pmi
  */
@@ -302,6 +304,50 @@ ChangeService.viewPMI = function(CIPGuid){
 	    url: API.viewPMI,
 	    method: 'post',
 	    params: {CIPGuid}
+	  })
+}
+
+/**
+ * 根据合同GUID获取合同施工组织设计
+ */
+ChangeService.buildingDesignItem = function(contractGuid){
+	return request({
+	    url: API.buildingDesignItem,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 通过cip生成pmi
+ */
+ChangeService.createBuildingDesign = function(parameter){
+	return request({
+	    url: API.createBuildingDesign,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+/**
+ * 通过cip生成pmi
+ */
+ChangeService.updateBuildingDesign = function(parameter){
+	return request({
+	    url: API.updateBuildingDesign,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
+/**
+ * 获取施工单位列表（合同乙方、其他方）
+ */
+ChangeService.contractPartyForBd = function(contractGuid){
+	return request({
+	    url: API.contractPartyForBd,
+	    method: 'get',
+	    params: {contractGuid}
 	  })
 }
 

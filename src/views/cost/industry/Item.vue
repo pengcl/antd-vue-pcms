@@ -196,9 +196,8 @@
               if (res.result.statusCode === 200) {
                 const that = this
                 this.loading.save = false
-                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
-                  that.$router.push({ path: `/cost/industry/list`})
-                })
+                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+                that.$router.push({ path: `/cost/industry/list`})
               }
             }).catch(() => {
               this.loading.save = false
