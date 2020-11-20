@@ -8,7 +8,7 @@ export function formatCities (data) {
     }
     cities.push({
       label: item.name,
-      value: item.name,
+      value: item.id,
       children: item.children
     })
   })

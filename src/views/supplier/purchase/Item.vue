@@ -52,11 +52,12 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="公司所在地" prop="city">
+            <a-form-model-item label="公司所在地" prop="cities">
               <a-cascader
                 :disabled="type === 'view'"
                 :options="selection.cities"
                 :key="form.vendor.city"
+                v-model="form.vendor.cities"
                 :default-value="[form.vendor.province,form.vendor.city]"
                 placeholder="请选择公司所在地"
                 @change="cityChange"/>
@@ -184,18 +185,13 @@ import ChangeInfo from '../components/ChangeInfo'
 import ContractInfo from '../components/ContractInfo'
 import BankInfo from '../components/BankInfo'
 import AttachmentInfo from '../components/AttachmentInfo'
-import { SwaggerService } from '@/api/swagger.service'
+import notification from 'ant-design-vue/es/notification'
 import { SupplierService } from '@/views/supplier/supplier.service'
 import { formatTree } from '@/utils/util'
 import { TreeSelect } from 'ant-design-vue'
 import { City as CitySvc, formatCities } from '@/api/city'
 import { DIALOGCONFIG } from '@/api/base'
 
-const DTO = {
-  create: 'ChangeVendorZRInputDto',
-  update: 'ChangeVendorEditDto',
-  view: 'VendorViewDtoResultModel'
-}
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 export default {
   name: 'SupplierPurchaseItem',
@@ -217,9 +213,9 @@ export default {
         vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
         vendorAbbreviation: [{ required: true, message: '请填写供应商别名', trigger: 'change' }],
         packageCodeList: [{ required: true, message: '请选择供应商类别', trigger: 'change' }],
-        city: [{ required: true, message: '请选择公司所在地', trigger: 'blur' }],
+        cities: [{ required: true, message: '请选择公司所在地', trigger: 'change' }],
         legalRep: [{ required: true, message: '请填写法人代表', trigger: 'blur' }],
-        taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'blur' }],
+        taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'change' }],
         logRemark: [{ required: this.type === 'update', message: '请填写变更备注', trigger: 'blur' }]
       }
     }
@@ -290,24 +286,11 @@ export default {
         if (valid) {
           SupplierService[this.type](this.form).then(res => {
             if (res.result.statusCode === 200) {
-              this.dialog.show({
-                content: this.type === 'update' ? '修改成功' : '添加成功',
-                title: '',
-                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
-                cancelText: '返回上一页'
-              }, (state) => {
-                if (state) {
-                  if (this.type === 'create') {
-                    this.form = {
-                      vendor: SwaggerService.getForm(DTO[this.type]),
-                      vendorBankList: [],
-                      vendorEmployeeList: []
-                    }
-                  }
-                } else {
-                  this.$router.push('/supplier/purchase/list')
-                }
+              notification.success({
+                message: `${this.type === 'update' ? '修改' : '添加'}成功`,
+                description: `您已成功${this.type === 'update' ? '修改' : '添加'}供应商 "${this.form.vendor.vendorName}"`
               })
+              this.$router.push({ path: `/supplier/purchase/list` })
             }
           })
         }

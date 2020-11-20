@@ -465,6 +465,7 @@ import { Currency as CurrencyService } from '@/api/currency'
 import { Company as CompanyService } from '@/api/company'
 import { DIALOGCONFIG } from '@/api/base'
 import SelectCompany from '@/views/project/components/selectComany/index'
+import notification from 'ant-design-vue/es/notification'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 export default {
@@ -564,7 +565,7 @@ export default {
       let name = ''
       if (code && this.selection.companies) {
         this.selection.companies.forEach(item => {
-          if(item.code === code){
+          if (item.code === code) {
             name = item.nameCN
           }
         })
@@ -583,29 +584,14 @@ export default {
         this.form.projectShortCode = this.form.projectCode
       }
       this.$refs.form.validate(valid => {
-        console.log(this.type + this.stage)
         if (valid) {
           ProjectService[this.type + this.stage](this.form).then(res => {
             if (res.result.statusCode === 200) {
-              this.dialog.show({
-                content: this.type === 'update' ? '修改成功' : '添加成功',
-                title: '',
-                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
-                cancelText: '返回上一页'
-              }, (state) => {
-                if (state) {
-                  if (this.type === 'create') {
-                    if (this.stage === 'Project') {
-                      this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
-                    } else {
-                      this.form.projectShortCode = ''
-                      this.form.projectShortName = ''
-                    }
-                  }
-                } else {
-                  this.$router.push('/project/list')
-                }
+              notification.success({
+                message: `${this.type === 'update' ? '修改' : '添加'}成功`,
+                description: `您已成功${this.type === 'update' ? '修改' : '添加'}${this.name} "${this.form.projectShortName}"`
               })
+              this.$router.push('/project/list')
             }
           })
         }

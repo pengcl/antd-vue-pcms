@@ -126,13 +126,13 @@ import PayInfo from '@/views/contract/components/PayInfo'
 import ContractList from '@/views/contract/components/ContractList'
 import BudgetList from '@/views/contract/components/BudgetList'
 import AttachmentList from '@/views/contract/components/AttachmentList'
+import notification from 'ant-design-vue/es/notification'
 import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 import { ContractService } from '@/views/contract/contract.service'
 import { SwaggerService } from '@/api/swagger.service'
 import { ProjectService } from '@/views/project/project.service'
 
 import { Company as CompanyService } from '@/api/company'
-import { compare } from '@/utils/util'
 import ContractComputeBudgets from '@/views/contract/components/computeBudgets/index'
 
 export default {
@@ -274,7 +274,6 @@ export default {
       } else {
         this.isBpm = false
       }
-      console.log(isBpm)
       let isValid = true
       const validateForms = [
         {
@@ -369,7 +368,12 @@ export default {
                   window.location.href = res.result.data
                 })
               } else {
-                this.dialog.show({
+                notification.success({
+                  message: `${this.type === 'update' ? '修改' : '添加'}成功`,
+                  description: `您已成功${this.type === 'update' ? '修改' : '添加'}合同 "${this.form.contract.contractName}"`
+                })
+                this.$router.push('/contract/list')
+                /* this.dialog.show({
                   content: this.type === 'update' ? '修改成功' : '添加成功',
                   title: '',
                   confirmText: this.type === 'update' ? '继续修改' : '继续添加',
@@ -383,7 +387,7 @@ export default {
                   } else {
                     this.$router.push('/contract/list')
                   }
-                })
+                }) */
               }
             }
           })

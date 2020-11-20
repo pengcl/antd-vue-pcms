@@ -21,6 +21,7 @@
 
     <!--<setting-drawer :settings="settings" @change="handleSettingChange" />-->
     <template v-slot:rightContentRender>
+      <span class="uat">DEV</span>
       <span class="uat">UAT</span>
       <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme"/>
     </template>
