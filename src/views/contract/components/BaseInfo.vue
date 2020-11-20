@@ -97,7 +97,7 @@
           <a-input v-model="data.contract.tenderPackageItemID" :disabled="type === 'view'" :hidden="true"/>
           <a-input
             :disabled="type === 'view'"
-            :value="tender.packageTitle"
+            :value="tender.packageTitle + ':' + tender.tradePackageCode"
             @click="showSelect('tender')"
             placeholder="请选择招投标分判包编号"
             :read-only="true"/>
@@ -554,6 +554,7 @@ export default {
       } else if (target === 'vendor') {
         const vendor = this.$refs.vendor.selected
         this.vendor.partyID = vendor.id
+        this.vendor.partyName = vendor.vendorName
       }
     },
     handleCancel (target) {
