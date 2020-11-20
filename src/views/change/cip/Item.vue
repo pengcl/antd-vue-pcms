@@ -251,11 +251,9 @@
               console.log(res)
               if (res.result.statusCode === 200) {
                  if(callback == undefined){
-                  this.$message.info('修改成功').then(() => {
-                    this.$router.push({ path: `/change/pmi` })
-                  })
+                  this.$message.info('修改成功')
+                  this.$router.push({ path: `/change/pmi` })
                  }else{
-                   console.log('进入sssss')
                    callback()
                  }
               }

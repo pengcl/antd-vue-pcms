@@ -42,7 +42,8 @@
                   type="primary"
                   icon="plus-square" title="新增">
                 </a-button>
-                <a-popconfirm v-if="record.isDelete && !record.isUsed" title="是否要删除此行？" @confirm="handleToRemove(record)">
+                <a-popconfirm v-if="record.isDelete && !record.isUsed" title="是否要删除此行？"
+                              @confirm="handleToRemove(record)">
                   <a-button
                     type="danger"
                     icon="delete"
@@ -61,7 +62,7 @@
         </a-col>
       </a-row>
     </a-card>
-    <resolve-modal  ref="resolveModal" :refreshParent="refreshTable"></resolve-modal>
+    <resolve-modal ref="resolveModal" :refreshParent="refreshTable"></resolve-modal>
   </page-header-wrapper>
 </template>
 
@@ -124,16 +125,34 @@
     return obj
   }
 
-  function getCostAmount(elementInfoId,items){
+  function getCostAmount(elementInfoId, items) {
     let amount = null
     items.forEach(item => {
-      if(elementInfoId ===  item.elementInfoId){
+      if (elementInfoId === item.elementInfoId) {
         const temp = item.amount
         if (temp) {
           amount = temp
         }
-      }else if(item.childs){
-        const temp = getCostAmount(elementInfoId,item.childs)
+      } else if (item.childs) {
+        const temp = getCostAmount(elementInfoId, item.childs)
+        if (temp) {
+          amount = temp
+        }
+      }
+    })
+    return amount
+  }
+
+  function getGTAmount(elementInfoId, items) {
+    let amount = null
+    items.forEach(item => {
+      if (elementInfoId === item.elementInfoId) {
+        const temp = item.tradeBudgetInfo.budgetValue
+        if (temp) {
+          amount = temp
+        }
+      } else if (item.childs) {
+        const temp = getCostAmount(elementInfoId, item.childs)
         if (temp) {
           amount = temp
         }
@@ -182,7 +201,7 @@
           budgetItem.isDelete = true
           objItems.push(budgetItem)
         })
-        if(objItems.length>0){
+        if (objItems.length > 0) {
           obj.children = objItems
         }
       }
@@ -197,9 +216,10 @@
           gt.BudgetTitle = 'General Trade'
           gt.elementInfoNameCN = ''
           const costName = 'cost' + center.costCenterId
-          gt[costName] = item.tradeBudgetInfo.budgetValue
+          gt[costName] = getGTAmount(item.elementInfoId, center.elementItem.childs)
         })
         list.push(gt)
+        obj.gt = gt
         obj.costCenters = costCenters
         obj.isCreate = true
       } else {
@@ -282,6 +302,7 @@
               })
               // 组装动态列对应的行数据
               const list = res.result.data[0].elementItem.childs
+              console.log(getList(list, res.result.data))
               result.result.data = getList(list, res.result.data)
               this.columns = _columns
               this.$forceUpdate()
@@ -292,10 +313,10 @@
       }
     },
     filters: {
-      amountFormat (value) {
-        if(value){
+      amountFormat(value) {
+        if (value) {
           return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        }else{
+        } else {
           return 0
         }
       },
@@ -338,21 +359,21 @@
           }
         })
       },
-      handleToRemove(record){
+      handleToRemove(record) {
         const requestParameters = Object.assign({
           ProjectGUID: this.ProjectGUID,
           ElementInfoId: record.elementInfoId,
           ItemGroupId: record.groupId
         })
-        CostService.removeTradeBudget(requestParameters).then(res =>{
-          if(res.result.statusCode === 200){
-            this.$message.info('预算分解删除成功').then(() =>{
+        CostService.removeTradeBudget(requestParameters).then(res => {
+          if (res.result.statusCode === 200) {
+            this.$message.info('预算分解删除成功').then(() => {
               this.$refs.table.refresh()
             })
           }
         })
       },
-      refreshTable(){
+      refreshTable() {
         console.log('JINJKSJKSKSKSKSKSKSK')
         this.$refs.table.refresh()
       }
@@ -407,7 +428,8 @@
       }
     }
   }
-   /deep/ .ant-table-row-level-2{
-     background: #d7f4ff !important;
-   }
+
+  /deep/ .ant-table-row-level-2 {
+    background: #d7f4ff !important;
+  }
 </style>

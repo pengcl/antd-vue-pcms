@@ -139,33 +139,36 @@
                     })
                     this.columns = _columns
                     this.$forceUpdate()
+                    const tempCodes = ['B', 'C', 'D', 'G']
                     res.result.data.forEach(item => {
-                      const obj = {}
-                      obj['id'] = item.id
-                      obj['code'] = item.code
-                      obj['name'] = item.nameCN
+                      if (tempCodes.includes(item.code)) {
+                        const obj = {}
+                        obj['id'] = item.id
+                        obj['code'] = item.code
+                        obj['name'] = item.nameCN
 
-                      if (res2.result.data != null) {
-                        res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
-                          // 加载成本
-                          const costName = 'cost' + subjectItem2.costCenterId
-                          subjectItem2.mainElements.forEach(itemA => {
-                            if (item.id === itemA.elementTypeId) {
+                        if (res2.result.data != null) {
+                          res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
+                            // 加载成本
+                            const costName = 'cost' + subjectItem2.costCenterId
+                            subjectItem2.mainElements.forEach(itemA => {
+                              if (item.id === itemA.elementTypeId) {
+                                obj[costName] = {
+                                  amount: itemA.amount,
+                                  percentage: itemA.percentage
+                                }
+                              }
+                            })
+                            if(!obj[costName]){
                               obj[costName] = {
-                                amount: itemA.amount,
-                                percentage: itemA.percentage
+                                amount: 0,
+                                percentage: 0
                               }
                             }
                           })
-                          if(!obj[costName]){
-                            obj[costName] = {
-                              amount: 0,
-                              percentage: 0
-                            }
-                          }
-                        })
+                        }
+                        result.result.data.push(obj)
                       }
-                      result.result.data.push(obj)
                     })
                   }
                   return fixedList(result, parameter)

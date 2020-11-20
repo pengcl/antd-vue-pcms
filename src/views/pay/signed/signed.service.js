@@ -25,6 +25,7 @@ const API = {
   upload: '/api/services/app/UploadAppservice/CommonUpload',
   masterID: '/api/services/app/UploadAppservice/GetMasterIDByBusinessGuid',
   approve: '/api/services/app/Payment/StartBPM',
+  paymentMethodTypes: '/api/services/app/GeneralType/GetPaymentMethodTypes',
 }
 
 const SignedService = {}
@@ -167,6 +168,14 @@ SignedService.billList = function () {
 SignedService.attachmentTypeList = function () {
   return request({
     url: API.attachmentTypeList,
+    method: 'get',
+    params: {}
+  })
+}
+
+SignedService.paymentMethodTypes = function () {
+  return request({
+    url: API.paymentMethodTypes,
     method: 'get',
     params: {}
   })

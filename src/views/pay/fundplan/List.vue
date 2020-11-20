@@ -24,6 +24,7 @@
                           @click="handleAdd">新增年度资金计划
                 </a-button>
                 <a-button type="success"
+                          v-if="queryParam.ProjectID"
                           style="margin-right: 10px"
                           @click="addMonthPlan">新增月度资金计划
                 </a-button>
@@ -57,15 +58,18 @@
           <template>
             <span>
               <span :style="{fontWeight: record.isRoot ? 'bold' : '' }">{{record.title}}</span>
-              <em style="color: #1e66ca;font-style: normal">{{record.yearVersionAuditStatus ? '（年度：' + record.yearVersionAuditStatus+record.yearVersion + '）' : ''}}</em>
-              <em style="color: #1e66ca;font-style: normal">{{record.monthLastVersionAuditStatus ? '（月度：' + record.monthLastVersionAuditStatus+record.monthLastVersion + '）' : ''}}</em>
+              <em style="color: #1e66ca;font-style: normal" v-if="record.isRoot">{{record.yearVersionAuditStatus ? '（年度：' + record.yearVersionAuditStatus+record.yearVersion + '）' : ''}}</em>
+              <em style="color: #1e66ca;font-style: normal" v-if="record.isRoot">{{record.monthLastVersionAuditStatus ? '（月度：' + record.monthLastVersionAuditStatus+record.monthLastVersion + '）' : ''}}</em>
             </span>
           </template>
         </span>
 
+        <span slot="fundingPlanAmountTotal" slot-scope="text">
+          {{text | NumberFormat}}
+        </span>
 
         <span slot="lastModificationTime" slot-scope="text">
-          {{text | moment}}
+          {{text | date}}
         </span>
 
         <span slot="action" slot-scope="text, record">
@@ -81,6 +85,7 @@
               title="查看"
               @click="handleToItem(record)"></a-button>
             <a-button
+              :disabled="record.yearVersionAuditStatus !== '未审核'"
               class="btn-info"
               type="primary"
               icon="form"
@@ -88,6 +93,7 @@
               title="修改"
               @click="handleToEdit(record)"></a-button>
             <a-button
+              :disabled="record.monthLastVersionAuditStatus !== '未审核'"
               type="primary"
               class="btn-info"
               icon="edit"
@@ -161,6 +167,8 @@
                     child.title = child.elementCode + '-' + child.elementName
                     child.projectCode = item.projectCode
                     child.year = item.year
+                    child.yearVersionAuditStatus = item.yearVersionAuditStatus
+                    child.monthLastVersionAuditStatus = item.monthLastVersionAuditStatus
                 })
             } else {
                 item.children = null
@@ -185,6 +193,7 @@
         {
             title: '金额',
             dataIndex: 'fundingPlanAmountTotal',
+            scopedSlots: { customRender: 'fundingPlanAmountTotal' }
         },
         {
             title: '最后修改时间',
@@ -359,7 +368,7 @@
                                     // 刷新表格
                                     this.$refs.table.refresh()
 
-                                    this.$message.info('新增成功')
+                                    this.$message.info('新增年度资金计划成功！')
                                 })
                             } else {
                                 this.visible = false
@@ -413,15 +422,12 @@
             addMonthPlan () {
                 const body = {
                     projectCode: this.queryParam.ProjectID,
-                    month: 0
-                }
-                for (let i = 0; i < this.fundingPlanYearList.length; i++) {
-                    if (i === this.fundingPlanYearList.length - 1) {
-                        body.year = this.fundingPlanYearList[i].year
-                    }
                 }
                 FundPlanService.createFundingPlanMonth(body).then(res => {
-                    console.log(res)
+                    if (res.result.data) {
+                        this.$message.success('新增月度资金计划成功！')
+                        this.$refs.table.refresh()
+                    }
                 })
             },
             startBPM (record) {

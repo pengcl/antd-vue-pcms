@@ -5,7 +5,6 @@
     title="新增预算分解"
     @cancel="handleCancel"
     @ok="handleOk"
-    @afterClose="refreshTable"
     :ok-button-props="{ props: { disabled: defaultSave } }"
   >
     <a-card :bordered="false">
@@ -77,7 +76,8 @@
                   style="margin-top: 20px"
                   :prop="'costCenterItems.' + index +'.centers.' + aIndex +'.amount'"
                   :rules="[
-                    {validator: (rule,value,callback) => {checkTo(rule,value,callback,form.costCenterItems[index].centers[aIndex].disabled)},  type : 'number', trigger: 'change',required : true }
+                    {validator: (rule,value,callback) => {checkTo(rule,value,callback,form.costCenterItems[index],form.costCenterItems[index].centers[aIndex].disabled)},  type : 'number', trigger: 'change',required : true },
+                    {validator: (rule,value,callback) => {checkMaxTo(rule,value,callback,form.costCenterItems[index].centers[aIndex].costCenterId,form.costCenterItems[index].centers[aIndex].disabled)},  type : 'number', trigger: 'change'}
                    ]"
                 >
                   <a-input-number
@@ -169,7 +169,6 @@
     methods: {
       // 搜索
       show(record) {
-        console.log(record)
         this.record = record
         this.form.costCenterItems = []
         this.visible = true
@@ -181,7 +180,7 @@
           const obj = {}
           obj.costCenterId = item.costCenterId
           const costName = 'cost' + item.costCenterId
-          const amount = record[costName]
+          const amount = record.gt.[costName]
           if (amount && amount !== 0) {
             isCanSave = false
           }
@@ -201,37 +200,35 @@
       handleOk() {
         console.log(this.form)
         this.$refs.form.validate(valid => {
-          const result = []
-          const resultForm = Object.assign({},this.form)
-          const costCenterItems = Object.assign([],this.form.costCenterItems)
-          if (costCenterItems) {
-            costCenterItems.forEach(item => {
-              item.centers.forEach(centerItem => {
-                if (centerItem.amount && centerItem.amount !== 0) {
-                  const obj = {}
-                  obj.tradeTypeId = item.tradeTypeId
-                  obj.costCenterId = centerItem.costCenterId
-                  obj.amount = centerItem.amount
-                  result.push(obj)
-                }
-              })
-            })
-          }
-          resultForm.costCenterItems = result
-          console.log('this.form', this.form,resultForm)
-          CostService.bidBudgetCreate(resultForm).then(res => {
-            if (res.result.statusCode === 200) {
-              const that = this
-              this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() =>{
-                that.refreshParent()
-                this.visible = false
+          if (valid) {
+            const result = []
+            const resultForm = Object.assign({}, this.form)
+            const costCenterItems = Object.assign([], this.form.costCenterItems)
+            if (costCenterItems) {
+              costCenterItems.forEach(item => {
+                item.centers.forEach(centerItem => {
+                  if (centerItem.amount && centerItem.amount !== 0) {
+                    const obj = {}
+                    obj.tradeTypeId = item.tradeTypeId
+                    obj.costCenterId = centerItem.costCenterId
+                    obj.amount = centerItem.amount
+                    result.push(obj)
+                  }
+                })
               })
             }
-          })
+            resultForm.costCenterItems = result
+            CostService.bidBudgetCreate(resultForm).then(res => {
+              if (res.result.statusCode === 200) {
+                const that = this
+                this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
+                  that.refreshParent()
+                  this.visible = false
+                })
+              }
+            })
+          }
         })
-      },
-      refreshTable() {
-
       },
       addResolve() {
         const centers = []
@@ -257,10 +254,62 @@
         const items = this.form.costCenterItems
         removeItem(index, items)
       },
-      checkTo(rule, value, callback, isDisabled) {
-        value = value || ''
-        if (!isDisabled && !value) {
-          callback(new Error('请输入金额'))
+      checkTo(rule, value, callback, item, isDisabled) {
+        //判断是否校验金额
+        if (!isDisabled) {
+          let isCheck = true
+          //循环判断是否当前行存在不为0的，如果有，那么其他不再验证
+          if (item.centers) {
+            item.centers.forEach(temp => {
+              if (!temp.disabled && temp.amount > 0) {
+                isCheck = false
+              }
+            })
+          }
+          if (isCheck) {
+            callback(new Error('请输入金额'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      },
+      checkMaxTo(rule, value, callback, costCenterId, isDisabled) {
+        // 判断是否校验金额
+        if (!isDisabled) {
+          let isCheck = false
+          // 循环判断列总额不超过最大额度
+          if (this.form.costCenterItems) {
+            const lineNum = this.form.costCenterItems.length
+            const result = []
+            for (var i in this.costCenters) {
+              const obj = {
+                defaultAmount: this.costCenters[i].amount,
+                costCenterId: this.costCenters[i].costCenterId
+              }
+              let amount = 0
+              for (var j = 0; j < lineNum; j++) {
+                amount = amount + this.form.costCenterItems[j].centers[i].amount
+              }
+              obj.amount = amount
+              result.push(obj)
+            }
+            if (result.length > 0) {
+              result.forEach(item => {
+                if (item.costCenterId === costCenterId) {
+                  if (item.amount > item.defaultAmount) {
+                    isCheck = true
+                  }
+                }
+              })
+            }
+          }
+          if (isCheck) {
+            callback(new Error('超出限额'))
+          } else {
+            callback()
+          }
         } else {
           callback()
         }
