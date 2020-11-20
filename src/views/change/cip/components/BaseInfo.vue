@@ -247,7 +247,7 @@
             <a-form-model-item label="人工/材料差价累计 (已提交)">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountIncrease"
+                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -262,7 +262,7 @@
             <a-form-model-item label="人工/材料差价累计 (已审批)">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmountDecrease"
+                :value="data.voMasterInfo.fluctuationApprovedAccumulateAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -277,7 +277,7 @@
             <a-form-model-item label="人工/材料差价累计">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmount"
+                :value="data.voMasterInfo.fluctuationAccumulateAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -292,7 +292,7 @@
             <a-form-model-item label="延长顾问服务之累计费用 (已提交)">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountIncrease"
+                :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -307,7 +307,7 @@
             <a-form-model-item label="延长顾问服务之累计费用 (已审批)">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmountDecrease"
+                :value="data.voMasterInfo.extensionConsultancyServiceApprovedAccumulate"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -322,7 +322,7 @@
             <a-form-model-item label="延长顾问服务费用累计">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.extensionConsultancyServiceSubmittedAccumulateAmount"
+                :value="data.voMasterInfo.extensionConsultancyServiceAccumulateAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"

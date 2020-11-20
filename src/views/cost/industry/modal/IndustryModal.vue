@@ -135,8 +135,7 @@
           },
           //确定
           handleOk(){
-            const that = this
-            const result = {packageId : that.queryParam.id, budgetItemList : []}
+            const result = {packageId : this.queryParam.id, budgetItemList : []}
             //获取选中行业预算
             getResults(this.columnDatas)
             function getResults(datas){
@@ -159,11 +158,9 @@
             if(result.budgetItemList.length > 0){
               CostService.addBudgetItem(result).then(res =>{
                 if(res.result.statusCode === 200){
-                  const that = this
-                  this.$message.info('添加行业预算成功').then(() =>{
+                  this.$message.info('添加行业预算成功')
                   this.refreshAllTable(true)
-                    that.closeModal()
-                  })
+                  this.closeModal()
                 }
               })
             }else{
