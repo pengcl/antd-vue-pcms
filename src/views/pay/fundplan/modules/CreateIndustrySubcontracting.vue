@@ -99,17 +99,12 @@
                 selectedRows: [],
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                    this.queryParam.elementTypeId = this.elementID
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     return FundPlanService.tenderPacakges(requestParameters).then(res => {
                         return fixedList(res, requestParameters)
                     })
                 },
-            }
-        },
-        watch: {
-            'elementID' (value) {
-                this.queryParam.elementTypeId = value
-                this.$refs.tenderPacakge.refresh()
             }
         },
         created () {
@@ -132,7 +127,7 @@
                 })
                 const value = getPosValue(cities)
                 this.queryParam.ProjectGUID = value.projectGUID
-                this.$refs.tenderPacakge.refresh(true)
+                this.$refs.tenderPacakge.refresh()
                 this.$forceUpdate()
             })
         },

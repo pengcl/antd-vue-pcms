@@ -252,20 +252,13 @@ export const asyncRouterMap = [
       {
         path: '/change',
         name: 'change',
-        redirect: '/change/pmi',
+        redirect: '/change/cip/list',
         component: RouteView,
         meta: { title: 'menu.change', icon: 'switcher', permission: ['change'] },
         children: [
           {
-            path: '/change/pmi',
-            name: 'ChangePmi',
-            component: () => import('@/views/change/Pmi'),
-            meta: { title: 'menu.change.pmi', keepAlive: true, permission: ['change'] }
-          },
-          {
             path: '/change/cip/list',
             name: 'ChangeCipList',
-            hidden: true,
             component: () => import('@/views/change/cip/List'),
             meta: { title: 'menu.change.cip.list', keepAlive: true, permission: ['change'] }
           },
@@ -277,37 +270,16 @@ export const asyncRouterMap = [
             meta: { title: 'menu.change.cip.item', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/cip/edit',
-            name: 'ChangeCipEdit',
-            hidden: true,
-            component: () => import('@/views/change/cip/Edit'),
-            meta: { title: 'menu.change.cip.edit', keepAlive: true, permission: ['change'] }
+            path: '/change/account/list',
+            name: 'ChangeAccountList',
+            component: () => import('@/views/change/account/List'),
+            meta: { title: 'menu.change.account.list', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/vo/list',
-            name: 'ChangeVoList',
-            component: () => import('@/views/change/vo/List'),
-            meta: { title: 'menu.change.vo.list', keepAlive: true, permission: ['change'] }
-          },
-          {
-            path: '/change/vo/item/:id',
-            name: 'ChangeVoItem',
+            path: '/change/cip/certificate/:id',
+            name: 'ChangeCipCertificate',
             hidden: true,
-            component: () => import('@/views/change/vo/Item'),
-            meta: { title: 'menu.change.vo.item', keepAlive: true, permission: ['change'] }
-          },
-          {
-            path: '/change/vo/edit',
-            name: 'ChangeVoEdit',
-            hidden: true,
-            component: () => import('@/views/change/vo/Edit'),
-            meta: { title: 'menu.change.vo.edit', keepAlive: true, permission: ['change'] }
-          },
-          {
-            path: '/change/certificate/:id',
-            name: 'ChangeCertificate',
-            hidden: true,
-            component: () => import('@/views/change/Certificate'),
+            component: () => import('@/views/change/cip/Certificate'),
             meta: { title: 'menu.change.certificate', keepAlive: true, permission: ['change'] }
           },
           {

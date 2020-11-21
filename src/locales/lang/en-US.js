@@ -37,13 +37,10 @@ const locale = {
   'menu.contract.account.item': 'Account detail',
 
   'menu.change': 'Changes',
-  'menu.change.pmi': 'PMI',
   'menu.change.cip.list': 'CIP',
   'menu.change.cip.item': 'CIP detail',
-  'menu.change.cip.edit': 'CIP edit',
-  'menu.change.vo.list': 'VO',
-  'menu.change.vo.item': 'VO detail',
-  'menu.change.vo.edit': 'VO edit',
+  'menu.change.account.list': 'VO',
+  'menu.change.account.item': 'VO detail',
   'menu.change.certificate': 'Certificate',
 
   'menu.cost': 'Costs',
