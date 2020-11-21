@@ -47,7 +47,7 @@
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="workflowId"
         :columns="columns"
         :data="loadData"
         :alert="false"
@@ -85,11 +85,12 @@
 <script>
   import moment from 'moment'
   import { STable, Ellipsis } from '@/components'
-  import { getRoleList, getServiceList } from '@/api/manage'
+  import { getRoleList } from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import CreateForm from '@/views/list/modules/CreateForm'
   import { TaskService } from '@/views/dashboard/task.service'
+  import { fixedList } from '@/utils/util'
 
   const columns = [
     {
@@ -134,8 +135,7 @@
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return TaskService.tasks(requestParameters)
             .then(res => {
-              console.log(res)
-              return res.result
+              return fixedList(res, parameter)
             })
         },
         selectedRowKeys: [],

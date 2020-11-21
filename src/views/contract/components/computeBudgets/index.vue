@@ -3,11 +3,15 @@
     title="预算调整"
     :width="900"
     :visible="visible"
-    :okText="'预算确认'"
-    :cancelText="'关闭'"
-    @ok="() => { $emit('ok') }"
-    @cancel="() => { $emit('cancel') }"
   >
+    <template slot="footer">
+      <a-button key="back" @click="() => { $emit('cancel') }">
+        关闭
+      </a-button>
+      <a-button :disabled="statusCode === 900" key="submit" type="primary" @click="() => { $emit('ok') }">
+        预算确认
+      </a-button>
+    </template>
     <div>
       <a-form-model
         ref="form"
@@ -147,17 +151,19 @@
         balances: [],
         selection: {},
         queryParam: {},
+        statusCode: 200,
         useStore: null,
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           this.queryParam.contractGuid = this.contractGuid
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return ContractService.computeBudgets(requestParameters).then(res => {
+            console.log(res.result.statusCode)
+            this.statusCode = res.result.statusCode
             this.getTotal(res.result.data)
             this.getBalance(res.result.data)
             this.getBalances()
             this.data = fixedList(res, requestParameters)
-            console.log(this.data)
             return this.data
           })
         },

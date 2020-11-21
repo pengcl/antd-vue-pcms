@@ -212,7 +212,7 @@
                 </a-button>
               </td>
               <td>
-                <a-input :value="getVendorName(item.partyID)" @click="showSelect('vendor',item)" :read-only="true"></a-input>
+                <a-input :disabled="type === 'view'" :value="getVendorName(item.partyID)" @click="showSelect('vendor',item)" :read-only="true"></a-input>
               <!--<a-select
                 :disabled="type === 'view'"
                 placeholder="请选择"
@@ -260,6 +260,7 @@
               </td>
               <td>
                 <a-input
+                  :disabled="type === 'view'"
                   :value="getVendorName(item.partyID)"
                   @click="showSelect('vendor',item)"
                   :read-only="true"></a-input>

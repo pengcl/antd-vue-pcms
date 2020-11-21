@@ -76,16 +76,16 @@
               <a-input
                 :disabled="type === 'view'"
                 placeholder="请填写法人代表"
-                v-model="form.vendor.legalRep"
-                v-decorator="['form.vendor.legalRep', { initialValue: '', rules: [{required: true, message: '请填写法人代表'}] }]"/>
+                v-model="form.vendor.legalRep"/>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="经办部门">
-              <a-select :disabled="type === 'view'" placeholder="请选择" default-value="0">
-                <a-select-option value="0">深圳</a-select-option>
-                <a-select-option value="1">广州</a-select-option>
-                <a-select-option value="2">珠海</a-select-option>
+              <a-select v-model="form.vendor.organizationalStructureId" :disabled="type === 'view'" placeholder="请选择" default-value="0">
+                <a-select-option
+                  v-for="item in selection.departments"
+                  :key="item.organizationalStructureId"
+                  :value="item.organizationalStructureId">{{ item.departmentName }}</a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -180,176 +180,179 @@
 </template>
 
 <script>
-import CompanyStaff from '../components/CompanyStaff'
-import ChangeInfo from '../components/ChangeInfo'
-import ContractInfo from '../components/ContractInfo'
-import BankInfo from '../components/BankInfo'
-import AttachmentInfo from '../components/AttachmentInfo'
-import notification from 'ant-design-vue/es/notification'
-import { SupplierService } from '@/views/supplier/supplier.service'
-import { formatTree } from '@/utils/util'
-import { TreeSelect } from 'ant-design-vue'
-import { City as CitySvc, formatCities } from '@/api/city'
-import { DIALOGCONFIG } from '@/api/base'
+  import CompanyStaff from '../components/CompanyStaff'
+  import ChangeInfo from '../components/ChangeInfo'
+  import ContractInfo from '../components/ContractInfo'
+  import BankInfo from '../components/BankInfo'
+  import AttachmentInfo from '../components/AttachmentInfo'
+  import { SupplierService } from '@/views/supplier/supplier.service'
+  import { formatTree } from '@/utils/util'
+  import { TreeSelect } from 'ant-design-vue'
+  import { City as CitySvc, formatCities } from '@/api/city'
+  import { DIALOGCONFIG, Base as BaseService } from '@/api/base'
 
-const SHOW_PARENT = TreeSelect.SHOW_PARENT
-export default {
-  name: 'SupplierPurchaseItem',
-  components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
-  data () {
-    return {
-      SHOW_PARENT,
-      dialog: DIALOGCONFIG,
-      selection: {},
-      checkText: '',
-      duplicated: false,
-      form: {
-        vendor: {},
-        vendorEmployeeList: [],
-        vendorBankList: []
-      },
-      rules: {
-        vendorCode: [{ required: false, message: '请填写供应商编号', trigger: 'blur' }],
-        vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
-        vendorAbbreviation: [{ required: true, message: '请填写供应商别名', trigger: 'change' }],
-        packageCodeList: [{ required: true, message: '请选择供应商类别', trigger: 'change' }],
-        cityID: [{ required: true, message: '请选择公司所在地', trigger: 'blur' }],
-        legalRep: [{ required: true, message: '请填写法人代表', trigger: 'blur' }],
-        taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'change' }],
-        logRemark: [{ required: this.type === 'update', message: '请填写变更备注', trigger: 'blur' }]
+  const SHOW_PARENT = TreeSelect.SHOW_PARENT
+  export default {
+    name: 'SupplierPurchaseItem',
+    components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
+    data () {
+      return {
+        SHOW_PARENT,
+        dialog: DIALOGCONFIG,
+        selection: {},
+        checkText: '',
+        duplicated: false,
+        form: {
+          vendor: {},
+          vendorEmployeeList: [],
+          vendorBankList: []
+        },
+        rules: {
+          vendorCode: [{ required: false, message: '请填写供应商编号', trigger: 'blur' }],
+          vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
+          vendorAbbreviation: [{ required: true, message: '请填写供应商别名', trigger: 'change' }],
+          packageCodeList: [{ required: true, message: '请选择供应商类别', trigger: 'change' }],
+          cityID: [{ required: true, message: '请选择公司所在地', trigger: 'blur' }],
+          legalRep: [{ required: true, message: '请填写法人代表', trigger: 'blur' }],
+          taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'change' }],
+          logRemark: [{ required: this.type === 'update', message: '请填写变更备注', trigger: 'blur' }]
+        }
       }
-    }
-  },
-  created () {
-    if (this.id !== '0') {
-      SupplierService[this.type + 'Entity'](this.id).then(res => {
-        this.data = res.result.data
-        this.form = res.result.data
+    },
+    created () {
+      if (this.id !== '0') {
+        SupplierService[this.type + 'Entity'](this.id).then(res => {
+          this.data = res.result.data
+          this.form = res.result.data
+          this.form.vendor.registerType = 0
+          this.$forceUpdate()
+        })
+      } else {
         this.form.vendor.registerType = 0
+      }
+      SupplierService.types().then(res => {
+        this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
         this.$forceUpdate()
       })
-    } else {
-      this.form.vendor.registerType = 0
-    }
-    SupplierService.types().then(res => {
-      this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
-      this.$forceUpdate()
-    })
-    CitySvc.cities().then(res => {
-      this.selection.cities = formatCities(res.result.data.provinces)
-      this.$forceUpdate()
-    })
-  },
-  computed: {
-    id () {
-      return this.$route.params.id
-    },
-    type () {
-      return this.$route.query.type
-    }
-  },
-  methods: {
-    checkName (name) {
-      if (this.id === '0') {
-        SupplierService.check(name).then(res => {
-          this.duplicated = res.result.data
+      CitySvc.cities().then(res => {
+        this.selection.cities = formatCities(res.result.data.provinces)
+        this.$forceUpdate()
+      })
+      BaseService.departmentList().then(res => {
+        console.log(res)
+        res.result.data.sort((a, b) => {
+          return a.sort - b.sort
         })
+        this.selection.departments = res.result.data
+      })
+    },
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
       }
     },
-    back () {
-      this.$router.push({ path: `/supplier/purchase/list` })
-    },
-    cityChange (value) {
-      this.form.vendor.province = value[0]
-      this.form.vendor.city = value[1]
-    },
-    handleEdit (record) {
-      this.visible = true
-      this.mdl = { ...record }
-    },
-    askUpdate () {
-      SupplierService.generate(this.id).then(res => {
-        this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
-      })
-    },
-    save () {
-      this.form.vendorEmployeeList.forEach(item => {
-        item.logGID = this.form.vendor.logGID
-        item.vendorGID = this.form.vendor.vendorGID
-      })
-      this.form.vendorBankList.forEach(item => {
-        item.logGID = this.form.vendor.logGID
-        item.vendorGID = this.form.vendor.vendorGID
-      })
-
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          SupplierService[this.type](this.form).then(res => {
-            if (res.result.statusCode === 200) {
-              notification.success({
-                message: `${this.type === 'update' ? '修改' : '添加'}成功`,
-                description: `您已成功${this.type === 'update' ? '修改' : '添加'}供应商 "${this.form.vendor.vendorName}"`
-              })
-              this.$router.push({ path: `/supplier/purchase/list` })
-            }
+    methods: {
+      checkName (name) {
+        if (this.id === '0') {
+          SupplierService.check(name).then(res => {
+            this.duplicated = res.result.data
           })
         }
-      })
+      },
+      back () {
+        this.$router.push({ path: `/supplier/purchase/list` })
+      },
+      cityChange (value) {
+        this.form.vendor.province = value[0]
+        this.form.vendor.city = value[1]
+      },
+      handleEdit (record) {
+        this.visible = true
+        this.mdl = { ...record }
+      },
+      askUpdate () {
+        SupplierService.generate(this.id).then(res => {
+          this.$router.push({ path: `/supplier/purchase/item/${res.result.data}?type=update` })
+        })
+      },
+      save () {
+        this.form.vendorEmployeeList.forEach(item => {
+          item.logGID = this.form.vendor.logGID
+          item.vendorGID = this.form.vendor.vendorGID
+        })
+        this.form.vendorBankList.forEach(item => {
+          item.logGID = this.form.vendor.logGID
+          item.vendorGID = this.form.vendor.vendorGID
+        })
+
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            SupplierService[this.type](this.form).then(res => {
+              if (res.result.statusCode === 200) {
+                this.$message.success('保存成功')
+                this.$router.push({ path: `/supplier/purchase/list` })
+              }
+            })
+          }
+        })
+      }
     }
   }
-}
 </script>
 
 <style lang="less" scoped>
-.ant-btn-group {
-  margin-right: 8px;
-}
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 
-table {
-  margin: 15px 0;
-  width: 100%;
-  border-width: 1px 1px 0 0;
-  border-radius: 3px 3px 0 0;
-  border-style: solid;
-  border-color: #ccc;
+  table {
+    margin: 15px 0;
+    width: 100%;
+    border-width: 1px 1px 0 0;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-color: #ccc;
 
-  thead {
-    tr {
-      &:first-child {
+    thead {
+      tr {
+        &:first-child {
+          th {
+            background-color: #f5f5f5;
+            white-space: nowrap;
+          }
+        }
+
         th {
-          background-color: #f5f5f5;
-          white-space: nowrap;
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
         }
       }
+    }
 
-      th {
-        background-color: #06c;
-        color: #fff;
-        font-weight: normal;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
+    tbody {
+      tr {
+        td {
+          padding: 0.5em 0.6em 0.4em 0.6em !important;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
 
-        button {
-          margin-right: 10px;
+          button {
+            margin-right: 10px;
+          }
         }
       }
     }
   }
-
-  tbody {
-    tr {
-      td {
-        padding: 0.5em 0.6em 0.4em 0.6em !important;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
-
-        button {
-          margin-right: 10px;
-        }
-      }
-    }
-  }
-}
 </style>

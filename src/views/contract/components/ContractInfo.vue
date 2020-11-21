@@ -40,7 +40,13 @@
         <a-form-item
           label="汇率"
         >
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.currencyExchangeRate" :min="0"></a-input-number>
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.currencyExchangeRate"
+            :min="0"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"
+            :precision="2"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -220,25 +226,45 @@
       <a-col :md="24" :sm="24">
         <a-form-item
           label="工程延误天数">
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.delayDay"></a-input-number>
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.delayDay"
+            :min="0"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item
           label="获甲方批准延长工期天数">
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.extensionOfTime"></a-input-number>
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.extensionOfTime"
+            :min="0"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item
           label="承包人最终延误天数">
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.actualDelayDay"></a-input-number>
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.actualDelayDay"
+            :min="0"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item
           label="工程延误赔偿合计">
-          <a-input-number :disabled="type === 'view'" v-model="data.contract.liquidatedDamagesSum"></a-input-number>
+          <a-input-number
+            :disabled="type === 'view'"
+            v-model="data.contract.liquidatedDamagesSum"
+            :min="0"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"></a-input-number>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">

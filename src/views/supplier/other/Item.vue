@@ -82,10 +82,11 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="经办部门">
-              <a-select :disabled="type === 'view'" placeholder="请选择" default-value="0">
-                <a-select-option value="0">深圳</a-select-option>
-                <a-select-option value="1">广州</a-select-option>
-                <a-select-option value="2">珠海</a-select-option>
+              <a-select v-model="form.vendor.organizationalStructureId" :disabled="type === 'view'" placeholder="请选择" default-value="0">
+                <a-select-option
+                  v-for="item in selection.departments"
+                  :key="item.organizationalStructureId"
+                  :value="item.organizationalStructureId">{{ item.departmentName }}</a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -183,8 +184,7 @@ import AttachmentInfo from '../components/AttachmentInfo'
 import { SupplierService } from '@/views/supplier/supplier.service'
 import { TreeSelect } from 'ant-design-vue'
 import { City as CitySvc, formatCities } from '@/api/city'
-import { DIALOGCONFIG } from '@/api/base'
-import notification from 'ant-design-vue/es/notification'
+import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
 function formatTree (data, keys) {
   const items = []
@@ -251,6 +251,13 @@ export default {
       this.selection.cities = formatCities(res.result.data.provinces)
       this.$forceUpdate()
     })
+    BaseService.departmentList().then(res => {
+      console.log(res)
+      res.result.data.sort((a, b) => {
+        return a.sort - b.sort
+      })
+      this.selection.departments = res.result.data
+    })
   },
   computed: {
     id () {
@@ -298,10 +305,7 @@ export default {
         if (valid) {
           SupplierService[this.type](this.form).then(res => {
             if (res.result.statusCode === 200) {
-              notification.success({
-                message: `${this.type === 'update' ? '修改' : '添加'}成功`,
-                description: `您已成功${this.type === 'update' ? '修改' : '添加'}供应商 "${this.form.vendor.vendorName}"`
-              })
+              this.$message.success('保存成功')
               this.$router.push({ path: `/supplier/other/list` })
             }
           })

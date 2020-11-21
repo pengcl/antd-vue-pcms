@@ -616,7 +616,7 @@
         }
       }
       this.data.contract.contractYear = new Date().getFullYear()
-      ContractService.centers(this.project.id).then(res => {
+      ContractService.centers(this.data.contract.contractGuid).then(res => {
         this.selection.centers = res.result.data
         this.$forceUpdate()
       })
@@ -719,20 +719,16 @@
         })
       },
       getContractAmount () {
-        let items = JSON.parse(JSON.stringify(this.data.contractBQlst))
-        items = items.filter(item => item.isCarryData)
-        if (items.length > 0) {
-          ContractService.amount(this.data.contract.contractCategory, this.data.contractBQlst).then(res => {
-            const data = res.result.data
-            this.data.contract.contractAmount = data.contractAmount
-            this.data.contract.contractEffectAmount = data.contractEffectAmount
-            this.data.contract.contractAmountText = data.contractAmountText
-            this.data.contract.contractDSAmount = data.contractDSAmount
-            this.data.contract.contractOPTAmount = data.contractOPTAmount
-            this.data.contract.contractPCPreAmount = data.contractPCPreAmount
-            this.data.contract.contractPSAmount = data.contractPSAmount
-          })
-        }
+        ContractService.amount(this.data.contract.contractCategory, this.data.contractBQlst).then(res => {
+          const data = res.result.data
+          this.data.contract.contractAmount = data.contractAmount
+          this.data.contract.contractEffectAmount = data.contractEffectAmount
+          this.data.contract.contractAmountText = data.contractAmountText
+          this.data.contract.contractDSAmount = data.contractDSAmount
+          this.data.contract.contractOPTAmount = data.contractOPTAmount
+          this.data.contract.contractPCPreAmount = data.contractPCPreAmount
+          this.data.contract.contractPSAmount = data.contractPSAmount
+        })
       },
       checkCarry (item, isDisabled, index) {
         if (!this.data.contract.contractCategory) {
@@ -758,9 +754,10 @@
         }
       },
       centerChange (values) {
+        console.log(values)
         let ids = ''
         let names = ''
-        let item
+        let item = {}
         values.forEach(value => {
           const arr = value.split(';')
           item = this.data.contractBQlst[arr[0]]

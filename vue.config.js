@@ -98,7 +98,8 @@ const vueConfig = {
           'table-selected-row-bg': '#F5F5F5',
           'table-footer-bg': '#F5F5F5',
           // 'menu-highlight-color': '#333',
-          'menu-item-active-bg': '#F5F5F5'
+          'menu-item-active-bg': '#F5F5F5',
+          'disabled-color': '#666'
         },
         // DO NOT REMOVE THIS LINE
         javascriptEnabled: true
