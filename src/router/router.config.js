@@ -277,31 +277,10 @@ export const asyncRouterMap = [
             meta: { title: 'menu.change.cip.item', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/cip/edit',
-            name: 'ChangeCipEdit',
-            hidden: true,
-            component: () => import('@/views/change/cip/Edit'),
-            meta: { title: 'menu.change.cip.edit', keepAlive: true, permission: ['change'] }
-          },
-          {
-            path: '/change/vo/list',
-            name: 'ChangeVoList',
-            component: () => import('@/views/change/vo/List'),
-            meta: { title: 'menu.change.vo.list', keepAlive: true, permission: ['change'] }
-          },
-          {
-            path: '/change/vo/item/:id',
-            name: 'ChangeVoItem',
-            hidden: true,
-            component: () => import('@/views/change/vo/Item'),
-            meta: { title: 'menu.change.vo.item', keepAlive: true, permission: ['change'] }
-          },
-          {
-            path: '/change/vo/edit',
-            name: 'ChangeVoEdit',
-            hidden: true,
-            component: () => import('@/views/change/vo/Edit'),
-            meta: { title: 'menu.change.vo.edit', keepAlive: true, permission: ['change'] }
+            path: '/change/account/list',
+            name: 'ChangeAccountList',
+            component: () => import('@/views/change/account/List'),
+            meta: { title: 'menu.change.account.list', keepAlive: true, permission: ['change'] }
           },
           {
             path: '/change/certificate/:id',

@@ -3,12 +3,17 @@
     <a-card :bordered="false">
       <a-form-model ref="form" :model="data" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
-          <a-col :md="24" :sm="24">
+          <a-col :md="12" :sm="12">
             <a-form-model-item label="项目名称">
               <a-input :disabled="true" :value="project.projectName"></a-input>
             </a-form-model-item>
           </a-col>
-          <a-col :md="12" :sm="24">
+          <a-col :md="12" :sm="12">
+            <a-form-item label=" " :colon="false" style="text-align:right">
+              <span class="label-primary">{{data.auditStatus}}</span>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="12">
             <a-form-model-item label="施工组织文案名称" prop="bdName">
               <a-input v-model="data.bdName" :disabled="type === 'view'"></a-input>
             </a-form-model-item>
@@ -405,12 +410,21 @@ export default {
       this.data.contractGuid = this.contractGuid
       this.data.contrtactGuid = this.contractGuid
       this.data.projectCode = this.projectCode
+      this.data.auditStatus = '未申请'
     }
   },
 }
 </script>
 
 <style lang="less" scoped>
+.label-primary {
+  border-color: #3A44E1;
+  color: #FFF;
+  background-color: #666EE8;
+  padding: 8px 15px;
+  line-height: 20px;
+  border-radius: 5px;
+}
 table {
   margin: 15px 0;
   width: 100%;
