@@ -6,11 +6,13 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
+                <a-tree-select
+                  :treeData="cities"
                   placeholder="请选择"
-                  @change="onChange"
-                />
+                  style="width: 100%"
+                  v-model="queryParam.ProjectGUID"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  @select="onSelect"/>
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -39,7 +41,6 @@
           </a-col>
         </a-row>
       </a-form>
-
       <s-table
         style="margin-top: 10px"
         ref="table"
@@ -48,8 +49,7 @@
         bordered
         :columns="columns"
         :data="loadData"
-        :alert="false"
-        :scroll="{ x: 1500, y: 300 }"
+        :scroll="{x : 2300}"
         showPagination="auto"
       >
         <span slot="serial" slot-scope="text, record, index">
@@ -62,25 +62,7 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a-button type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
-            </a-button>
-            <a-button type="success" icon="form" style="margin-left: 4px" title="编辑" @click="handleToEdit(record)">
-            </a-button>
-          </template>
-        </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -90,10 +72,10 @@
     import { STable, Ellipsis } from '@/components'
     //import { getRoleList, getServiceList } from '@/api/manage'
 
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
+    import { fixedList, getPosValue,nullFixedList } from '@/utils/util'
 
     const columns = [
         {
@@ -159,7 +141,7 @@
         },
         {
             title:'变更状态',
-            dataIndex:'changeType'
+            dataIndex:'changeStatus'
         },
         {
             title:'确认状态',
@@ -204,8 +186,7 @@
         components: {
             STable,
             Ellipsis,
-            CreateForm,
-            StepByStepModal
+            CreateForm
         },
         data () {
             this.columns = columns
@@ -224,10 +205,7 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     console.log('loadData request parameters:', requestParameters)
-                    return getServiceList(requestParameters)
-                        .then(res => {
-                            return res.result
-                        })
+                    return nullFixedList(requestParameters)
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -247,15 +225,20 @@
                 const cities = []
                 res.result.data.citys.forEach(item => {
                     const children = formatList(item.projects.items)
-                    console.log(children)
                     cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
+                    label: item.city.nameCN,
+                    value: item.city.id,
+                    children: children,
+                    selectable: false
                     })
                 })
-                this.cities = cities
+                this.cities = cities 
+                const value = getPosValue(this.cities)
+                this.queryParam.ProjectID = value.projectCode
+                this.queryParam.ProjectGUID = value.projectGUID
+                console.log(this.queryParam)
                 this.$forceUpdate()
+                this.$refs.table.refresh()
             })
         },
         computed: {
@@ -267,80 +250,6 @@
             }
         },
         methods: {
-            handleToItem (record) {
-                this.$router.push({ path: `/change/vo/item/${record.id}?type=view` })
-            },
-            handleToEdit (record) {
-                this.$router.push({ path: `/change/vo/item/${record.id}?type=edit` })
-            },
-            handleToAdd () {
-                this.$router.push({ path: '/change/vo/edit' })
-            },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading = false
-                    }
-                })
-            },
-            handleCancel () {
-                this.visible = false
-
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
@@ -348,20 +257,14 @@
             toggleAdvanced () {
                 this.advanced = !this.advanced
             },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
-                }
-            },
-            onChange (value) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
-            },
+            onSelect (value,option) {
+                storage.set('POS', option.pos)
+                this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+                this.queryParam.ProjectGUID = value.projectGUID
+                this.$refs.table.clearSelected()
+                this.$refs.table.refresh()
+                this.$forceUpdate()
+            }
         }
     }
 </script>

@@ -237,7 +237,7 @@
               this.loading.save = false
               console.log(res)
               if (res.result.statusCode === 200) {
-                this.$message.info('创建成功')
+                this.$message.success('创建成功')
                 this.$router.push({ path: `/change/pmi` })
               }
             }).catch(() => {
@@ -251,7 +251,7 @@
               console.log(res)
               if (res.result.statusCode === 200) {
                  if(callback == undefined){
-                  this.$message.info('修改成功')
+                  this.$message.success('修改成功')
                   this.$router.push({ path: `/change/pmi` })
                  }else{
                    callback()
@@ -357,7 +357,7 @@
             ChangeService.delete(that.form.voMasterInfo.voGuid).then(res =>{
               this.loading.cancel = false
               if(res.result.statusCode === 200){
-                that.$message.info('废弃成功').then(() =>{
+                that.$message.success('废弃成功').then(() =>{
                   that.$router.push({ path: `/change/pmi` })
                 })
               }
@@ -387,7 +387,7 @@
         }).catch(() =>{
           this.loading.createPMI = false
         })
-        this.$message.info('生成文档所需时间1-2分钟左右，请稍等...')
+        this.$message.success('生成文档所需时间1-2分钟左右，请稍等...')
       },
       showPMI(){
         window.open(this.pmiUrl)
