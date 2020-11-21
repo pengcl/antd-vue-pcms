@@ -78,6 +78,7 @@ import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 
 export default {
+  name: 'Login',
   components: {},
   data () {
     return {
