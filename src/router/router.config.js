@@ -252,20 +252,13 @@ export const asyncRouterMap = [
       {
         path: '/change',
         name: 'change',
-        redirect: '/change/pmi',
+        redirect: '/change/cip/list',
         component: RouteView,
         meta: { title: 'menu.change', icon: 'switcher', permission: ['change'] },
         children: [
           {
-            path: '/change/pmi',
-            name: 'ChangePmi',
-            component: () => import('@/views/change/Pmi'),
-            meta: { title: 'menu.change.pmi', keepAlive: true, permission: ['change'] }
-          },
-          {
             path: '/change/cip/list',
             name: 'ChangeCipList',
-            hidden: true,
             component: () => import('@/views/change/cip/List'),
             meta: { title: 'menu.change.cip.list', keepAlive: true, permission: ['change'] }
           },
@@ -283,10 +276,10 @@ export const asyncRouterMap = [
             meta: { title: 'menu.change.account.list', keepAlive: true, permission: ['change'] }
           },
           {
-            path: '/change/certificate/:id',
-            name: 'ChangeCertificate',
+            path: '/change/cip/certificate/:id',
+            name: 'ChangeCipCertificate',
             hidden: true,
-            component: () => import('@/views/change/Certificate'),
+            component: () => import('@/views/change/cip/Certificate'),
             meta: { title: 'menu.change.certificate', keepAlive: true, permission: ['change'] }
           },
           {

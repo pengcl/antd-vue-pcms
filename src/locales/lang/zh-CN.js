@@ -37,8 +37,7 @@ const locale = {
   'menu.contract.account.item': '合同详情',
 
   'menu.change': '变更及成本管控',
-  'menu.change.pmi': '合同变更',
-  'menu.change.cip.list': '变更台账',
+  'menu.change.cip.list': '合同变更',
   'menu.change.cip.item': '变更合同详细',
   'menu.change.account.list': '变更台账',
   'menu.change.account.item': '变更台账详细',
