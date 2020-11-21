@@ -128,7 +128,6 @@
 </template>
 
 <script>
-    import moment from 'moment'
     import { STable } from '@/components'
     import { getRoleList } from '@/api/manage'
     import { getPosValue, nullFixedList } from '@/utils/util'
@@ -249,7 +248,6 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {
@@ -288,9 +286,9 @@
             handToMonthEdit (record) {
                 this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&status=month&projectCode=` + record.projectCode + `&year=` + record.year })
             },
-            search () {
-                this.show = !this.show
-                this.$refs.table.refresh(true)
+            handleAdd () {
+                this.mdl = null
+                this.visible = true
             },
             onSelect (value, option) {
                 storage.set('POS', option.pos)

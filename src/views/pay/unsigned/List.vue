@@ -292,16 +292,7 @@
             handleToAdd () {
                 this.$router.push({ path: '/pay/unsigned/item/0?type=create&projectGUID=' + this.queryParam.ProjectGUID })
             },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
             search () {
-                console.log('search')
                 this.show = !this.show
                 this.$refs.table.refresh(true)
             },
