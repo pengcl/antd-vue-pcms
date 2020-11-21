@@ -180,7 +180,7 @@
           const obj = {}
           obj.costCenterId = item.costCenterId
           const costName = 'cost' + item.costCenterId
-          const amount = record.gt.[costName]
+          const amount = record.gt[costName]
           if (amount && amount !== 0) {
             isCanSave = false
           }

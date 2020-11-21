@@ -14,7 +14,8 @@ const API = {
   centerTags: '/api/services/app/PropertyType/GetPropertyTypeTree',
   centerTypes: '/api/services/app/GeneralType/GetDevPurposeGeneralTypes',
   viewBpm: '/api/services/app/Bpm/GetBPMAuditInfo',
-  professionTypes: '/api/services/app/GeneralType/GetProfessionTypes'
+  professionTypes: '/api/services/app/GeneralType/GetProfessionTypes',
+  departmentList: '/api/services/app/BasicData/GetDepartmentList',
 }
 
 const Base = {}
@@ -107,11 +108,11 @@ Base.removeFile = function (ifileDetialID) {
   })
 }
 
-Base.viewBpm = function (BusinessID) {
+Base.viewBpm = function (BusinessGUID) {
   return request({
     url: API.viewBpm,
     method: 'GET',
-    params: { BusinessID }
+    params: { BusinessGUID }
   })
 }
 
@@ -120,6 +121,14 @@ Base.professionTypes = function (params) {
     url: API.professionTypes,
     method: 'GET',
     params: params
+  })
+}
+
+Base.departmentList = function () {
+  return request({
+    url: API.departmentList,
+    method: 'GET',
+    params: {}
   })
 }
 
@@ -134,6 +143,7 @@ function removeItem (index, items) {
     items[index].isDeleted = true
   }
 }
+
 // update by huya 2020-11-13 增加返回
 // 因使用data[target] 传参方式后，本方法进行修改赋值不会同步修改data[target]，所以增加返回进行外部覆盖
 function clearItems (items) {

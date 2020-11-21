@@ -170,7 +170,7 @@
                              style="width: 100%"
                              v-decorator="['progressSendDate', { rules: [{required: true, message: '请选择承包单位送单时间'}] }]"></a-date-picker>
             </td>
-            <td>单位承包上报金额</td>
+            <td>承包单位上报金额</td>
             <td>
               <a-input-number :disabled="type === 'view'"
                               v-model="data.contractMasterInfo.progressRequestAmount"
@@ -178,7 +178,7 @@
                               :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                               :precision="2"
-                              v-decorator="['progressRequestAmount', { rules: [{required: true, message: '请输入单位承包上报金额'}] }]"></a-input-number>
+                              v-decorator="['progressRequestAmount', { rules: [{required: true, message: '请输入承包单位上报金额'}] }]"></a-input-number>
             </td>
             <td>现场确认时间</td>
             <td>
@@ -288,7 +288,7 @@
                 <a-date-picker :disabled="type === 'view'" v-model="item.progressSendDate"
                                style="width: 100%"></a-date-picker>
               </td>
-              <td>单位承包上报金额</td>
+              <td>承包单位上报金额</td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 v-model="item.progressRequestAmount"

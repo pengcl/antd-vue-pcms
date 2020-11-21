@@ -1,7 +1,7 @@
 <template>
   <page-header-wrapper>
-    <a-card v-if="true" :bordered="false">
-      <a-form-model ref="form" v-model="data" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+    <a-card :bordered="false">
+      <a-form-model ref="form" :model="data" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
             <a-form-model-item label="项目名称">
@@ -25,9 +25,9 @@
               >
                 <a-select-option
                   v-for="option in selection.parties"
-                  :key="option.partID"
-                  :value="option.partID">
-                  {{ option.partName }}
+                  :key="option.partyID"
+                  :value="option.partyID">
+                  {{ option.partyName }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
@@ -90,7 +90,7 @@
                     ></a-input-number>
                   </td>
                   <td>
-                    <a-input v-model="item.creationTime" :disabled="true"></a-input>
+                    <a-input :value="item.creationTime | moment" :disabled="true"></a-input>
                   </td>
                 </tr>
               </tbody>
@@ -101,15 +101,15 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'edit'" @click="startBPM"
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'edit' && (data.auditStatus === '未审核')" @click="startBPM"
               >启动审批流程</a-button
             >
-            <a-button type="success" :loading="loading.showBPM" v-if="true" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="data.auditStatus == '审核中' || data.auditStatus == '已审核'" @click="showBPM">查看审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type != 'view'" @click="save">储存</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type != 'view'" @click="save()">{{data.id ? '编辑' : '储存'}}</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -129,10 +129,9 @@ export default {
   name: 'ConstrctionOrganizeDesign',
   data() {
     return {
-      selection: {},
+      selection: { parties : [] },
       partylst : [],//已选施工单位
       project : SwaggerService.getForm('ProjectListDto'),
-      form: this.$form.createForm(this),
       data : SwaggerService.getForm('ContractBuildingDesignDto'),
       loading: {
         save: false,
@@ -143,7 +142,7 @@ export default {
       filePage: null,
       index: 0,
       rules: {
-        bdName: [{ trigger: 'change', message: '请输入施工组织文案名称', required: true }],
+        bdName: [{ trigger: 'blur', message: '请输入施工组织文案名称', required: true }],
         partylst: [{ validator : this.checkPartylst, trigger: 'change' }],
         writeDate: [{ required: true, message: '请输入编制日期', trigger: 'change' }],
       },
@@ -165,13 +164,18 @@ export default {
       ChangeService.buildingDesignItem(this.contractGuid).then((res) => {
         this.data = res.result.data
         console.log('change.constructionOrganizeDesign.data', this.data)
-        BaseService.masterID(this.data.bdGuid).then(res => {
-          this.data.fileMasterId = res.result.data
-          BaseService.fileList(this.data.fileMasterId, this.data.bdGuid, '', '').then(_res => {
-            this.fileList = _res.result.data
-          })
+        BaseService.fileList(this.data.fileMasterId, this.data.bdGuid, '', '').then(_res => {
+          this.fileList = _res.result.data
         })
+        if(this.data.partylst && this.data.partylst.length > 0){
+          this.data.partylst.forEach(item =>{
+            let repeat = false
+            this.partylst.push(item.partyID)
+          })
+        }
       })
+    }else{
+      this.initData()
     }
     ProjectService.view2(this.projectCode).then((res) => {
       this.project = res.result.data
@@ -179,7 +183,15 @@ export default {
     })
     // 获取可选抄送单位
     ChangeService.contractPartyForBd(this.contractGuid).then((item) => {
-      this.selection.parties = item.result.data
+      // this.selection.parties = item.result.data
+      item.result.data.forEach(item => {
+        let repeatParties = this.selection.parties.filter(party => party.partyID === item.partyID)
+        if(repeatParties.length < 1){
+          this.selection.parties.push(item)
+        }
+        
+      })
+      this.$forceUpdate()
     })
   },
   methods: {
@@ -188,19 +200,20 @@ export default {
     },
     save(callback) {
       let isValid = true
-      this.form.validate(valid => {
+      this.$refs.form.validate(valid => {
         if (!valid) {
           isValid = false
         }
       })
+      console.log('this.data',this.data)
       if(isValid){
         this.loading.save = true
         let actionType = 'updateBuildingDesign'
         if(this.type === 'add'){
-          this.initData()
           actionType = 'createBuildingDesign'
         }
         ChangeService[actionType](this.data).then(res =>{
+          this.loading.save = false
           if(res.result.statusCode === 200){
             if(callback != undefined){
               callback()
@@ -209,11 +222,35 @@ export default {
               this.back()
             }
           }
+        }).catch(() =>{
+          this.loading.save = false
+          this.$message.error('保存失败,请联系管理员')
         })
       }
     },
-    startBPM() {},
-    showBPM(){},
+    startBPM() {
+      this.loading.startBPM = true
+      const that = this
+      this.save(innerStartBPM())
+      function innerStartBPM(){
+        ChangeService.startBuildingDesignBPM({ BDGuid : that.data.bdGuid, sProjectCode : that.data.projectCode}).then(res => {
+          if(res.result.statusCode === 200){
+            console.log('审批地址',res.result.data)
+            window.open(res.result.data)
+            // window.location.reload()
+          }
+        }).catch(() =>{
+          that.loading.startBPM = false
+        })
+      }
+    },
+    showBPM(){
+      this.loading.showBPM = true
+      BaseService.viewBpm(this.data.bdGuid).then(res => {
+        this.loading.showBPM= false
+        window.open(res.result.data)
+      })
+    },
     onFilePageChange(value) {
       this.filePage = value
     },
@@ -261,6 +298,9 @@ export default {
         onCancel() {},
       })
     },
+    choose (index) {
+        this.index = index
+    },
     beforeUpload(file) {
       this.handleUpload(file)
       return false
@@ -268,7 +308,7 @@ export default {
     handleUpload(file) {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('masterId', this.form.fileMasterId)
+      formData.append('masterId', this.data.fileMasterId)
       formData.append('businessID', '')
       formData.append('businessType', 'BuildingDesign')
       formData.append('subInfo1', '') //
@@ -313,7 +353,7 @@ export default {
             temp.bdGuid = this.data.bdGuid
             temp.isDeleted = false
             temp.isTemp = true
-            this.data.voPartylst.push(temp)
+            this.data.partylst.push(temp)
           } else {
             repeatData.isDeleted = false
           }
@@ -322,7 +362,7 @@ export default {
       // 清理vopartyLst中比cc多出的公司信息
       this.data.partylst.forEach((party, index) => {
         if (party.isSendCopy) {
-          if (vals.indexOf(party.partID) < 0) {
+          if (vals.indexOf(party.partyID) < 0) {
             if (party.isTemp) {
               this.data.partylst.splice(index, 1)
             } else {
@@ -333,16 +373,16 @@ export default {
       })
 
       // 根据partID及抄送与否 获取修改voPartyLst对象中的对应公司信息
-      function getPartyByID (partID) {
-        var party = that.data.partylst.filter(item => item.partID === partID )
+      function getPartyByID (partyID) {
+        var party = that.data.partylst.filter(item => item.partyID === partyID )
         if (party.length > 0) {
           return party[0]
         }
       }
 
       // 根据partID 获取抄送公司列表中的公司信息
-      function getCopyPartyByID (partID) {
-        const party = that.selection.parties.filter(item => item.partID === partID)
+      function getCopyPartyByID (partyID) {
+        const party = that.selection.parties.filter(item => item.partyID === partyID)
         if (party.length > 0) {
           return party[0]
         }
@@ -351,6 +391,7 @@ export default {
       this.$forceUpdate()
     },
     checkPartylst(rule,value,callback){
+      console.log('value',value,this.partylst)
       if(this.partylst.length < 1){
         callback(new Error('请选择施工单位名称'))
       }else{
@@ -359,8 +400,11 @@ export default {
     },
     initData(){
       this.data.id = 0
-      this.isAudit = false
-      this.fileMasterId = 0
+      this.data.isAudit = false
+      this.data.fileMasterId = 0
+      this.data.contractGuid = this.contractGuid
+      this.data.contrtactGuid = this.contractGuid
+      this.data.projectCode = this.projectCode
     }
   },
 }

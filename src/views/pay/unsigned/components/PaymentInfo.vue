@@ -47,10 +47,24 @@
                        v-decorator="['item.paymentUse', { rules: [{required: true, message: '请输入款项用途'}] }]"></a-input>
             </td>
             <td>
-              <a-input placeholder="请输入"
-                       :disabled="type === 'view'"
-                       v-model="item.paymentAmount"
-                       v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input>
+              <a-input-number placeholder="请输入"
+                              v-if="item.paymentType === '一般付款' || item.paymentType === '扣款冲销'"
+                              :disabled="type === 'view'"
+                              v-model="item.paymentAmount"
+                              :min="0"
+                              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"
+                              v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input-number>
+              <a-input-number placeholder="请输入"
+                              v-if="item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
+                              :disabled="type === 'view'"
+                              v-model="item.paymentAmount"
+                              :min="0"
+                              :formatter="value => `-${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\-\s?|(,*)/g, '').replace(/\元\s?|(,*)/g, '')"
+                              :precision="2"
+                              v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input-number>
             </td>
             <td>
               <a-select
@@ -140,6 +154,7 @@
             add (target) {
                 const item = {
                     id: 0,
+                    gid: '00000000-0000-0000-0000-000000000000',
                     isDeleted: false,
                     isTemp: true,
                     paymentType: '',

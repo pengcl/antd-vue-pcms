@@ -28,7 +28,9 @@ const API = {
   buildingDesignItem : '/api/services/app/Contract/GetContractBuildingDesign',//根据合同GUID获取合同施工组织设计
   createBuildingDesign : '/api/services/app/Contract/CreateContractBuildingDesign',//新增施工组织设计
   updateBuildingDesign : '/api/services/app/Contract/UpdateContractBuildingDesign',//修改施工组织设计
-  contractPartyForBd : '/api/services/app/Contract/GetContractPartyForBD'//获取施工单位列表（合同乙方、其他方）
+  contractPartyForBd : '/api/services/app/Contract/GetContractPartyForBD',//获取施工单位列表（合同乙方、其他方）
+  startBuildingDesignBPM : '/api/services/app/Contract/StartContractBDBPM',//发起流程-施工组织设计
+  getCostCenters : '/api/services/app/VO/GetProjectTenderPackageCostCenters'//获取造价估算成本中心列表
 }
 
 const ChangeService = {}
@@ -346,6 +348,29 @@ ChangeService.updateBuildingDesign = function(parameter){
 ChangeService.contractPartyForBd = function(contractGuid){
 	return request({
 	    url: API.contractPartyForBd,
+	    method: 'get',
+	    params: {contractGuid}
+	  })
+}
+
+/**
+ * 发起流程-施工组织设计
+ */
+ChangeService.startBuildingDesignBPM = function(parameter){
+	return request({
+	    url: API.startBuildingDesignBPM,
+	    method: 'post',
+	    params: parameter
+	  })
+}
+
+
+/**
+ * 获取施工单位列表（合同乙方、其他方）
+ */
+ChangeService.getCostCenters = function(contractGuid){
+	return request({
+	    url: API.getCostCenters,
 	    method: 'get',
 	    params: {contractGuid}
 	  })
