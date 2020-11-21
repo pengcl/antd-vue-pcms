@@ -77,9 +77,9 @@
                 default: null
             },
             year: {
-                type: Number,
-                default: 0
-            }
+                type: String,
+                default: null
+            },
         },
         data () {
             this.columns = columns
@@ -88,7 +88,6 @@
                 queryParam: {},
                 selectedRowKeys: [],
                 selectedRows: [],
-                year: 0,
                 selected: null,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {

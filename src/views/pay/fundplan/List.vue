@@ -129,7 +129,6 @@
 
 <script>
     import { STable } from '@/components'
-    import { getRoleList } from '@/api/manage'
     import { getPosValue, nullFixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
@@ -156,11 +155,12 @@
 
     function _formatList (items, isRoot) {
         const list = []
-        items.forEach(item => {
+        items.forEach((item, index) => {
             item.isRoot = isRoot
             if (item.elementList && item.elementList.length > 0) {
                 item.children = _formatList(item.elementList, false)
-                item.children.forEach(child => {
+                item.children.forEach((child, i) => {
+                    child.gid = index + '-' + i
                     child.title = child.elementCode + '-' + child.elementName
                     child.projectCode = item.projectCode
                     child.year = item.year
@@ -353,7 +353,7 @@
             },
             handleOk2 () {
                 const history = this.$refs.createViewHistoryModal.selected
-                this.$router.push({ path: `/pay/fundplan/item/0?type=view&projectCode=` + this.queryParam.ProjectID + `&year=` + history.yearNum })
+                this.$router.push({ path: `/pay/fundplan/item/0?type=view&projectCode=` + this.queryParam.ProjectID + `&year=` + history.yearNum + `&month=` + history.monthNum })
                 this.visible2 = false
             },
             handleCancel2 () {

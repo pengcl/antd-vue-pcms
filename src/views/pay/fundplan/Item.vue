@@ -216,7 +216,8 @@
             result.totalPage = Math.ceil(res.result.data.elementList.length / params.pageSize)
             result.totalCount = res.result.data.elementList.length
             result.data = _formatList(res.result.data.elementList, true)
-            res.result.data.elementList.forEach(item => {
+            res.result.data.elementList.forEach((item, index) => {
+                item.id = index
                 if (item.detailList.length > 0) {
                     item.detailList.forEach(d => {
                         total.businessAmt += d.businessAmt
@@ -384,7 +385,7 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if (!this.originData) {
-                        return FundPlanService.fundingPlanInfo(this.projectCode, this.year, 0, this.id === '0' ? '' : this.id).then(res => {
+                        return FundPlanService.fundingPlanInfo(this.projectCode, this.year, this.month ? this.month : 0, this.id === '0' ? '' : this.id).then(res => {
                             this.originData = res
                             if (res.result.data.elementList.length > 0) {
                                 this.elementID = res.result.data.elementList[0].elementID
@@ -412,11 +413,19 @@
             year () {
                 return this.$route.query.year
             },
+            month () {
+                return this.$route.query.month
+            },
             status () {
                 return this.$route.query.status
             },
         },
-        watch: {},
+        watch: {
+            '$route' (path) {
+                this.originData = null
+                this.$refs.table.refresh()
+            }
+        },
         created () {
             if (this.status) {
                 FundPlanService.currentFiscalMonth().then(res => {
@@ -473,7 +482,7 @@
             },
             handleOk2 () {
                 const history = this.$refs.createViewHistoryModal.selected
-                this.$router.push({ path: `/pay/fundplan/item/0?type=view&projectCode=` + this.projectCode + `&year=` + history.yearNum })
+                this.$router.push({ path: `/pay/fundplan/item/${this.id}?type=view&projectCode=` + this.projectCode + `&year=` + history.yearNum + `&month=` + history.monthNum })
                 this.visible2 = false
             },
             handleCancel2 () {
