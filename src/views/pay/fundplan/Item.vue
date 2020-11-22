@@ -30,6 +30,7 @@
                           @change="e => onChange(e,record,'month_7')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_7') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -40,6 +41,7 @@
                           @change="e => onChange(e,record,'month_8')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_8') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -50,6 +52,7 @@
                           @change="e => onChange(e,record,'month_9')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_9') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -60,6 +63,7 @@
                           @change="e => onChange(e,record,'month_10')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_10') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -70,6 +74,7 @@
                           @change="e => onChange(e,record,'month_11')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_11') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -80,6 +85,7 @@
                           @change="e => onChange(e,record,'month_12')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_12') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -90,6 +96,7 @@
                           @change="e => onChange(e,record,'month_1')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_1') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -100,6 +107,7 @@
                           @change="e => onChange(e,record,'month_2')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_2') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -110,6 +118,7 @@
                           @change="e => onChange(e,record,'month_3')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_3') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -120,6 +129,7 @@
                           @change="e => onChange(e,record,'month_4')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_4') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -130,6 +140,7 @@
                           @change="e => onChange(e,record,'month_5')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_5') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -140,6 +151,7 @@
                           @change="e => onChange(e,record,'month_6')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_6') === -1 )"
                           :min="0"
+                          :max="record.businessAmt"
                           :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                           :precision="2"></a-input-number>
@@ -222,7 +234,6 @@
                     item.detailList.forEach(d => {
                         total.businessAmt += d.businessAmt
                         total.businessPayAmt += d.businessPayAmt
-                        total.planTotalAmount += d.planTotalAmount
                         total.month_7 += d.month_7
                         total.month_8 += d.month_8
                         total.month_9 += d.month_9
@@ -235,6 +246,8 @@
                         total.month_4 += d.month_4
                         total.month_5 += d.month_5
                         total.month_6 += d.month_6
+                        d.planTotalAmount = d.month_7 + d.month_8 + d.month_9 + d.month_10 + d.month_11 + d.month_12 + d.month_1 + d.month_2 + d.month_3 + d.month_4 + d.month_5 + d.month_6
+                        total.planTotalAmount += d.planTotalAmount
                     })
                     item.businessAmt = total.businessAmt
                     item.businessPayAmt = total.businessPayAmt
@@ -445,7 +458,7 @@
                 this.visible2 = true
             },
             handleOk () {
-                this.$refs.createModal.selectedRows.forEach(item => {
+                this.$refs.createModal.selected.forEach(item => {
                     const params = {
                         id: item.id,
                         businessGID: item.tenderPackageGUID,
