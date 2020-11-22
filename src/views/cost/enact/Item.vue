@@ -29,7 +29,7 @@
                 :precision="2"
               />
               <template v-else>
-                {{ record['cost' + item.costCenterId] }}
+                {{ record['cost' + item.costCenterId]| NumberFormat }}
               </template>
             </span>
           </a-table>
