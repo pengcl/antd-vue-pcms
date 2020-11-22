@@ -152,15 +152,19 @@
           amount = temp
         }
       } else if (item.childs) {
-        const temp = getCostAmount(elementInfoId, item.childs)
+        const temp = getGTAmount(elementInfoId, item.childs)
         if (temp) {
           amount = temp
         }
       }
     })
+    if (amount === null) {
+      amount = 0
+    }
     return amount
   }
 
+  //根据行数据，循环成本中心组装列数据
   function getList(items, costCenters) {
     const list = []
     items.forEach(item => {
@@ -228,6 +232,56 @@
       }
     })
     return list
+  }
+
+  //组装行数据
+  function getLineData(defaultData, centerData) {
+    const list = []
+    defaultData.forEach(item => {
+      centerData.forEach(center => {
+        let list = getTradeBudgetItems(item.elementInfoId, center.elementItem.childs)
+        if (list && list.length > 0) {
+          list.forEach(budget => {
+            if (item.tradeBudgetItems && item.tradeBudgetItems.length > 0) {
+              let isHaving = false
+              item.tradeBudgetItems.forEach(tradeBudget => {
+                if (budget.groupId === tradeBudget.groupId) {
+                  isHaving = true
+                }
+              })
+              if (!isHaving) {
+                item.tradeBudgetItems.push(budget)
+              }
+            } else {
+              item.tradeBudgetItems.push(budget)
+            }
+          })
+        }
+      })
+      if (item.childs) {
+        item.children = getLineData(item.childs, centerData)
+      }
+      list.push(item)
+    })
+    return list
+  }
+
+  function getTradeBudgetItems(elementInfoId, items) {
+    let budgetList = null
+    items.forEach(item => {
+      if (elementInfoId === item.elementInfoId) {
+          const tradeBudgetItems = item.tradeBudgetItems
+          if (tradeBudgetItems) {
+            budgetList = tradeBudgetItems
+          }
+      }else if (item.childs) {
+        const tradeBudgetItems = getTradeBudgetItems(elementInfoId, item.childs)
+        if (tradeBudgetItems) {
+          budgetList = tradeBudgetItems
+        }
+      }
+    })
+    return budgetList
   }
 
   const defaultColumns = [
@@ -301,8 +355,7 @@
                 )
               })
               // 组装动态列对应的行数据
-              const list = res.result.data[0].elementItem.childs
-              console.log(getList(list, res.result.data))
+              const list = getLineData(res.result.data[0].elementItem.childs, res.result.data)
               result.result.data = getList(list, res.result.data)
               this.columns = _columns
               this.$forceUpdate()
@@ -374,7 +427,6 @@
         })
       },
       refreshTable() {
-        console.log('JINJKSJKSKSKSKSKSKSK')
         this.$refs.table.refresh()
       }
     }
