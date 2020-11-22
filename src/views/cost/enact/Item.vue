@@ -148,6 +148,7 @@
                         for (var i in datas) {
                             var data = datas[i]
                             data['costCenters'] = []
+                            console.log(data)
                             columnDatas.forEach(item => {
                                 if (item.elementItem) {
                                     var costName = 'cost' + item.costCenterId
@@ -241,12 +242,17 @@
                     }
                 })
                 let totalCost = 0
+                console.log(this.datas)
                 this.datas.forEach(item => {
                     item.children.forEach(child => {
                         let childCost = 0
-                        child.children.forEach(_child => {
+                        if(child.children){
+                          child.children.forEach(_child => {
                             childCost += _child['cost' + costCenterId]
-                        })
+                          })
+                        }else{
+                          childCost += child['cost' + costCenterId]
+                        }
                         child['cost' + costCenterId] = childCost
                         totalCost += child['cost' + costCenterId]
                     })
