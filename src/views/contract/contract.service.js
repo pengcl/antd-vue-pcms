@@ -10,7 +10,7 @@ const API = {
   update: '/api/services/app/Contract/UpdateContractAllInfo',
   delete: '/api/services/app/Contract/DeleteContractAllInfo',
   vendors: '/api/services/app/Contract/GetVendorList',
-  centers: '/api/services/app/VO/GetProjectTenderPackageCostCenters',
+  centers: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackageCostCenters',
   amount: '/api/services/app/Contract/GetContractAmountByBQList',
   tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',
   viewBudgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid',
@@ -101,11 +101,11 @@ ContractService.vendors = function () {
   })
 }
 
-ContractService.centers = function (contractGuid) {
+ContractService.centers = function (Id) {
   return request({
     url: API.centers,
     method: 'GET',
-    params: { contractGuid }
+    params: { Id }
   })
 }
 

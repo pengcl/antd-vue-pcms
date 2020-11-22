@@ -74,8 +74,9 @@
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
           label="适用增值税率"
+          prop="taxRate"
         >
           <a-input-number
             :disabled="type === 'view'"
@@ -84,7 +85,35 @@
             :max="100"
             :formatter="value => `${value}%`"
             :parser="value => value.replace('%', '')"></a-input-number>
-        </a-form-item>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="不含税金额"
+          prop="contractNoTaxAmount"
+        >
+          <a-input-number
+            :disabled="true"
+            v-model="data.contract.contractNoTaxAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"></a-input-number>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="税额"
+          prop="contractTaxAmount"
+        >
+          <a-input-number
+            :disabled="true"
+            v-model="data.contract.contractTaxAmount"
+            :min="0"
+            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :precision="2"></a-input-number>
+        </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-item
@@ -308,7 +337,8 @@
         rules: {
           baseCurrencyID: [{ required: true, message: '请选择基本币种', trigger: 'change' }],
           currencyID: [{ required: true, message: '请选择币种', trigger: 'change' }],
-          isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }]
+          isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }],
+          taxRate: [{ required: true, message: '请选择是否需要出差', trigger: 'blur' }]
         }
       }
     },
@@ -334,6 +364,20 @@
       id: {
         type: String,
         default: '0'
+      }
+    },
+    watch: {
+      'data.contract.contractAmount' (value) {
+        if (typeof value === 'number') {
+          this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
+          this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+        }
+      },
+      'data.contract.taxRate' (value) {
+        if (typeof value === 'number') {
+          this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
+          this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+        }
       }
     },
     methods: {

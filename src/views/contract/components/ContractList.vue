@@ -635,6 +635,12 @@
             this.$forceUpdate()
           })
         }
+      },
+      'data.contract.tenderPackageItemID' (value) {
+        ContractService.centers(value).then(res => {
+          this.selection.centers = res.result.data
+          this.$forceUpdate()
+        })
       }
     },
     filters: {
@@ -728,6 +734,8 @@
           this.data.contract.contractOPTAmount = data.contractOPTAmount
           this.data.contract.contractPCPreAmount = data.contractPCPreAmount
           this.data.contract.contractPSAmount = data.contractPSAmount
+          this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
+          this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
         })
       },
       checkCarry (item, isDisabled, index) {
@@ -736,6 +744,12 @@
             activeKey: 1,
             component: 'baseInfo',
             filed: 'contractCategory'
+          })
+        } else if (!this.data.contract.tenderPackageItemID) {
+          this.$emit('validate-field', {
+            activeKey: 1,
+            component: 'baseInfo',
+            filed: 'tenderPackageItemID'
           })
         } else {
           let isValid = true
