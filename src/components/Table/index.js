@@ -87,7 +87,6 @@ export default {
       })
       // change pagination, reset total data
       this.needTotalList = this.initTotalList(this.columns)
-      this.clearSelected()
       this.selectedRowKeys = []
       this.selectedRows = []
     },
