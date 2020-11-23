@@ -480,7 +480,7 @@ export default {
       })
     },
     jumpToContract() {
-      this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGuid}?type=view` })
+      this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGUID}?type=view` })
     },
     jumpToProjectTenderPackage() {
       this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackageGUID}&type=view` })

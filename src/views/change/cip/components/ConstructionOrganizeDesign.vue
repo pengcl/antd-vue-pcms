@@ -341,7 +341,7 @@ export default {
         })
     },
     back (){
-        this.$router.push({ path: `/change/pmi` })
+        this.$router.push({ path: `/change/cip/list` })
     },
     partyChange(vals) {
       var that = this
