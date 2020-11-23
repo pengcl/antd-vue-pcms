@@ -3,12 +3,13 @@
     title="预算调整"
     :width="900"
     :visible="visible"
+    :closable="false"
   >
     <template slot="footer">
       <a-button key="back" @click="() => { $emit('cancel') }">
         关闭
       </a-button>
-      <a-button :disabled="statusCode === 900" key="submit" type="primary" @click="() => { $emit('ok') }">
+      <a-button :disabled="statusCode !== 200" key="submit" type="primary" @click="() => { $emit('ok') }">
         预算确认
       </a-button>
     </template>
@@ -218,13 +219,15 @@
         }, 100)
       },
       getTotal (items) {
-        items.forEach(item => {
-          if (this.total[item.costCenterCode]) {
-            this.total[item.costCenterCode] = this.total[item.costCenterCode] + item.contractSplitAmount
-          } else {
-            this.total[item.costCenterCode] = item.contractSplitAmount
-          }
-        })
+        if (items) {
+          items.forEach(item => {
+            if (this.total[item.costCenterCode]) {
+              this.total[item.costCenterCode] = this.total[item.costCenterCode] + item.contractSplitAmount
+            } else {
+              this.total[item.costCenterCode] = item.contractSplitAmount
+            }
+          })
+        }
       },
       getBalanceItem (key, items) {
         let max = this.total[key]

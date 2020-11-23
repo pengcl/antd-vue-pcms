@@ -616,7 +616,7 @@
         }
       }
       this.data.contract.contractYear = new Date().getFullYear()
-      ContractService.centers(this.data.contract.contractGuid).then(res => {
+      ContractService.centers(this.data.contract.tenderPackageItemID).then(res => {
         this.selection.centers = res.result.data
         this.$forceUpdate()
       })

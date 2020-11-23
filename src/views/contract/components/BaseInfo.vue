@@ -122,7 +122,7 @@
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="专业分类"
-          prop="contractTypeCode"
+          prop="contractProfession"
         >
           <a-select
             :disabled="type === 'view'"
@@ -359,6 +359,7 @@ export default {
         ],
         tenderPackageItemID: [{ required: true, message: '请选择招投标分判包', trigger: 'change' }],
         contractCategory: [{ required: true, message: '请选择合同类型', trigger: 'change' }],
+        contractProfession: [{ required: true, message: '请选择专业分类', trigger: 'change' }],
         secretLevelID: [
           { required: true, message: '请选择密级', trigger: 'change' }
         ],

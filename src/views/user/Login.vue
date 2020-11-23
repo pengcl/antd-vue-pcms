@@ -26,10 +26,10 @@
         <a-input
           size="large"
           type="text"
-          placeholder="账户: admin"
+          placeholder="请输入帐户名或邮箱地址"
           v-decorator="[
             'userNameOrEmailAddress',
-            {initialValue: 'test01', rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
+            {initialValue: appType === 'production' ? '' : 'test01', rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
           ]"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -39,10 +39,10 @@
       <a-form-item>
         <a-input-password
           size="large"
-          placeholder="密码: admin or ant.design"
+          placeholder="请输入密码"
           v-decorator="[
             'password',
-            {initialValue: 'abc123', rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
+            {initialValue: appType === 'production' ? '' : 'abc123', rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
           ]"
         >
           <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -86,6 +86,7 @@ export default {
       isLoginError: false,
       requiredTwoStepCaptcha: false,
       stepCaptchaVisible: false,
+      appType: process.env.NODE_ENV,
       form: this.$form.createForm(this),
       state: {
         loginBtn: false,

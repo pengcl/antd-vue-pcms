@@ -15,11 +15,6 @@
                   @select="onSelect"
                   :suffixIcon="cities ? '' : '加载中...'">
                 </a-tree-select>
-                <!--<a-cascader
-                  :options="cities"
-                  placeholder="请选择"
-                  @change="onChange"
-                />-->
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24"><span
@@ -87,7 +82,7 @@
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
-        <span slot="contractAmount" slot-scope="text">{{ text | NumberFormat}}</span>
+        <span slot="contractAmount" slot-scope="text">{{ text | NumberFormat }}</span>
 
         <span slot="action" slot-scope="text, record">
           <template>
@@ -238,22 +233,21 @@
       handleToDel (record) {
         const that = this
         this.$confirm({
-          title : '删除合同',
-          content : '是否确定删除选中合同信息?',
+          title: '删除合同',
+          content: '是否确定删除选中合同信息?',
           onOk () {
             ContractService.delete(record.contractGuid).then(res => {
-              that.$message.info('删除成功').then(() =>{
+              that.$message.info('删除成功').then(() => {
                 that.$refs.table.refresh()
               })
-            }).catch(() =>{
+            }).catch(() => {
               that.$message.error(res.result.msg)
             })
           },
-          onCancel(){
+          onCancel () {
 
           }
         })
-        
       },
       search () {
         this.show = !this.show
