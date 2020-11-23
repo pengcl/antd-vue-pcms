@@ -13,7 +13,8 @@
                   search-placeholder="请选择"
                   v-model="queryParam.ProjectGUID"
                   @select="onSelect"
-                />
+                  :suffixIcon="cities ? '' : '加载中...'">
+                </a-tree-select>
               </a-form-item>
             </a-col>
           </a-row>
@@ -267,7 +268,7 @@ export default {
     this._columns = _columns
     return {
       pid: '',
-      cities: [],
+      cities: null,
       show: false,
       visible: false,
       confirmLoading: false,
@@ -296,8 +297,6 @@ export default {
               return fixedList(res, requestParameters)
             }
           })
-        } else {
-          return nullFixedList(requestParameters)
         }
       },
       loadData2: (parameter) => {
@@ -481,7 +480,7 @@ export default {
       })
     },
     jumpToContract() {
-      this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGuid}?type=view` })
+      this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGUID}?type=view` })
     },
     jumpToProjectTenderPackage() {
       this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackageGUID}&type=view` })

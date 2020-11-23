@@ -61,7 +61,7 @@
     const defaultColumns = [
         {
             title: '科目代码',
-            width: 150,
+            width: 250,
             dataIndex: 'elementInfoCode',
             key: 'elementInfoCode'
         },

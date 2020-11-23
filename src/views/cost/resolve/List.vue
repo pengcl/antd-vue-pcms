@@ -13,7 +13,8 @@
                   search-placeholder="请选择"
                   v-model="queryParam.ProjectGUID"
                   @select="onSelect"
-                />
+                  :suffixIcon="cities ? '' : '加载中...'">
+                </a-tree-select>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -87,6 +88,7 @@
     {
       title: '科目名称',
       className: 'title-center',
+      width: '200px',
       dataIndex: 'name'
     }
   ]
@@ -105,7 +107,7 @@
       return {
         titleIds:[],
         auditStatus: '',
-        cities: [],
+        cities: null,
         visible: false,
         confirmLoading: false,
         mdl: null,
@@ -177,8 +179,6 @@
                   return fixedList(result, parameter)
                 })
             })
-          }else {
-            return nullFixedList(requestParameters)
           }
         },
         selectedRowKeys: [],
