@@ -3,7 +3,7 @@
     title="引入行业分判包"
     :width="900"
     :visible="visible"
-    :ok-button-props="{ props: { disabled: selectedRows.length < 1 } }"
+    :ok-button-props="{ props: { disabled: selected.length < 1 } }"
     :confirmLoading="loading"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
@@ -23,7 +23,7 @@
         style="margin-top: 10px"
         ref="tenderPacakge"
         size="default"
-        rowKey="gid"
+        rowKey="tenderPackageGUID"
         bordered
         :columns="columns"
         :data="loadData"
@@ -97,6 +97,7 @@
                 queryParam: { IsToContract: false },
                 selectedRowKeys: [],
                 selectedRows: [],
+                selected: [],
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     this.queryParam.elementTypeId = this.elementID
@@ -133,9 +134,19 @@
         },
         computed: {
             rowSelection () {
+                const that = this
                 return {
                     selectedRowKeys: this.selectedRowKeys,
                     onChange: this.onSelectChange,
+                    type: 'checkbox',
+                    onSelect: function (record, selected, selectRows, nativeEvent) {
+                        if (selected) {
+                            that.selected.push(record)
+                        } else {
+                            const index = that.selected.findIndex(item => item.tenderPackageGUID === record.tenderPackageGUID)
+                            that.selected.splice(index, 1)
+                        }
+                    }
                 }
             }
         },

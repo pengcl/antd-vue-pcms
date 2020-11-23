@@ -97,7 +97,7 @@
           <a-input v-model="data.contract.tenderPackageItemID" :disabled="type === 'view'" :hidden="true"/>
           <a-input
             :disabled="type === 'view'"
-            :value="tender.packageTitle + ':' + tender.tradePackageCode"
+            :value="tender.packageTitle ? (tender.packageTitle + ':' + tender.tradePackageCode) : ''"
             @click="showSelect('tender')"
             placeholder="请选择招投标分判包编号"
             :read-only="true"/>
