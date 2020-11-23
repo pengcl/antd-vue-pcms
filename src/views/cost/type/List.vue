@@ -121,7 +121,6 @@
       return {
         titleIds: [],
         auditStatus: '',
-        cities: [],
         visible: false,
         confirmLoading: false,
         mdl: null,

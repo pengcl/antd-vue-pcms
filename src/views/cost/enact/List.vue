@@ -13,7 +13,8 @@
                   search-placeholder="请选择"
                   v-model="queryParam.ProjectGUID"
                   @select="onSelect"
-                />
+                  :suffixIcon="cities ? '' : '加载中...'">
+                </a-tree-select>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -119,7 +120,7 @@
       return {
         titleIds: [],
         auditStatus: '',
-        cities: [],
+        cities: null,
         visible: false,
         confirmLoading: false,
         mdl: null,
@@ -188,8 +189,6 @@
                   return fixedList(result, parameter)
                 })
             })
-          } else {
-            return nullFixedList(requestParameters)
           }
         },
         selectedRowKeys: [],

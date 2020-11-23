@@ -13,7 +13,8 @@
                   search-placeholder="请选择"
                   v-model="queryParam.ProjectGUID"
                   @select="onSelect"
-                />
+                  :suffixIcon="cities ? '' : '加载中...'">
+                </a-tree-select>
               </a-form-item>
             </a-col>
           </a-row>
@@ -267,7 +268,7 @@ export default {
     this._columns = _columns
     return {
       pid: '',
-      cities: [],
+      cities: null,
       show: false,
       visible: false,
       confirmLoading: false,
@@ -296,8 +297,6 @@ export default {
               return fixedList(res, requestParameters)
             }
           })
-        } else {
-          return nullFixedList(requestParameters)
         }
       },
       loadData2: (parameter) => {
