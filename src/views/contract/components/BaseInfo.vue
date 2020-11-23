@@ -122,7 +122,7 @@
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="专业分类"
-          prop="contractTypeCode"
+          prop="contractProfession"
         >
           <a-select
             :disabled="type === 'view'"
@@ -144,7 +144,7 @@
             <tr>
               <th style="width: 30%;background-color: #06c;">操作</th>
               <th style="width: 40%;background-color: #06c;">公司名</th>
-              <th style="width: 40%;background-color: #06c;">百分比</th>
+              <!--<th style="width: 40%;background-color: #06c;">百分比</th>-->
             </tr>
           </thead>
           <tbody>
@@ -166,7 +166,7 @@
                   </a-select-option>
                 </a-select>
               </td>
-              <td>
+              <!--<td>
                 <a-input-number
                   placeholder="请填写"
                   v-model="item.percentage"
@@ -175,7 +175,7 @@
                   :max="100"
                   :formatter="value => `${value}%`"
                   :parser="value => value.replace('%', '')"></a-input-number>
-              </td>
+              </td>-->
             </tr>
           </tbody>
         </table>
@@ -359,6 +359,7 @@ export default {
         ],
         tenderPackageItemID: [{ required: true, message: '请选择招投标分判包', trigger: 'change' }],
         contractCategory: [{ required: true, message: '请选择合同类型', trigger: 'change' }],
+        contractProfession: [{ required: true, message: '请选择专业分类', trigger: 'change' }],
         secretLevelID: [
           { required: true, message: '请选择密级', trigger: 'change' }
         ],

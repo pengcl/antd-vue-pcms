@@ -143,28 +143,28 @@
                 :type="record.isCarryData ? 'check-square' : 'border'"/>
             </template>
             <template slot="srNo" slot-scope="text, record">
-              <a-input style="width:100%" :disabled="true" :value="record.srNo"></a-input>
+              <a-input style="width:100%" :disabled="true" v-model="record.srNo"></a-input>
             </template>
             <template slot="section" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" :value="record.section"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.section"></a-input>
             </template>
             <template slot="building" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" :value="record.building"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.building"></a-input>
             </template>
             <template slot="subsection" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" :value="record.subsection"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.subsection"></a-input>
             </template>
             <template slot="segmentation" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" :value="record.segmentation"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.segmentation"></a-input>
             </template>
             <template slot="remark1" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" :value="record.remark1"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.remark1"></a-input>
             </template>
             <template slot="remark2" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" :value="record.remark2"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.remark2"></a-input>
             </template>
             <template slot="description" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" :value="record.description"></a-input>
+              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.description"></a-input>
             </template>
             <template slot="costCenter" slot-scope="text, record, index">
               <a-form-model-item
@@ -616,7 +616,7 @@
         }
       }
       this.data.contract.contractYear = new Date().getFullYear()
-      ContractService.centers(this.data.contract.contractGuid).then(res => {
+      ContractService.centers(this.data.contract.tenderPackageItemID).then(res => {
         this.selection.centers = res.result.data
         this.$forceUpdate()
       })

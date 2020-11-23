@@ -120,9 +120,11 @@
                     placeholder="请选择二次分摊"
                     :default-value="1"
                     v-model="form.secCostAllocateTypeID">
-                    <a-select-option :value="1">1</a-select-option>
-                    <a-select-option :value="2">2</a-select-option>
-                    <a-select-option :value="3">3</a-select-option>
+                    <a-select-option :value="1">不适用(NA)</a-select-option>
+                    <a-select-option :value="2">地下室之功能空间(E1)</a-select-option>
+                    <a-select-option :value="3">地下室之后勤区(E2)</a-select-option>
+                    <a-select-option :value="4">地下室停车场(E3)</a-select-option>
+                    <a-select-option :value="5">其它(EO)</a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -705,7 +707,8 @@ const DTO = {
 const formatList = (items) => {
   const list = []
   items.forEach(item => {
-    if (item.childs) {
+    if (item.childs && item.childs.length > 0) {
+      item.selectable = false
       item.children = formatList(item.childs)
     } else {
       item.children = null

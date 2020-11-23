@@ -238,7 +238,7 @@
               console.log(res)
               if (res.result.statusCode === 200) {
                 this.$message.success('创建成功')
-                this.$router.push({ path: `/change/pmi` })
+                this.$router.push({ path: `/change/cip/list` })
               }
             }).catch(() => {
               this.loading.save = false
@@ -252,7 +252,7 @@
               if (res.result.statusCode === 200) {
                  if(callback == undefined){
                   this.$message.success('修改成功')
-                  this.$router.push({ path: `/change/pmi` })
+                  this.$router.push({ path: `/change/cip/list` })
                  }else{
                    callback()
                  }
@@ -271,12 +271,13 @@
       startBPM () {
         this.loading.startBPM = true
         const that = this
-        this.save(innerStartBPM())
+        this.save(innerStartBPM)
         function innerStartBPM(){
           ChangeService.startBMP({ guid : that.form.voMasterInfo.voGuid, sProjectCode : that.project.projectCode}).then(res => {
             if(res.result.statusCode === 200){
               window.open(res.result.data)
-              window.location.reload()
+              // window.location.reload()
+              that.loading.startBPM = true
             }
           }).catch(() =>{
             that.loading.startBPM = false
@@ -291,7 +292,7 @@
         })
       },
       back () {
-        this.$router.push({ path: `/change/pmi` })
+        this.$router.push({ path: `/change/cip/list` })
       },
       // 初始化新增cip信息的voMasterInfo对象
       initCreateForm () {
@@ -358,7 +359,7 @@
               this.loading.cancel = false
               if(res.result.statusCode === 200){
                 that.$message.success('废弃成功').then(() =>{
-                  that.$router.push({ path: `/change/pmi` })
+                  that.$router.push({ path: `/change/cip/list` })
                 })
               }
             }).catch(() =>{

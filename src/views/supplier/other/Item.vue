@@ -152,7 +152,7 @@
               供应商信息变更
             </a-button>
           </a-button-group>
-          <a-button-group>
+          <a-button-group v-if="type === 'update' && form.vendor.auditStatus === '未审核'">
             <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
@@ -238,10 +238,12 @@ export default {
         this.data = res.result.data
         this.form = res.result.data
         this.form.vendor.registerType = 1
+        this.form.vendor.packageCodeList = ['9']
         this.$forceUpdate()
       })
     } else {
       this.form.vendor.registerType = 1
+      this.form.vendor.packageCodeList = ['9']
     }
     SupplierService.types().then(res => {
       this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])

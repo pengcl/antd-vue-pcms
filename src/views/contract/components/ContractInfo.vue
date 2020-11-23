@@ -338,7 +338,7 @@
           baseCurrencyID: [{ required: true, message: '请选择基本币种', trigger: 'change' }],
           currencyID: [{ required: true, message: '请选择币种', trigger: 'change' }],
           isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }],
-          taxRate: [{ required: true, message: '请选择是否需要出差', trigger: 'blur' }]
+          taxRate: [{ required: true, message: '请填写适用增值税率', trigger: 'blur' }]
         }
       }
     },

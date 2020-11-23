@@ -74,7 +74,7 @@
         </a-tab-pane>
       </a-tabs>
       <a-row :gutter="48">
-        <a-col v-if="type === 'update'" :md="24" :sm="24" style="margin-bottom: 10px">
+        <a-col v-if="type === 'update' && form.contract.auditStatus === '未审核'" :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group>
             <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
@@ -82,7 +82,7 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view'">
+          <a-button-group v-if="type === 'view' && form.contract.auditStatus !== '未审核'">
             <a-button :loading="loading.view" @click="view" type="success">
               查看审批
             </a-button>
@@ -115,6 +115,8 @@
       ref="budgets"
       :visible="show"
       :contractGuid="contractGuid"
+      :amount="form.contract.contractEffectAmount"
+      :destroyOnClose="true"
       @cancel="handleCancel()"
       @ok="handleOk()"></contract-compute-budgets>
   </page-header-wrapper>

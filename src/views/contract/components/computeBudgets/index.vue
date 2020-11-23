@@ -3,12 +3,13 @@
     title="预算调整"
     :width="900"
     :visible="visible"
+    :closable="false"
   >
     <template slot="footer">
       <a-button key="back" @click="() => { $emit('cancel') }">
         关闭
       </a-button>
-      <a-button :disabled="statusCode === 900" key="submit" type="primary" @click="() => { $emit('ok') }">
+      <a-button :disabled="statusCode !== 200 || (amount === 0 && data.data.length === 0)" key="submit" type="primary" @click="() => { $emit('ok') }">
         预算确认
       </a-button>
     </template>
@@ -145,7 +146,7 @@
     data () {
       return {
         columns: columns,
-        data: { data: {} },
+        data: { data: [] },
         total: {},
         balance: {},
         balances: [],
@@ -158,12 +159,13 @@
           this.queryParam.contractGuid = this.contractGuid
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return ContractService.computeBudgets(requestParameters).then(res => {
-            console.log(res.result.statusCode)
             this.statusCode = res.result.statusCode
             this.getTotal(res.result.data)
             this.getBalance(res.result.data)
             this.getBalances()
             this.data = fixedList(res, requestParameters)
+            console.log(this.data.data)
+            console.log(this.amount)
             return this.data
           })
         },
@@ -185,6 +187,9 @@
       visible: {
         type: Boolean,
         required: true
+      },
+      amount: {
+        default: 0
       }
     },
     computed: {},
@@ -218,13 +223,15 @@
         }, 100)
       },
       getTotal (items) {
-        items.forEach(item => {
-          if (this.total[item.costCenterCode]) {
-            this.total[item.costCenterCode] = this.total[item.costCenterCode] + item.contractSplitAmount
-          } else {
-            this.total[item.costCenterCode] = item.contractSplitAmount
-          }
-        })
+        if (items) {
+          items.forEach(item => {
+            if (this.total[item.costCenterCode]) {
+              this.total[item.costCenterCode] = this.total[item.costCenterCode] + item.contractSplitAmount
+            } else {
+              this.total[item.costCenterCode] = item.contractSplitAmount
+            }
+          })
+        }
       },
       getBalanceItem (key, items) {
         let max = this.total[key]
