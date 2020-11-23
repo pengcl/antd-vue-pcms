@@ -271,12 +271,13 @@
       startBPM () {
         this.loading.startBPM = true
         const that = this
-        this.save(innerStartBPM())
+        this.save(innerStartBPM)
         function innerStartBPM(){
           ChangeService.startBMP({ guid : that.form.voMasterInfo.voGuid, sProjectCode : that.project.projectCode}).then(res => {
             if(res.result.statusCode === 200){
               window.open(res.result.data)
-              window.location.reload()
+              // window.location.reload()
+              that.loading.startBPM = true
             }
           }).catch(() =>{
             that.loading.startBPM = false

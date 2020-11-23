@@ -236,11 +236,12 @@ export default {
     startBPM() {
       this.loading.startBPM = true
       const that = this
-      this.save(innerStartBPM())
+      this.save(innerStartBPM)
       function innerStartBPM(){
         ChangeService.startBuildingDesignBPM({ BDGuid : that.data.bdGuid, sProjectCode : that.data.projectCode}).then(res => {
           if(res.result.statusCode === 200){
             console.log('审批地址',res.result.data)
+            that.loading.startBPM = false
             window.open(res.result.data)
             // window.location.reload()
           }
