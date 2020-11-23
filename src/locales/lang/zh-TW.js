@@ -42,7 +42,7 @@ const locale = {
   'menu.change.account.list': '变更指令',
   'menu.change.account.item': '变更指令详细',
   'menu.change.certificate': '现场签证',
-  'menu.change.constructionOrganizeDesign' : '施工组织设计',
+  'menu.change.constructionOrganizeDesign': '施工组织设计',
 
   'menu.cost': '成本预算管理',
   'menu.cost.enact.list': '成本预算制定',
@@ -91,7 +91,10 @@ const locale = {
   'menu.settings.security': '案例设置',
   'menu.settings.custom': '个性化设置',
   'menu.settings.binding': '账户绑定',
-  'menu.settings.notification': '消息通知'
+  'menu.settings.notification': '消息通知',
+
+  'system.logout.title': '系统提示',
+  'system.logout.content': '您需要退出系统吗'
 }
 
 export default {

@@ -21,7 +21,7 @@
         type="error"
         showIcon
         style="margin-bottom: 24px;"
-        message="账户或密码错误（admin/ant.design )"/>
+        message="账户或密码错误"/>
       <a-form-item>
         <a-input
           size="large"
@@ -165,13 +165,8 @@ export default {
         }, 1000)
         this.isLoginError = false
       },
-      requestFailed (err) {
+      requestFailed () {
         this.isLoginError = true
-        this.$notification['error']({
-          message: '错误',
-          description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
-          duration: 4
-        })
       }
     }
   }
