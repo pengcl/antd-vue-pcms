@@ -25,8 +25,21 @@
         showPagination="auto"
         :expandIconColumnIndex="0"
       >
+        <span slot="businessAmt" slot-scope="text">
+          {{text | NumberFormat}}
+        </span>
+
+        <span slot="businessPayAmt" slot-scope="text">
+          {{text | NumberFormat}}
+        </span>
+
+        <span slot="planTotalAmount" slot-scope="text">
+          {{text | NumberFormat}}
+        </span>
+
         <span slot="month_7" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_7') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_7')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_7') === -1 )"
                           :min="0"
@@ -38,6 +51,7 @@
 
         <span slot="month_8" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_8') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_8')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_8') === -1 )"
                           :min="0"
@@ -49,6 +63,7 @@
 
         <span slot="month_9" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_9') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_9')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_9') === -1 )"
                           :min="0"
@@ -60,6 +75,7 @@
 
         <span slot="month_10" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_10') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_10')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_10') === -1 )"
                           :min="0"
@@ -71,6 +87,7 @@
 
         <span slot="month_11" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_11') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_11')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_11') === -1 )"
                           :min="0"
@@ -82,6 +99,7 @@
 
         <span slot="month_12" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_12') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_12')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_12') === -1 )"
                           :min="0"
@@ -93,6 +111,7 @@
 
         <span slot="month_1" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_1') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_1')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_1') === -1 )"
                           :min="0"
@@ -104,6 +123,7 @@
 
         <span slot="month_2" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_2') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_2')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_2') === -1 )"
                           :min="0"
@@ -115,6 +135,7 @@
 
         <span slot="month_3" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_3') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_3')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_3') === -1 )"
                           :min="0"
@@ -126,6 +147,7 @@
 
         <span slot="month_4" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_4') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_4')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_4') === -1 )"
                           :min="0"
@@ -137,6 +159,7 @@
 
         <span slot="month_5" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_5') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_5')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_5') === -1 )"
                           :min="0"
@@ -148,6 +171,7 @@
 
         <span slot="month_6" slot-scope="text,record">
           <a-input-number :value="text"
+                          :style="{backgroundColor: record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_6') === -1 ) ? '' : 'skyblue'}"
                           @change="e => onChange(e,record,'month_6')"
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_6') === -1 )"
                           :min="0"
@@ -307,14 +331,17 @@
         {
             title: '金额',
             dataIndex: 'businessAmt',
+            scopedSlots: { customRender: 'businessAmt' }
         },
         {
             title: '已支付',
             dataIndex: 'businessPayAmt',
+            scopedSlots: { customRender: 'businessPayAmt' }
         },
         {
             title: '计划支付',
-            dataIndex: 'planTotalAmount'
+            dataIndex: 'planTotalAmount',
+            scopedSlots: { customRender: 'planTotalAmount' }
         },
         {
             title: 'Jul-20',

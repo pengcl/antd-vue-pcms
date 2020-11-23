@@ -13,6 +13,7 @@
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   search-placeholder="请选择"
                   @select="onSelect"
+                  :suffixIcon="cities ? '' : '加载中...'"
                 />
               </a-form-item>
             </a-col>
@@ -164,6 +165,7 @@
                     child.title = child.elementCode + '-' + child.elementName
                     child.projectCode = item.projectCode
                     child.year = item.year
+                    child.monthLastNum = item.monthLastNum
                     child.yearVersionAuditStatus = item.yearVersionAuditStatus
                     child.monthLastVersionAuditStatus = item.monthLastVersionAuditStatus
                 })
@@ -284,7 +286,7 @@
                 this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&projectCode=` + record.projectCode + `&year=` + record.year })
             },
             handToMonthEdit (record) {
-                this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&status=month&projectCode=` + record.projectCode + `&year=` + record.year })
+                this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&status=month&projectCode=` + record.projectCode + `&year=` + record.year + `&month=` + record.monthLastNum })
             },
             handleAdd () {
                 this.mdl = null

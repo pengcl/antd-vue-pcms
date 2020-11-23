@@ -13,6 +13,7 @@
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   search-placeholder="请选择"
                   @select="onSelect"
+                  :suffixIcon="cities ? '' : '加载中...'"
                 />
               </a-form-item>
             </a-col>
@@ -229,7 +230,7 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    if (this.queryParam.ProjectGUID) {
+                    if (this.queryParam.ProjectCode) {
                         return UnSignedService.items(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
                         })
@@ -263,7 +264,7 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                this.queryParam.ProjectID = value.projectCode
+                this.queryParam.ProjectCode = value.projectCode
                 this.projectType = value.type
                 this.queryParam.ProjectGUID = value.projectGUID
                 this.$refs.table.refresh()

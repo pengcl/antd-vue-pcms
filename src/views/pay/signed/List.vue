@@ -13,6 +13,7 @@
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   search-placeholder="请选择"
                   @select="onSelect"
+                  :suffixIcon="cities ? '' : '加载中...'"
                 />
               </a-form-item>
             </a-col>
@@ -116,7 +117,7 @@
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
-        <span slot="auditTime" slot-scope="text">
+        <span slot="creationTime" slot-scope="text">
           <template>
             <span>{{text | date}}</span>
           </template>
@@ -238,8 +239,8 @@
         },
         {
             title: '申请日期',
-            dataIndex: 'auditTime',
-            scopedSlots: { customRender: 'auditTime' }
+            dataIndex: 'creationTime',
+            scopedSlots: { customRender: 'creationTime' }
         },
         {
             title: '付款单号',
