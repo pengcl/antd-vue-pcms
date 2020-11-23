@@ -38,7 +38,7 @@
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button style="margin-right: 20px" type="success">启动审批流程</a-button>
-          <a-button :disabled="type === 'view'" @click="handleToSave" type="success">储存</a-button>
+          <a-button :disabled="type === 'view'" :loading="loading.save" @click="handleToSave" type="success">储存</a-button>
           <a-button @click="back" style="margin-left: 5px" type="danger">关闭</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
@@ -90,6 +90,9 @@
                 isUpdate: false,
                 confirmLoading: false,
                 mdl: null,
+                loading : {
+                  save : false
+                },
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
@@ -148,15 +151,19 @@
                         for (var i in datas) {
                             var data = datas[i]
                             data['costCenters'] = []
-                            console.log(data)
                             columnDatas.forEach(item => {
                                 if (item.elementItem) {
                                     var costName = 'cost' + item.costCenterId
                                     if (item.elementItem) {
+                                        const center = {}
+                                        center['costCenterId'] = item.costCenterId
+                                        center['elementInfoId'] = data.elementInfoId
                                         var costColumn = forEachItem([item.elementItem], data.elementInfoId)
                                         if (costColumn != null) {
                                             data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                                            center['amount'] = costColumn.amount !== null ? costColumn.amount : 0
                                         }
+                                        data['costCenters'].push(center)
                                     }
                                 }
                             })
@@ -215,6 +222,10 @@
                     datas.forEach(item => {
                         if (item.costCenters.length > 0) {
                             item.costCenters.forEach(center => {
+                              const obj = {}
+                              obj['costCenterId'] = center.costCenterId
+                              obj['elementInfoId'] = center.elementInfoId
+                              obj['amount'] = center.amount !== null ? center.amount : 0
                                 items.push(center)
                             })
                         }
@@ -225,11 +236,16 @@
                 }
 
                 result['items'] = items
+                console.log(result)
+                this.loading.save = true
                 CostService.update(result).then(res => {
                     if (res.result.statusCode === 200) {
+                        this.loading.save = false
                         this.$message.info('修改成功')
                         this.back()
                     }
+                }).catch(() => {
+                  this.loading.save = false
                 })
             },
             checkChange (value, record, costCenterId) {
@@ -242,7 +258,6 @@
                     }
                 })
                 let totalCost = 0
-                console.log(this.datas)
                 this.datas.forEach(item => {
                     item.children.forEach(child => {
                         let childCost = 0
