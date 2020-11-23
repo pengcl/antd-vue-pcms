@@ -115,6 +115,8 @@
       ref="budgets"
       :visible="show"
       :contractGuid="contractGuid"
+      :amount="form.contract.contractEffectAmount"
+      :destroyOnClose="true"
       @cancel="handleCancel()"
       @ok="handleOk()"></contract-compute-budgets>
   </page-header-wrapper>

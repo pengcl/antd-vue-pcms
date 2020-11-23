@@ -493,6 +493,7 @@ export default {
   },
   created () {
     this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
+    this.form.currencyCode = 'CNY'
     if (this.id !== '0') {
       ProjectService.item(this.id).then(res => {
         const data = res.result.data
@@ -510,9 +511,11 @@ export default {
           value.description = ''
           value.parentCode = data.projectCode
           value.parentId = this.id
+          value.currencyCode = data.currencyCode ? data.currencyCode : 'CNY'
           this.form = value
         } else {
           this.form = data
+          this.form.currencyCode = 'CNY'
         }
       })
     }
@@ -561,7 +564,6 @@ export default {
   },
   methods: {
     getName (code) {
-      console.log(code)
       let name = ''
       if (code && this.selection.companies) {
         this.selection.companies.forEach(item => {
@@ -570,7 +572,6 @@ export default {
           }
         })
       }
-      console.log(name)
       return name
     },
     approve () {
@@ -611,11 +612,9 @@ export default {
       }
     },
     back () {
-      console.log('back')
       this.$router.push({ path: `/project/list` })
     },
     handleToEdit () {
-      console.log('handleToEdit')
       this.$router.push({ path: `/project/item/${this.id}?type=edit` })
     },
     showSelect () {

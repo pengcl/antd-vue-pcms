@@ -9,7 +9,7 @@
       <a-button key="back" @click="() => { $emit('cancel') }">
         关闭
       </a-button>
-      <a-button :disabled="statusCode !== 200" key="submit" type="primary" @click="() => { $emit('ok') }">
+      <a-button :disabled="statusCode !== 200 || (amount === 0 && data.data.length === 0)" key="submit" type="primary" @click="() => { $emit('ok') }">
         预算确认
       </a-button>
     </template>
@@ -146,7 +146,7 @@
     data () {
       return {
         columns: columns,
-        data: { data: {} },
+        data: { data: [] },
         total: {},
         balance: {},
         balances: [],
@@ -159,12 +159,13 @@
           this.queryParam.contractGuid = this.contractGuid
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return ContractService.computeBudgets(requestParameters).then(res => {
-            console.log(res.result.statusCode)
             this.statusCode = res.result.statusCode
             this.getTotal(res.result.data)
             this.getBalance(res.result.data)
             this.getBalances()
             this.data = fixedList(res, requestParameters)
+            console.log(this.data.data)
+            console.log(this.amount)
             return this.data
           })
         },
@@ -186,6 +187,9 @@
       visible: {
         type: Boolean,
         required: true
+      },
+      amount: {
+        default: 0
       }
     },
     computed: {},

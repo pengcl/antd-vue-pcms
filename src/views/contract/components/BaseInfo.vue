@@ -144,7 +144,7 @@
             <tr>
               <th style="width: 30%;background-color: #06c;">操作</th>
               <th style="width: 40%;background-color: #06c;">公司名</th>
-              <th style="width: 40%;background-color: #06c;">百分比</th>
+              <!--<th style="width: 40%;background-color: #06c;">百分比</th>-->
             </tr>
           </thead>
           <tbody>
@@ -166,7 +166,7 @@
                   </a-select-option>
                 </a-select>
               </td>
-              <td>
+              <!--<td>
                 <a-input-number
                   placeholder="请填写"
                   v-model="item.percentage"
@@ -175,7 +175,7 @@
                   :max="100"
                   :formatter="value => `${value}%`"
                   :parser="value => value.replace('%', '')"></a-input-number>
-              </td>
+              </td>-->
             </tr>
           </tbody>
         </table>
