@@ -321,7 +321,6 @@
               this.loading.save = false
               if (res.result.statusCode === 200) {
                 this.contractGuid = res.result.data
-                console.log(this.form.contract.contractAmount)
                 if (this.form.contract.contractAmount > 0) {
                   this.showBudgets(items, sourceItems)
                 } else {

@@ -9,7 +9,11 @@
       <a-button key="back" @click="() => { $emit('cancel') }">
         关闭
       </a-button>
-      <a-button :disabled="statusCode !== 200 || (amount === 0 && data.data.length === 0)" key="submit" type="primary" @click="() => { $emit('ok') }">
+      <a-button
+        :disabled="statusCode !== 200 || (amount === 0 && data.data.length === 0)"
+        key="submit"
+        type="primary"
+        @click="() => { $emit('ok') }">
         预算确认
       </a-button>
     </template>
@@ -46,7 +50,7 @@
       style="margin-top: 5px"
       ref="table"
       size="default"
-      rowKey="id"
+      rowKey="index"
       bordered
       :columns="columns"
       :data="loadData"
@@ -160,12 +164,17 @@
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return ContractService.computeBudgets(requestParameters).then(res => {
             this.statusCode = res.result.statusCode
+            this.total = {}
+            this.balance = {}
+            this.balances = []
+            this.selection = {}
+            res.result.data.forEach((item, index) => {
+              item.index = index
+            })
             this.getTotal(res.result.data)
             this.getBalance(res.result.data)
             this.getBalances()
             this.data = fixedList(res, requestParameters)
-            console.log(this.data.data)
-            console.log(this.amount)
             return this.data
           })
         },
@@ -200,9 +209,10 @@
       })
     },
     watch: {
-      'contractGuid' (value) {
-        console.log(value)
-        console.log(this.contractGuid)
+      'visible' (value) {
+        if (value && this.$refs.table) {
+          this.$refs.table.refresh()
+        }
       }
     },
     methods: {
@@ -244,7 +254,6 @@
         for (const key in this.total) {
           let items = JSON.parse(JSON.stringify(records))
           items = items.filter((data) => data.costCenterCode === key)
-          console.log(items)
           this.balance[key] = this.getBalanceItem(key, items)
         }
       },
