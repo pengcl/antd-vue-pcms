@@ -221,6 +221,7 @@
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="总建筑面积(不含停车库)(CFA)"
+                  prop="totalCFAExcludeParking"
                 >
                   <a-input-number
                     :disabled="type === 'view'"
@@ -229,12 +230,14 @@
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="value => value.replace(/\\s?|(,*)/g, '')"
                     :precision="2"
+                    :min="0"
                   />
                 </a-form-model-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="总建筑面积(含停车库)(CFA)"
+                  prop="totalCFAIncludeParking"
                 >
                   <a-input-number
                     :disabled="type === 'view'"
@@ -243,6 +246,7 @@
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="value => value.replace(/\\s?|(,*)/g, '')"
                     :precision="2"
+                    :min="0"
                   />
                 </a-form-model-item>
               </a-col>
@@ -736,7 +740,9 @@ export default {
         developmentPurposeID: [{ required: true, message: '请选择产品业态属性', trigger: 'change' }],
         secCostAllocateTypeID: [
           { required: true, message: '请选择二次分摊', trigger: 'change' }
-        ]
+        ],
+        totalCFAExcludeParking: [{ required: true, message: '请填写总建筑面积(不含停车库)(CFA)', trigger: 'blur' }],
+        totalCFAIncludeParking: [{ required: true, message: '请填写总建筑面积(含停车库)(CFA)', trigger: 'blur' }]
       }
     }
   },

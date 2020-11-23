@@ -9,6 +9,7 @@ table {
 
   tbody {
     color: #333;
+
     tr {
       &:hover, &:active {
         &:not(.ant-table-expanded-row):not(.ant-table-row-selected) {
@@ -21,16 +22,20 @@ table {
       &:nth-child(even) {
         background: #f5f5f5;
       }
+
       td {
         .ant-input {
           min-width: 60px;
+
           &.ant-calendar-picker-input {
             min-width: 140px;
           }
         }
+
         .ant-input-number {
           min-width: 100px;
         }
+
         .ant-select {
           min-width: 100px;
         }
@@ -64,55 +69,68 @@ table {
   }
 }
 
-.ant-table-pagination.ant-pagination{
+.ant-table-pagination.ant-pagination {
   float: left;
-  li{
+
+  li {
     margin-right: 0;
   }
-  .ant-pagination-prev,.ant-pagination-next{
-    .ant-pagination-item-link{
-      &:hover{
+
+  .ant-pagination-prev, .ant-pagination-next {
+    .ant-pagination-item-link {
+      &:hover {
         border-color: #ccc;
         background: #ebebeb;
       }
     }
 
   }
-  .ant-pagination-item{
+
+  .ant-pagination-item {
     border-color: #ccc;
-    &:hover{
+
+    &:hover {
       background: #ebebeb;
     }
-    a{
-      color:#428bca;
+
+    a {
+      color: #428bca;
     }
-    &.ant-pagination-item-active{
+
+    &.ant-pagination-item-active {
       background-color: #428bca;
       border-color: #428bca;
-      a{
+
+      a {
         color: #fff;
       }
     }
   }
 
-  .ant-pagination-options{
-    .ant-select-selection{
-      &:hover{
+  .ant-pagination-options {
+    .ant-select-selection {
+      &:hover {
         border-color: #aeaeae;
         background: #ebebeb;
       }
     }
   }
 
-  .ant-select-dropdown-menu-item{
-    &.ant-select-dropdown-menu-item-selected{
-      background: #428bca!important;
+  .ant-select-dropdown-menu-item {
+    &.ant-select-dropdown-menu-item-selected {
+      background: #428bca !important;
       color: #fff;
     }
-    &.ant-select-dropdown-menu-item-active{
+
+    &.ant-select-dropdown-menu-item-active {
       background: #ebebeb;
     }
   }
+}
 
-
+.ant-table-placeholder {
+  padding: 65px 0 50px;
+  &:before {
+    height: 15px;
+  }
 }

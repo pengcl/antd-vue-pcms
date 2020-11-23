@@ -447,9 +447,9 @@ export const asyncRouterMap = [
         hidden: true,
         component: () => import('@/views/data/Item'),
         meta: { title: 'menu.data.item', icon: 'database', permission: ['data'] }
-      },
+      }
       // settings
-      {
+      /* {
         path: '/settings',
         name: 'settings',
         component: () => import('@/views/settings/Index'),
@@ -488,7 +488,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.settings.notification', hidden: true, keepAlive: true, permission: ['settings'] }
           }
         ]
-      }
+      } */
 
       // budget
       /* {

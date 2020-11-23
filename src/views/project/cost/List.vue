@@ -13,6 +13,7 @@
                   search-placeholder="请选择"
                   v-model="queryParam.ProjectGUID"
                   @select="onSelect"
+                  :suffixIcon="cities ? '' : '加载中...'"
                 />
               </a-form-item>
             </a-col>
@@ -172,7 +173,7 @@ export default {
     this.columns = columns
     return {
       show: false,
-      cities: [],
+      cities: null,
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {

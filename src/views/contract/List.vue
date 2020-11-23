@@ -77,6 +77,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
+        :locale="{emptyText:'暂无数据'}"
         showPagination="auto"
       >
         <span slot="description" slot-scope="text">
