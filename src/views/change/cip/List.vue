@@ -414,7 +414,7 @@
       },
       showVO (record) {
         this.$router.push({
-          path: `/change/cip/item/${record.voGuid}?type=edit&contractGuid=${this.queryParam2.contractGuid}&stage=VO`
+          path: `/change/cip/item/${record.voGuid}?type=view&contractGuid=${this.queryParam2.contractGuid}&stage=VO`
         })
       },
       handleToContractInfo(record){
