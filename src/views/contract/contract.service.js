@@ -138,7 +138,7 @@ ContractService.computeBudgets = function (params) {
   return request({
     url: API.computeBudgets,
     method: 'POST',
-    params: params
+    data: params
   })
 }
 

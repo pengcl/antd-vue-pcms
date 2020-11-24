@@ -40,7 +40,7 @@
           </a-col>
         </a-row>
       </a-form-model>
-      <a-radio-group v-model="useStore" button-style="solid">
+      <a-radio-group v-model="queryParam.useStore" button-style="solid">
         <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
           {{ item.nameCN }}
         </a-radio>
@@ -155,9 +155,8 @@
         balance: {},
         balances: [],
         selection: {},
-        queryParam: {},
+        queryParam: { useStore: '' },
         statusCode: 200,
-        useStore: null,
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           this.queryParam.contractGuid = this.contractGuid
@@ -167,7 +166,6 @@
             this.total = {}
             this.balance = {}
             this.balances = []
-            this.selection = {}
             res.result.data.forEach((item, index) => {
               item.index = index
             })
@@ -205,7 +203,8 @@
     created () {
       ContractService.storeTypes().then(res => {
         this.selection.storeTypes = res.result.data
-        this.useStore = res.result.data[0].id
+        this.queryParam.useStore = res.result.data[0].id
+        this.$forceUpdate()
       })
     },
     watch: {
