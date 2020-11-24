@@ -403,6 +403,9 @@
           if (res.result.statusCode === 200) {
             this.$message.info('GeneralTrade已触发生成')
           }
+        }).catch ((e) =>{
+          console.log(e)
+          this.$message.error(''+e)
         })
       },
       handleToRemove(record) {
