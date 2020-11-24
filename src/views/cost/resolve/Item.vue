@@ -401,7 +401,9 @@
       createGT() {
         CostService.createGT({projectGUID: this.ProjectGUID, planPackageGUID: this.ProjectGUID}).then(res => {
           if (res.result.statusCode === 200) {
-            this.$message.info('GeneralTrade已触发生成')
+            this.$message.info('GeneralTrade已触发生成').then(() => {
+              this.$refs.table.refresh()
+            })
           }
         }).catch ((e) =>{
           console.log(e)
