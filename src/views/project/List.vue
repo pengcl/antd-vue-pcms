@@ -90,7 +90,7 @@
 <script>
 
 import { STable, Ellipsis } from '@/components'
-// import { getRoleList } from '@/api/manage'
+import { getRoleList } from '@/api/manage'
 import { ProjectService } from '@/views/project/project.service'
 import { City as CityService } from '@/api/city'
 import storage from 'store'
@@ -211,7 +211,7 @@ export default {
     }
   },
   created () {
-    // getRoleList({ t: new Date() })
+    getRoleList({ t: new Date() })
     ProjectService.tree().then(res => {
       this.cities = res.result.data.citys
       const value = getPosValue(this.cities)
