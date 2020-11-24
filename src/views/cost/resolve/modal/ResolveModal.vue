@@ -39,7 +39,7 @@
               <td>{{this.elementInfoNameCN}}</td>
               <td></td>
               <td v-for="(costCenterItem,index) in costCenters" :key="index">
-                {{costCenterItem.amount|amountFormat}}
+                {{costCenterItem.amount|NumberFormat}}
               </td>
             </tr>
             <tr v-for="(item,index) in form.costCenterItems" :key="index">
@@ -149,13 +149,6 @@
       }
     },
     filters: {
-      amountFormat(value) {
-        if (value) {
-          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        } else {
-          return 0
-        }
-      },
     },
     props: {
       refreshParent: {

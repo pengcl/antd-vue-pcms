@@ -70,7 +70,7 @@
         showPagination="auto"
       >
         <span slot="budgetAmount" slot-scope="text,record">
-            {{record.budgetAmount|amountFormat}}
+            {{record.budgetAmount|NumberFormat}}
         </span>
         <span slot="action" slot-scope="text,record">
           <template>
@@ -172,9 +172,6 @@
             }
         },
         filters: {
-            amountFormat (value) {
-              return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-            }
         },
         created () {
           ProjectService.tree().then(res => {

@@ -31,7 +31,7 @@
           >
             <span slot="cost" slot-scope="text">
               <p style="text-align: center">
-                <span style="font-weight: bold;padding-right: 10px">{{ text|amountFormat }}</span>
+                <span style="font-weight: bold;padding-right: 10px">{{ text|NumberFormat }}</span>
               </p>
             </span>
             <span slot="action" slot-scope="text, record">
@@ -366,13 +366,6 @@
       }
     },
     filters: {
-      amountFormat(value) {
-        if (value) {
-          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        } else {
-          return 0
-        }
-      },
     },
     created() {
 
