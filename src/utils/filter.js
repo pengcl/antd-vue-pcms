@@ -5,32 +5,33 @@ moment.locale('zh-cn')
 
 Vue.filter('NumberFormat', function (value) {
   if (!value) {
-    return '0'
+    return '0.00'
   }
-  const intPartFormat = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // 将整数部分逢三一断
+  const intPartFormat = value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // 将整数部分逢三一断
+  // intPartFormat = Math.floor(Number(intPartFormat) * 100 / 100)
   return intPartFormat
 })
 
 Vue.filter('dayjs', function (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
-  if(dataStr){
+  if (dataStr) {
     return moment(dataStr).format(pattern)
-  }else{
+  } else {
     return ''
   }
 })
 
 Vue.filter('moment', function (dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
-  if(dataStr){
+  if (dataStr) {
     return moment(dataStr).format(pattern)
-  }else{
+  } else {
     return ''
   }
 })
 
 Vue.filter('date', function (dataStr, pattern = 'YYYY-MM-DD') {
-  if(dataStr){
+  if (dataStr) {
     return moment(dataStr).format(pattern)
-  }else{
+  } else {
     return ''
   }
 })

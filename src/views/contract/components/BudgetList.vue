@@ -18,34 +18,11 @@
           :alert="false"
           showPagination="auto"
         >
-          <thead>
-            <tr>
-              <th style="width: 10%">科目</th>
-              <th style="width: 10%">行业</th>
-              <th style="width: 10%">业态</th>
-              <th style="width: 10%">预算余额(a)</th>
-              <th style="width: 10%">行业预算(b)</th>
-              <th style="width: 10%">合同金额(c)</th>
-              <th style="width: 10%">定标盈余(d)</th>
-              <th style="width: 10%">预计变更(e)</th>
-              <th style="width: 10%">差额(f)</th>
-              <th style="width: 10%">调动预算余额(g)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
+          <span slot="generalTradeAmount" slot-scope="text">{{ text | NumberFormat }}</span>
+          <span slot="budgetPlanDetailAmount" slot-scope="text">{{ text | NumberFormat }}</span>
+          <span slot="contractSplitAmount" slot-scope="text">{{ text | NumberFormat }}</span>
+          <span slot="tenderSurplus" slot-scope="text">{{ text | NumberFormat }}</span>
+          <span slot="alterPlan" slot-scope="text">{{ text | NumberFormat }}</span>
         </s-table>
       </a-col>
     </a-row>
@@ -63,6 +40,10 @@ const columns = [
     dataIndex: 'elementName'
   },
   {
+    title: '编码',
+    dataIndex: 'elementCode'
+  },
+  {
     title: '行业',
     dataIndex: 'itemTypeName'
   },
@@ -72,11 +53,13 @@ const columns = [
   },
   {
     title: '预算余额(a)',
-    dataIndex: 'generalTradeAmount'
+    dataIndex: 'generalTradeAmount',
+    scopedSlots: { customRender: 'generalTradeAmount' }
   },
   {
     title: '行业预算(b)',
-    dataIndex: 'budgetPlanDetailAmount'
+    dataIndex: 'budgetPlanDetailAmount',
+    scopedSlots: { customRender: 'budgetPlanDetailAmount' }
   },
   {
     title: '合同金额(c)',
