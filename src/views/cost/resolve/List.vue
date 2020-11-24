@@ -43,7 +43,7 @@
 
         <span slot="cost" slot-scope="text">
           <p style="text-align: right">
-            <span style="font-weight: bold;padding-right: 10px">{{text.amount|amountFormat}}</span>
+            <span style="font-weight: bold;padding-right: 10px">{{text.amount|NumberFormat}}</span>
 <!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
           </p>
         </span>
@@ -186,9 +186,6 @@
       }
     },
     filters: {
-      amountFormat (value) {
-        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      },
     },
     created () {
       ProjectService.tree().then(res => {

@@ -115,7 +115,7 @@
                       【 {{ childItem.costCenterName }} 】
                     </span>
                   </td>
-                  <td>{{ getIndustryItem(index).budgetAmount }}</td>
+                  <td>{{ getIndustryItem(index).budgetAmount | NumberFormat}}</td>
                 </tr>
               </tbody>
             </table>
