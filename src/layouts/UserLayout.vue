@@ -1,8 +1,13 @@
 <template>
   <div id="userLayout" :class="['user-layout-wrapper', isMobile && 'mobile']">
     <div class="container">
-
-      <router-view />
+      <div class="user-header">
+        <a class="header-logo" href="javascript:;">
+          <img src="~@/assets/login-logo.png">
+        </a>
+        <div data-bind="text: environmentTag" class="EnvironmentTag">UAT (#uat_202003-003)</div>
+      </div>
+      <router-view/>
 
       <!--<div class="footer">
         <div class="links">
@@ -19,22 +24,22 @@
 </template>
 
 <script>
-import { deviceMixin } from '@/store/device-mixin'
+  import { deviceMixin } from '@/store/device-mixin'
 
-export default {
-  name: 'UserLayout',
-  mixins: [deviceMixin],
-  mounted () {
-    document.body.classList.add('userLayout')
-  },
-  beforeDestroy () {
-    document.body.classList.remove('userLayout')
+  export default {
+    name: 'UserLayout',
+    mixins: [deviceMixin],
+    mounted () {
+      document.body.classList.add('userLayout')
+    },
+    beforeDestroy () {
+      document.body.classList.remove('userLayout')
+    }
   }
-}
 </script>
 
 <style lang="less" scoped>
-#userLayout.user-layout-wrapper {
+  #userLayout.user-layout-wrapper {
     height: 100%;
 
     &.mobile {
@@ -49,10 +54,31 @@ export default {
     .container {
       width: 100%;
       min-height: 100%;
-      background: #f0f2f5 url(~@/assets/background.svg) no-repeat 50%;
+      background: #4DD0E1 !important;
       background-size: 100%;
-      padding: 110px 0 144px;
       position: relative;
+
+      .user-header {
+        height: 72px;
+        background: #2C303B;
+        box-shadow: 0 2px 30px 2px rgba(0, 0, 0, .1);
+        .header-logo {
+          width: 260px;
+          padding: 8px 30px 0 30px;
+          display: block;
+          float: left;
+          img {
+            display: block;
+            width: 100%;
+          }
+        }
+        .EnvironmentTag {
+          font-size: 30px;
+          color: red;
+          font-weight: bold;
+          // font-family: Quicksand,Georgia,'Times New Roman',Times,serif;
+        }
+      }
 
       a {
         text-decoration: none;
@@ -91,6 +117,7 @@ export default {
             top: 2px;
           }
         }
+
         .desc {
           font-size: 14px;
           color: rgba(0, 0, 0, 0.45);
@@ -101,15 +128,12 @@ export default {
 
       .main {
         min-width: 260px;
-        width: 500px;
-        padding: 50px 50px 26px;
-        margin: 0 auto;
+        max-width: 25%;
+        padding: 20px;
+        margin: 30px auto;
         background-color: #fff;
-        border-radius: 10px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate3d(-50%,-50%,0);
+        border-radius: 5px;
+        box-shadow: 0 10px 18px 0 rgba(62,57,107,.2)
       }
 
       .footer {
@@ -123,14 +147,17 @@ export default {
         .links {
           margin-bottom: 8px;
           font-size: 14px;
+
           a {
             color: rgba(0, 0, 0, 0.45);
             transition: all 0.3s;
+
             &:not(:last-child) {
               margin-right: 40px;
             }
           }
         }
+
         .copyright {
           color: rgba(0, 0, 0, 0.45);
           font-size: 14px;

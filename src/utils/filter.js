@@ -3,12 +3,12 @@ import moment from 'moment'
 import 'moment/locale/zh-cn'
 moment.locale('zh-cn')
 
-Vue.filter('NumberFormat', function (value) {
+Vue.filter('NumberFormat', (value) => {
   if (!value) {
     return '0.00'
   }
-  const intPartFormat = value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') // 将整数部分逢三一断
-  // intPartFormat = Math.floor(Number(intPartFormat) * 100 / 100)
+  let intPartFormat = typeof value === 'number' ? value.toFixed(2).toString() : value
+  intPartFormat = intPartFormat.replace(/\B(?=(\d{3})+(?!\d))/g, ',') // 将整数部分逢三一断
   return intPartFormat
 })
 
