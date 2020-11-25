@@ -54,7 +54,7 @@
           label="等值金额"
         >
           <a-input-number
-            :disabled="type === 'view'"
+            :disabled="true"
             v-model="data.contract.equivalentAmount"
             :min="0"
             :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -378,6 +378,22 @@
           this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
           this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
         }
+      },
+      'data.master.contractAmount' (value) {
+        if (typeof value === 'number') {
+          const equivalentAmount = value * this.data.contract.currencyExchangeRate
+          this.data.contract.equivalentAmount = equivalentAmount || 0
+        }
+      },
+      'data.contract.currencyExchangeRate' (value) {
+        if (typeof value === 'number') {
+          const equivalentAmount = this.data.master.contractAmount * value
+          this.data.contract.equivalentAmount = equivalentAmount || 0
+        }
+      },
+      'data.contract.masterContractID' () {
+        const equivalentAmount = this.data.master.contractAmount * this.data.contract.currencyExchangeRate
+        this.data.contract.equivalentAmount = equivalentAmount || 0
       }
     },
     methods: {

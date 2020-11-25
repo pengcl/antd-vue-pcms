@@ -19,6 +19,7 @@
       showPagination="auto"
       :rowSelection="rowSelection"
     >
+      <span slot="budgetAmount" slot-scope="text">{{ text | NumberFormat }}</span>
     </s-table>
   </a-modal>
 </template>

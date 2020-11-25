@@ -74,7 +74,11 @@
         </a-tab-pane>
       </a-tabs>
       <a-row :gutter="48">
-        <a-col v-if="type === 'update' && form.contract.auditStatus === '未审核'" :md="24" :sm="24" style="margin-bottom: 10px">
+        <a-col
+          v-if="type === 'view' && form.contract.auditStatus === '未审核'"
+          :md="24"
+          :sm="24"
+          style="margin-bottom: 10px">
           <a-button-group>
             <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
@@ -87,8 +91,8 @@
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group>
-            <a-button :loading="loading.save" v-if="type !== 'view'" @click="save()" type="success">
+          <a-button-group v-if="type !== 'view'">
+            <a-button :loading="loading.save" @click="save()" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -116,6 +120,7 @@
       :visible="show"
       :contractGuid="contractGuid"
       :amount="form.contract.contractEffectAmount"
+      :useStore="form.contract.useStore"
       :destroyOnClose="true"
       @cancel="handleCancel()"
       @ok="handleOk()"></contract-compute-budgets>
@@ -141,7 +146,6 @@
     components: { ContractComputeBudgets, AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
     data () {
       return {
-        isBpm: false,
         disabled: true,
         activeKey: 1,
         loading: {
@@ -200,23 +204,7 @@
           this.activeKey = 1
         })
       },
-      showBudgets (items, sourceItems) {
-        /* const keys = []
-        items.sort((a, b) => {
-          return compare(b.srNo, a.srNo)
-        })
-        sourceItems.sort((a, b) => {
-          return compare(b.srNo, a.srNo)
-        })
-        if (items.length !== sourceItems.length) {
-          this.show = true
-        } else {
-          items.forEach((item, index) => {
-            for (const key in item) {
-              console.log(key)
-            }
-          })
-        } */
+      showBudgets () {
         this.show = true
       },
       getData () {
@@ -231,6 +219,7 @@
             this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQlst))
             this.form.master = {}
             this.form.contract.useStore = 2
+            this.form.contract.currencyExchangeRate = 1
             ProjectService.view2(this.form.contract.projectID).then(res => {
               this.project = res.result.data
               this.getCompanies()
@@ -246,6 +235,7 @@
           this.form.contract.serialNo = 0
           this.form.master = {}
           this.form.contract.useStore = 2
+          this.form.contract.currencyExchangeRate = 1
           ProjectService.view(this.ProjectGUID).then(res => {
             this.project = res.result.data
             this.form.contract.projectID = this.project.projectCode
@@ -262,19 +252,13 @@
         })
       },
       bpm () {
-        this.save(true)
-        /* this.loading.bpm = true
+        this.loading.bpm = true
         ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
           this.loading.bpm = false
           window.location.href = res.result.data
-        }) */
+        })
       },
-      save (isBpm) {
-        if (isBpm) {
-          this.isBpm = true
-        } else {
-          this.isBpm = false
-        }
+      save () {
         let isValid = true
         const validateForms = [
           {
@@ -313,16 +297,15 @@
         if (isValid) {
           let items = JSON.parse(JSON.stringify(this.form.contractBQlst))
           items = items.filter(item => item.isCarryData && !item.isDeleted)
-          let sourceItems = JSON.parse(JSON.stringify(this.contractSourceBQList))
-          sourceItems = sourceItems.filter(item => item.isCarryData && !item.isDeleted)
           if (items.length > 0) {
             this.loading.save = true
             ContractService[this.type](this.form).then((res, err) => {
               this.loading.save = false
               if (res.result.statusCode === 200) {
-                this.contractGuid = res.result.data
-                if (this.form.contract.contractAmount > 0) {
-                  this.showBudgets(items, sourceItems)
+                this.contractGuid = this.type === 'create' ? res.result.data : res.result.data.contractGuid
+                const show = this.type === 'create' ? this.form.contract.contractAmount > 0 : res.result.data.bAmountIsChangeResult
+                if (show) {
+                  this.showBudgets()
                 } else {
                   this.$message.success('保存成功')
                 }
@@ -345,6 +328,7 @@
       },
       handleCancel () {
         this.show = false
+        this.$router.push('/contract/list')
       },
       handleOk () {
         this.$refs.budgets.$refs.form.validate(valid => {
@@ -358,16 +342,9 @@
             const type = this.form.contract.budgetIsConfirm ? 'update' : 'create'
             ContractService[type + 'Budgets'](form).then(res => {
               if (res.result.statusCode === 200) {
-                if (this.isBpm) {
-                  this.loading.bpm = true
-                  ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
-                    this.loading.bpm = false
-                    window.location.href = res.result.data
-                  })
-                } else {
-                  this.$message.success('保存成功')
-                  this.$router.push('/contract/list')
-                }
+                this.show = false
+                this.$message.success('确认成功')
+                this.$router.push({ path: `/contract/item/${this.form.contract.contractGuid}?type=view` })
               }
             })
           }

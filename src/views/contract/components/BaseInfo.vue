@@ -567,6 +567,7 @@
         if (target === 'master') {
           this.data.master = this.$refs.masterContract.selected
           this.data.contract.masterContractID = this.data.master.contractGuid
+          this.$forceUpdate()
         } else if (target === 'tender') {
           this.tender = this.$refs.tenderPackage.selected
           this.data.contract.tenderPackageItemID = this.tender.projectTenderPackageGUID
