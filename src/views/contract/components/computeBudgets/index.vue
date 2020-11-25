@@ -40,7 +40,7 @@
           </a-col>
         </a-row>
       </a-form-model>
-      <a-radio-group v-model="queryParam.useStore" button-style="solid">
+      <a-radio-group @change="storeChange" v-model="queryParam.useStore" button-style="solid">
         <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
           {{ item.nameCN }}
         </a-radio>
@@ -206,6 +206,7 @@
     created () {
       ContractService.storeTypes().then(res => {
         this.selection.storeTypes = res.result.data
+        if (!this.queryParam.useStore) { this.queryParam.useStore = this.selection.storeTypes[0].id }
         this.$forceUpdate()
       })
     },
@@ -216,6 +217,7 @@
         }
       },
       'useStore' (value) {
+        console.log(value)
         this.queryParam.useStore = value
       }
     },
@@ -273,6 +275,10 @@
         }
         this.form.balances = balances
         this.$forceUpdate()
+      },
+      storeChange (e) {
+        this.queryParam.useStore = e.target.value
+        this.$refs.table.refresh()
       }
     }
   }

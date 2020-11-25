@@ -26,7 +26,7 @@
             :columns="columns"
             :data="loadData"
             :alert="false"
-            showPagination="auto"
+            :showPagination="false"
             :scroll="{ y: 500 }"
           >
             <span slot="cost" slot-scope="text">
@@ -40,10 +40,13 @@
                   v-if="record.isCreate"
                   @click="showModal(record,'add')"
                   type="primary"
-                  icon="plus-square" title="新增">
+                  icon="plus-square"
+                  title="新增">
                 </a-button>
-                <a-popconfirm v-if="record.isDelete && !record.isUsed" title="是否要删除此行？"
-                              @confirm="handleToRemove(record)">
+                <a-popconfirm
+                  v-if="record.isDelete && !record.isUsed"
+                  title="是否要删除此行？"
+                  @confirm="handleToRemove(record)">
                   <a-button
                     type="danger"
                     icon="delete"
@@ -67,12 +70,11 @@
 </template>
 
 <script>
-  import {CostService} from '@/views/cost/cost.service'
-  import {Ellipsis, STable} from '@/components'
+  import { CostService } from '@/views/cost/cost.service'
+  import { Ellipsis, STable } from '@/components'
   import ResolveModal from '@/views/cost/resolve/modal/ResolveModal'
-  import StepByStepModal from '@/views/list/modules/StepByStepModal'
 
-  function fixedList(res, params) {
+  function fixedList (res, params) {
     const result = {}
     result.pageSize = params.pageSize
     result.pageNo = params.pageNo
@@ -88,7 +90,7 @@
     return result
   }
 
-  function formatList(items) {
+  function formatList (items) {
     const list = []
     items.forEach(item => {
       if (item.childs) {
@@ -99,7 +101,7 @@
     return list
   }
 
-  function getBudgetList(groupId, items) {
+  function getBudgetList (groupId, items) {
     let obj = null
     items.forEach(item => {
       if (item.childs && item.childs.length > 0) {
@@ -125,7 +127,7 @@
     return obj
   }
 
-  function getCostAmount(elementInfoId, items) {
+  function getCostAmount (elementInfoId, items) {
     let amount = null
     items.forEach(item => {
       if (elementInfoId === item.elementInfoId) {
@@ -143,7 +145,7 @@
     return amount
   }
 
-  function getGTAmount(elementInfoId, items) {
+  function getGTAmount (elementInfoId, items) {
     let amount = null
     items.forEach(item => {
       if (elementInfoId === item.elementInfoId) {
@@ -164,8 +166,8 @@
     return amount
   }
 
-  //根据行数据，循环成本中心组装列数据
-  function getList(items, costCenters) {
+  // 根据行数据，循环成本中心组装列数据
+  function getList (items, costCenters) {
     const list = []
     items.forEach(item => {
       // 插入科目
@@ -234,12 +236,12 @@
     return list
   }
 
-  //组装行数据
-  function getLineData(defaultData, centerData) {
+  // 组装行数据
+  function getLineData (defaultData, centerData) {
     const list = []
     defaultData.forEach(item => {
       centerData.forEach(center => {
-        let list = getTradeBudgetItems(item.elementInfoId, center.elementItem.childs)
+        const list = getTradeBudgetItems(item.elementInfoId, center.elementItem.childs)
         if (list && list.length > 0) {
           list.forEach(budget => {
             if (item.tradeBudgetItems && item.tradeBudgetItems.length > 0) {
@@ -266,7 +268,7 @@
     return list
   }
 
-  function getTradeBudgetItems(elementInfoId, items) {
+  function getTradeBudgetItems (elementInfoId, items) {
     let budgetList = null
     items.forEach(item => {
       if (elementInfoId === item.elementInfoId) {
@@ -274,7 +276,7 @@
           if (tradeBudgetItems) {
             budgetList = tradeBudgetItems
           }
-      }else if (item.childs) {
+      } else if (item.childs) {
         const tradeBudgetItems = getTradeBudgetItems(elementInfoId, item.childs)
         if (tradeBudgetItems) {
           budgetList = tradeBudgetItems
@@ -289,7 +291,7 @@
       title: '科目代码',
       width: 200,
       dataIndex: 'code',
-      scopedSlots: {customRender: 'action'}
+      scopedSlots: { customRender: 'action' }
     },
     {
       title: '行业名称',
@@ -312,7 +314,7 @@
       Ellipsis,
       ResolveModal
     },
-    data() {
+    data () {
       this.columns = columns
       return {
         auditStatus: '',
@@ -323,7 +325,7 @@
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
-        queryParam: {ProjectGUID: this.$route.query.ProjectGUID},
+        queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const _columns = JSON.parse(JSON.stringify(defaultColumns))
@@ -348,7 +350,7 @@
                       {
                         title: 'Budget Value',
                         dataIndex: 'cost' + item.costCenterId,
-                        scopedSlots: {customRender: 'cost'}
+                        scopedSlots: { customRender: 'cost' }
                       }
                     ]
                   }
@@ -360,57 +362,57 @@
               this.columns = _columns
               this.$forceUpdate()
             }
-            return fixedList(result, parameter)
+            return { data: result.result.data }
           })
         }
       }
     },
     filters: {
     },
-    created() {
+    created () {
 
     },
     computed: {
-      rowSelection() {
+      rowSelection () {
         return {
           selectedRowKeys: this.selectedRowKeys
         }
       },
-      id() {
+      id () {
         return this.$route.params.id
       },
-      type() {
+      type () {
         return this.$route.query.type
       },
-      ProjectGUID() {
+      ProjectGUID () {
         return this.$route.query.ProjectGUID
       }
     },
     methods: {
-      back() {
-        this.$router.push({path: `/cost/resolve/list`})
+      back () {
+        this.$router.push({ path: `/cost/resolve/list` })
       },
-      showModal(record, type) {
-        CostService.elementTradeTypes({Id: record.elementInfoId}).then(res => {
+      showModal (record, type) {
+        CostService.elementTradeTypes({ Id: record.elementInfoId }).then(res => {
           record.elementTradeTypes = JSON.parse(JSON.stringify(res.result.data))
           record.ProjectGUID = this.ProjectGUID
           record.type = type
           this.$refs.resolveModal.show(record)
         })
       },
-      createGT() {
-        CostService.createGT({projectGUID: this.ProjectGUID, planPackageGUID: this.ProjectGUID}).then(res => {
+      createGT () {
+        CostService.createGT({ projectGUID: this.ProjectGUID, planPackageGUID: this.ProjectGUID }).then(res => {
           if (res.result.statusCode === 200) {
             this.$message.info('GeneralTrade已触发生成').then(() => {
               this.$refs.table.refresh()
             })
           }
-        }).catch ((e) =>{
+        }).catch((e) => {
           console.log(e)
-          this.$message.error(''+e)
+          this.$message.error('' + e)
         })
       },
-      handleToRemove(record) {
+      handleToRemove (record) {
         const requestParameters = Object.assign({
           ProjectGUID: this.ProjectGUID,
           ElementInfoId: record.elementInfoId,
@@ -424,7 +426,7 @@
           }
         })
       },
-      refreshTable() {
+      refreshTable () {
         this.$refs.table.refresh()
       }
     }
