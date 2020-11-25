@@ -19,6 +19,15 @@
           Copyright &copy; 2018 vueComponent
         </div>
       </div>-->
+      <footer class="footer fixed-bottom footer-dark navbar-border navbar-shadow">
+        <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
+          <span class="float-md-left d-block d-md-inline-block">
+            © 新世界中国地产有限公司 2020。 版权所有。
+
+          </span>
+
+        </p>
+      </footer>
     </div>
   </div>
 </template>
@@ -162,6 +171,34 @@
           color: rgba(0, 0, 0, 0.45);
           font-size: 14px;
         }
+      }
+      footer.footer-dark {
+        background: #2C303B;
+      }
+      footer.footer-dark {
+        background: #2C303B;
+      }
+      footer.navbar-border {
+        border-top: 1px solid #E4E7ED;
+      }
+      footer.footer {
+        padding: 12px;
+        margin: 0;
+        .pl-2, .px-2 {
+          padding-left: 1.5rem !important;
+        }
+        p {
+          margin: 0;
+          text-align: left;
+          color: #fff;
+        }
+      }
+      .fixed-bottom {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1030;
       }
     }
   }

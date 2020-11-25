@@ -265,6 +265,7 @@
           })
         }
         this.form.balances = balances
+        console.log(balances)
         this.$forceUpdate()
       }
     }
