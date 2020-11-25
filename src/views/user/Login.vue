@@ -2,13 +2,13 @@
   <div class="main">
     <div class="header">
       <a href="/" class="logo">
-        <img src="~@/assets/logo.svg" alt="logo">
+        <img src="~@/assets/logoPCMS.png" alt="logo">
         <!--<span class="title">PCMS</span>-->
       </a>
     </div>
-    <div class="desc">
+    <!--<div class="desc">
       NWCL PCMS系统登录
-    </div>
+    </div>-->
     <a-form
       id="formLogin"
       class="user-layout-login"
@@ -174,10 +174,11 @@ export default {
 
 <style lang="less" scoped>
   .header {
-    height: 44px;
-    line-height: 44px;
+    height: 54px;
+    line-height: 54px;
     text-align: center;
-
+margin-bottom: 20px;
+    border-bottom: 1px solid #DADADA;
     .badge {
       position: absolute;
       display: inline-block;
@@ -189,8 +190,7 @@ export default {
     }
 
     .logo {
-      height: 44px;
-      width: 44px;
+      width: 32%;
       vertical-align: top;
       border-style: none;
       display: block;
@@ -237,7 +237,7 @@ export default {
     button.login-button {
       padding: 0 15px;
       font-size: 16px;
-      height: 40px;
+      height: 50px;
       width: 100%;
     }
 
@@ -263,5 +263,8 @@ export default {
         float: right;
       }
     }
+  }
+  /deep/ .ant-input {
+    border-radius: 4px;
   }
 </style>

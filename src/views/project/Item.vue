@@ -8,7 +8,7 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目编码">
-                {{ info.projectCode }}
+                {{ info.mainProjectCode }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -18,7 +18,7 @@
             </a-col>
             <a-col :md="12" :sm="24">
               <a-form-item label="房产项目名称(中文)">
-                {{ info.projectName }}
+                {{ info.mainProjectName }}
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -484,7 +484,7 @@ export default {
         projectShortCode: [{ required: true, message: '请填写编码', trigger: 'blur' }],
         projStatus: [{ required: true, message: '请选择项目状态', trigger: 'change' }],
         projectShortName: [{ required: true, message: '请填写(中文)', trigger: 'blur' }],
-        projectEnName: [{ required: true, message: '请填写(英文)', trigger: 'blur' }],
+        projectEnName: [{ required: false, message: '请填写(英文)', trigger: 'blur' }],
         currencyCode: [{ required: true, message: '请选择币种', trigger: 'change' }],
         companyCode: [{ required: true, message: '请选择项目公司', trigger: 'change' }],
         builtUpArea: [{ required: true, message: '请填写工地面积', trigger: 'blur' }]

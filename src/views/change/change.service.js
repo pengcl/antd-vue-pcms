@@ -30,7 +30,11 @@ const API = {
   updateBuildingDesign : '/api/services/app/Contract/UpdateContractBuildingDesign',//修改施工组织设计
   contractPartyForBd : '/api/services/app/Contract/GetContractPartyForBD',//获取施工单位列表（合同乙方、其他方）
   startBuildingDesignBPM : '/api/services/app/Contract/StartContractBDBPM',//发起流程-施工组织设计
-  getCostCenters : '/api/services/app/VO/GetProjectTenderPackageCostCenters'//获取造价估算成本中心列表
+  getCostCenters : '/api/services/app/VO/GetProjectTenderPackageCostCenters',//获取造价估算成本中心列表
+  getVoBudgetPreSplit : '/api/services/app/VO/GetVoBudgetPreSplitByVOGuid',//变更预分解（针对预计变更金额）
+  createVoUsePlan : '/api/services/app/VO/CreateVOUsePlan',//预算确认（针对预计结算金额）
+  updateVoUsePlan : '/api/services/app/VO/UpdateVOUsePlan',//更新变更预算调整
+  storeTypes: '/api/services/app/GeneralType/GetSAorVOUseStoreTypes'//补充合同或变更余额使用类型
 }
 
 const ChangeService = {}
@@ -375,5 +379,52 @@ ChangeService.getCostCenters = function(contractGuid){
 	    params: {contractGuid}
 	  })
 }
+
+/**
+ * 变更预分解（针对预计变更金额）
+ */
+ChangeService.getVoBudgetPreSplit = function(parameter){
+	return request({
+	    url: API.getVoBudgetPreSplit,
+	    method: 'get',
+	    params: parameter
+	  })
+}
+
+
+/**
+ * 预算确认（针对预计结算金额）
+ */
+ChangeService.createVoUsePlan = function(parameter){
+	return request({
+	    url: API.createVoUsePlan,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+
+/**
+ * 更新变更预算调整
+ */
+ChangeService.updateVoUsePlan = function(parameter){
+	return request({
+	    url: API.updateVoUsePlan,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
+/**
+ * 补充合同或变更余额使用类型
+ */
+ChangeService.storeTypes = function(){
+	return request({
+	    url: API.storeTypes,
+	    method: 'get',
+	    params: {}
+	  })
+}
+
 
 export { ChangeService }

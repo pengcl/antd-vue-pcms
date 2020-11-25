@@ -89,7 +89,7 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'edit' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' &&form.voMasterInfo.budgetIsConfirm && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
             <a-button type="success" :loading="loading.showBPM" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中'" @click="showBPM">查看审批流程</a-button>
 
             <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !this.pmiUrl" @click="createPMI">生成项目指令</a-button>
@@ -98,13 +98,24 @@
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type != 'view'" @click="save()">储存</a-button>
-            <a-button type="danger" :loading="loading.cancel" v-if="type != 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO'" @click="$router.push({ path: `/change/cip/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type !== 'view'" @click="save()">储存</a-button>
+            <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
+            <!-- <a-button type="danger" @click="showBudgets">预算测试</a-button> -->
           </a-col>
         </a-row>
       </div>
     </a-card>
+
+    <compute-budgets-modal
+      ref="budgets"
+      :stage="stage"
+      :voGuid="id"
+      :voType="form.voMasterInfo.voType"
+      :contractGuid="contractGuid"
+      :destroyOnClose="true"
+    ></compute-budgets-modal>
   </page-header-wrapper>
 </template>
 
@@ -114,7 +125,7 @@
   import BudgetList from '@/views/change/cip/components/BudgetList'
   import AttachmentData from '@/views/change/cip/components/AttachmentData'
   import AttachmentList from '@/views/change/cip/components/AttachmentList'
-  import Process from '@/views/change/cip/components/Process'
+  import ComputeBudgetsModal from '@/views/change/cip/components/modal/ComputeBudgetsModal'
   import { ChangeService } from '@/views/change/change.service'
   import { ProjectService } from '@/views/project/project.service'
   import { SwaggerService } from '@/api/swagger.service'
@@ -122,7 +133,7 @@
 
   export default {
     name: 'ChangeItem',
-    components: { Process, AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo },
+    components: {  AttachmentList, AttachmentData, BudgetList, CostEstimates, BaseInfo,ComputeBudgetsModal },
     data () {
       return {
         tabActiveKey: 1,
@@ -238,7 +249,8 @@
               console.log(res)
               if (res.result.statusCode === 200) {
                 this.$message.success('创建成功')
-                this.$router.push({ path: `/change/cip/list` })
+                this.id = res.result.data
+                this.$router.push({ path: `/change/cip/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
               }
             }).catch(() => {
               this.loading.save = false
@@ -252,7 +264,7 @@
               if (res.result.statusCode === 200) {
                  if(callback == undefined){
                   this.$message.success('修改成功')
-                  this.$router.push({ path: `/change/cip/list` })
+                  this.$router.push({ path: `/change/cip/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
                  }else{
                    callback()
                  }
@@ -271,7 +283,8 @@
       startBPM () {
         this.loading.startBPM = true
         const that = this
-        this.save(innerStartBPM)
+        // this.save(innerStartBPM)
+        innerStartBPM()
         function innerStartBPM(){
           ChangeService.startBMP({ guid : that.form.voMasterInfo.voGuid, sProjectCode : that.project.projectCode}).then(res => {
             if(res.result.statusCode === 200){
@@ -318,6 +331,8 @@
         this.form.voMasterInfo.effectDay = this.form.voMasterInfo.effectDay || 0
         this.form.voMasterInfo.isBeforeApply = this.form.voMasterInfo.isBeforeApply == undefined || this.form.voMasterInfo.isBeforeApply == null || this.form.voMasterInfo.isBeforeApply == '' ? true : this.form.voMasterInfo.isBeforeApply
         this.form.voMasterInfo.isTrip = this.form.voMasterInfo.isTrip || false
+        this.form.voMasterInfo.budgetIsConfirm = this.form.voMasterInfo.budgetIsConfirm || false
+        this.form.voMasterInfo.useStore =  0
         // this.$forceUpdate()
       },
       handleTabChange(activieKey){
@@ -393,6 +408,9 @@
       showPMI(){
         window.open(this.pmiUrl)
       },
+      showBudgets(){
+        this.$refs.budgets.showModal()
+      }
     }
   }
 </script>

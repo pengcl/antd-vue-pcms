@@ -30,7 +30,7 @@
               required
               :prop="'balances.' + index + '.value'"
               :rules="[{ type: 'number', required: true, message: '请输入项目名称(中文)' },{ type: 'number', max: 0.01, min:-0.01, message: item.key + '必须等于0' }]"
-              :label="item.key">
+              :label="item.name">
               <a-input-number
                 :disabled="true"
                 v-model="item.value"
@@ -40,7 +40,7 @@
           </a-col>
         </a-row>
       </a-form-model>
-      <a-radio-group v-model="useStore" button-style="solid">
+      <a-radio-group v-model="queryParam.useStore" button-style="solid">
         <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
           {{ item.nameCN }}
         </a-radio>
@@ -55,7 +55,7 @@
       :columns="columns"
       :data="loadData"
       :alert="false"
-      showPagination="auto"
+      :showPagination="false"
     >
       <template slot="contractSplitAmount" slot-scope="text, record">
         <a-input-number
@@ -97,20 +97,22 @@
 <script>
   import { STable, Ellipsis } from '@/components'
   import { ContractService } from '@/views/contract/contract.service'
-  import { fixedList } from '@/utils/util'
 
   const columns = [
     {
       title: '科目',
-      dataIndex: 'elementName'
+      dataIndex: 'elementName',
+      width: '30%'
     },
     {
       title: '行业',
-      dataIndex: 'itemTypeName'
+      dataIndex: 'itemTypeName',
+      width: '140px'
     },
     {
       title: '业态',
-      dataIndex: 'costCenterName'
+      dataIndex: 'costCenterName',
+      width: '140px'
     },
     {
       title: '预算余额(a)',
@@ -155,27 +157,23 @@
         balance: {},
         balances: [],
         selection: {},
-        queryParam: {},
+        queryParam: { useStore: '' },
         statusCode: 200,
-        useStore: null,
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           this.queryParam.contractGuid = this.contractGuid
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return ContractService.computeBudgets(requestParameters).then(res => {
+          return ContractService.computeBudgets(this.queryParam).then(res => {
             this.statusCode = res.result.statusCode
             this.total = {}
             this.balance = {}
             this.balances = []
-            this.selection = {}
             res.result.data.forEach((item, index) => {
               item.index = index
             })
             this.getTotal(res.result.data)
             this.getBalance(res.result.data)
             this.getBalances()
-            this.data = fixedList(res, requestParameters)
-            return this.data
+            return res.result
           })
         },
         rules: {
@@ -199,13 +197,16 @@
       },
       amount: {
         default: 0
+      },
+      useStore: {
+        default: null
       }
     },
     computed: {},
     created () {
       ContractService.storeTypes().then(res => {
         this.selection.storeTypes = res.result.data
-        this.useStore = res.result.data[0].id
+        this.$forceUpdate()
       })
     },
     watch: {
@@ -213,6 +214,9 @@
         if (value && this.$refs.table) {
           this.$refs.table.refresh()
         }
+      },
+      'useStore' (value) {
+        this.queryParam.useStore = value
       }
     },
     methods: {
@@ -236,19 +240,19 @@
         if (items) {
           items.forEach(item => {
             if (this.total[item.costCenterCode]) {
-              this.total[item.costCenterCode] = this.total[item.costCenterCode] + item.contractSplitAmount
+              this.total[item.costCenterCode].value = this.total[item.costCenterCode].value + item.contractSplitAmount
             } else {
-              this.total[item.costCenterCode] = item.contractSplitAmount
+              this.total[item.costCenterCode] = { name: item.costCenterName, value: item.contractSplitAmount }
             }
           })
         }
       },
       getBalanceItem (key, items) {
-        let max = this.total[key]
+        let max = this.total[key].value
         items.forEach(item => {
           max = max - item.contractSplitAmount
         })
-        return max
+        return { name: this.total[key].name, value: max }
       },
       getBalance (records) {
         for (const key in this.total) {
@@ -260,9 +264,11 @@
       getBalances () {
         const balances = []
         for (const key in this.balance) {
+          console.log(this.balance[key])
           balances.push({
             key,
-            value: this.balance[key]
+            name: this.balance[key].name,
+            value: this.balance[key].value
           })
         }
         this.form.balances = balances
@@ -271,3 +277,10 @@
     }
   }
 </script>
+<style lang="less" scoped>
+/deep/ table {
+  td {
+    min-width: 150px;
+  }
+}
+</style>

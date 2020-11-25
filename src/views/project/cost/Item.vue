@@ -224,7 +224,7 @@
                   prop="totalCFAExcludeParking"
                 >
                   <a-input-number
-                    :disabled="type === 'view'"
+                    :disabled="true"
                     v-model="form.totalCFAExcludeParking"
                     placeholder="请填写总建筑面积(不含停车库)(CFA)"
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -312,7 +312,7 @@
                   style="width: 50%;padding-right: 24px;"
                 >
                   <a-input-number
-                    :disabled="type === 'view'"
+                    :disabled="true"
                     v-model="form.totalGFA"
                     placeholder="请填写总计容面积(GFA)"
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -366,12 +366,12 @@
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
-                  label="地上RA(=地上计容面积 GFA)"
+                  label="地上可售/可租面积"
                 >
                   <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.raUpperGround"
-                    placeholder="请填写地上RA(=地上计容面积 GFA)"
+                    placeholder="请填写地上可售/可租面积"
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="value => value.replace(/\\s?|(,*)/g, '')"
                     :precision="2"
@@ -380,12 +380,12 @@
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-model-item
-                  label="地下RA(=地下计容面积 GFA + 不计容地下前勤建筑面积，不含后勤区及车库)"
+                  label="地下可售/可租面积"
                 >
                   <a-input-number
                     :disabled="type === 'view'"
                     v-model="form.raBasement"
-                    placeholder="请填写地下RA(=地下计容面积 GFA + 不计容地下前勤建筑面积，不含后勤区及车库)"
+                    placeholder="请填写地下可售/可租面积"
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="value => value.replace(/\\s?|(,*)/g, '')"
                     :precision="2"
@@ -397,7 +397,7 @@
                   label="总可售/可租面积(RA)"
                 >
                   <a-input-number
-                    :disabled="type === 'view'"
+                    :disabled="true"
                     v-model="form.totalRA"
                     placeholder="请填写总可售/可租面积(RA)"
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -766,6 +766,43 @@ export default {
     },
     ProjectGUID () {
       return this.$route.query.ProjectGUID
+    }
+  },
+  watch: {
+    'form.cfaUpperGround' () {
+      // a
+      this.form.totalCFAExcludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh
+      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
+    },
+    'form.cfafoh' () {
+      // b
+      this.form.totalCFAExcludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh
+      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
+    },
+    'form.cfaboh' () {
+      // c
+      this.form.totalCFAExcludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh
+      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
+    },
+    'form.cfaCarpark' () {
+      // d
+      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
+    },
+    'form.gfaUpperGround' () {
+      // e
+      this.form.totalGFA = this.form.gfaUpperGround + this.form.gfaBasement
+    },
+    'form.gfaBasement' () {
+      // f
+      this.form.totalGFA = this.form.gfaUpperGround + this.form.gfaBasement
+    },
+    'form.raUpperGround' () {
+      // g
+      this.form.totalRA = this.form.raUpperGround + this.form.raBasement
+    },
+    'form.raBasement' () {
+      // h
+      this.form.totalRA = this.form.raUpperGround + this.form.raBasement
     }
   },
   methods: {

@@ -59,7 +59,7 @@ request.interceptors.response.use((response) => {
   if (result) {
     if (result.statusCode && result.statusCode !== 200) {
       notification.error({
-        message: '接口错误',
+        message: '系统提示',
         description: result.msg
       })
       if (result.statusCode === 401) {
