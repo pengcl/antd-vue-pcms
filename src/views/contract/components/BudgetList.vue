@@ -2,7 +2,7 @@
   <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" style="margin-bottom: 16px">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
-        <a-radio-group :disabled="type === 'view'" v-model="useStore" button-style="solid">
+        <a-radio-group :disabled="true" v-model="useStore" button-style="solid">
           <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
             {{ item.nameCN }}
           </a-radio>
@@ -72,8 +72,13 @@ const columns = [
     scopedSlots: { customRender: 'tenderSurplus' }
   },
   {
-    title: '预计变更(e)',
+    title: '变更预留-固定(e1)',
     dataIndex: 'alterPlan',
+    scopedSlots: { customRender: 'alterPlan' }
+  },
+  {
+    title: '变更预留-暂定(e2)',
+    dataIndex: 'TemporaryAlterPlan',
     scopedSlots: { customRender: 'alterPlan' }
   },
   {

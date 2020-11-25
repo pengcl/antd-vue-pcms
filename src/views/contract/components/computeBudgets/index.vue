@@ -80,6 +80,13 @@
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
           :precision="2"/>
       </template>
+      <template slot="temporaryAlterPlan" slot-scope="text, record">
+        <a-input-number
+          :disabled="true"
+          :value="record.temporaryAlterPlan"
+          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+          :precision="2"/>
+      </template>
       <template slot="balanceAmount" slot-scope="text, record">
         <a-form-model-item>
           <a-input-number
@@ -133,9 +140,14 @@
       scopedSlots: { customRender: 'tenderSurplus' }
     },
     {
-      title: '预计变更(e)',
+      title: '变更预留-固定(e1)',
       dataIndex: 'alterPlan',
       scopedSlots: { customRender: 'alterPlan' }
+    },
+    {
+      title: '变更预留-暂定(e2)',
+      dataIndex: 'temporaryAlterPlan',
+      scopedSlots: { customRender: 'temporaryAlterPlan' }
     },
     {
       title: '差额(f)',
@@ -157,7 +169,7 @@
         balance: {},
         balances: [],
         selection: {},
-        queryParam: { useStore: '' },
+        queryParam: { useStore: this.contract.useStore },
         statusCode: 200,
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
@@ -198,7 +210,8 @@
       amount: {
         default: 0
       },
-      useStore: {
+      contract: {
+        type: Object,
         default: null
       }
     },
@@ -215,10 +228,6 @@
         if (value && this.$refs.table) {
           this.$refs.table.refresh()
         }
-      },
-      'useStore' (value) {
-        console.log(value)
-        this.queryParam.useStore = value
       }
     },
     methods: {
@@ -226,14 +235,17 @@
         setTimeout(() => {
           if (record.budgetPlanDetailAmount - record.contractSplitAmount >= record.contractSplitAmount * 0.05) {
             record.alterPlan = record.contractSplitAmount * 0.05
+            record.TemporaryAlterPlan = record.contractSplitAmount * 0.05
           } else {
             const alterPlan = record.budgetPlanDetailAmount - record.contractSplitAmount
             record.alterPlan = alterPlan >= 0 ? alterPlan : 0
+            const TemporaryAlterPlan = record.budgetPlanDetailAmount - record.contractSplitAmount
+            record.TemporaryAlterPlan = TemporaryAlterPlan >= 0 ? TemporaryAlterPlan : 0
           }
 
-          const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan
+          const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan - record.TemporaryAlterPlan
           record.tenderSurplus = tenderSurplus >= 0 ? tenderSurplus : 0
-          record.balanceAmount = record.budgetPlanDetailAmount - record.contractSplitAmount - record.tenderSurplus - record.alterPlan
+          record.balanceAmount = record.budgetPlanDetailAmount - record.contractSplitAmount - record.tenderSurplus - record.alterPlan - record.TemporaryAlterPlan
           this.getBalance(this.$refs.table.localDataSource)
           this.getBalances()
         }, 100)
@@ -266,7 +278,6 @@
       getBalances () {
         const balances = []
         for (const key in this.balance) {
-          console.log(this.balance[key])
           balances.push({
             key,
             name: this.balance[key].name,
