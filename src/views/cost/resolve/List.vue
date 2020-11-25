@@ -144,7 +144,7 @@
                     })
                     this.columns = _columns
                     this.$forceUpdate()
-                    const tempCodes = ['B', 'C', 'D', 'G']
+                    const tempCodes = ['B', 'C', 'D', 'E', 'F', 'G']
                     res.result.data.forEach(item => {
                       if (tempCodes.includes(item.code)) {
                         const obj = {}

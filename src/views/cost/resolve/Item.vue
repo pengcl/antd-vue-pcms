@@ -9,9 +9,9 @@
               <a-button type="success" style="margin-left: 20px">审批记录</a-button>
               <a-button type="success" @click="createGT" style="margin-left: 20px">生成GT</a-button>
             </a-col>
-            <a-col :md="24" :sm="24">
-              <a-checkbox>Budget Re-allocation</a-checkbox>
-            </a-col>
+<!--            <a-col :md="24" :sm="24">-->
+<!--              <a-checkbox>Budget Re-allocation</a-checkbox>-->
+<!--            </a-col>-->
           </a-row>
         </a-form>
       </div>
@@ -70,34 +70,7 @@
   import {CostService} from '@/views/cost/cost.service'
   import {Ellipsis, STable} from '@/components'
   import ResolveModal from '@/views/cost/resolve/modal/ResolveModal'
-  import StepByStepModal from '@/views/list/modules/StepByStepModal'
-
-  function fixedList(res, params) {
-    const result = {}
-    result.pageSize = params.pageSize
-    result.pageNo = params.pageNo
-    if (res.result.data) {
-      result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
-      result.totalCount = res.result.data.length
-      result.data = formatList(res.result.data)
-    } else {
-      result.totalPage = 0
-      result.totalCount = 0
-      result.data = []
-    }
-    return result
-  }
-
-  function formatList(items) {
-    const list = []
-    items.forEach(item => {
-      if (item.childs) {
-        item.children = formatList(item.childs)
-      }
-      list.push(item)
-    })
-    return list
-  }
+  import {fixedList} from "@/utils/util";
 
   function getBudgetList(groupId, items) {
     let obj = null
@@ -164,7 +137,7 @@
     return amount
   }
 
-  //根据行数据，循环成本中心组装列数据
+  // 根据行数据，循环成本中心组装列数据
   function getList(items, costCenters) {
     const list = []
     items.forEach(item => {
