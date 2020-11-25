@@ -24,7 +24,6 @@
 
       <div class="table-operator">
         <a-button type="success" @click="handleAdd">搜索</a-button>
-        <a-button type="success" @click="handleAdd">批量同意</a-button>
         <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1">
@@ -62,7 +61,7 @@
           {{ record.taskStartTime | moment }}
         </span>
 
-        <span slot="action" slot-scope="record">
+        <span slot="action" slot-scope="text,record">
           <template>
             <a-button icon="form" @click="handleEdit(record)" type="primary"></a-button>
           </template>
@@ -160,8 +159,8 @@
         this.visible = true
       },
       handleEdit (record) {
-        this.visible = true
-        this.mdl = { ...record }
+        console.log(record)
+        window.location.href = record.workflowUrl
       },
       handleOk () {
         const form = this.$refs.createModal.form

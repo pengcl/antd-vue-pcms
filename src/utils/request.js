@@ -63,10 +63,8 @@ request.interceptors.response.use((response) => {
         description: result.msg
       })
       if (result.statusCode === 401) {
-        logout().then(res => {
-          storage.remove(ACCESS_TOKEN)
-          window.location.href = '/user/login'
-        })
+        storage.remove(ACCESS_TOKEN)
+        window.location.href = '/user/login'
         // window.location.href = '/user/login'
       }
     }

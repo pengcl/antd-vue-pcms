@@ -300,6 +300,19 @@ export const asyncRouterMap = [
         meta: { title: 'menu.pay', icon: 'transaction', permission: ['pay'] },
         children: [
           {
+            path: '/pay/fundplan/list',
+            name: 'PayFundPlanList',
+            component: () => import('@/views/pay/fundplan/List'),
+            meta: { title: 'menu.pay.fundplan.list', keepAlive: true, permission: ['pay'] }
+          },
+          {
+            path: '/pay/fundplan/item/:id',
+            name: 'PayFundPlanItem',
+            hidden: true,
+            component: () => import('@/views/pay/fundplan/Item'),
+            meta: { title: 'menu.pay.fundplan.item', keepAlive: true, permission: ['pay'] }
+          },
+          {
             path: '/pay/signed/list',
             name: 'PaySignedList',
             component: () => import('@/views/pay/signed/List'),
@@ -338,19 +351,6 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/pay/unsigned/Item'),
             meta: { title: 'menu.pay.unsigned.item', keepAlive: true, permission: ['pay'] }
-          },
-          {
-            path: '/pay/fundplan/list',
-            name: 'PayFundPlanList',
-            component: () => import('@/views/pay/fundplan/List'),
-            meta: { title: 'menu.pay.fundplan.list', keepAlive: true, permission: ['pay'] }
-          },
-          {
-            path: '/pay/fundplan/item/:id',
-            name: 'PayFundPlanItem',
-            hidden: true,
-            component: () => import('@/views/pay/fundplan/Item'),
-            meta: { title: 'menu.pay.fundplan.item', keepAlive: true, permission: ['pay'] }
           }
         ]
       },

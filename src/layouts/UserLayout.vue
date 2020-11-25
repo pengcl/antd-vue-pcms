@@ -22,7 +22,7 @@
       <footer class="footer fixed-bottom footer-dark navbar-border navbar-shadow">
         <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
           <span class="float-md-left d-block d-md-inline-block">
-            © 新世界中国地产有限公司 2020。 版权所有。
+            © 新世界中国 2020。 版权所有。
 
           </span>
 
