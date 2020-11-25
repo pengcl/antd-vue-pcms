@@ -19,7 +19,7 @@
           <a-col :md="24" :sm="24">
             <s-table 
               v-if="useStore === 108"
-              :row-key="record => record.id" 
+              :row-key="record => record.itemkey" 
               :columns="columns" 
               :showPagination="false"
               :data="loadData"
@@ -207,8 +207,13 @@
                     this.rowSpans['cost'+item.costCenterId] = 1
                   }
                 })
-                console.log('results',res.result.data)
+                console.log('results',res.result)
                 return res.result
+              }).catch((e) =>{
+                this.$message.error('获取预算变更金额列表错误')
+                return new Promise((resolve, reject) => {
+                  resolve({ data : [] })
+                })
               })
           }else{
             return new Promise((resolve, reject) => {

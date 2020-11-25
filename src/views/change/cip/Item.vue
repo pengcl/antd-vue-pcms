@@ -332,6 +332,7 @@
         this.form.voMasterInfo.isBeforeApply = this.form.voMasterInfo.isBeforeApply == undefined || this.form.voMasterInfo.isBeforeApply == null || this.form.voMasterInfo.isBeforeApply == '' ? true : this.form.voMasterInfo.isBeforeApply
         this.form.voMasterInfo.isTrip = this.form.voMasterInfo.isTrip || false
         this.form.voMasterInfo.budgetIsConfirm = this.form.voMasterInfo.budgetIsConfirm || false
+        this.form.voMasterInfo.useStore =  0
         // this.$forceUpdate()
       },
       handleTabChange(activieKey){
