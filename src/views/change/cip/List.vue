@@ -383,7 +383,7 @@
       // cip转vo 方法
       handleCipToVo () {
         if (this.tableSelected.voGuid != undefined) {
-          this.$router.push({ path: `/change/cip/item/${this.tableSelected.cipGuid}?type=add&contractGuid=${this.queryParam2.contractGuid}&stage=VO` })
+          this.$router.push({ path: `/change/vo/item/${this.tableSelected.cipGuid}?type=add&contractGuid=${this.queryParam2.contractGuid}&stage=VO` })
         }
       },
       onSelectChange (selectedRowKeys, selectedRows) {
@@ -414,7 +414,7 @@
       },
       showVO (record) {
         this.$router.push({
-          path: `/change/cip/item/${record.voGuid}?type=view&contractGuid=${this.queryParam2.contractGuid}&stage=VO`
+          path: `/change/vo/item/${record.voGuid}?type=view&contractGuid=${this.queryParam2.contractGuid}&stage=VO`
         })
       },
       handleToContractInfo(record){

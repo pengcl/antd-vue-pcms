@@ -320,7 +320,6 @@
         {
             title: '项目名称',
             dataIndex: 'elementCode',
-            width: '79px',
             colSpan: 2,
         },
         {
