@@ -343,7 +343,7 @@
               if (res.result.statusCode === 200) {
                 this.show = false
                 this.$message.success('确认成功')
-                this.$router.push({ path: `/contract/item/${this.form.contract.contractGuid}?type=view` })
+                this.$router.push({ path: `/contract/item/${res.result.data}?type=view` })
               }
             })
           }
