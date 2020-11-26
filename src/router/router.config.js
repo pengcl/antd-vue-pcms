@@ -270,6 +270,13 @@ export const asyncRouterMap = [
             meta: { title: 'menu.change.cip.item', keepAlive: true, permission: ['change'] }
           },
           {
+            path: '/change/vo/item/:id',
+            name: 'ChangeCipVO',
+            hidden: true,
+            component: () => import('@/views/change/cip/Item'),
+            meta: { title: 'menu.change.vo.item', keepAlive: true, permission: ['change'] }
+          },
+          {
             path: '/change/account/list',
             name: 'ChangeAccountList',
             component: () => import('@/views/change/account/List'),

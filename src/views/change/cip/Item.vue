@@ -89,7 +89,7 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' &&form.voMasterInfo.budgetIsConfirm && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
             <a-button type="success" :loading="loading.showBPM" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中'" @click="showBPM">查看审批流程</a-button>
 
             <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !this.pmiUrl" @click="createPMI">生成项目指令</a-button>
@@ -98,7 +98,7 @@
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO'" @click="$router.push({ path: `/change/cip/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO'" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
             <a-button type="success" :loading="loading.save" v-if="type !== 'view'" @click="save()">储存</a-button>
             <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
@@ -110,10 +110,7 @@
 
     <compute-budgets-modal
       ref="budgets"
-      :stage="stage"
-      :voGuid="id"
-      :voType="form.voMasterInfo.voType"
-      :contractGuid="contractGuid"
+      :data="form"
       :destroyOnClose="true"
     ></compute-budgets-modal>
   </page-header-wrapper>
@@ -236,6 +233,7 @@
           return
         }
         if (isValid) {
+          const stageLower = this.stage.toLowerCase()
           this.form.contractNo = this.contract.contractNo
           console.log('saveData', this.form)
           if (this.type == 'add') {
@@ -250,7 +248,7 @@
               if (res.result.statusCode === 200) {
                 this.$message.success('创建成功')
                 this.id = res.result.data
-                this.$router.push({ path: `/change/cip/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
+                this.$router.push({ path: `/change/${stageLower}/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
               }
             }).catch(() => {
               this.loading.save = false
@@ -264,7 +262,7 @@
               if (res.result.statusCode === 200) {
                  if(callback == undefined){
                   this.$message.success('修改成功')
-                  this.$router.push({ path: `/change/cip/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
+                  this.$router.push({ path: `/change/${stageLower}/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
                  }else{
                    callback()
                  }
@@ -282,6 +280,11 @@
       },
       startBPM () {
         this.loading.startBPM = true
+        if(!this.form.voMasterInfo.budgetIsConfirm){
+          this.$message.warn('未确认预算，无法发起审批流程')
+          this.loading.startBPM= false
+          return
+        }
         const that = this
         // this.save(innerStartBPM)
         innerStartBPM()

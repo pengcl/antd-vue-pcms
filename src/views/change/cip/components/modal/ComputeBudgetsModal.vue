@@ -10,7 +10,7 @@
 	    <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-radio-group v-model="useStore" button-style="solid" @change="useStoreChange">
+            <a-radio-group v-model="data.voMasterInfo.useStore" button-style="solid" @change="useStoreChange">
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
                 {{ item.nameCN }}（<span class="redText">余额：<span>1000</span>元</span>）
               </a-radio>
@@ -18,11 +18,11 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <s-table 
-              v-if="useStore === 108"
+              v-if="data.voMasterInfo.useStore === 108"
               :row-key="record => record.itemkey" 
               :columns="columns" 
               :showPagination="false"
-              :data="loadData"
+              :data="usePlanLoadData"
               bordered 
               ref="table" >
                 <template slot="alterPlan" slot-scope="text,record">
@@ -37,7 +37,7 @@
                 </template>
             </s-table>
             <s-table 
-              v-if="useStore === 109"
+              v-if="data.voMasterInfo.useStore === 109"
               :row-key="record => record.id" 
               :columns="surplusColumns" 
               :showPagination="false"
@@ -56,7 +56,7 @@
                 </template>
             </s-table>
             <s-table 
-              v-if="useStore === 110"
+              v-if="data.voMasterInfo.useStore === 110"
               :row-key="record => record.id" 
               :columns="generalTradeColumns" 
               :showPagination="false"
@@ -189,11 +189,11 @@
         // 高级搜索 展开/关闭
         advanced: false,
         // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
+        usePlanLoadData: parameter => {
           this.rowSpans = {}
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          if(this.useStore === 108 ){
-            return ChangeService.getVoBudgetPreSplit({VOGuid : this.voGuid, VOType : this.voType,useStore : this.useStore})
+          if(this.data.voMasterInfo.useStore === 108 ){
+            return ChangeService.getVoBudgetPreSplit({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : this.data.voMasterInfo.useStore})
               .then(res => {
                 if(res.result.data.length > 0){
                   res.result.data.sort((a,b) =>{
@@ -223,7 +223,7 @@
         },
         surplusLoadData :  parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          if(this.useStore === 109 ){
+          if(this.data.voMasterInfo.useStore === 109 ){
             return new Promise((resolve, reject) => {
               resolve({ data : [] })
             })
@@ -235,7 +235,7 @@
         },
         generalTradeLoadData : parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          if(this.useStore === 110 ){
+          if(this.data.voMasterInfo.useStore === 110 ){
             return new Promise((resolve, reject) => {
               resolve({ data : [] })
             })
@@ -250,17 +250,9 @@
       }
     },
     props: {
-      voGuid: {
-        type: String,
-        default: ''
-      },
-      voType: {
-        type : String,
-        default : '',
-      },
-      useStore: {
-        type : Number,
-        default : 0
+      data : {
+        type : Object,
+        default : null
       }
     },
     computed: {

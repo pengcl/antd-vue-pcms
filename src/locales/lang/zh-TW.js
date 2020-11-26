@@ -36,9 +36,9 @@ const locale = {
   'menu.contract.account.item': '合同详情',
 
   'menu.change': '变更及成本管控',
-  'menu.change.pmi': '项目管理指令表',
-  'menu.change.cip.list': '合同指令预先批核表',
-  'menu.change.cip.item': '合同指令预先批核详细',
+  'menu.change.cip.list': '合同变更',
+  'menu.change.cip.item': '合同指令预先批核详细 (CIP)',
+  'menu.change.vo.item': '变更指令详细（VO）',
   'menu.change.account.list': '变更指令',
   'menu.change.account.item': '变更指令详细',
   'menu.change.certificate': '现场签证',
