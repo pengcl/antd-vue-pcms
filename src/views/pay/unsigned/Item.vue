@@ -262,10 +262,11 @@
                         if (res.result.data) {
                             this.$message.success('创建成功')
                             if (this.approveStatus) {
-                                UnSignedService.approve(res.result.data).then(res => {
-                                    if (res.result.data) {
+                                UnSignedService.approve(res.result.data).then(_res => {
+                                    if (_res.result.data) {
                                         this.$message.success('已启动审批流程')
-                                        window.location.href = res.result.data
+                                        const tempwindow = window.open('_blank')
+                                        tempwindow.location = _res.result.data
                                     }
                                 })
                             } else {
@@ -280,10 +281,11 @@
                         if (res.result.data) {
                             this.$message.success('修改成功')
                             if (this.approveStatus) {
-                                UnSignedService.approve(this.id).then(res => {
-                                    if (res.result.data) {
+                                UnSignedService.approve(this.id).then(_res => {
+                                    if (_res.result.data) {
                                         this.$message.success('已启动审批流程')
-                                        window.location.href = res.result.data
+                                        const tempwindow = window.open('_blank')
+                                        tempwindow.location = _res.result.data
                                     }
                                 })
                             } else {

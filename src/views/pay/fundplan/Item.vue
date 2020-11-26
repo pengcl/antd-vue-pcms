@@ -33,7 +33,8 @@
           {{text | NumberFormat}}
         </span>
 
-        <span slot="planTotalAmount" slot-scope="text">
+        <span slot="planTotalAmount" slot-scope="text,record"
+              :style="{color: record.planTotalAmount > record.businessAmt ? 'red' : ''}">
           {{text | NumberFormat}}
         </span>
 
@@ -206,7 +207,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin: 10px 0">
           <a-button-group v-if="type !== 'view'">
-            <a-button @click="save" type="success">
+            <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
           </a-button-group>
@@ -226,8 +227,10 @@
     import CreateViewHistoryVersion from './modules/CreateViewHistoryVersion'
     import { FundPlanService } from '@/views/pay/fundplan/fundplan.service'
     import { STable } from '@/components'
+    import notification from 'ant-design-vue/es/notification'
 
     function fixedList (res, params) {
+        const that = this
         const result = {}
         result.pageSize = params.pageSize
         result.pageNo = params.pageNo
@@ -258,6 +261,7 @@
                     item.detailList.forEach(d => {
                         total.businessAmt += d.businessAmt
                         total.businessPayAmt += d.businessPayAmt
+                        total.planTotalAmount += d.planTotalAmount
                         total.month_7 += d.month_7
                         total.month_8 += d.month_8
                         total.month_9 += d.month_9
@@ -270,8 +274,6 @@
                         total.month_4 += d.month_4
                         total.month_5 += d.month_5
                         total.month_6 += d.month_6
-                        d.planTotalAmount = d.month_7 + d.month_8 + d.month_9 + d.month_10 + d.month_11 + d.month_12 + d.month_1 + d.month_2 + d.month_3 + d.month_4 + d.month_5 + d.month_6
-                        total.planTotalAmount += d.planTotalAmount
                     })
                     item.businessAmt = total.businessAmt
                     item.businessPayAmt = total.businessPayAmt
@@ -411,6 +413,7 @@
         data () {
             this.columns = columns
             return {
+                disabled: false,
                 elementID: 0,
                 visible: false,
                 confirmLoading: false,
@@ -562,6 +565,19 @@
                 this.originData.result.data.elementList.forEach(item => {
                     item.detailList.forEach(d => {
                         total[key] += d[key]
+                        d.planTotalAmount = d.month_7 + d.month_8 + d.month_9 + d.month_10 + d.month_11 + d.month_12 + d.month_1 + d.month_2 + d.month_3 + d.month_4 + d.month_5 + d.month_6
+                        if (record.businessGID === d.businessGID) {
+                            if (d.planTotalAmount > d.businessAmt) {
+                                notification.error({
+                                    message: '提示',
+                                    description: '计划支付不能大于合同金额！'
+                                })
+                                this.disabled = true
+                            } else {
+                                this.disabled = false
+                            }
+                        }
+
                     })
                     item[key] = total[key]
                 })
@@ -574,5 +590,15 @@
 <style lang="less" scoped>
   .ant-btn-group {
     margin-right: 8px;
+  }
+
+  /deep/ .ant-table-body {
+    .ant-table-thead {
+      tr {
+        th:first-child {
+          min-width: 200px;
+        }
+      }
+    }
   }
 </style>

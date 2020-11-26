@@ -157,9 +157,7 @@
             </td>
             <td>累计支付金额</td>
             <td>
-              <a-input
-                :disabled="true"
-                v-model="data.contractMasterInfo.paymentAmountTotal + '/' + data.contractMasterInfo.paymentAmountTotalRatio + '%'"></a-input>
+              {{data.contractMasterInfo.paymentAmountTotal | NumberFormat}} / {{data.contractMasterInfo.paymentAmountTotalRatio + '%'}}
             </td>
           </tr>
           <tr>
@@ -276,11 +274,7 @@
                                 :precision="2"></a-input-number>
               </td>
               <td>累计支付金额</td>
-              <td>
-                <a-input
-                  :disabled="true"
-                  v-model="item.paymentAmountTotal + '/' + item.paymentAmountTotalRatio + '%'"></a-input>
-              </td>
+              <td>{{item.paymentAmountTotal | NumberFormat}} / {{item.paymentAmountTotalRatio + '%'}}</td>
             </tr>
             <tr>
               <td>承包单位送单时间</td>

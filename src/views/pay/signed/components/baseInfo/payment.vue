@@ -72,7 +72,7 @@
             <td>
               <a-select
                 @change="onChange"
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
                 placeholder="请选择"
                 v-model="item.vendorGID">
                 <a-select-option v-for="type in vendorTypes"
@@ -85,7 +85,7 @@
               <a-select
                 @change="bankChange"
                 placeholder="请选择"
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
                 v-model="item.vendorBankGID">
                 <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
                                  :value="type.gid"
@@ -142,7 +142,7 @@
         },
         watch: {
             'data' (value) {
-                this.getVendor(this.type === 'create' ? this.data['contractGID'] : this.data['mainContractGID'])
+                this.getVendor(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID'])
             }
         },
         created () {
@@ -150,8 +150,8 @@
                 this.moneyTypes = res.result.data
                 this.$forceUpdate()
             })
-            if (this.data['contractGID'] || this.data['mainContractGID']) {
-                SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['mainContractGID']).then(res => {
+            if (this.data['contractGID'] || this.data['secondaryContractGID']) {
+                SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID']).then(res => {
                     this.vendorTypes = res.result.data
                     this.$forceUpdate()
                 })
