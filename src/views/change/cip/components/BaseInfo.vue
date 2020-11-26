@@ -19,7 +19,7 @@
         <a-form-model-item label="项目管理指令发出日期">
           <a-input
             :disabled="true"
-            :value="creationTime"
+            :value="data.voMasterInfo.creationTime | date"
           ></a-input>
         </a-form-model-item>
       </a-col>
@@ -27,7 +27,7 @@
         <a-form-model-item label="项目管理指令最后更新日期">
           <a-input
             :disabled="true"
-            :value="lastModificationTime"
+            :value="data.voMasterInfo.lastModificationTime | date"
           ></a-input>
         </a-form-model-item>
       </a-col>
@@ -38,13 +38,13 @@
         <table>
           <thead>
             <tr>
-              <th>致：</th>
+              <th>公司名：</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td >
-                <a-form-model-item prop="to">
+                <a-form-model-item prop="to" label="致">
                   <a-select
                     placeholder="请选择"
                     v-model="to"
@@ -64,36 +64,23 @@
         </table>
       </a-col>
       <a-col :md="24" :sm="24">
-        <table>
-          <thead>
-            <tr>
-              <th>抄送：</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <a-form-item >
-                  <a-select
-                    mode="multiple"
-                    placeholder="请选择"
-                    :disabled="type === 'view'"
-                    v-model="cc"
-                    @change="ccChange"
-                    option-filter-prop="children"
-                  >
-                    <a-select-option
-                      v-for="option in selection.sendCopyParties"
-                      :key="option.partID"
-                      :value="option.partID">
-                      {{ option.partName }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <a-form-item label="抄送">
+          <a-select
+            mode="multiple"
+            placeholder="请选择"
+            :disabled="type === 'view'"
+            v-model="cc"
+            @change="ccChange"
+            option-filter-prop="children"
+          >
+            <a-select-option
+              v-for="option in selection.sendCopyParties"
+              :key="option.partID"
+              :value="option.partID">
+              {{ option.partName }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <a-form-model-item label="变更原因详细" prop="reason">
@@ -511,8 +498,6 @@
         to: '',
         cc: [],
         resonTypes : resonTypes,
-        creationTime : '',
-        lastModificationTime : '',
         toRate: 0,
         reasonType: [],
         selection: {},
@@ -586,8 +571,6 @@
         }
       },
       'data.voMasterInfo' (value) {
-        this.creationTime = this.data.voMasterInfo.creationTime ? moment(this.data.voMasterInfo.creationTime).format('yyyy-MM-DD HH:mm:ss') : ''
-        this.lastModificationTime = this.data.voMasterInfo.lastModificationTime ? moment(this.data.voMasterInfo.lastModificationTime).format('yyyy-MM-DD HH:mm:ss') : ''
         // 初始化reasonType值，转换为checkboxgroup认同的值
         if (this.data.voMasterInfo.reasonType) {
           this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType)

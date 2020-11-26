@@ -27,7 +27,7 @@
             <tr>
               <th style="width: 15%">操作</th>
               <th style="width: 20%">科目</th>
-              <th style="width: 20%">行业类型</th>
+              <th style="width: 20%">行业名称</th>
               <th v-for="(costCenterItem,index) in costCenters" :key="index">
                 {{costCenterItem.costCenterName}}
               </th>
@@ -54,7 +54,7 @@
                   class="simple"
                   style="margin-top: 20px"
                   :prop="'costCenterItems.' + index + '.tradeTypeId'"
-                  :rules="[{required: true, message: '请选择行业类型', trigger: 'change' }]"
+                  :rules="[{required: true, message: '请选择行业', trigger: 'change' }]"
                 >
                   <a-select
                     placeholder="请选择"
