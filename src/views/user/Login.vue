@@ -21,15 +21,15 @@
         type="error"
         showIcon
         style="margin-bottom: 24px;"
-        message="账户或密码错误"/>
+        message="用户名或密码错误"/>
       <a-form-item>
         <a-input
           size="large"
           type="text"
-          placeholder="请输入帐户名或邮箱地址"
+          placeholder="用户名"
           v-decorator="[
             'userNameOrEmailAddress',
-            {initialValue: appType === 'production' ? '' : 'test01', rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
+            {initialValue: appType === 'production' ? '' : 'test01', rules: [{ required: true, message: '请输入用户名' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
           ]"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -39,7 +39,7 @@
       <a-form-item>
         <a-input-password
           size="large"
-          placeholder="请输入密码"
+          placeholder="密码"
           v-decorator="[
             'password',
             {initialValue: appType === 'production' ? '' : 'abc123', rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
@@ -66,7 +66,7 @@
           class="login-button"
           :loading="state.loginBtn"
           :disabled="state.loginBtn"
-        >确定
+        >登入
         </a-button>
       </a-form-item>
     </a-form>

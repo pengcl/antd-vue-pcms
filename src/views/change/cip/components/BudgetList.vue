@@ -4,7 +4,7 @@
       <a-col :md="24" :sm="24">
         <a-radio-group name="radioGroup" v-model="budgetType">
           <a-radio :value="1">
-            预计变更金额（<span class="redText">余额：<span>1000</span>元</span>）
+            变更预留金额（<span class="redText">余额：<span>1000</span>元</span>）
           </a-radio>
           <a-radio :value="2">
             定标盈余（<span class="redText">余额：<span>800</span>元</span>）
@@ -20,7 +20,7 @@
           <tr>
             <th style="width: 20%">业态</th>
             <th style="width: 20%">科目</th>
-            <th style="width: 20%" >预算变更金额</th>
+            <th style="width: 20%" >变更预留金额</th>
             <th style="width: 20%">本次使用金额</th>
             <th style="width: 20%">差额</th>
           </tr>

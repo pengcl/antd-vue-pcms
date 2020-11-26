@@ -120,7 +120,7 @@
       :visible="show"
       :contractGuid="contractGuid"
       :amount="form.contract.contractEffectAmount"
-      :useStore="form.contract.useStore"
+      :contract="form.contract"
       :destroyOnClose="true"
       @cancel="handleCancel()"
       @ok="handleOk()"></contract-compute-budgets>
@@ -163,6 +163,7 @@
       }
     },
     created () {
+      console.log(this.form)
       this.getData()
     },
     computed: {
@@ -218,7 +219,6 @@
             this.form = res.result.data
             this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQlst))
             this.form.master = {}
-            this.form.contract.useStore = 2
             this.form.contract.currencyExchangeRate = 1
             ProjectService.view2(this.form.contract.projectID).then(res => {
               this.project = res.result.data
@@ -234,7 +234,6 @@
           this.form.contract.subNo = 0
           this.form.contract.serialNo = 0
           this.form.master = {}
-          this.form.contract.useStore = 2
           this.form.contract.currencyExchangeRate = 1
           ProjectService.view(this.ProjectGUID).then(res => {
             this.project = res.result.data
@@ -335,7 +334,7 @@
           if (valid) {
             const form = {
               contractGuid: this.contractGuid,
-              useStore: this.$refs.budgets.useStore,
+              useStore: this.$refs.budgets.queryParam.useStore,
               budgetIsConfirm: true,
               contractBudgetAdjustlst: this.$refs.budgets.$refs.table.localDataSource
             }

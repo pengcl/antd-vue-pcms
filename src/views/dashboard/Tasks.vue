@@ -4,7 +4,7 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="12" :sm="24">
+            <!--<a-col :md="12" :sm="24">
               <a-form-item label="使用状态">
                 <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
                   <a-select-option value="0">全部</a-select-option>
@@ -12,7 +12,7 @@
                   <a-select-option value="2">运行中</a-select-option>
                 </a-select>
               </a-form-item>
-            </a-col>
+            </a-col>-->
             <a-col :md="24" :sm="24">
               <a-form-item label="关键词">
                 <a-input v-model="queryParam.id" placeholder=""/>
@@ -24,23 +24,6 @@
 
       <div class="table-operator">
         <a-button type="success" @click="handleAdd">搜索</a-button>
-        <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1">
-              <a-icon type="delete"/>
-              删除
-            </a-menu-item>
-            <!-- lock | unlock -->
-            <a-menu-item key="2">
-              <a-icon type="lock"/>
-              锁定
-            </a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px">
-            批量操作
-            <a-icon type="down"/>
-          </a-button>
-        </a-dropdown>
       </div>
 
       <s-table
@@ -67,27 +50,12 @@
           </template>
         </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-  import moment from 'moment'
   import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
-
-  import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import CreateForm from '@/views/list/modules/CreateForm'
   import { TaskService } from '@/views/dashboard/task.service'
   import { fixedList } from '@/utils/util'
 
@@ -114,19 +82,12 @@
     name: 'Tasks',
     components: {
       STable,
-      Ellipsis,
-      CreateForm,
-      StepByStepModal
+      Ellipsis
     },
     data () {
       this.columns = columns
       return {
         // create model
-        visible: false,
-        confirmLoading: false,
-        mdl: null,
-        // 高级搜索 展开/关闭
-        advanced: false,
         // 查询参数
         queryParam: {},
         // 加载数据方法 必须为 Promise 对象
@@ -143,7 +104,7 @@
     },
     filters: {},
     created () {
-      getRoleList({ t: new Date() })
+      // getRoleList({ t: new Date() })
     },
     computed: {
       rowSelection () {
@@ -154,82 +115,17 @@
       }
     },
     methods: {
-      handleAdd () {
-        this.mdl = null
-        this.visible = true
+      search () {
+        this.$refs.table.refresh()
       },
       handleEdit (record) {
         console.log(record)
         window.location.href = record.workflowUrl
       },
-      handleOk () {
-        const form = this.$refs.createModal.form
-        this.confirmLoading = true
-        form.validateFields((errors, values) => {
-          if (!errors) {
-            console.log('values', values)
-            if (values.id > 0) {
-              // 修改 e.g.
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
 
-                this.$message.info('修改成功')
-              })
-            } else {
-              // 新增
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  resolve()
-                }, 1000)
-              }).then(res => {
-                this.visible = false
-                this.confirmLoading = false
-                // 重置表单数据
-                form.resetFields()
-                // 刷新表格
-                this.$refs.table.refresh()
-
-                this.$message.info('新增成功')
-              })
-            }
-          } else {
-            this.confirmLoading = false
-          }
-        })
-      },
-      handleCancel () {
-        this.visible = false
-
-        const form = this.$refs.createModal.form
-        form.resetFields() // 清理表单数据（可不做）
-      },
-      handleSub (record) {
-        if (record.status !== 0) {
-          this.$message.info(`${record.no} 订阅成功`)
-        } else {
-          this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-        }
-      },
       onSelectChange (selectedRowKeys, selectedRows) {
         this.selectedRowKeys = selectedRowKeys
         this.selectedRows = selectedRows
-      },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
-      },
-      resetSearchForm () {
-        this.queryParam = {
-          date: moment(new Date())
-        }
       }
     }
   }

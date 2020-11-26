@@ -105,7 +105,7 @@
       dataIndex: 'elementName'
     },
     {
-      title: '预算变更金额',
+      title: '变更预留金额',
       dataIndex: 'alterPlan',
       scopedSlots: { customRender: 'alterPlan' }
     },
