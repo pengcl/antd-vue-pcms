@@ -65,318 +65,321 @@
 </template>
 
 <script>
-    import { CostService } from '@/views/cost/cost.service'
-    import { ContractService } from '@/views/contract/contract.service'
-    import { SwaggerService } from '@/api/swagger.service'
-    import { Ellipsis, STable } from '@/components'
+  import {CostService} from '@/views/cost/cost.service'
+  import {ContractService} from '@/views/contract/contract.service'
+  import {SwaggerService} from '@/api/swagger.service'
+  import {Ellipsis, STable} from '@/components'
 
-    const defaultColumns = [
-        {
-            title: '科目代码',
-            width: 250,
-            dataIndex: 'elementInfoCode',
-            key: 'elementInfoCode'
-        },
-        {
-            title: '科目名称',
-            width: 250,
-            dataIndex: 'elementInfoNameCN',
-            key: 'elementInfoNameCN'
-        }
-    ]
-
-    const columns = defaultColumns
-
-    export default {
-        name: 'Table',
-        components: {
-            STable,
-            Ellipsis
-        },
-        data () {
-            this.columns = columns
-            return {
-                visible: false,
-                treeLevel: [],
-                datas: [],
-                ars: [],
-                isUpdate: false,
-                confirmLoading: false,
-                mdl: null,
-                loading: {
-                    save: false
-                },
-                active: '',
-                // 高级搜索 展开/关闭
-                advanced: false,
-                // 查询参数
-                queryParam: {},
-                // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
-                    const _columns = JSON.parse(JSON.stringify(defaultColumns))
-                    const requestParameters = {
-                        MaxResultCount: 1000,
-                        ProjectGUID: this.ProjectGUID,
-                        ElementTypeId: this.id
-                    }
-                    return CostService.subjectViewItems(requestParameters).then(res => {
-                        this.ars = res.result.data
-                        this.ars.forEach(item => {
-                            // 组装动态列
-                            _columns.push(
-                                {
-                                    title: item.costCenterName,
-                                    dataIndex: 'cost' + item.costCenterId,
-                                    scopedSlots: { customRender: 'cost' + item.costCenterId }
-                                }
-                            )
-                        })
-                        this.columns = _columns
-                        this.$forceUpdate()
-                        const rows = res.result.data[0].elementItem.childs
-                        forEachRow(rows, res.result.data)
-                        const result = []
-                        const obj = insertFirstRow(res.result.data[0].elementItem, res.result.data)
-                        obj['childs'] = rows
-                        obj['children'] = rows
-                        result.push(obj)
-                        //获取树级数量
-                        this.levelData(result)
-                        this.datas = result
-                    })
-
-                    function forEachItem (datas, elementId) {
-                        let result = null
-                        for (var i in datas) {
-                            const data = datas[i]
-                            if (data.elementInfoId === elementId) {
-                                result = data
-                                break
-                            }
-                            if (data.childs && data.childs.length > 0) {
-                                result = forEachItem(data.childs, elementId)
-                                if (result != null) {
-                                    break
-                                }
-                            }
-                        }
-                        return result
-                    }
-
-                    function forEachRow (datas, columnDatas) {
-                        for (var i in datas) {
-                            var data = datas[i]
-                            data['costCenters'] = []
-                            columnDatas.forEach(item => {
-                                if (item.elementItem) {
-                                    var costName = 'cost' + item.costCenterId
-                                    if (item.elementItem) {
-                                        const center = {}
-                                        center['costCenterId'] = item.costCenterId
-                                        center['elementInfoId'] = data.elementInfoId
-                                        var costColumn = forEachItem([item.elementItem], data.elementInfoId)
-                                        if (costColumn != null) {
-                                            data[costName] = costColumn.amount !== null ? costColumn.amount : 0
-                                            center['amount'] = costColumn.amount !== null ? costColumn.amount : 0
-                                        }
-                                        data['costCenters'].push(center)
-                                    }
-                                }
-                            })
-                            if (data.childs && data.childs.length > 0) {
-                                forEachRow(data.childs, columnDatas)
-                                data.children = data.childs
-                            }
-                        }
-                    }
-
-                    function insertFirstRow (data, columnDatas) {
-                        data['costCenters'] = []
-                        columnDatas.forEach(item => {
-                            var costName = 'cost' + item.costCenterId
-                            if (item.elementItem) {
-                                var costColumn = forEachItem([item.elementItem], data.elementInfoId)
-                                if (costColumn != null) {
-                                    data[costName] = costColumn.amount !== null ? costColumn.amount : 0
-                                }
-                            }
-                        })
-                        return data
-                    }
-                }
-            }
-        },
-        filters: {},
-        created () {
-            this.loadData()
-        },
-        computed: {
-            id () {
-                return this.$route.params.id
-            },
-            type () {
-                return this.$route.query.type
-            },
-            ProjectGUID () {
-                return this.$route.query.ProjectGUID
-            }
-        },
-        methods: {
-            back () {
-                this.$router.push({ path: `/cost/enact/list` })
-            },
-            handleToSave () {
-                const result = {}
-                const items = []
-                // 组装保存数据
-                result['ProjectGUID'] = this.ProjectGUID
-                result['budgetBaseTypeId'] = 83
-                result['elementTypeId'] = this.id
-                getResults(this.datas)
-
-                function getResults (datas) {
-                    datas.forEach(item => {
-                        if (item.costCenters.length > 0) {
-                            item.costCenters.forEach(center => {
-                                const obj = {}
-                                obj['costCenterId'] = center.costCenterId
-                                obj['elementInfoId'] = center.elementInfoId
-                                obj['amount'] = center.amount !== null ? center.amount : 0
-                                items.push(center)
-                            })
-                        }
-                        if (item.children && item.children.length > 0) {
-                            getResults(item.children)
-                        }
-                    })
-                }
-
-                result['items'] = items
-                console.log(result)
-                this.loading.save = true
-                CostService.update(result).then(res => {
-                    if (res.result.statusCode === 200) {
-                        this.loading.save = false
-                        this.$message.info('修改成功')
-                        this.back()
-                    }
-                }).catch(() => {
-                    this.loading.save = false
-                })
-            },
-            checkChange (value, record, costCenterId) {
-                // 找到如果数据内存在旧数据，先移除，再添加
-                this.isUpdate = false
-                record.costCenters.forEach(center => {
-                    if (center.costCenterId === costCenterId) {
-                        center.amount = value
-                        this.isUpdate = true
-                    }
-                })
-                let totalCost = 0
-                this.datas.forEach(item => {
-                    item.children.forEach(child => {
-                        let childCost = 0
-                        if (child.children) {
-                            child.children.forEach(_child => {
-                                childCost += _child['cost' + costCenterId]
-                            })
-                        } else {
-                            childCost += child['cost' + costCenterId]
-                        }
-                        child['cost' + costCenterId] = childCost
-                        totalCost += child['cost' + costCenterId]
-                    })
-                    item['cost' + costCenterId] = totalCost
-                })
-                if (!this.isUpdate) {
-                    const item = {}
-                    item['costCenterId'] = costCenterId
-                    item['elementInfoId'] = record.elementInfoId
-                    item['amount'] = value
-                    record.costCenters.push(item)
-                }
-                this.$forceUpdate()
-            },
-            changeLevel (index) {
-                // 处理按钮的样式
-                for (let i = 0; i < this.treeLevel.length; i++) {
-                    if (i === index) {
-                        this.treeLevel[i].type = 'primary'
-                    } else {
-                        this.treeLevel[i].type = 'dashed'
-                    }
-                    // 处理树的显示或者隐藏
-                    if (index !== 0) {
-                        const first = document.getElementsByClassName('ant-table-row ant-table-row-level-0')[0]
-                        first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.remove('ant-table-row-collapsed')
-                        first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.add('ant-table-row-expanded')
-                        // 低于此级别的全部显示
-                        for (let j = 1; j <= index; j++) {
-                            let className = 'ant-table-row ant-table-row-level-' + j
-                            document.getElementsByClassName(className).forEach(item => {
-                                if (index === 1) {
-                                    item.getElementsByClassName('ant-table-row-expand-icon')[0].classList.remove('ant-table-row-expanded')
-                                    item.getElementsByClassName('ant-table-row-expand-icon')[0].classList.add('ant-table-row-collapsed')
-                                }
-                                item.style.display = ''
-                            })
-                        }
-                        // 高于此级别的全部隐藏
-                        for (let j = index + 1; j < this.treeLevel.length; j++) {
-                            let className = 'ant-table-row ant-table-row-level-' + j
-                            document.getElementsByClassName(className).forEach(item => {
-                                item.style.display = 'none'
-                            })
-                        }
-                    } else {
-                        const first = document.getElementsByClassName('ant-table-row ant-table-row-level-0')[0]
-                        first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.remove('ant-table-row-expanded')
-                        first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.add('ant-table-row-collapsed')
-                        for (let j = 1; j < this.treeLevel.length; j++) {
-                            let className = 'ant-table-row ant-table-row-level-' + j
-                            document.getElementsByClassName(className).forEach(item => {
-                                item.style.display = 'none'
-                            })
-                            // document.getElementsByClassName('ant-table-row ant-table-row-level-0').getElementsByClassName('ant-table-row-expand-icon').addClass('ant-table-row-collapsed')
-                        }
-                    }
-                }
-
-            },
-            getMaxlevel (treeData) {
-                let level = 0
-                let v = this
-                let maxLevel = 0
-
-                function loop (data, level) {
-                    data.forEach(item => {
-                        item.level = level
-                        if (level > maxLevel) {
-                            maxLevel = level
-                        }
-                        if ('children' in item) {
-                            if (item.children.length > 0) {
-                                loop(item.children, level + 1)
-                            }
-                        }
-                    })
-                }
-
-                loop(treeData, 1)
-                return maxLevel
-            },
-            levelData (result) {
-                const level = this.getMaxlevel(result)
-                for (let i = 0; i < level; i++) {
-                    const obj = {}
-                    obj.index = i
-                    obj.type = 'dashed'
-                    this.treeLevel.push(obj)
-                }
-            },
-        }
+  const defaultColumns = [
+    {
+      title: '科目代码',
+      width: 250,
+      dataIndex: 'elementInfoCode',
+      key: 'elementInfoCode'
+    },
+    {
+      title: '科目名称',
+      width: 250,
+      dataIndex: 'elementInfoNameCN',
+      key: 'elementInfoNameCN'
     }
+  ]
+
+  const columns = defaultColumns
+
+  export default {
+    name: 'Table',
+    components: {
+      STable,
+      Ellipsis
+    },
+    data() {
+      this.columns = columns
+      return {
+        visible: false,
+        treeLevel: [],
+        datas: [],
+        ars: [],
+        isUpdate: false,
+        confirmLoading: false,
+        mdl: null,
+        loading: {
+          save: false
+        },
+        active: '',
+        // 高级搜索 展开/关闭
+        advanced: false,
+        // 查询参数
+        queryParam: {},
+        // 加载数据方法 必须为 Promise 对象
+        loadData: parameter => {
+          const _columns = JSON.parse(JSON.stringify(defaultColumns))
+          const requestParameters = {
+            MaxResultCount: 1000,
+            ProjectGUID: this.ProjectGUID,
+            ElementTypeId: this.id
+          }
+          return CostService.subjectViewItems(requestParameters).then(res => {
+            this.ars = res.result.data
+            this.ars.forEach(item => {
+              // 组装动态列
+              _columns.push(
+                {
+                  title: item.costCenterName,
+                  dataIndex: 'cost' + item.costCenterId,
+                  scopedSlots: {customRender: 'cost' + item.costCenterId}
+                }
+              )
+            })
+            this.columns = _columns
+            this.$forceUpdate()
+            const rows = res.result.data[0].elementItem.childs
+            forEachRow(rows, res.result.data)
+            const result = []
+            const obj = insertFirstRow(res.result.data[0].elementItem, res.result.data)
+            obj['childs'] = rows
+            obj['children'] = rows
+            result.push(obj)
+            //获取树级数量
+            this.levelData(result)
+            this.datas = result
+          })
+
+          function forEachItem(datas, elementId) {
+            let result = null
+            for (var i in datas) {
+              const data = datas[i]
+              if (data.elementInfoId === elementId) {
+                result = data
+                break
+              }
+              if (data.childs && data.childs.length > 0) {
+                result = forEachItem(data.childs, elementId)
+                if (result != null) {
+                  break
+                }
+              }
+            }
+            return result
+          }
+
+          function forEachRow(datas, columnDatas) {
+            for (var i in datas) {
+              var data = datas[i]
+              data['costCenters'] = []
+              columnDatas.forEach(item => {
+                if (item.elementItem) {
+                  var costName = 'cost' + item.costCenterId
+                  if (item.elementItem) {
+                    const center = {}
+                    center['costCenterId'] = item.costCenterId
+                    center['elementInfoId'] = data.elementInfoId
+                    var costColumn = forEachItem([item.elementItem], data.elementInfoId)
+                    if (costColumn != null) {
+                      data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                      center['amount'] = costColumn.amount !== null ? costColumn.amount : 0
+                    }
+                    data['costCenters'].push(center)
+                  }
+                }
+              })
+              if (data.childs && data.childs.length > 0) {
+                forEachRow(data.childs, columnDatas)
+                data.children = data.childs
+              }
+            }
+          }
+
+          function insertFirstRow(data, columnDatas) {
+            data['costCenters'] = []
+            columnDatas.forEach(item => {
+              var costName = 'cost' + item.costCenterId
+              if (item.elementItem) {
+                var costColumn = forEachItem([item.elementItem], data.elementInfoId)
+                if (costColumn != null) {
+                  data[costName] = costColumn.amount !== null ? costColumn.amount : 0
+                }
+              }
+            })
+            return data
+          }
+        }
+      }
+    },
+    filters: {},
+    created() {
+      this.loadData()
+    },
+    computed: {
+      id() {
+        return this.$route.params.id
+      },
+      type() {
+        return this.$route.query.type
+      },
+      ProjectGUID() {
+        return this.$route.query.ProjectGUID
+      }
+    },
+    methods: {
+      back() {
+        this.$router.push({path: `/cost/enact/list`})
+      },
+      handleToSave() {
+        const result = {}
+        const items = []
+        // 组装保存数据
+        result['ProjectGUID'] = this.ProjectGUID
+        result['budgetBaseTypeId'] = 83
+        result['elementTypeId'] = this.id
+        getResults(this.datas)
+
+        function getResults(datas) {
+          datas.forEach(item => {
+            if (item.costCenters.length > 0) {
+              item.costCenters.forEach(center => {
+                const obj = {}
+                obj['costCenterId'] = center.costCenterId
+                obj['elementInfoId'] = center.elementInfoId
+                obj['amount'] = center.amount !== null ? center.amount : 0
+                items.push(center)
+              })
+            }
+            if (item.children && item.children.length > 0) {
+              getResults(item.children)
+            }
+          })
+        }
+
+        result['items'] = items
+        console.log(result)
+        this.loading.save = true
+        CostService.update(result).then(res => {
+          if (res.result.statusCode === 200) {
+            this.loading.save = false
+            this.$message.info('修改成功')
+            this.back()
+          }
+        }).catch(() => {
+          this.loading.save = false
+        })
+      },
+      checkChange(value, record, costCenterId) {
+        // 找到如果数据内存在旧数据，先移除，再添加
+        this.isUpdate = false
+        record.costCenters.forEach(center => {
+          if (center.costCenterId === costCenterId) {
+            center.amount = value
+            this.isUpdate = true
+          }
+        })
+        let totalCost = 0
+        this.datas.forEach(item => {
+          item.children.forEach(child => {
+            let childCost = 0
+            if (child.children) {
+              child.children.forEach(_child => {
+                childCost += _child['cost' + costCenterId]
+              })
+            } else {
+              childCost += child['cost' + costCenterId]
+            }
+            child['cost' + costCenterId] = childCost
+            totalCost += child['cost' + costCenterId]
+          })
+          item['cost' + costCenterId] = totalCost
+        })
+        if (!this.isUpdate) {
+          const item = {}
+          item['costCenterId'] = costCenterId
+          item['elementInfoId'] = record.elementInfoId
+          item['amount'] = value
+          record.costCenters.push(item)
+        }
+        this.$forceUpdate()
+      },
+      changeLevel(index) {
+        // 处理按钮的样式
+        for (let i = 0; i < this.treeLevel.length; i++) {
+          if (i === index) {
+            this.treeLevel[i].type = 'primary'
+          } else {
+            this.treeLevel[i].type = 'dashed'
+          }
+          // 处理树的显示或者隐藏
+          if (index !== 0) {
+            const first = document.getElementsByClassName('ant-table-row ant-table-row-level-0')[0]
+            first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.remove('ant-table-row-collapsed')
+            first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.add('ant-table-row-expanded')
+            // 低于此级别的全部显示
+            for (let j = 1; j <= index; j++) {
+              let className = 'ant-table-row ant-table-row-level-' + j
+              document.getElementsByClassName(className).forEach(item => {
+                if (index === j) {
+                  item.getElementsByClassName('ant-table-row-expand-icon')[0].classList.remove('ant-table-row-expanded')
+                  item.getElementsByClassName('ant-table-row-expand-icon')[0].classList.add('ant-table-row-collapsed')
+                } else {
+                  item.getElementsByClassName('ant-table-row-expand-icon')[0].classList.remove('ant-table-row-collapsed')
+                  item.getElementsByClassName('ant-table-row-expand-icon')[0].classList.add('ant-table-row-expanded')
+                }
+                item.style.display = ''
+              })
+            }
+            // 高于此级别的全部隐藏
+            for (let j = index + 1; j < this.treeLevel.length; j++) {
+              let className = 'ant-table-row ant-table-row-level-' + j
+              document.getElementsByClassName(className).forEach(item => {
+                item.style.display = 'none'
+              })
+            }
+          } else {
+            const first = document.getElementsByClassName('ant-table-row ant-table-row-level-0')[0]
+            first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.remove('ant-table-row-expanded')
+            first.getElementsByClassName('ant-table-row-expand-icon')[0].classList.add('ant-table-row-collapsed')
+            for (let j = 1; j < this.treeLevel.length; j++) {
+              let className = 'ant-table-row ant-table-row-level-' + j
+              document.getElementsByClassName(className).forEach(item => {
+                item.style.display = 'none'
+              })
+              // document.getElementsByClassName('ant-table-row ant-table-row-level-0').getElementsByClassName('ant-table-row-expand-icon').addClass('ant-table-row-collapsed')
+            }
+          }
+        }
+
+      },
+      getMaxlevel(treeData) {
+        let level = 0
+        let v = this
+        let maxLevel = 0
+
+        function loop(data, level) {
+          data.forEach(item => {
+            item.level = level
+            if (level > maxLevel) {
+              maxLevel = level
+            }
+            if ('children' in item) {
+              if (item.children.length > 0) {
+                loop(item.children, level + 1)
+              }
+            }
+          })
+        }
+
+        loop(treeData, 1)
+        return maxLevel
+      },
+      levelData(result) {
+        const level = this.getMaxlevel(result)
+        for (let i = 0; i < level; i++) {
+          const obj = {}
+          obj.index = i
+          obj.type = 'dashed'
+          this.treeLevel.push(obj)
+        }
+      },
+    }
+  }
 </script>
 
 <style lang="less" scoped>
