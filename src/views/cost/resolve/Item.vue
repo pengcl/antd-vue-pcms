@@ -9,9 +9,6 @@
               <a-button type="success" style="margin-left: 20px">审批记录</a-button>
               <a-button type="success" @click="createGT" style="margin-left: 20px">生成GT</a-button>
             </a-col>
-            <a-col :md="24" :sm="24">
-              <a-checkbox>Budget Re-allocation</a-checkbox>
-            </a-col>
           </a-row>
         </a-form>
       </div>
@@ -28,6 +25,7 @@
             :alert="false"
             :showPagination="false"
             :scroll="{ y: 500 }"
+            :pageSize="1000"
           >
             <span slot="cost" slot-scope="text">
               <p style="text-align: center">

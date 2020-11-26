@@ -142,6 +142,7 @@
         loadData: parameter => {
           this.form.projectGUID = this.resolveItem.ProjectGUID
           this.form.elementInfoId = this.resolveItem.elementInfoId
+          this.form.costCenterItems = []
           this.columnLength = this.columnLength + this.resolveItem.costCenters.length
           this.addResolve()
           this.$forceUpdate()
@@ -163,7 +164,6 @@
       // 搜索
       show(record) {
         this.record = record
-        this.form.costCenterItems = []
         this.visible = true
         this.resolveItem = record
         this.elementTradeTypes = record.elementTradeTypes
