@@ -34,7 +34,8 @@ const API = {
   getVoBudgetPreSplit : '/api/services/app/VO/GetVoBudgetPreSplitByVOGuid',//变更预分解（针对预计变更金额）
   createVoUsePlan : '/api/services/app/VO/CreateVOUsePlan',//预算确认（针对预计结算金额）
   updateVoUsePlan : '/api/services/app/VO/UpdateVOUsePlan',//更新变更预算调整
-  storeTypes: '/api/services/app/GeneralType/GetSAorVOUseStoreTypes'//补充合同或变更余额使用类型
+  storeTypes: '/api/services/app/GeneralType/GetSAorVOUseStoreTypes',//补充合同或变更余额使用类型
+  getSourceTypes : '/api/services/app/GeneralType/GetVOValueSoruceTypes'//估值来源
 }
 
 const ChangeService = {}
@@ -421,6 +422,17 @@ ChangeService.updateVoUsePlan = function(parameter){
 ChangeService.storeTypes = function(){
 	return request({
 	    url: API.storeTypes,
+	    method: 'get',
+	    params: {}
+	  })
+}
+
+/**
+ * 估值来源
+ */
+ChangeService.getSourceTypes = function(){
+	return request({
+	    url: API.getSourceTypes,
 	    method: 'get',
 	    params: {}
 	  })

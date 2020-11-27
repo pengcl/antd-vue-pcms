@@ -47,6 +47,8 @@
                 :contract="contract"
                 :type="type"
                 :id="id"
+                :master="master"
+                :stage="stage"
                 ref="baseInfo"
               ></base-info>
             </a-tab-pane>
@@ -147,6 +149,7 @@
         },
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
+        master:{oldVoTotalAmountIncrease : 0},
         project: null,
       }
     },
@@ -175,7 +178,7 @@
         if (this.stage === 'VO') {
           ChangeService.voItem(this.id).then((res) => {
             this.form = res.result.data
-            console.log('change.item.data', this.form)
+            this.master.oldVoTotalAmountIncrease = this.form.voMasterInfo.voTotalAmountIncrease
           })
         } else {
           this.contract.cnotractGuid = this.contractGuid

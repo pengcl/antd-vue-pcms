@@ -100,6 +100,9 @@
         created () {
             ChangeService.fileTypes().then(res => {
                 this.fileTypeList = res.result.data
+                if(this.stage === 'VO'){
+                  this.fileTypeList = this.fileTypeList.filter(item => item.id !== 104)
+                }
             })
             BaseService.masterID(this.data.voMasterInfo.voGuid).then(res => {
               this.data.fileMasterId = res.result.data
