@@ -19,6 +19,11 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
+          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核'">
+            <a-button @click="view" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
           <a-button-group v-if="type !== 'view'">
             <a-button @click="save" type="success">
               储存
@@ -40,6 +45,7 @@
     import PayDetail from './components/PayDetail'
     import { SwaggerService } from '@/api/swagger.service'
     import { SignedService } from './signed.service'
+    import { Base as BaseService } from '@/api/base'
 
     export default {
         name: 'Item',
@@ -173,10 +179,11 @@
                         if (res.result.data) {
                             this.$message.success('创建成功')
                             if (this.approveStatus) {
-                                SignedService.approve(res.result.data).then(res => {
-                                    if (res.result.data) {
+                                SignedService.approve(res.result.data).then(_res => {
+                                    if (_res.result.data) {
                                         this.$message.success('已启动审批流程')
-                                        window.location.href = res.result.data
+                                        const tempwindow = window.open('_blank')
+                                        tempwindow.location = _res.result.data
                                     }
                                 })
                             } else {
@@ -207,10 +214,11 @@
                         if (res.result.data) {
                             this.$message.success('修改成功')
                             if (this.approveStatus) {
-                                SignedService.approve(this.id).then(res => {
-                                    if (res.result.data) {
+                                SignedService.approve(this.id).then(_res => {
+                                    if (_res.result.data) {
                                         this.$message.success('已启动审批流程')
-                                        window.location.href = res.result.data
+                                        const tempwindow = window.open('_blank')
+                                        tempwindow.location = _res.result.data
                                     }
                                 })
                             } else {
@@ -221,18 +229,22 @@
                         }
                     })
                 }
-            }
-            ,
+            },
             back () {
                 this.$router.push({
                     path: '/pay/signed/list'
                 })
-            }
-            ,
+            },
             approve () {
                 this.approveStatus = true
                 this.save()
-            }
+            },
+            view () {
+                BaseService.viewBpm(this.id).then(res => {
+                    const tempwindow = window.open('_blank')
+                    tempwindow.location = res.result.data
+                })
+            },
         }
 
     }

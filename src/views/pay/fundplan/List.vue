@@ -219,7 +219,7 @@
                 value: '',
                 city: '',
                 projectType: '',
-                cities: [],
+                cities: null,
                 fundingPlanYearList: [],
                 visible: false,
                 confirmLoading: false,
@@ -240,8 +240,6 @@
                             this.fundingPlanYearList = res.result.data
                             return fixedList(res, requestParameters)
                         })
-                    } else {
-                        return nullFixedList(requestParameters)
                     }
 
                 },
@@ -380,7 +378,8 @@
                     FundPlanService.startBPM_Year(record.gid).then(res => {
                         if (res.result.data) {
                             this.$message.success('已启动审批流程')
-                            window.location.href = res.result.data
+                            const tempwindow = window.open('_blank')
+                            tempwindow.location = res.result.data
                         }
                     })
                 } else {
@@ -388,7 +387,8 @@
                         FundPlanService.startBPM_Month(record.monthLastVersionGID).then(res => {
                             if (res.result.data) {
                                 this.$message.success('已启动审批流程')
-                                window.location.href = res.result.data
+                                const tempwindow = window.open('_blank')
+                                tempwindow.location = res.result.data
                             }
                         })
                     }

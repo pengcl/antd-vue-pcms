@@ -213,7 +213,7 @@
             this.columns = columns
             return {
                 // create model
-                cities: [],
+                cities: null,
                 moneyTypes: [],
                 city: '',
                 value: '',
@@ -234,8 +234,6 @@
                         return UnSignedService.items(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
                         })
-                    } else {
-                        return nullFixedList(requestParameters)
                     }
                 },
                 selectedRowKeys: [],
