@@ -70,6 +70,9 @@
         </a-button>
       </a-form-item>
     </a-form>
+    <div class="footer">
+      <p><a :href="url">AD域快捷登录</a></p>
+    </div>
   </div>
 </template>
 
@@ -87,6 +90,7 @@ export default {
       requiredTwoStepCaptcha: false,
       stepCaptchaVisible: false,
       appType: process.env.NODE_ENV,
+      url: 'WebPage/ADLogin.aspx?url=' + window.location.protocol + '//' + window.location.host,
       form: this.$form.createForm(this),
       state: {
         loginBtn: false,
@@ -266,5 +270,16 @@ margin-bottom: 20px;
   }
   /deep/ .ant-input {
     border-radius: 4px;
+  }
+
+  .footer {
+    p {
+      margin:0;
+      text-align: right;
+      a {
+        color: red;
+        text-decoration: none;
+      }
+    }
   }
 </style>
