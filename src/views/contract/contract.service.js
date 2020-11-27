@@ -12,7 +12,7 @@ const API = {
   vendors: '/api/services/app/Contract/GetVendorList',
   centers: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackageCostCenters',
   amount: '/api/services/app/Contract/GetContractAmountByBQList',
-  tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',
+  tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProjectToContract',
   viewBudgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid',
   computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid',
   createBudgets: '/api/services/app/Contract/CreateContractBudget',

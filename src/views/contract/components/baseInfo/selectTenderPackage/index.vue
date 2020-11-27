@@ -90,14 +90,13 @@ tradePackageCode: "CC01-TENDER-0001"
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return ContractService.tenders(requestParameters).then(res => {
             const items = []
-            res.result.data.items.forEach(item => {
+            res.result.data.forEach(item => {
               if (item.packageTitle.indexOf(this.searchKey) >= 0) {
                 items.push(item)
               }
             })
-            res.result.data.items = items
-            const data = fixedList(res, requestParameters)
-            return data
+            res.result.data = items
+            return fixedList(res, requestParameters)
           })
         }
       }

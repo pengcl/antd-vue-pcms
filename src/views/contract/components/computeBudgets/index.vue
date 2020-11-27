@@ -87,12 +87,12 @@
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
           :precision="2"/>
       </template>
-      <template slot="balanceAmount" slot-scope="text, record">
+      <template slot="useBalanceAmount" slot-scope="text, record">
         <a-form-model-item>
           <a-input-number
             style="margin-top: 18px"
             :disabled="true"
-            :value="record.balanceAmount"
+            :value="record.useBalanceAmount"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :precision="2"/>
         </a-form-model-item>
@@ -151,8 +151,8 @@
     },
     {
       title: '差额(f)',
-      dataIndex: 'balanceAmount',
-      scopedSlots: { customRender: 'balanceAmount' }
+      dataIndex: 'useBalanceAmount',
+      scopedSlots: { customRender: 'useBalanceAmount' }
     }
   ]
   export default {
