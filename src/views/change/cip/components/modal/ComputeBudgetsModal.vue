@@ -5,12 +5,15 @@
     title="预算调整确认"
     @cancel="handleCancel"
     @ok="handleOk"
+    :closable="false"
+    :maskClosable="false"
+    :confirm-loading="loading"
   >
     <div>
 	    <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-radio-group v-model="data.voMasterInfo.useStore" button-style="solid" @change="useStoreChange">
+            <a-radio-group v-model="useStore" button-style="solid" >
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
                 {{ item.nameCN }}（<span class="redText">余额：<span>1000</span>元</span>）
               </a-radio>
@@ -18,18 +21,27 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <s-table 
-              v-if="data.voMasterInfo.useStore === 108"
-              :row-key="record => record.itemkey" 
+              :style="useStore !== 108 ? 'display : none' : ''"
+              rowKey="index"
               :columns="columns" 
               :showPagination="false"
               :data="usePlanLoadData"
               bordered 
-              ref="table" >
+              :alert="false"
+              ref="usePlanTable" >
                 <template slot="alterPlan" slot-scope="text,record">
-                  <input-number  :value="record.alterPlan" :disabled="true"></input-number>
+                  <a-input-number  :value="record.alterPlan" :disabled="true"></a-input-number>
                 </template>
                 <template slot="voUseAmount" slot-scope="text,record">
-                  <input-number  v-model="record.voUseAmount" @change="value => changeVoUseAmount(value,record)"></input-number>
+                  <a-input-number 
+                    :max="record.alterPlan" 
+                    :min="-record.alterPlan" 
+                    v-model="record.voUseAmount" 
+                    @change="changeVoUseAmount(record)"
+                    :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"
+                    ></a-input-number>
                 </template>
                 <template slot="balanceAmount" slot-scope="text">
                   <span v-if="text >= 0">0</span>
@@ -37,18 +49,18 @@
                 </template>
             </s-table>
             <s-table 
-              v-if="data.voMasterInfo.useStore === 109"
-              :row-key="record => record.id" 
+              :style="useStore !== 109 ? 'display : none' : ''"
+              :row-key="record => JSON.stringify(record)" 
               :columns="surplusColumns" 
               :showPagination="false"
               :data="surplusLoadData"
               bordered 
               ref="surplusTable" >
                 <template slot="alterPlan" slot-scope="text,record">
-                  <input-number  :value="record.alterPlan" :disabled="true"></input-number>
+                  <a-input-number  :value="record.alterPlan" :disabled="true"></a-input-number>
                 </template>
                 <template slot="voUseAmount" slot-scope="text,record">
-                  <input-number  v-model="record.voUseAmount" @change="value => changeVoUseAmount(value,record)"></input-number>
+                  <a-input-number  v-model="record.voUseAmount"  @change="value => changeVoUseAmount(value,record)"></a-input-number>
                 </template>
                 <template slot="balanceAmount" slot-scope="text">
                   <span v-if="text >= 0">0</span>
@@ -56,18 +68,18 @@
                 </template>
             </s-table>
             <s-table 
-              v-if="data.voMasterInfo.useStore === 110"
-              :row-key="record => record.id" 
+              :style="useStore !== 110 ? 'display : none' : ''"
+              :row-key="record => JSON.stringify(record)" 
               :columns="generalTradeColumns" 
               :showPagination="false"
               :data="generalTradeLoadData"
               bordered 
               ref="generalTradeTable" >
                 <template slot="alterPlan" slot-scope="text,record">
-                  <input-number  :value="record.alterPlan" :disabled="true"></input-number>
+                  <a-input-number  :value="record.alterPlan" :disabled="true"></a-input-number>
                 </template>
                 <template slot="voUseAmount" slot-scope="text,record">
-                  <input-number  v-model="record.voUseAmount" @change="value => changeVoUseAmount(value,record)"></input-number>
+                  <a-input-number  v-model="record.voUseAmount" @change="value => changeVoUseAmount(value,record)"></a-input-number>
                 </template>
                 <template slot="balanceAmount" slot-scope="text">
                   <span v-if="text >= 0">0</span>
@@ -86,19 +98,10 @@
   import { STable, Ellipsis } from '@/components'
   import { ChangeService } from '@/views/change/change.service'
   import { fixedList } from '@/utils/util'
-
   const columns = [
     {
       title: '业态',
-      dataIndex: 'costCenterName',
-      customRender : (value,row,index) =>{
-        const obj = {
-          children : value,
-          attrs : {
-            rowSpan : this.rowSpans['cost'+row.costCenterId] || 1
-          }
-        }
-      }
+      dataIndex: 'costCenterName'
     },
     {
       title: '科目',
@@ -169,6 +172,24 @@
     }
   ]
 
+  const actions = {
+    108 : {
+      'create' : 'createVoUsePlan',
+      'update' : 'updateVoUsePlan',
+      'table' : 'usePlanTable'
+    },
+    109 : {
+      'create' : 'createVoUsePlan',
+      'update' : 'updateVoUsePlan',
+      'table' : 'surplusTable'
+    },
+    110 : {
+      'create' : 'createVoUsePlan',
+      'update' : 'updateVoUsePlan',
+      'table' : 'generalTradeTable'
+    }
+  }
+
   export default {
     name: 'ComputeBudgetsModal',
     components: {
@@ -176,74 +197,63 @@
         Ellipsis
     },
     data () {
+      columns[0].customRender = this.renderCost
       this.columns = columns
       this.surplusColumns = surplusColumns
       this.generalTradeColumns = generalTradeColumns
       return {
         // create model
         show: false,
+        loading : false,
         visible: false,
         confirmLoading: false,
         rowSpans : {},
         selection : {},
+        useStore : 0,
         // 高级搜索 展开/关闭
         advanced: false,
         // 加载数据方法 必须为 Promise 对象
         usePlanLoadData: parameter => {
           this.rowSpans = {}
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          if(this.data.voMasterInfo.useStore === 108 ){
-            return ChangeService.getVoBudgetPreSplit({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : this.data.voMasterInfo.useStore})
-              .then(res => {
-                if(res.result.data.length > 0){
-                  res.result.data.sort((a,b) =>{
-                    return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
-                  })
-                }
-                res.result.data.forEach(item =>{
-                  if(this.rowSpans['cost'+item.costCenterId]){
-                    this.rowSpans['cost'+item.costCenterId]++
-                  }else{
-                    this.rowSpans['cost'+item.costCenterId] = 1
-                  }
-                })
-                console.log('results',res.result)
-                return res.result
-              }).catch((e) =>{
-                this.$message.error('获取预算变更金额列表错误')
+          return ChangeService.getVoBudgetPreSplit({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+            .then(res => {
+              if(res.result.data == null){
                 return new Promise((resolve, reject) => {
-                  resolve({ data : [] })
-                })
+                resolve({ data : [] })
               })
-          }else{
-            return new Promise((resolve, reject) => {
-              resolve({ data : [] })
+              }
+              res.result.data.sort((a,b) =>{
+                return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
+              })
+              res.result.data.forEach(item =>{
+                item.voGuid = this.data.voMasterInfo.voGuid
+                if(this.rowSpans['cost'+item.costCenterId]){
+                  this.rowSpans['cost'+item.costCenterId]++
+                }else{
+                  this.rowSpans['cost'+item.costCenterId] = 1
+                }
+              })
+              console.log('results',res.result)
+              return res.result
+            }).catch((e) =>{
+              this.$message.error('获取预算变更金额列表错误')
+              return new Promise((resolve, reject) => {
+                resolve({ data : [] })
+              })
             })
-          }
         },
         surplusLoadData :  parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          if(this.data.voMasterInfo.useStore === 109 ){
-            return new Promise((resolve, reject) => {
-              resolve({ data : [] })
-            })
-          }else{
-            return new Promise((resolve, reject) => {
-              resolve({ data : [] })
-            })
-          }
+          return new Promise((resolve, reject) => {
+            resolve({ data : [] })
+          })
         },
         generalTradeLoadData : parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          if(this.data.voMasterInfo.useStore === 110 ){
-            return new Promise((resolve, reject) => {
-              resolve({ data : [] })
-            })
-          }else{
-            return new Promise((resolve, reject) => {
-              resolve({ data : [] })
-            })
-          }
+          return new Promise((resolve, reject) => {
+            resolve({ data : [] })
+          })
         },
         selectedRowKeys: [],
         selectedRows: []
@@ -253,12 +263,21 @@
       data : {
         type : Object,
         default : null
+      },
+      contractGuid : {
+        type : String,
+        default : ''
+      },
+      stage : {
+        type : String,
+        default : ''
       }
     },
     computed: {
     	
     },
     created () {
+      this.useStore = this.data.voMasterInfo.useStore
       ChangeService.storeTypes().then(res => {
         this.selection.storeTypes = res.result.data
       })
@@ -271,29 +290,52 @@
         this.visible = true
       },
       handleCancel(){
-      	this.visible = false
+        this.visible = false
+        const stageLower = this.stage.toLowerCase()
+        location.href = `/change/${stageLower}/item/${this.data.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
       },
       loadData(){
       	return ChangeService.bqList(this.contract.contractGuid).then(res => {
-        	  console.log('myData',res)
           this.tableData = res.result.data
         })
       },
       handleOk(){
-      	this.visible = false
-      },
-      useStoreChange(value){
-        if(value == 108){
-          this.$refs.table.refresh()
-        }else if(value == 109){
-          this.$refs.surplusTable.refresh()
-        }else if(value == 110){
-          this.$refs.generalTradeTable.refresh()
+        this.loading = true
+        if(this.useStore != 108){
+          this.$message.warn('暂无接口，无法完成预算确认，请选择【变更预留金额】进行操作')
+          this.loading = false
+          return
         }
+        let methodName = this.data.voMasterInfo.budgetIsConfirm ? 'update' : 'create'
+        const reqData = {
+          voGuid : this.data.voMasterInfo.voGuid,
+          useStore : this.useStore,
+          budgetIsConfirm : this.data.voMasterInfo.budgetIsConfirm,
+          voUsePlanlst : this.$refs[actions[this.useStore].table].localDataSource
+        }
+        console.log('reqData',reqData)
+        ChangeService[actions[this.useStore][methodName]](reqData).then(res =>{
+          this.loading = false
+          if(res.result.statusCode === 200){
+            this.$message.success('预算确认成功')
+            this.handleCancel()
+          }
+        }).catch(()=>{
+          this.loading = false
+        })
       },
-      changeVoUseAmount(value,record){
-        const balanceAmount = record.alterPlan - voUseAmount
-        record.balanceAmount = balanceAmount
+      changeVoUseAmount(record){
+        const balanceAmount = record.alterPlan - record.voUseAmount
+        record.balanceAmount = balanceAmount > 0 ? 0 : balanceAmount
+      },
+      renderCost(value,row,index){ 
+        const obj = {
+          children : value,
+          attrs : {
+            rowSpan : this.rowSpans['cost'+row.costCenterId] || 1
+          }
+        }
+        return obj
       }
     }
   }

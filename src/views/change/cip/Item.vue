@@ -102,7 +102,6 @@
             <a-button type="success" :loading="loading.save" v-if="type !== 'view'" @click="save()">储存</a-button>
             <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
-            <!-- <a-button type="danger" @click="showBudgets">预算测试</a-button> -->
           </a-col>
         </a-row>
       </div>
@@ -111,6 +110,8 @@
     <compute-budgets-modal
       ref="budgets"
       :data="form"
+      :contractGuid="contractGuid"
+      :stage="stage"
       :destroyOnClose="true"
     ></compute-budgets-modal>
   </page-header-wrapper>
@@ -196,7 +197,6 @@
         return this.$route.query.stage
       }
     },
-    watch: {},
     methods: {
       approve () {
         console.log('approve')
@@ -244,11 +244,10 @@
             this.loading.save = true
             ChangeService.create(this.form).then((res) => {
               this.loading.save = false
-              console.log(res)
               if (res.result.statusCode === 200) {
                 this.$message.success('创建成功')
-                this.id = res.result.data
-                this.$router.push({ path: `/change/${stageLower}/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
+                this.form.voMasterInfo.voGuid = res.result.data
+                this.showBudgets()
               }
             }).catch(() => {
               this.loading.save = false
@@ -262,7 +261,11 @@
               if (res.result.statusCode === 200) {
                  if(callback == undefined){
                   this.$message.success('修改成功')
-                  this.$router.push({ path: `/change/${stageLower}/item/${res.result.data}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}` })
+                  if(res.result.data.bAmountIsChangeResult){
+                    this.showBudgets()
+                  }else{
+                    location.href = `/change/${stageLower}/item/${this.form.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
+                  }
                  }else{
                    callback()
                  }
@@ -374,14 +377,16 @@
           onOk () {
             that.loading.cancel = true
             ChangeService.delete(that.form.voMasterInfo.voGuid).then(res =>{
-              this.loading.cancel = false
+              that.loading.cancel = false
+              console.log('res',res)
               if(res.result.statusCode === 200){
-                that.$message.success('废弃成功').then(() =>{
-                  that.$router.push({ path: `/change/cip/list` })
-                })
+                that.$message.success('废弃成功')
+                that.$router.push({ path: `/change/cip/list` })
+                
               }
-            }).catch(() =>{
-              this.loading.cancel = false
+            }).catch((e) =>{
+              console.log('e',e)
+              that.loading.cancel = false
             })
             //调用废弃接口
             console.log('进入废弃功能按钮点击事件')
