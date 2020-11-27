@@ -219,7 +219,7 @@
                 value: '',
                 city: '',
                 projectType: '',
-                cities: [],
+                cities: null,
                 fundingPlanYearList: [],
                 visible: false,
                 confirmLoading: false,
@@ -240,8 +240,6 @@
                             this.fundingPlanYearList = res.result.data
                             return fixedList(res, requestParameters)
                         })
-                    } else {
-                        return nullFixedList(requestParameters)
                     }
 
                 },

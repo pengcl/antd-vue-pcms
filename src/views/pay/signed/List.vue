@@ -7,14 +7,14 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
                 <a-tree-select
-                  v-model="queryParam2.ProjectGUID"
                   style="width: 100%"
                   :tree-data="cities"
                   :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
                   search-placeholder="请选择"
+                  v-model="queryParam2.ProjectGUID"
                   @select="onSelect"
-                  :suffixIcon="cities ? '' : '加载中...'"
-                />
+                  :suffixIcon="cities ? '' : '加载中...'">
+                </a-tree-select>
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24">
@@ -182,7 +182,6 @@
 </template>
 
 <script>
-    import moment from 'moment'
     import { STable } from '@/components'
     import CreateForm from '@/views/list/modules/CreateForm'
     import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
@@ -286,7 +285,7 @@
                 canAdd: false,
                 city: '',
                 projectType: '',
-                cities: [],
+                cities: null,
                 data: [],
                 show: false,
                 visible: false,
@@ -314,10 +313,7 @@
                         return SignedService.items(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
                         })
-                    } else {
-                        return nullFixedList(requestParameters)
                     }
-
                 },
                 selectedRowKeys: [],
                 selectedRows: []
