@@ -332,9 +332,10 @@
         const obj = {
           children : value,
           attrs : {
-            rowSpan : this.rowSpans['cost'+row.costCenterId] || 1
+            rowSpan : this.rowSpans['cost'+row.costCenterId] || 0
           }
         }
+        this.rowSpans['cost'+row.costCenterId] = undefined
         return obj
       }
     }
@@ -342,6 +343,10 @@
 </script>
 
 <style lang="less" scoped>
+  .redText {
+    color : red;
+    background-color : white;
+  }
   .search-form {
     background-color: #1E9FF2;
     padding: 20px;
