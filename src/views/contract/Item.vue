@@ -247,14 +247,16 @@
         this.loading.view = true
         BaseService.viewBpm(this.form.contract.contractGuid).then(res => {
           this.loading.view = false
-          window.location.href = res.result.data
+          const _window = window.open('_blank')
+          _window.location = res.result.data
         })
       },
       bpm () {
         this.loading.bpm = true
         ContractService.bpm(this.form.contract.contractGuid, this.form.contract.projectID).then(res => {
           this.loading.bpm = false
-          window.location.href = res.result.data
+          const _window = window.open('_blank')
+          _window.location = res.result.data
         })
       },
       save () {

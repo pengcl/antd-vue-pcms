@@ -97,7 +97,6 @@ tradePackageCode: "CC01-TENDER-0001"
             })
             res.result.data.items = items
             const data = fixedList(res, requestParameters)
-            console.log(data)
             return data
           })
         }
