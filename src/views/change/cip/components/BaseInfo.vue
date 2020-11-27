@@ -228,13 +228,28 @@
           </a-col>
         </a-row>
       </a-col>
-      <a-col :md="24" :sm="24">
+      <a-col :md="24" :sm="24" v-if="stage==='VO' && type ==='add'">
         <a-row>
           <a-col :span="10">
-            <a-form-model-item label="人工/材料差价累计 (已提交)">
+            <a-form-model-item label="原CIP金额">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.fluctuationSubmittedAccumulateAmount"
+                :value="master.oldVoTotalAmountIncrease"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-col>
+      <a-col :md="24" :sm="24" v-if="stage==='VO' && type ==='add'">
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="差额">
+              <a-input-number
+                :disabled="true"
+                :value="data.voMasterInfo.voTotalAmountIncrease - master.oldVoTotalAmountIncrease"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -321,6 +336,26 @@
       <a-col :md="24" :sm="24">
         <a-row>
           <a-col :span="10">
+            <a-form-model-item label="估值来源" prop="sourceValue">
+              <a-select
+                placeholder="请选择"
+                v-model="data.voMasterInfo.sourceValue"
+                :disabled="type === 'view'"
+              >
+                <a-select-option
+                  v-for="option in selection.sourceTypes"
+                  :key="option.id"
+                  :value="option.id">
+                  {{ option.nameCN }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-col>
+      <a-col :md="24" :sm="24">
+        <a-row>
+          <a-col :span="10">
             <a-form-model-item label="承包商报价" prop="packageContractorQuotation">
               <a-input-number
                 :disabled="type === 'view'"
@@ -342,6 +377,22 @@
                 :disabled="type === 'view'"
                 placeholder="请输入顾问估算金额"
                 v-model="data.voMasterInfo.consultantEstimatedAmount"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :precision="2"
+              ></a-input-number>
+            </a-form-model-item>
+          </a-col>
+        </a-row>
+      </a-col>
+      <a-col :md="24" :sm="24">
+        <a-row>
+          <a-col :span="10">
+            <a-form-model-item label="项目PQS估算金额" >
+              <a-input-number
+                :disabled="type === 'view'"
+                placeholder="项目PQS估算金额"
+                v-model="data.voMasterInfo.estimatedAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -422,6 +473,10 @@
 
   const resonTypes = {
     "现场管理" : [
+      {
+        value : '增加工作范围',
+        text : '增加工作范围'
+      },
       {
         value : '抢险',
         text : '抢险'
@@ -515,8 +570,9 @@
           effectDay : [ { validator : this.checkEffectDay, type:'number' }],
           voType: [{ required: true, message: '请选择变更类型', trigger: 'change' }],
           reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
-          packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
-          consultantEstimatedAmount: [{ required: true, message: '请输入顾问估算金额', trigger: 'change' }],
+          // packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
+          // consultantEstimatedAmount: [{ required: true, message: '请输入顾问估算金额', trigger: 'change' }],
+          sourceValue : [{required : true,message:'请选择估值来源',trigger : 'change'}],
           currencyExchangeRate: [{ required: true, message: '请输入汇率', trigger: 'change' }]
         }
       }
@@ -525,6 +581,10 @@
       // 获取可选抄送单位
       ChangeService.sendCopyParty({}).then(item => {
         this.selection.sendCopyParties = item.result.data
+      })
+
+      ChangeService.getSourceTypes().then(res =>{
+        this.selection.sourceTypes = res.result.data
       })
     },
     props: {
@@ -543,6 +603,14 @@
       contract: {
         type: Object,
         default: {}
+      },
+      master: {
+        type : Object,
+        default : {}
+      },
+      stage : {
+        type : String,
+        default: ''
       }
     },
     watch: {

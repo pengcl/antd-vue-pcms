@@ -47,6 +47,8 @@
                 :contract="contract"
                 :type="type"
                 :id="id"
+                :master="master"
+                :stage="stage"
                 ref="baseInfo"
               ></base-info>
             </a-tab-pane>
@@ -63,7 +65,7 @@
                 ref="costEstimates"
               ></cost-estimates>
             </a-tab-pane>
-            <a-tab-pane :key="3" tab="预算调整" >
+            <a-tab-pane v-if="type !== 'add'" :key="3" tab="预算调整" >
               <budget-list title="预算调整" :data="form" :type="type" :id="id"></budget-list>
             </a-tab-pane>
             <a-tab-pane :key="4" tab="附加资料" >
@@ -86,7 +88,7 @@
         </a-form>
       </div>
 
-      <div class="table-operator">
+      <div class="table-operator" style="margin-top:8px;">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
             <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
@@ -147,6 +149,7 @@
         },
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
+        master:{oldVoTotalAmountIncrease : 0},
         project: null,
       }
     },
@@ -175,7 +178,7 @@
         if (this.stage === 'VO') {
           ChangeService.voItem(this.id).then((res) => {
             this.form = res.result.data
-            console.log('change.item.data', this.form)
+            this.master.oldVoTotalAmountIncrease = this.form.voMasterInfo.voTotalAmountIncrease
           })
         } else {
           this.contract.cnotractGuid = this.contractGuid
