@@ -6,6 +6,7 @@
     @cancel="handleCancel"
     @ok="handleOk"
     :ok-button-props="{ props: { disabled: defaultSave } }"
+    :confirm-loading="loading"
   >
     <a-card :bordered="false">
       <a-form-model
@@ -135,6 +136,7 @@
         costCenters: [],
         record: {},
         type: '',
+        loading : false,
         form: SwaggerService.getForm('TradeBudgetItemProjectCreateInputDto'),
         rules: {
           costCenterItems: []
@@ -149,8 +151,7 @@
         }
       }
     },
-    filters: {
-    },
+    filters: {},
     props: {
       refreshParent: {
         type: Function
@@ -211,14 +212,18 @@
               })
             }
             resultForm.costCenterItems = result
+            this.loading = true
             CostService.bidBudgetCreate(resultForm).then(res => {
               if (res.result.statusCode === 200) {
+                this.loading = false
                 const that = this
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
                   that.refreshParent()
                   this.visible = false
                 })
               }
+            }).catch(() => {
+              this.loading = false
             })
           }
         })

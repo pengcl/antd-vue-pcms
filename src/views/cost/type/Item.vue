@@ -41,7 +41,7 @@
       <a-row>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: left">
-            <a-button :disabled="type === 'view'" type="success" @click="handleToSave">储存</a-button>
+            <a-button :disabled="type === 'view'" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -59,6 +59,9 @@
     name: 'CostTypeItem',
     data () {
       return {
+        loading: {
+          save: false
+        },
         form: SwaggerService.getForm('ElementTradeTypeListOutputDtoListResultModel'),
         rules: {
           nameCN: [{ required: true, message: '请输入科目名称', trigger: 'blur' }],
@@ -91,13 +94,17 @@
       handleToSave () {
         this.$refs.form.validate(valid => {
           if (valid) {
+            this.loading.save = true
             const buttonType = this.type==='add' ? 'typeCreate' : 'typeUpdate'
             this.form.elementId = this.elementId
             CostService[buttonType](this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
+                this.loading.save = false
                 this.back()
               }
+            }).catch(() => {
+              this.loading.save = false
             })
           }
         })
