@@ -90,7 +90,7 @@ export default {
       requiredTwoStepCaptcha: false,
       stepCaptchaVisible: false,
       appType: process.env.NODE_ENV,
-      url: 'WebPage/ADLogin.aspx?url=' + window.location.protocol + '//' + window.location.host,
+      url: '/WebPage/ADLogin.aspx?redirectUrl=' + window.location.protocol + '//' + window.location.host,
       form: this.$form.createForm(this),
       state: {
         loginBtn: false,
