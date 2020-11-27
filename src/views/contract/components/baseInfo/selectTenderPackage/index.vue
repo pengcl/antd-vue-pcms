@@ -81,7 +81,7 @@ tradePackageCode: "CC01-TENDER-0001"
     data () {
       return {
         columns: columns,
-        queryParam: {},
+        queryParam: { IsShowContractUse: false },
         selected: null,
         searchKey: '',
         // 加载数据方法 必须为 Promise 对象
