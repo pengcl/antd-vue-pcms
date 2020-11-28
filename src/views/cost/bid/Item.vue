@@ -39,23 +39,29 @@
               </a-textarea>
             </a-form-model-item>
           </a-col>
-          <a-col :md="24" :sm="24">
-            <a-form-model-item label="招投标包类型" prop="itemTypeId">
-              <a-select
-                :disabled="type === 'view'"
-                placeholder="请选择"
-                v-model="form.itemTypeId"
-                style="width:500px"
-              >
-                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">
-                  {{ option.nameCN }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col>
+<!--          <a-col :md="24" :sm="24">-->
+<!--            <a-form-model-item label="招投标包类型" prop="itemTypeId">-->
+<!--              <a-select-->
+<!--                :disabled="type === 'view'"-->
+<!--                placeholder="请选择"-->
+<!--                v-model="form.itemTypeId"-->
+<!--                style="width:500px"-->
+<!--              >-->
+<!--                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">-->
+<!--                  {{ option.nameCN }}-->
+<!--                </a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-model-item>-->
+<!--          </a-col>-->
           <a-col :md="24" :sm="24">
             <a-form-item label="金额" prop="budgetAmount">
-              <a-input :disabled="true" v-model="form.budgetAmount|NumberFormat" placeholder="汇总明细项金额"></a-input>
+              <a-input
+                :disabled="true"
+                v-model="form.budgetAmount"
+                placeholder="汇总明细项金额"
+                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              ></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -264,10 +270,10 @@
     },
     filters: {},
     created() {
-      CostService.budgetTypeItems().then(res => {
-        this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
-        this.$forceUpdate()
-      })
+      // CostService.budgetTypeItems().then(res => {
+      //   this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
+      //   this.$forceUpdate()
+      // })
       CostService.bidIndustryItems({ProjectGUID: this.ProjectGUID}).then(res => {
         this.industryItems = JSON.parse(JSON.stringify(res.result.data))
         this.$forceUpdate()
@@ -316,6 +322,7 @@
         addItem(item, this.form.plans)
       },
       handleToSave() {
+        this.form.itemTypeId = 0
         this.form.projectGUID = this.ProjectGUID
         this.$refs.form.validate(valid => {
           if (valid) {
