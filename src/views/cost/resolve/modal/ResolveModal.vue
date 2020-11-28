@@ -136,7 +136,8 @@
         costCenters: [],
         record: {},
         type: '',
-        loading : false,
+        loading: false,
+        groupId: 0,
         form: SwaggerService.getForm('TradeBudgetItemProjectCreateInputDto'),
         rules: {
           costCenterItems: []
@@ -203,6 +204,7 @@
                 item.centers.forEach(centerItem => {
                   if (centerItem.amount && centerItem.amount !== 0) {
                     const obj = {}
+                    obj.groupId = item.groupId
                     obj.tradeTypeId = item.tradeTypeId
                     obj.costCenterId = centerItem.costCenterId
                     obj.amount = centerItem.amount
@@ -214,8 +216,8 @@
             resultForm.costCenterItems = result
             this.loading = true
             CostService.bidBudgetCreate(resultForm).then(res => {
+              this.loading = false
               if (res.result.statusCode === 200) {
-                this.loading = false
                 const that = this
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
                   that.refreshParent()
@@ -243,9 +245,11 @@
           centers.push(obj)
         })
         const item = {
+          groupId: this.groupId + 1,
           tradeTypeId: '',
           centers: centers
         }
+        this.groupId = this.groupId + 1
         addItem(item, this.form.costCenterItems)
       },
       del(index) {
