@@ -416,7 +416,7 @@
         this.$forceUpdate()
       })
       ContractService.tenders({ ProjectGUID: this.project.projectGUID, MaxResultCount: 999 }).then(res => {
-        res.result.data.items.forEach(item => {
+        res.result.data.forEach(item => {
           if (this.data.contract.tenderPackageItemID === item.projectTenderPackageGUID) {
             this.tender = item
             this.selection.itemTypes = [{

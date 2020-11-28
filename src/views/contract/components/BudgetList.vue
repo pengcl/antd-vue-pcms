@@ -23,6 +23,8 @@
           <span slot="contractSplitAmount" slot-scope="text">{{ text | NumberFormat }}</span>
           <span slot="tenderSurplus" slot-scope="text">{{ text | NumberFormat }}</span>
           <span slot="alterPlan" slot-scope="text">{{ text | NumberFormat }}</span>
+          <span slot="temporaryAlterPlan" slot-scope="text">{{ text | NumberFormat }}</span>
+          <span slot="useBalanceAmount" slot-scope="text">{{ text | NumberFormat }}</span>
         </s-table>
       </a-col>
     </a-row>
@@ -78,13 +80,13 @@ const columns = [
   },
   {
     title: '变更预留-暂定(e2)',
-    dataIndex: 'TemporaryAlterPlan',
-    scopedSlots: { customRender: 'alterPlan' }
+    dataIndex: 'temporaryAlterPlan',
+    scopedSlots: { customRender: 'temporaryAlterPlan' }
   },
   {
     title: '差额(f)',
-    dataIndex: 'balanceAmount',
-    scopedSlots: { customRender: 'balanceAmount' }
+    dataIndex: 'useBalanceAmount',
+    scopedSlots: { customRender: 'useBalanceAmount' }
   }
 ]
 
