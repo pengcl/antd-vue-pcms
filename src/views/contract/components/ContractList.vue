@@ -712,6 +712,9 @@
           item.isDeleted = true
         })
         this.data.contractBQlst = this.data.contractBQlst.filter(item => !(item.isDeleted && item.isTemp))
+        if (record.isCarryData) {
+          this.getContractAmount()
+        }
         this.$forceUpdate()
       },
       clear () {
