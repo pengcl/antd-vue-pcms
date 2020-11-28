@@ -236,7 +236,6 @@
           return
         }
         if (isValid) {
-          const stageLower = this.stage.toLowerCase()
           this.form.contractNo = this.contract.contractNo
           console.log('saveData', this.form)
           if (this.type == 'add') {
@@ -250,9 +249,10 @@
               if (res.result.statusCode === 200) {
                 this.$message.success('创建成功')
                 this.form.voMasterInfo.voGuid = res.result.data
-                this.showBudgets()
+                this.showBudgets(true)
               }
-            }).catch(() => {
+            }).catch((e) => {
+              console.log('e',e)
               this.loading.save = false
               this.$message.error('创建失败，表单未填写完整')
             })
@@ -264,11 +264,7 @@
               if (res.result.statusCode === 200) {
                  if(callback == undefined){
                   this.$message.success('修改成功')
-                  if(res.result.data.bAmountIsChangeResult){
-                    this.showBudgets()
-                  }else{
-                    location.href = `/change/${stageLower}/item/${this.form.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
-                  }
+                  this.showBudgets(res.result.data.bAmountIsChangeResult)
                  }else{
                    callback()
                  }
@@ -419,8 +415,13 @@
       showPMI(){
         window.open(this.pmiUrl)
       },
-      showBudgets(){
-        this.$refs.budgets.showModal()
+      showBudgets(bAmountIsChangeResult){
+        const stageLower = this.stage.toLowerCase()
+        if(this.form.vobQlst != null && this.form.vobQlst.length > 0 && bAmountIsChangeResult){
+          this.$refs.budgets.showModal()
+        }else{
+          location.href = `/change/${stageLower}/item/${this.form.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
+        }
       }
     }
   }
