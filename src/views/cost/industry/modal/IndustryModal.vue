@@ -102,6 +102,7 @@
                               //整理数据
                               const rows = [res.result.data]
                               this.forEachRow(rows,res2.result.data)
+                              console.log('rows',rows,'showColumnCodes',this.showColumnCodes)
                               const showRows = this.filterRows(rows)
                               this.columnDatas = showRows
                             }
@@ -198,15 +199,33 @@
           forEachRow (datas,columnDatas){
             for(var i in datas){
               var data = datas[i]
+              data.children = []
               columnDatas.forEach(item =>{
                 var costName = 'cost_'+item.costCenterId
                 if(item.elementBudgetItemTree ){
                   var costColumn = this.forEachBugetItem([item.elementBudgetItemTree],data.elementInfoId)
-                  if(costColumn != null && costColumn.tradeBudgetItems.length > 0){
-                    data[costName] = []
-                    this.showColumnCodes.push(data.elementInfoCode)
-                    costColumn.tradeBudgetItems.forEach(temp => {
-                      data[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
+                  if(costColumn != null && costColumn.tradeBudgetItems.length > 0 && data.tradeTypes && data.tradeTypes.length > 0){
+                    data.tradeTypes.forEach(tradeType => {
+                      let child = {
+                        elementInfoId : tradeType.elementId+''+tradeType.id,
+                        elementInfoCode : tradeType.code,
+                        elementInfoNameCN : tradeType.nameCN,
+                        parentID : tradeType.elementId,
+                        orderSeq : 0
+                      }
+                      const repeatChilds = data.children.filter(childTemp => childTemp.elementInfoId === child.elementInfoId)
+                      if(repeatChilds.length > 0){
+                        child = repeatChilds[0]
+                      }else{
+                        data.children.push(child)
+                      }
+                      child[costName] = []
+                      this.showColumnCodes.push(child.elementInfoCode)
+                      costColumn.tradeBudgetItems.forEach(temp => {
+                        if( child.elementInfoId == temp.elementInfoId+''+temp.tradeTypeId){
+                          child[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
+                        }
+                      })
                     })
                   }
                 }

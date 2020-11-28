@@ -15,7 +15,7 @@
           <a-col :md="24" :sm="24">
             <a-radio-group v-model="useStore" button-style="solid" >
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
-                {{ item.nameCN }}（<span class="redText">余额：<span>1000</span>元</span>）
+                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance}}</span>元</span>）
               </a-radio>
             </a-radio-group>
           </a-col>
@@ -279,7 +279,33 @@
     created () {
       this.useStore = this.data.voMasterInfo.useStore
       ChangeService.storeTypes().then(res => {
-        this.selection.storeTypes = res.result.data
+        ChangeService.getVOUseStoreSum(this.contractGuid).then(res2 => {
+          if(res2.result.statusCode === 200){
+            res.result.data.forEach(item =>{
+              switch(item.id){
+                case 108 :
+                  item.balance = res2.result.data.alterPlanSumAmount
+                  break
+                case 109 :
+                  item.balance = res2.result.data.surplusSumAmount
+                  break
+                case 110:
+                  item.balance = res2.result.data.generalTradeSumAmount
+              }
+            })
+          }else{
+            res.result.data.forEach(item =>{
+              item.balance = 0
+            })
+          }
+          this.selection.storeTypes = res.result.data
+        }).catch((e) =>{
+          console.log('通过合同编号获取对应的三种变更类型预算余额失败',e)
+          res.result.data.forEach(item =>{
+            item.balance = 0
+          })
+          this.selection.storeTypes = res.result.data
+        })
       })
     },
     mounted(){

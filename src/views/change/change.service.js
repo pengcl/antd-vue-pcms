@@ -35,7 +35,8 @@ const API = {
   createVoUsePlan : '/api/services/app/VO/CreateVOUsePlan',//预算确认（针对预计结算金额）
   updateVoUsePlan : '/api/services/app/VO/UpdateVOUsePlan',//更新变更预算调整
   storeTypes: '/api/services/app/GeneralType/GetSAorVOUseStoreTypes',//补充合同或变更余额使用类型
-  getSourceTypes : '/api/services/app/GeneralType/GetVOValueSoruceTypes'//估值来源
+  getSourceTypes : '/api/services/app/GeneralType/GetVOValueSoruceTypes',//估值来源
+  getVOUseStoreSum : '/api/services/app/ProjectTenderPackage/GetContractVOUseStoreSum'//通过合同编号获取对应的三种变更类型预算余额
 }
 
 const ChangeService = {}
@@ -438,5 +439,15 @@ ChangeService.getSourceTypes = function(){
 	  })
 }
 
+/**
+ * 通过合同编号获取对应的三种变更类型预算余额
+ */
+ChangeService.getVOUseStoreSum = function(contractGuid){
+	return request({
+	    url: API.getVOUseStoreSum,
+	    method: 'get',
+	    params: {Id : contractGuid}
+	  })
+}
 
 export { ChangeService }
