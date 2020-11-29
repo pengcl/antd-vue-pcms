@@ -35,6 +35,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
+        :scroll="{ x: columnsWidth,y: 500 }"
         showPagination="auto"
       >
         <span slot="description" slot-scope="text">
@@ -82,13 +83,15 @@
       title: '科目代码',
       className: 'title-center',
       dataIndex: 'action',
-      width: '200px',
+      width: 200,
+      fixed: 'left',
       scopedSlots: { customRender: 'action' }
     },
     {
       title: '科目名称',
       className: 'title-center',
-      width: '200px',
+      width: 200,
+      fixed: 'left',
       dataIndex: 'name'
     }
   ]
@@ -111,6 +114,7 @@
         visible: false,
         confirmLoading: false,
         mdl: null,
+        columnsWidth: 1200,
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
@@ -135,6 +139,7 @@
                       _columns.push(
                         {
                           title: subjectItem1.costCenterName,
+                          width: 200,
                           className: 'title-center',
                           dataIndex: 'cost' + subjectItem1.costCenterId,
                           scopedSlots: { customRender: 'cost' }
