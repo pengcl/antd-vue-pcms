@@ -35,7 +35,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
-        :scroll="{ x: columnsWidth,y: 500 }"
+        :scroll="{ x:columnsWidth,y: 500 }"
         showPagination="auto"
       >
         <span slot="description" slot-scope="text">
@@ -45,7 +45,7 @@
         <span slot="cost" slot-scope="text">
           <p style="text-align: right">
             <span style="font-weight: bold;padding-right: 10px">{{text.amount|NumberFormat}}</span>
-<!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
+            <!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
           </p>
         </span>
 
@@ -67,13 +67,13 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
-  import { getRoleList } from '@/api/manage'
+  import {STable, Ellipsis} from '@/components'
+  import {getRoleList} from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
-  import { ProjectService } from '@/views/project/project.service'
-  import { CostService } from '@/views/cost/cost.service'
-  import { formatList } from '../../../mock/util'
+  import {ProjectService} from '@/views/project/project.service'
+  import {CostService} from '@/views/cost/cost.service'
+  import {formatList} from '../../../mock/util'
   import {fixedList, getPosValue, nullFixedList} from '@/utils/util'
   import storage from "store";
 
@@ -85,12 +85,12 @@
       dataIndex: 'action',
       width: 200,
       fixed: 'left',
-      scopedSlots: { customRender: 'action' }
+      scopedSlots: {customRender: 'action'}
     },
     {
       title: '科目名称',
       className: 'title-center',
-      width: 200,
+      width: 300,
       fixed: 'left',
       dataIndex: 'name'
     }
@@ -105,16 +105,16 @@
       Ellipsis,
       StepByStepModal
     },
-    data () {
+    data() {
       this.columns = columns
       return {
-        titleIds:[],
+        titleIds: [],
         auditStatus: '',
         cities: null,
         visible: false,
         confirmLoading: false,
         mdl: null,
-        columnsWidth: 1200,
+        columnsWidth: 500,
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
@@ -129,24 +129,33 @@
               data: []
             }
           }
-          if(this.queryParam.ProjectGUID){
+          if (this.queryParam.ProjectGUID) {
             return CostService.items(requestParameters).then(res => {
-              const requestParameters2 = Object.assign({}, parameter, { Id: this.queryParam.ProjectGUID })
+              const requestParameters2 = Object.assign({}, parameter, {Id: this.queryParam.ProjectGUID})
               return CostService.subjectItems(requestParameters2)
                 .then(res2 => {
                   if (res2.result.data != null) {
+                    this.columnsWidth = 500 + res2.result.data.costCenterBudgetSubPlans.length * 200
+                    if (this.columnsWidth < 1560) {
+                      this.columnsWidth = 1560
+                    }
+                    let index = 0
                     res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
-                      _columns.push(
-                        {
-                          title: subjectItem1.costCenterName,
-                          width: 200,
-                          className: 'title-center',
-                          dataIndex: 'cost' + subjectItem1.costCenterId,
-                          scopedSlots: { customRender: 'cost' }
-                        }
-                      )
+                      ++index
+                      const obj = {}
+                      obj.title = subjectItem1.costCenterName
+                      obj.className = 'title-center'
+                      obj.dataIndex = 'cost' + subjectItem1.costCenterId
+                      obj.scopedSlots = {customRender: 'cost'}
+                      console.log(index,res2.result.data.costCenterBudgetSubPlans.length)
+                      if (index !== res2.result.data.costCenterBudgetSubPlans.length) {
+                        obj.width = (this.columnsWidth - 500) / res2.result.data.costCenterBudgetSubPlans.length
+                      }
+
+                      _columns.push(obj)
                       this.titleIds.push('cost' + subjectItem1.costCenterId)
                     })
+                    console.log(_columns)
                     this.columns = _columns
                     this.$forceUpdate()
                     const tempCodes = ['B', 'C', 'D', 'E', 'F', 'G']
@@ -169,7 +178,7 @@
                                 }
                               }
                             })
-                            if(!obj[costName]){
+                            if (!obj[costName]) {
                               obj[costName] = {
                                 amount: 0,
                                 percentage: 0
@@ -190,13 +199,12 @@
         selectedRows: []
       }
     },
-    filters: {
-    },
-    created () {
+    filters: {},
+    created() {
       ProjectService.tree().then(res => {
         const cities = []
         res.result.data.citys.forEach(item => {
-          const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+          const children = formatList(item.projects.items, {key: 'type', value: 'project'})
           cities.push({
             selectable: false,
             label: item.city.nameCN,
@@ -213,7 +221,7 @@
       })
     },
     computed: {
-      rowSelection () {
+      rowSelection() {
         return {
           selectedRowKeys: this.selectedRowKeys,
           onChange: this.onSelectChange
@@ -221,10 +229,10 @@
       }
     },
     methods: {
-      handleToResolve (record) {
-        this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
+      handleToResolve(record) {
+        this.$router.push({path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}`})
       },
-      onSelect (value, option) {
+      onSelect(value, option) {
         storage.set('POS', option.pos)
         this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
         if (typeof value === 'number') {
