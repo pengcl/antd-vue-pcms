@@ -415,7 +415,8 @@
         this.selection.professions = res.result.data
         this.$forceUpdate()
       })
-      ContractService.tenders({ ProjectGUID: this.project.projectGUID, MaxResultCount: 999 }).then(res => {
+      const body = this.type !== 'create' ? { ProjectTenderPackageGUID: this.data.contract.tenderPackageItemID, ProjectGUID: this.project.projectGUID, MaxResultCount: 999 } : { ProjectGUID: this.project.projectGUID, MaxResultCount: 999 }
+      ContractService.tenders(body).then(res => {
         res.result.data.forEach(item => {
           if (this.data.contract.tenderPackageItemID === item.projectTenderPackageGUID) {
             this.tender = item
