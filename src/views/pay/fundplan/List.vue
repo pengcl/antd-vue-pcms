@@ -130,7 +130,7 @@
 
 <script>
     import { STable } from '@/components'
-    import { getPosValue, nullFixedList } from '@/utils/util'
+    import { getPosValue } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
