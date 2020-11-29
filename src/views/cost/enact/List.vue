@@ -22,11 +22,11 @@
                 {{ auditStatus }}
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
-              <a-button type="success">预算汇总</a-button>
-              <a-button type="success" style="margin-left: 20px">审批记录</a-button>
-              <a-button type="success" style="margin-left: 20px">导入导出</a-button>
-            </a-col>
+              <a-col :md="10" :sm="24">
+                <a-button type="success" style="margin-right: 5px">预算汇总</a-button>
+                <a-button type="success" style="margin-right: 5px;">审批记录</a-button>
+                <a-button type="success" >导入导出</a-button>
+              </a-col>
           </a-row>
         </a-form>
       </div>
@@ -40,6 +40,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
+        :scroll="{ x: columnsWidth }"
         showPagination="auto"
       >
         <span slot="description" slot-scope="text">
@@ -96,12 +97,15 @@
       title: '科目代码',
       className: 'title-center',
       dataIndex: 'action',
-      width: '200px',
+      width: 200,
+      fixed: 'left',
       scopedSlots: {customRender: 'action'}
     },
     {
       title: '科目名称',
       className: 'title-center',
+      width: 200,
+      fixed: 'left',
       dataIndex: 'name'
     }
   ]
@@ -124,6 +128,7 @@
         visible: false,
         confirmLoading: false,
         mdl: null,
+        columnsWidth: 1200,
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
@@ -150,6 +155,7 @@
                           title: subjectItem1.costCenterName,
                           className: 'title-center',
                           dataIndex: 'cost' + subjectItem1.costCenterId,
+                          width: 200,
                           scopedSlots: {customRender: 'cost'}
                         }
                       )

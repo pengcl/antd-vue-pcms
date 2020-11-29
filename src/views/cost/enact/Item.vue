@@ -25,7 +25,7 @@
             :data-source="datas"
             :alert="false"
             :pagination="false"
-            :scroll="{ y: 500 }"
+            :scroll="{ x: columnsWidth, y: 500 }"
             :defaultExpandAllRows="true"
           >
             <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId"
@@ -73,13 +73,15 @@
   const defaultColumns = [
     {
       title: '科目代码',
-      width: 250,
+      width: 200,
+      fixed: 'left',
       dataIndex: 'elementInfoCode',
       key: 'elementInfoCode'
     },
     {
       title: '科目名称',
-      width: 250,
+      width: 200,
+      fixed: 'left',
       dataIndex: 'elementInfoNameCN',
       key: 'elementInfoNameCN'
     }
@@ -103,6 +105,7 @@
         isUpdate: false,
         confirmLoading: false,
         mdl: null,
+        columnsWidth: 1200,
         loading: {
           save: false
         },
@@ -126,6 +129,7 @@
               _columns.push(
                 {
                   title: item.costCenterName,
+                  width: 200,
                   dataIndex: 'cost' + item.costCenterId,
                   scopedSlots: {customRender: 'cost' + item.costCenterId}
                 }

@@ -294,13 +294,13 @@
     },
     {
       title: '行业名称',
-      width: 150,
+      width: 200,
       fixed: 'left',
       dataIndex: 'elementInfoNameCN'
     },
     {
       title: '行业名称',
-      width: 150,
+      width: 200,
       fixed: 'left',
       dataIndex: 'BudgetTitle'
     }
@@ -344,7 +344,7 @@
           return CostService.resolveTreeItems(requestParameters).then(res => {
             if (res.result.data) {
               if (res.result.data.length > 3) {
-                this.columnsWidth = 500 + res.result.data.length * 150
+                this.columnsWidth = res.result.data.length * 150
               }
               res.result.data.forEach(item => {
                 // 组装动态列
@@ -354,7 +354,7 @@
                     children: [
                       {
                         title: 'Budget Value',
-                        width: 150,
+                        width: 200,
                         dataIndex: 'cost' + item.costCenterId,
                         scopedSlots: {customRender: 'cost'}
                       }
