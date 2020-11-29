@@ -323,7 +323,7 @@
         visible: false,
         confirmLoading: false,
         mdl: null,
-        columnsWidth: 1000,
+        columnsWidth: 600,
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
@@ -343,24 +343,25 @@
           }
           return CostService.resolveTreeItems(requestParameters).then(res => {
             if (res.result.data) {
-              if (res.result.data.length > 3) {
-                this.columnsWidth = res.result.data.length * 150
+              this.columnsWidth = 600 + res.result.data.length * 200
+              if (this.columnsWidth < 1560) {
+                this.columnsWidth = 1560
               }
+              let index = 0
               res.result.data.forEach(item => {
-                // 组装动态列
-                _columns.push(
-                  {
-                    title: item.costCenterName,
-                    children: [
-                      {
-                        title: 'Budget Value',
-                        width: 200,
-                        dataIndex: 'cost' + item.costCenterId,
-                        scopedSlots: {customRender: 'cost'}
-                      }
-                    ]
-                  }
-                )
+                ++index
+                const obj = {}
+                obj.title = item.costCenterName
+                obj.children = []
+                const childrenObj = {}
+                childrenObj.title = 'Budget Value'
+                if (index !== res.result.data.length) {
+                  childrenObj.width = (this.columnsWidth - 600) / res.result.data.length
+                }
+                childrenObj.dataIndex = 'cost' + item.costCenterId
+                childrenObj.scopedSlots = {customRender: 'cost'}
+                obj.children.push(childrenObj)
+                _columns.push(obj)
               })
               // 组装动态列对应的行数据
               const list = getLineData(res.result.data[0].elementItem.childs, res.result.data)

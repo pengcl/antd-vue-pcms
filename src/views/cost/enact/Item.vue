@@ -80,7 +80,7 @@
     },
     {
       title: '科目名称',
-      width: 200,
+      width: 300,
       fixed: 'left',
       dataIndex: 'elementInfoNameCN',
       key: 'elementInfoNameCN'
@@ -105,7 +105,7 @@
         isUpdate: false,
         confirmLoading: false,
         mdl: null,
-        columnsWidth: 1200,
+        columnsWidth: 400,
         loading: {
           save: false
         },
@@ -124,16 +124,21 @@
           }
           return CostService.subjectViewItems(requestParameters).then(res => {
             this.ars = res.result.data
+            this.columnsWidth = 500 + this.ars.length * 200
+            if (this.columnsWidth < 1560) {
+              this.columnsWidth = 1560
+            }
+            let index = 0
             this.ars.forEach(item => {
-              // 组装动态列
-              _columns.push(
-                {
-                  title: item.costCenterName,
-                  width: 200,
-                  dataIndex: 'cost' + item.costCenterId,
-                  scopedSlots: {customRender: 'cost' + item.costCenterId}
-                }
-              )
+              ++index
+              const obj = {}
+              obj.title = item.costCenterName
+              obj.dataIndex = 'cost' + item.costCenterId
+              obj.scopedSlots = {customRender: 'cost' + item.costCenterId}
+              if (index !== this.ars.length) {
+                obj.width = (this.columnsWidth - 500) / this.ars.length
+              }
+              _columns.push(obj)
             })
             this.columns = _columns
             this.$forceUpdate()

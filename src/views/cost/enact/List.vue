@@ -22,11 +22,11 @@
                 {{ auditStatus }}
               </a-form-item>
             </a-col>
-              <a-col :md="10" :sm="24">
-                <a-button type="success" style="margin-right: 5px">预算汇总</a-button>
-                <a-button type="success" style="margin-right: 5px;">审批记录</a-button>
-                <a-button type="success" >导入导出</a-button>
-              </a-col>
+            <a-col :md="10" :sm="24">
+              <a-button type="success" style="margin-right: 5px">预算汇总</a-button>
+              <a-button type="success" style="margin-right: 5px;">审批记录</a-button>
+              <a-button type="success">导入导出</a-button>
+            </a-col>
           </a-row>
         </a-form>
       </div>
@@ -40,7 +40,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
-        :scroll="{ x: columnsWidth }"
+        :scroll="{ x: columnsWidth,y: 500 }"
         showPagination="auto"
       >
         <span slot="description" slot-scope="text">
@@ -50,7 +50,7 @@
         <span slot="cost" slot-scope="text">
           <p style="text-align: right">
             <span style="font-weight: bold;padding-right: 10px">{{text.amount|NumberFormat}}</span>
-<!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
+            <!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
           </p>
         </span>
 
@@ -104,7 +104,7 @@
     {
       title: '科目名称',
       className: 'title-center',
-      width: 200,
+      width: 300,
       fixed: 'left',
       dataIndex: 'name'
     }
@@ -128,7 +128,7 @@
         visible: false,
         confirmLoading: false,
         mdl: null,
-        columnsWidth: 1200,
+        columnsWidth: 500,
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
@@ -149,18 +149,26 @@
               return CostService.subjectItems(requestParameters2)
                 .then(res2 => {
                   if (res2.result.data != null) {
+                    this.columnsWidth = 500 + res2.result.data.costCenterBudgetSubPlans.length * 200
+                    if (this.columnsWidth < 1560) {
+                      this.columnsWidth = 1560
+                    }
+                    let index = 0
                     res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem1 => {
-                      _columns.push(
-                        {
-                          title: subjectItem1.costCenterName,
-                          className: 'title-center',
-                          dataIndex: 'cost' + subjectItem1.costCenterId,
-                          width: 200,
-                          scopedSlots: {customRender: 'cost'}
-                        }
-                      )
+                      ++index
+                      const obj = {}
+                      obj.title = subjectItem1.costCenterName
+                      obj.className = 'title-center'
+                      obj.dataIndex = 'cost' + subjectItem1.costCenterId
+                      obj.scopedSlots = {customRender: 'cost'}
+                      console.log(index, res2.result.data.costCenterBudgetSubPlans.length)
+                      if (index !== res2.result.data.costCenterBudgetSubPlans.length) {
+                        obj.width = (this.columnsWidth - 500) / res2.result.data.costCenterBudgetSubPlans.length
+                      }
+                      _columns.push(obj)
                       this.titleIds.push('cost' + subjectItem1.costCenterId)
                     })
+                    console.log(_columns)
                     this.columns = _columns
                     this.$forceUpdate()
                     res.result.data.forEach(item => {
@@ -201,8 +209,7 @@
         selectedRows: []
       }
     },
-    filters: {
-    },
+    filters: {},
     created() {
       ProjectService.tree().then(res => {
         const cities = []
