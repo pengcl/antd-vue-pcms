@@ -5,7 +5,7 @@
         <a class="header-logo" href="javascript:;">
           <img src="~@/assets/login-logo.png">
         </a>
-        <div data-bind="text: environmentTag" class="EnvironmentTag">UAT (#uat_202003-003)</div>
+        <div data-bind="text: environmentTag" class="EnvironmentTag">{{appType === 'production' ? 'UAT' : 'DEV'}} (#uat_202003-003)</div>
       </div>
       <router-view/>
 
@@ -38,6 +38,11 @@
   export default {
     name: 'UserLayout',
     mixins: [deviceMixin],
+    data () {
+      return {
+        appType: process.env.NODE_ENV
+      }
+    },
     mounted () {
       document.body.classList.add('userLayout')
     },
