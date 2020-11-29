@@ -282,7 +282,7 @@
       },
       startBPM () {
         this.loading.startBPM = true
-        if(!this.form.voMasterInfo.budgetIsConfirm){
+        if(!this.form.voMasterInfo.budgetIsConfirm && this.form.vobQlst.length > 0){
           this.$message.warn('未确认预算，无法发起审批流程')
           this.loading.startBPM= false
           return
