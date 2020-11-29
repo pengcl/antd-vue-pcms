@@ -9,6 +9,13 @@
     <div>
 	    <a-table :row-key="record => record.id" :columns="columns" :data-source="tableData" :scroll="{ x : ' calc(1200px + 50%)' }" :rowSelection="rowSelection" bordered ref="table" :pagination="false">
 	    		<label slot="isCarryData" slot-scope="text">{{ text ? '是' : '否' }}</label>
+          <div slot="itemType" slot-scope="text, item, index">
+            <a-select :value="item.itemType" style="width: 200px" :disabled="true">
+              <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code"
+                >{{ item.nameCN }}
+              </a-select-option>
+            </a-select>
+          </div>
 	    </a-table>
     </div>
   </a-modal>
@@ -19,6 +26,7 @@
   import { STable, Ellipsis } from '@/components'
   import { ChangeService } from '@/views/change/change.service'
   import { fixedList } from '@/utils/util'
+  import { Base as BaseService } from '@/api/base'
 
   const columns = [
     {
@@ -59,8 +67,9 @@
     },
     {
       title: '清单项类别',
-      dataIndex: 'signDate',
-      width : 150
+      dataIndex: 'itemType',
+      scopedSlots: { customRender: 'itemType' },
+      width : 220
     },
     {
       title: '供应',
@@ -159,6 +168,7 @@
         show: false,
         visible: false,
         confirmLoading: false,
+        selection : {},
         mdl: null,
         // 高级搜索 展开/关闭
         advanced: false,
@@ -195,6 +205,9 @@
         }
     },
     created () {
+       BaseService.itemTypes('vo').then((res) => {
+        this.selection.itemTypes = res.result.data
+      })
     },
     mounted(){
     		this.loadData();

@@ -578,11 +578,6 @@
       }
     },
     created () {
-      // 获取可选抄送单位
-      ChangeService.sendCopyParty({}).then(item => {
-        this.selection.sendCopyParties = item.result.data
-      })
-
       ChangeService.getSourceTypes().then(res =>{
         this.selection.sourceTypes = res.result.data
       })
@@ -618,6 +613,11 @@
       // 因为baseinfo为第一个tab,界面加载后默认先打开了baseinfo，因为在item.created异步加载的数据无法在本界面created中获取到数据
       // 所以使用对象监听的方式来获取item界面获取到的对象信息
       'contract.contractGuid' (value) {
+        // 获取可选抄送单位
+        ChangeService.sendCopyParty({contractGuid : this.contract.contractGuid}).then(item => {
+          this.selection.sendCopyParties = item.result.data
+          this.$forceUpdate()
+        })
         const contractPartyParams = {
           contractGuid: this.contract.contractGuid,
           masterContractID: this.contract.masterContractID,
