@@ -6,10 +6,14 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="项目">
-                <a-cascader
-                  :options="cities"
-                  placeholder="请选择"
-                  @change="onChange"
+                <a-tree-select
+                  v-model="queryParam.ProjectGUID"
+                  style="width: 100%"
+                  :tree-data="cities"
+                  :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                  search-placeholder="请选择"
+                  @select="onSelect"
+                  :suffixIcon="cities ? '' : '加载中...'"
                 />
               </a-form-item>
             </a-col>
@@ -40,7 +44,7 @@
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-button type="success" @click="search()">搜索</a-button>
+            <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>
         </a-row>
@@ -51,9 +55,51 @@
           合同列表
         </a-col>
       </a-row>
-      <a-table :columns="columns" :data-source="data" bordered>
+      <s-table
+        style="margin-top: 5px"
+        ref="table"
+        size="default"
+        rowKey="contractGuid"
+        bordered
+        :columns="columns"
+        :data="loadData"
+        :alert="false"
+        showPagination="auto"
+      >
+        <span slot="contractNo" slot-scope="text, record">
+            <a @click="handleToContractInfo(record)">{{text}}</a>
+        </span>
 
-      </a-table>
+        <span slot="contractAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
+        <span slot="action" slot-scope="text, record">
+          <template>
+            <a-button
+              class="btn-success"
+              type="primary"
+              icon="file-text"
+              title="查看"
+              @click="handleToItem(record)"></a-button>
+            <a-button
+              :disabled="record.auditStatus !== '未审核'"
+              class="btn-info"
+              type="primary"
+              icon="form"
+              style="margin-left: 4px"
+              title="编辑"
+              @click="handleToEdit(record)"></a-button>
+            <a-button
+              :disabled="record.auditStatus !== '未审核'"
+              type="danger"
+              icon="delete"
+              style="margin-left: 4px"
+              title="删除"
+              @click="remove(record)"></a-button>
+          </template>
+        </span>
+      </s-table>
 
 
       <a-row :gutter="48" style="margin-top: 10px">
@@ -68,18 +114,15 @@
       </a-row>
       <s-table
         style="margin-top: 5px"
-        ref="table"
+        ref="_table"
         size="default"
         rowKey="contractGuid"
         bordered
         :columns="_columns"
-        :data="loadData"
+        :data="loadData2"
         :alert="false"
         showPagination="auto"
       >
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
 
         <span slot="action" slot-scope="text, record">
           <template>
@@ -114,27 +157,26 @@
         @cancel="handleCancel"
         @ok="handleOk"
       />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
     import moment from 'moment'
-    import { STable, Ellipsis } from '@/components'
+    import { STable } from '@/components'
     import { getRoleList } from '@/api/manage'
-
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { ContractService } from '@/views/contract/contract.service'
-    import { fixedList } from '@/utils/util'
+    import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../../mock/util'
+    import { ChangeService } from '@/views/change/change.service'
+    import { formatList } from '@/mock/util'
+    import storage from 'store'
 
     const columns = [
         {
             title: '合同编号',
-            dataIndex: 'contractNo'
+            dataIndex: 'contractNo',
+            scopedSlots: { customRender: 'contractNo' }
         },
         {
             title: '合同名称',
@@ -148,7 +190,7 @@
         },
         {
             title: '结算状态',
-            dataIndex: 'payState',
+            dataIndex: 'balanceStatus',
         },
         {
             title: '合同类型',
@@ -241,39 +283,19 @@
         }
     ]
 
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
-
     export default {
         name: 'CheckoutContractList',
         components: {
             STable,
-            Ellipsis,
             CreateForm,
-            StepByStepModal
         },
         data () {
             this.columns = columns
             this._columns = _columns
             return {
                 // create model
-                cities:[],
+                projectType: '',
+                cities: null,
                 show: false,
                 visible: false,
                 confirmLoading: false,
@@ -282,24 +304,21 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
+                queryParam2: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    console.log('loadData request parameters:', requestParameters)
-                    return ContractService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
+                    return ChangeService.items(requestParameters)
+                        .then(res => {
+                            return fixedList(res, parameter)
+                        })
+                },
+                loadData2: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam2)
+                    return nullFixedList(requestParameters)
                 },
                 selectedRowKeys: [],
                 selectedRows: []
-            }
-        },
-        filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
             }
         },
         created () {
@@ -308,7 +327,6 @@
                 const cities = []
                 res.result.data.citys.forEach(item => {
                     const children = formatList(item.projects.items)
-                    console.log(children)
                     cities.push({
                         label: item.city.nameCN,
                         value: item.city.id,
@@ -316,6 +334,11 @@
                     })
                 })
                 this.cities = cities
+                const value = getPosValue(this.cities)
+                this.queryParam.ProjectCode = value.projectCode
+                this.projectType = value.type
+                this.queryParam.ProjectGUID = value.projectGUID
+                this.$refs.table.refresh()
                 this.$forceUpdate()
             })
         },
@@ -328,6 +351,22 @@
             }
         },
         methods: {
+            handleToContractInfo (record) {
+                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+            },
+            onSelect (value, option) {
+                storage.set('POS', option.pos)
+                this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+                this.projectType = option.$options.propsData.dataRef.type
+                if (typeof value === 'number') {
+                    this.city = value
+                    this.queryParam.ProjectGUID = ''
+                } else {
+                    this.queryParam.ProjectGUID = value
+                }
+                this.$refs.table.refresh()
+                this.$forceUpdate()
+            },
             handleToCompleted () {
                 this.$router.push({ path: '/checkout/completed/list' })
             },
@@ -344,12 +383,7 @@
                 this.mdl = null
                 this.visible = true
             },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
             search () {
-                console.log('search')
                 this.show = !this.show
                 this.$refs.table.refresh(true)
             },
@@ -412,25 +446,10 @@
                 const form = this.$refs.createModal.form
                 form.resetFields() // 清理表单数据（可不做）
             },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
             },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
-            },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
-                }
-            }
         }
     }
 </script>
