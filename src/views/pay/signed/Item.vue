@@ -184,6 +184,9 @@
                                         this.$message.success('已启动审批流程')
                                         const tempwindow = window.open('_blank')
                                         tempwindow.location = _res.result.data
+                                        this.$router.push({
+                                            path: '/pay/signed/list'
+                                        })
                                     }
                                 })
                             } else {
@@ -219,6 +222,9 @@
                                         this.$message.success('已启动审批流程')
                                         const tempwindow = window.open('_blank')
                                         tempwindow.location = _res.result.data
+                                        this.$router.push({
+                                            path: '/pay/signed/list'
+                                        })
                                     }
                                 })
                             } else {

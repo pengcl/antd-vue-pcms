@@ -15,7 +15,7 @@
           <a-col :md="24" :sm="24">
             <a-radio-group v-model="useStore" button-style="solid" >
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
-                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance}}</span>元</span>）
+                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance | NumberFormat}}</span>元</span>）
               </a-radio>
             </a-radio-group>
           </a-col>

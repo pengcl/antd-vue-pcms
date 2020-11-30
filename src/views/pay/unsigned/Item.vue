@@ -229,6 +229,10 @@
                         BaseService.masterID(this.id).then(_res => {
                             this.form.attachmentID = _res.result.data
                         })
+                        UnSignedService.initData(this.projectGUID).then(res => {
+                            const initData = res.result.data
+                            this.form.projectName = initData.projectName
+                        })
                     })
                 } else {
                     UnSignedService.initData(this.projectGUID).then(res => {
@@ -267,6 +271,9 @@
                                         this.$message.success('已启动审批流程')
                                         const tempwindow = window.open('_blank')
                                         tempwindow.location = _res.result.data
+                                        this.$router.push({
+                                            path: '/pay/unsigned/list'
+                                        })
                                     }
                                 })
                             } else {
@@ -286,6 +293,9 @@
                                         this.$message.success('已启动审批流程')
                                         const tempwindow = window.open('_blank')
                                         tempwindow.location = _res.result.data
+                                        this.$router.push({
+                                            path: '/pay/unsigned/list'
+                                        })
                                     }
                                 })
                             } else {

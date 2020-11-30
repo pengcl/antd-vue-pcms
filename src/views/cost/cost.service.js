@@ -299,6 +299,15 @@ CostService.removeTradeBudget = function (parameter) {
   })
 }
 
+CostService.industryRemove = function (TenderPackageId) {
+  return request({
+    url: API.industryRemove,
+    method: 'delete',
+    params: {TenderPackageId}
+  })
+}
+
+
 
 /**
  * login func

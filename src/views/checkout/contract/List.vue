@@ -70,6 +70,10 @@
             <a @click="handleToContractInfo(record)">{{text}}</a>
         </span>
 
+        <span slot="contractCategory" slot-scope="text">
+            {{text === 15 ? '原合同' : text === 16 ? '补充合同' : '专业分包合同'}}
+        </span>
+
         <span slot="contractAmount" slot-scope="text">
             {{text | NumberFormat}}
         </span>
@@ -194,7 +198,8 @@
         },
         {
             title: '合同类型',
-            dataIndex: 'contractType',
+            dataIndex: 'contractCategory',
+            scopedSlots: { customRender: 'contractCategory' }
         },
         {
             title: '合同总金额(￥)',
