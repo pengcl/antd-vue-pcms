@@ -103,7 +103,7 @@
         </span>
 
         <span slot="packageDate" slot-scope="text, record">
-          {{ record.packageDate | moment }}
+          {{ record.packageDate | date }}
         </span>
 
         <span slot="tradePackageCode" slot-scope="text, record">
