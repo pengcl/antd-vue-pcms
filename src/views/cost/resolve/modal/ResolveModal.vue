@@ -16,83 +16,83 @@
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }">
         <a-col :md="24" :sm="24">
-          <table>
-            <thead>
-            <tr>
-              <th :colspan="columnLength">
-                <a-button @click="addResolve()" icon="plus" type="success">
-                  新增
-                </a-button>
-              </th>
-            </tr>
-            <tr>
-              <th style="width: 15%">操作</th>
-              <th style="width: 20%">科目</th>
-              <th style="width: 20%">行业名称</th>
-              <th v-for="(costCenterItem,index) in costCenters" :key="index">
-                {{costCenterItem.costCenterName}}
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td></td>
-              <td>{{this.elementInfoNameCN}}</td>
-              <td></td>
-              <td v-for="(costCenterItem,index) in costCenters" :key="index">
-                {{costCenterItem.amount|NumberFormat}}
-              </td>
-            </tr>
-            <tr v-for="(item,index) in form.costCenterItems" :key="index">
-              <td>
-                <a-button @click="del(index)" icon="delete" type="danger"></a-button>
-              </td>
-              <td>
-
-              </td>
-              <td>
-                <a-form-model-item
-                  class="simple"
-                  style="margin-top: 20px"
-                  :prop="'costCenterItems.' + index + '.tradeTypeId'"
-                  :rules="[{required: true, message: '请选择行业', trigger: 'change' }]"
-                >
-                  <a-select
-                    placeholder="请选择"
-                    v-model="form.costCenterItems[index].tradeTypeId"
+          <div class="table-wrapper">
+            <table>
+              <thead>
+              <tr>
+                <th :colspan="columnLength">
+                  <a-button @click="addResolve()" icon="plus" type="success">
+                    新增
+                  </a-button>
+                </th>
+              </tr>
+              <tr>
+                <th style="width: 100px">操作</th>
+                <th style="width: 200px">科目</th>
+                <th style="width: 200px">行业名称</th>
+                <th style="width: 200px" v-for="(costCenterItem,index) in costCenters" :key="index">
+                  {{costCenterItem.costCenterName}}
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td style="width: 100px"></td>
+                <td style="width: 200px">{{this.elementInfoNameCN}}</td>
+                <td style="width: 200px"></td>
+                <td style="width: 200px" v-for="(costCenterItem,index) in costCenters" :key="index">
+                  {{costCenterItem.amount|NumberFormat}}
+                </td>
+              </tr>
+              <tr v-for="(item,index) in form.costCenterItems" :key="index">
+                <td style="width: 100px">
+                  <a-button @click="del(index)" icon="delete" type="danger"></a-button>
+                </td>
+                <td><div style="width: 100px"></div></td>
+                <td style="width: 200px">
+                  <a-form-model-item
+                    class="simple"
+                    style="margin-top: 20px"
+                    :prop="'costCenterItems.' + index + '.tradeTypeId'"
+                    :rules="[{required: true, message: '请选择行业', trigger: 'change' }]"
                   >
-                    <a-select-option
-                      v-for="option in elementTradeTypes"
-                      :key="option.id"
-                      :value="option.id"
+                    <a-select
+                      placeholder="请选择"
+                      v-model="form.costCenterItems[index].tradeTypeId"
                     >
-                      {{ option.nameCN }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-model-item>
-              </td>
-              <td v-for="(costCenterItem,aIndex) in form.costCenterItems[index].centers" :key="aIndex">
-                <a-form-model-item
-                  class="simple"
-                  style="margin-top: 20px"
-                  :prop="'costCenterItems.' + index +'.centers.' + aIndex +'.amount'"
-                  :rules="[
+                      <a-select-option
+                        v-for="option in elementTradeTypes"
+                        :key="option.id"
+                        :value="option.id"
+                      >
+                        {{ option.nameCN }}
+                      </a-select-option>
+                    </a-select>
+                  </a-form-model-item>
+                </td>
+                <td style="width: 200px" v-for="(costCenterItem,aIndex) in form.costCenterItems[index].centers" :key="aIndex">
+                  <a-form-model-item
+                    class="simple"
+                    style="margin-top: 20px"
+                    :prop="'costCenterItems.' + index +'.centers.' + aIndex +'.amount'"
+                    :rules="[
                     {validator: (rule,value,callback) => {checkTo(rule,value,callback,form.costCenterItems[index],form.costCenterItems[index].centers[aIndex].disabled)},  type : 'number', trigger: 'change',required : true },
                     {validator: (rule,value,callback) => {checkMaxTo(rule,value,callback,form.costCenterItems[index].centers[aIndex].costCenterId,form.costCenterItems[index].centers[aIndex].disabled)},  type : 'number', trigger: 'change'}
                    ]"
-                >
-                  <a-input-number
-                    :disabled="form.costCenterItems[index].centers[aIndex].disabled"
-                    v-model="form.costCenterItems[index].centers[aIndex].amount"
-                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                    :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                   >
-                  </a-input-number>
-                </a-form-model-item>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+                    <a-input-number
+                      :disabled="form.costCenterItems[index].centers[aIndex].disabled"
+                      v-model="form.costCenterItems[index].centers[aIndex].amount"
+                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                    >
+                    </a-input-number>
+                  </a-form-model-item>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </a-col>
       </a-form-model>
     </a-card>
@@ -193,7 +193,6 @@
         this.visible = false
       },
       handleOk() {
-        console.log(this.form)
         this.$refs.form.validate(valid => {
           if (valid) {
             const result = []
