@@ -17,6 +17,9 @@
           :data-source="usePlanData"
           bordered 
           ref="usePlanTable" >
+          <label slot="alterPlan" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="voUseAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="balanceAmount" slot-scope="text">{{text | NumberFormat}}</label>
         </a-table>
         <a-table 
           :style="this.data.voMasterInfo.useStore !== 109 ? 'display : none' : ''"
@@ -26,6 +29,9 @@
           :data-source="surplusData"
           bordered 
           ref="surplusTable" >
+          <label slot="surplusAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="voUseAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="balanceAmount" slot-scope="text">{{text | NumberFormat}}</label>
         </a-table>
         <a-table 
           :style="this.data.voMasterInfo.useStore !== 110 ? 'display : none' : ''"
@@ -80,8 +86,8 @@
     },
     {
       title: '定标盈余',
-      dataIndex: 'alterPlan',
-      scopedSlots: { customRender: 'alterPlan' }
+      dataIndex: 'surplusAmount',
+      scopedSlots: { customRender: 'surplusAmount' }
     },
     {
       title: '本次使用金额',
@@ -148,7 +154,7 @@
         })
         this.usePlanData = usePlanDataTemp
       }
-      this.surplusData = []
+      this.surplusData = this.data.voUseSurpluslst
       this.generalTradeData = []
       return {
         selection : {storeTypes : []}
