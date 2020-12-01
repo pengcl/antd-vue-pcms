@@ -115,9 +115,12 @@
         </a-col>
         <a-col :md="24" :sm="24">
           <div
-            style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
+            style="padding-top:5px; padding-bottom:5px;padding-left:15px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
             <a-button :disabled="type === 'view'" icon="plus" @click="add()">
               新增
+            </a-button>
+            <a-button :loading="loading" :disabled="type === 'view'" style="margin-left: 15px" type="primary" @click="getContractAmount()">
+              计算金额
             </a-button>
           </div>
           <a-table
@@ -728,7 +731,9 @@
         })
       },
       getContractAmount () {
+        this.loading = true
         ContractService.amount(this.data.contract.contractCategory, this.data.contractBQlst).then(res => {
+          this.loading = false
           const data = res.result.data
           this.data.contract.contractAmount = data.contractAmount
           this.data.contract.contractEffectAmount = data.contractEffectAmount

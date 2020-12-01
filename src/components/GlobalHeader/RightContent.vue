@@ -51,7 +51,6 @@ export default {
   mounted () {
     getInfo().then(res => {
       this.currentUser = res.result.data
-      console.log(this.currentUser)
     })
     /* setTimeout(() => {
       this.currentUser = res.result.data

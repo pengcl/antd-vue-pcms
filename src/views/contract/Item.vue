@@ -163,7 +163,6 @@
       }
     },
     created () {
-      console.log(this.form)
       this.getData()
     },
     computed: {
