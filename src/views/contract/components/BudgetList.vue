@@ -2,7 +2,7 @@
   <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" style="margin-bottom: 16px">
     <a-row :gutter="48">
       <a-col :md="24" :sm="24">
-        <a-radio-group :disabled="true" v-model="useStore" button-style="solid">
+        <a-radio-group :disabled="true" v-model="data.contract.useStore" button-style="solid">
           <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
             {{ item.nameCN }}
           </a-radio>
@@ -101,7 +101,6 @@ export default {
       items: [],
       columns: columns,
       selection: {},
-      useStore: null,
       queryParam: { contractGuid: this.data.contract.contractGuid },
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -114,7 +113,7 @@ export default {
   created () {
     ContractService.storeTypes().then(res => {
       this.selection.storeTypes = res.result.data
-      this.useStore = res.result.data[0].id
+      this.$forceUpdate()
     })
   },
   props: {

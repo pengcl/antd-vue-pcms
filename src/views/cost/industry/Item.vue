@@ -32,7 +32,7 @@
           <a-col :md="24" :sm="24">
             <a-form-model-item prop="costCenters" label="范围">
               <a-select
-                :disabled="type === 'view'"
+                :disabled="type !== 'add'"
                 mode="multiple"
                 size="default"
                 placeholder="请选择"
