@@ -39,20 +39,20 @@
               </a-textarea>
             </a-form-model-item>
           </a-col>
-<!--          <a-col :md="24" :sm="24">-->
-<!--            <a-form-model-item label="招投标包类型" prop="itemTypeId">-->
-<!--              <a-select-->
-<!--                :disabled="type === 'view'"-->
-<!--                placeholder="请选择"-->
-<!--                v-model="form.itemTypeId"-->
-<!--                style="width:500px"-->
-<!--              >-->
-<!--                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">-->
-<!--                  {{ option.nameCN }}-->
-<!--                </a-select-option>-->
-<!--              </a-select>-->
-<!--            </a-form-model-item>-->
-<!--          </a-col>-->
+          <!--          <a-col :md="24" :sm="24">-->
+          <!--            <a-form-model-item label="招投标包类型" prop="itemTypeId">-->
+          <!--              <a-select-->
+          <!--                :disabled="type === 'view'"-->
+          <!--                placeholder="请选择"-->
+          <!--                v-model="form.itemTypeId"-->
+          <!--                style="width:500px"-->
+          <!--              >-->
+          <!--                <a-select-option v-for="option in budgetTypeItems" :key="JSON.stringify(option)" :value="option.id">-->
+          <!--                  {{ option.nameCN }}-->
+          <!--                </a-select-option>-->
+          <!--              </a-select>-->
+          <!--            </a-form-model-item>-->
+          <!--          </a-col>-->
           <a-col :md="24" :sm="24">
             <a-form-item label="金额" prop="budgetAmount">
               <a-input
@@ -107,7 +107,7 @@
                       v-model="form.tenderPackages[index]"
                     >
                       <a-select-option
-                        v-for="option in industryItems"
+                        v-for="option in getIndustrysList(industryItems,form.tenderPackages,form.tenderPackages[index])"
                         :key="option.id"
                         :value="option.id">
                         {{ option.packageTitle }}
@@ -355,6 +355,23 @@
         return (
           option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
         )
+      },
+      getIndustrysList(industrysItems, tenderPackages, value) {
+        const _industrysItems = JSON.parse(JSON.stringify(industrysItems))
+        for (let i = 0; i < _industrysItems.length; i++) {
+          let _item = _industrysItems[i]
+          tenderPackages.forEach(p => {
+            if (_item.id === p) {
+              _industrysItems.splice(i, 1)
+            }
+          })
+        }
+        industrysItems.forEach(item => {
+          if (item.id === value) {
+            _industrysItems.push(item)
+          }
+        })
+        return _industrysItems
       }
     }
   }
