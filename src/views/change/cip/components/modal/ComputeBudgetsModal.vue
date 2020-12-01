@@ -15,7 +15,7 @@
           <a-col :md="24" :sm="24">
             <a-radio-group v-model="useStore" button-style="solid" >
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
-                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance}}</span>元</span>）
+                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance | NumberFormat}}</span>元</span>）
               </a-radio>
             </a-radio-group>
           </a-col>
@@ -56,11 +56,19 @@
               :data="surplusLoadData"
               bordered 
               ref="surplusTable" >
-                <template slot="alterPlan" slot-scope="text,record">
-                  <a-input-number  :value="record.alterPlan" :disabled="true"></a-input-number>
+                <template slot="surplusAmount" slot-scope="text,record">
+                  <a-input-number  :value="record.surplusAmount" :disabled="true"></a-input-number>
                 </template>
                 <template slot="voUseAmount" slot-scope="text,record">
-                  <a-input-number  v-model="record.voUseAmount"  @change="value => changeVoUseAmount(value,record)"></a-input-number>
+                  <a-input-number 
+                    :max="record.alterPlan" 
+                    :min="-record.alterPlan" 
+                    v-model="record.voUseAmount" 
+                    @change="changeVoUseAmount(record)"
+                    :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"
+                    ></a-input-number>
                 </template>
                 <template slot="balanceAmount" slot-scope="text">
                   <span v-if="text >= 0">0</span>
@@ -79,7 +87,15 @@
                   <a-input-number  :value="record.alterPlan" :disabled="true"></a-input-number>
                 </template>
                 <template slot="voUseAmount" slot-scope="text,record">
-                  <a-input-number  v-model="record.voUseAmount" @change="value => changeVoUseAmount(value,record)"></a-input-number>
+                  <a-input-number 
+                    :max="record.alterPlan" 
+                    :min="-record.alterPlan" 
+                    v-model="record.voUseAmount" 
+                    @change="changeVoUseAmount(record)"
+                    :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
+                    :precision="2"
+                    ></a-input-number>
                 </template>
                 <template slot="balanceAmount" slot-scope="text">
                   <span v-if="text >= 0">0</span>
@@ -131,8 +147,8 @@
     },
     {
       title: '定标盈余',
-      dataIndex: 'alterPlan',
-      scopedSlots: { customRender: 'alterPlan' }
+      dataIndex: 'surplusAmount',
+      scopedSlots: { customRender: 'surplusAmount' }
     },
     {
       title: '本次使用金额',
@@ -176,17 +192,20 @@
     108 : {
       'create' : 'createVoUsePlan',
       'update' : 'updateVoUsePlan',
-      'table' : 'usePlanTable'
+      'table' : 'usePlanTable',
+      'list' : 'voUsePlanlst'
     },
     109 : {
-      'create' : 'createVoUsePlan',
-      'update' : 'updateVoUsePlan',
-      'table' : 'surplusTable'
+      'create' : 'createVOUseSurplus',
+      'update' : 'updateVOUseSurplus',
+      'table' : 'surplusTable',
+      'list' : 'voUseSurpluslst'
     },
     110 : {
       'create' : 'createVoUsePlan',
       'update' : 'updateVoUsePlan',
-      'table' : 'generalTradeTable'
+      'table' : 'generalTradeTable',
+      'list' : 'voUseSurpluslst'
     }
   }
 
@@ -245,9 +264,20 @@
         },
         surplusLoadData :  parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          return new Promise((resolve, reject) => {
-            resolve({ data : [] })
-          })
+          return ChangeService.getVOUseSurplusPreSplit({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+            .then(res => {
+              if(res.result.data == null){
+                return new Promise((resolve, reject) => {
+                resolve({ data : [] })
+              })
+              }
+              return res.result
+            }).catch((e) =>{
+              this.$message.error('获取定标盈余列表错误')
+              return new Promise((resolve, reject) => {
+                resolve({ data : [] })
+              })
+            })
         },
         generalTradeLoadData : parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
@@ -277,7 +307,6 @@
     	
     },
     created () {
-      this.useStore = this.data.voMasterInfo.useStore
       ChangeService.storeTypes().then(res => {
         ChangeService.getVOUseStoreSum(this.contractGuid).then(res2 => {
           if(res2.result.statusCode === 200){
@@ -308,6 +337,11 @@
         })
       })
     },
+    watch : {
+      'data.voMasterInfo'(value){
+        this.useStore = this.data.voMasterInfo.useStore
+      }
+    },
     mounted(){
     	
     },
@@ -327,7 +361,12 @@
       },
       handleOk(){
         this.loading = true
-        if(this.useStore != 108){
+        if(this.useStore != 108 && this.useStore != 109 && this.useStore != 110){
+          this.$message.warn('请选择预算确认类别')
+          this.loading = false
+          return
+        }
+        if(this.useStore === 110){
           this.$message.warn('暂无接口，无法完成预算确认，请选择【变更预留金额】进行操作')
           this.loading = false
           return
@@ -336,9 +375,9 @@
         const reqData = {
           voGuid : this.data.voMasterInfo.voGuid,
           useStore : this.useStore,
-          budgetIsConfirm : this.data.voMasterInfo.budgetIsConfirm,
-          voUsePlanlst : this.$refs[actions[this.useStore].table].localDataSource
+          budgetIsConfirm : this.data.voMasterInfo.budgetIsConfirm
         }
+        reqData[actions[this.useStore].list] = this.$refs[actions[this.useStore].table].localDataSource
         console.log('reqData',reqData)
         ChangeService[actions[this.useStore][methodName]](reqData).then(res =>{
           this.loading = false

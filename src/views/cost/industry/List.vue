@@ -103,7 +103,7 @@
         </span>
 
         <span slot="packageDate" slot-scope="text, record">
-          {{ record.packageDate | moment }}
+          {{ record.packageDate | date }}
         </span>
 
         <span slot="tradePackageCode" slot-scope="text, record">
@@ -483,7 +483,7 @@ export default {
       this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGUID}?type=view` })
     },
     jumpToProjectTenderPackage() {
-      this.$router.push({ path: `/cost/bid/item/1?ProjectGUID=${this.selectedPackage.projectTenderPackageGUID}&type=view` })
+      this.$router.push({ path: `/cost/bid/item/${this.selectedPackage.projectTenderPackageId}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
     },
     refreshAllTable(args) {
       if(args){

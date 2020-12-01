@@ -36,7 +36,10 @@ const API = {
   updateVoUsePlan : '/api/services/app/VO/UpdateVOUsePlan',//更新变更预算调整
   storeTypes: '/api/services/app/GeneralType/GetSAorVOUseStoreTypes',//补充合同或变更余额使用类型
   getSourceTypes : '/api/services/app/GeneralType/GetVOValueSoruceTypes',//估值来源
-  getVOUseStoreSum : '/api/services/app/ProjectTenderPackage/GetContractVOUseStoreSum'//通过合同编号获取对应的三种变更类型预算余额
+  getVOUseStoreSum : '/api/services/app/ProjectTenderPackage/GetContractVOUseStoreSum',//通过合同编号获取对应的三种变更类型预算余额
+  getVOUseSurplusPreSplit : '/api/services/app/VO/GetVOUseSurplusPreSplitByVOGuid',//变更预分解（针对定标盈余）
+  createVOUseSurplus : '/api/services/app/VO/CreateVOUseSurplus',//预算确认（针对定标盈余）
+  updateVOUseSurplus : '/api/services/app/VO/UpdateVOUseSurplus',//更新变更预算调整（针对定标盈余）
 }
 
 const ChangeService = {}
@@ -449,5 +452,41 @@ ChangeService.getVOUseStoreSum = function(contractGuid){
 	    params: {Id : contractGuid}
 	  })
 }
+
+/**
+ * 变更预分解（针对定标盈余）
+ */
+ChangeService.getVOUseSurplusPreSplit = function(parameter){
+	return request({
+	    url: API.getVOUseSurplusPreSplit,
+	    method: 'get',
+	    params: parameter
+	  })
+}
+
+
+/**
+ * 预算确认（针对定标盈余）
+ */
+ChangeService.createVOUseSurplus = function(parameter){
+	return request({
+	    url: API.createVOUseSurplus,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+
+/**
+ * 更新变更预算调整（针对定标盈余）
+ */
+ChangeService.updateVOUseSurplus = function(parameter){
+	return request({
+	    url: API.updateVOUseSurplus,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
 
 export { ChangeService }

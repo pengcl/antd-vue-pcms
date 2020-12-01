@@ -106,6 +106,14 @@ CostService.industryCreate = function (parameter) {
   })
 }
 
+CostService.industryUpdate = function (parameter) {
+  return request({
+    url: API.industryUpdate,
+    method: 'put',
+    data: parameter
+  })
+}
+
 CostService.update = function (parameter) {
   console.log(parameter)
   return request({
@@ -298,6 +306,15 @@ CostService.removeTradeBudget = function (parameter) {
     data: parameter
   })
 }
+
+CostService.industryRemove = function (TenderPackageId) {
+  return request({
+    url: API.industryRemove,
+    method: 'delete',
+    params: {TenderPackageId}
+  })
+}
+
 
 
 /**

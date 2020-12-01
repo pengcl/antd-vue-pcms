@@ -15,6 +15,7 @@
         v-if="columnDatas.length > 0"
         bordered
         :columns="columns"
+        :scroll="{x : tableWidth}"
         :data-source="columnDatas"
         :alert="false"
         :pagination="false"
@@ -28,7 +29,7 @@
         <template  v-if="text && text.length > 0">
           <a-checkbox 
             v-for ="budgetItem in text"
-            @change="value => checkChange(value,budgetItem)" >{{budgetItem.amount}}</a-checkbox>
+            @change="value => checkChange(value,budgetItem)" >{{budgetItem.amount | NumberFormat}}</a-checkbox>
         </template>
         <template v-if="text == undefined || text.length < 1">
           0
@@ -49,7 +50,8 @@
     const defaultColumns = [
         {
             title: '科目',
-            dataIndex: 'elementInfoNameCN'
+            dataIndex: 'elementInfoNameCN',
+            fixed : 'left'
         }
     ]
 
@@ -64,6 +66,7 @@
         data () {
             this.columns = columns
             return {
+                tableWidth : 800,
                 visible: false,
                 columnDatas : [],
                 confirmLoading: false,
@@ -94,7 +97,8 @@
                                 _columns.push({
                                   title : column.costCenterName,
                                   dataIndex : costName,
-                                  scopedSlots: { customRender: costName }
+                                  scopedSlots: { customRender: costName },
+                                  // width : 150
                                 })
                               })
                               this.columns = _columns
@@ -105,6 +109,7 @@
                               console.log('rows',rows,'showColumnCodes',this.showColumnCodes)
                               const showRows = this.filterRows(rows)
                               this.columnDatas = showRows
+                              this.tableWidth = (_columns.length) * 180
                             }
                           })
                       })
@@ -219,13 +224,17 @@
                       }else{
                         data.children.push(child)
                       }
-                      child[costName] = []
-                      this.showColumnCodes.push(child.elementInfoCode)
+                      if(child[costName] == undefined){
+                        child[costName] = []
+                      }
                       costColumn.tradeBudgetItems.forEach(temp => {
                         if( child.elementInfoId == temp.elementInfoId+''+temp.tradeTypeId){
                           child[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
                         }
                       })
+                      if(child[costName].length > 0){
+                        this.showColumnCodes.push(child.elementInfoCode)
+                      }
                     })
                   }
                 }
@@ -260,3 +269,15 @@
         }
     }
 </script>
+
+
+<style lang="less" scoped>
+  /deep/ table {
+    td:first-child {
+      width:380px !important;
+    }
+    th:first-child {
+      width:380px !important;
+    }
+  }
+</style>

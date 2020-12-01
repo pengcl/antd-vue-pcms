@@ -84,8 +84,13 @@
         :alert="false"
         showPagination="auto"
       >
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+        <span slot="paymentAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
+
+        <span slot="requestDate" slot-scope="text">
+            {{text | date}}
         </span>
 
         <span slot="action" slot-scope="text, record">
@@ -129,13 +134,11 @@
 </template>
 
 <script>
-    import moment from 'moment'
-    import { STable, Ellipsis } from '@/components'
+    import { STable } from '@/components'
     import { getRoleList } from '@/api/manage'
 
-    import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
+    import { fixedList, getPosValue } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '@/mock/util'
     import { UnSignedService } from './unsigned.service'
@@ -165,6 +168,7 @@
         {
             title: '金额',
             dataIndex: 'paymentAmount',
+            scopedSlots: { customRender: 'paymentAmount' }
         },
         {
             title: '审批状态',
@@ -173,7 +177,8 @@
         },
         {
             title: '建立日期',
-            dataIndex: 'requestDate'
+            dataIndex: 'requestDate',
+            scopedSlots: { customRender: 'requestDate' }
         },
         {
             title: '建立人',
@@ -182,32 +187,12 @@
         },
     ]
 
-    const statusMap = {
-        0: {
-            status: 'default',
-            text: '关闭'
-        },
-        1: {
-            status: 'processing',
-            text: '运行中'
-        },
-        2: {
-            status: 'success',
-            text: '已上线'
-        },
-        3: {
-            status: 'error',
-            text: '异常'
-        }
-    }
 
     export default {
         name: 'ContractList',
         components: {
             STable,
-            Ellipsis,
             CreateForm,
-            StepByStepModal
         },
         data () {
             this.columns = columns
@@ -238,14 +223,6 @@
                 },
                 selectedRowKeys: [],
                 selectedRows: []
-            }
-        },
-        filters: {
-            statusFilter (type) {
-                return statusMap[type].text
-            },
-            statusTypeFilter (type) {
-                return statusMap[type].status
             }
         },
         created () {
@@ -283,10 +260,10 @@
         },
         methods: {
             handleToItem (record) {
-                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=view` })
+                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=view&projectGUID=` + this.queryParam.ProjectGUID })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=update` })
+                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=update&projectGUID=` + this.queryParam.ProjectGUID })
             },
             handleToAdd () {
                 this.$router.push({ path: '/pay/unsigned/item/0?type=create&projectGUID=' + this.queryParam.ProjectGUID })
@@ -326,25 +303,11 @@
             handleCancel () {
                 this.visible = false
             },
-            handleSub (record) {
-                if (record.status !== 0) {
-                    this.$message.info(`${record.no} 订阅成功`)
-                } else {
-                    this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-                }
-            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
             },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
-            },
-            resetSearchForm () {
-                this.queryParam = {
-                    date: moment(new Date())
-                }
-            }
+
         }
     }
 </script>

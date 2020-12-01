@@ -4,7 +4,7 @@
       <a-col :md="24" :sm="24">
         <a-radio-group v-if="selection.storeTypes" :value="this.data.voMasterInfo.useStore" button-style="solid" :disabled="true" >
           <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
-            {{ item.nameCN }}（<span class="redText">余额：<span>{{ item.balance }}</span>元</span>）
+            {{ item.nameCN }}（<span class="redText">余额：<span>{{ item.balance  | NumberFormat}}</span>元</span>）
           </a-radio>
         </a-radio-group>
       </a-col>
@@ -17,6 +17,9 @@
           :data-source="usePlanData"
           bordered 
           ref="usePlanTable" >
+          <label slot="alterPlan" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="voUseAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="balanceAmount" slot-scope="text">{{text | NumberFormat}}</label>
         </a-table>
         <a-table 
           :style="this.data.voMasterInfo.useStore !== 109 ? 'display : none' : ''"
@@ -26,6 +29,9 @@
           :data-source="surplusData"
           bordered 
           ref="surplusTable" >
+          <label slot="surplusAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="voUseAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="balanceAmount" slot-scope="text">{{text | NumberFormat}}</label>
         </a-table>
         <a-table 
           :style="this.data.voMasterInfo.useStore !== 110 ? 'display : none' : ''"
@@ -80,8 +86,8 @@
     },
     {
       title: '定标盈余',
-      dataIndex: 'alterPlan',
-      scopedSlots: { customRender: 'alterPlan' }
+      dataIndex: 'surplusAmount',
+      scopedSlots: { customRender: 'surplusAmount' }
     },
     {
       title: '本次使用金额',
@@ -148,7 +154,7 @@
         })
         this.usePlanData = usePlanDataTemp
       }
-      this.surplusData = []
+      this.surplusData = this.data.voUseSurpluslst
       this.generalTradeData = []
       return {
         selection : {storeTypes : []}
