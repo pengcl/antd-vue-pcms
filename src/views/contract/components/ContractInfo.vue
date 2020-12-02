@@ -57,8 +57,8 @@
             :disabled="true"
             v-model="data.contract.equivalentAmount"
             :min="0"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
         </a-form-item>
       </a-col>
@@ -68,8 +68,8 @@
             :disabled="true"
             :value="data.master.contractAmount"
             :min="0"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
         </a-form-item>
       </a-col>
@@ -96,8 +96,8 @@
             :disabled="true"
             v-model="data.contract.contractNoTaxAmount"
             :min="0"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
@@ -110,8 +110,8 @@
             :disabled="true"
             v-model="data.contract.contractTaxAmount"
             :min="0"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
@@ -199,8 +199,8 @@
             :disabled="type === 'view'"
             v-model="data.contract.liquidatedDamagesMaxAmount"
             :min="0"
-            :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-            :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
         </a-form-item>
       </a-col>

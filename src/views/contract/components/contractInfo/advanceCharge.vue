@@ -76,15 +76,15 @@
             <td>
               <a-input-number
                 :disabled="type === 'view'"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </td>
             <td>
               <a-input-number
                 :disabled="type === 'view'"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </td>
           </tr>
@@ -97,8 +97,8 @@
         <a-input-number
           :disabled="type === 'view'"
           :min="0"
-          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+          :parser="value => value.replace(/\\s?|(,*)/g, '')"
           :precision="2"></a-input-number>
       </a-form-item>
     </a-col>

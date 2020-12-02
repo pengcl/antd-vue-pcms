@@ -17,8 +17,8 @@
               placeholder="请生成合同金额"
               v-model="data.contract.contractAmount"
               :min="0"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
           </a-form-model-item>
         </a-col>
@@ -32,8 +32,8 @@
               placeholder="请生成有效合同金额"
               v-model="data.contract.contractEffectAmount"
               :min="0"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
           </a-form-model-item>
         </a-col>
@@ -47,8 +47,8 @@
               placeholder="请生成合同内暂定款金额"
               v-model="data.contract.contractPSAmount"
               :min="0"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
           </a-form-model-item>
         </a-col>
@@ -62,8 +62,8 @@
               placeholder="合同内可选择项目金额"
               v-model="data.contract.contractOPTAmount"
               :min="0"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
           </a-form-model-item>
         </a-col>
@@ -77,8 +77,8 @@
               placeholder="专业分包合同金额"
               v-model="data.contract.contractPCPreAmount"
               :min="0"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
           </a-form-model-item>
         </a-col>
@@ -92,8 +92,8 @@
               placeholder="甲供材金额"
               v-model="data.contract.contractDSAmount"
               :min="0"
-              :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-              :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+              :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
           </a-form-model-item>
         </a-col>
@@ -233,8 +233,8 @@
                 @change="valueChange(record)"
                 v-model="record.unitPriceMaterial"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
 
@@ -243,8 +243,8 @@
                 :disabled="true"
                 v-model="record.subAmountMaterial"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
 
@@ -272,8 +272,8 @@
                 @change="valueChange(record)"
                 v-model="record.unitPriceWork"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
 
@@ -282,8 +282,8 @@
                 :disabled="true"
                 v-model="record.subAmountWork"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
 
@@ -309,8 +309,8 @@
                 @change="valueChange(record)"
                 v-model="record.unitPriceWork"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
             <template slot="subAmountWork" slot-scope="text, record">
@@ -318,8 +318,8 @@
                 :disabled="true"
                 v-model="record.subAmountWork"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
             <template slot="unitWorkMat" slot-scope="text, record">
@@ -344,8 +344,8 @@
                 @change="valueChange(record)"
                 v-model="record.unitPriceWorkMat"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
             <template slot="subAmountWorkMat" slot-scope="text, record">
@@ -353,8 +353,8 @@
                 :disabled="true"
                 v-model="record.subAmountWorkMat"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
             <template slot="allAmount" slot-scope="text, record">
@@ -362,8 +362,8 @@
                 :disabled="true"
                 v-model="record.allAmount"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
             </template>
           </a-table>

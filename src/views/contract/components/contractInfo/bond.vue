@@ -60,8 +60,8 @@
                   @change="valueChange(item)"
                   v-model="item.bondUnitPrice"
                   :min="0"
-                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\\s?|(,*)/g, '')"
                   :precision="2"></a-input-number>
               </td>
               <td>
@@ -70,8 +70,8 @@
                   @change="valueChange(item)"
                   v-model="item.bondAmount"
                   :min="0"
-                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\\s?|(,*)/g, '')"
                   :precision="2"></a-input-number>
               </td>
               <td>
@@ -127,8 +127,8 @@
           :disabled="true"
           :value="total"
           :min="0"
-          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+          :parser="value => value.replace(/\\s?|(,*)/g, '')"
           :precision="2"></a-input-number>
       </a-form-item>
     </a-col>

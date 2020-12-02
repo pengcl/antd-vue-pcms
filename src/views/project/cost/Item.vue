@@ -240,7 +240,7 @@
                   prop="totalCFAIncludeParking"
                 >
                   <a-input-number
-                    :disabled="type === 'view'"
+                    :disabled="true"
                     v-model="form.totalCFAIncludeParking"
                     placeholder="请填写总建筑面积(含停车库)(CFA)"
                     :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -679,197 +679,228 @@
   </page-header-wrapper>
 </template>
 <script>
-import { SwaggerService } from '@/api/swagger.service'
-import { CostService } from '@/views/project/cost/cost.service'
-import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { CostService } from '@/views/project/cost/cost.service'
+  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
-function getName (items, id) {
-  let name = ''
-  if (items) {
-    items.forEach(item => {
-      if (!name) {
-        if (item.id === id) {
-          name = item.nameCN
+  function getName (items, id) {
+    let name = ''
+    if (items) {
+      items.forEach(item => {
+        if (!name) {
+          if (item.id === id) {
             name = item.nameCN
-        } else {
-          if (item.children && item.children.length > 0) {
+            name = item.nameCN
+          } else {
+            if (item.children && item.children.length > 0) {
               name = getName(item.children, id)
+            }
           }
         }
-      }
-    })
+      })
+    }
+    return name
   }
-  return name
-}
 
-const DTO = {
-  create: 'ProjectCostCenterCreateInputDto',
-  update: 'ProjectCostCenterEditInputDto',
-  view: 'ProjectCostCenterEditInputDto'
-}
+  const DTO = {
+    create: 'ProjectCostCenterCreateInputDto',
+    update: 'ProjectCostCenterEditInputDto',
+    view: 'ProjectCostCenterEditInputDto'
+  }
 
-const formatList = (items) => {
-  const list = []
-  items.forEach(item => {
-    if (item.childs && item.childs.length > 0) {
-      item.selectable = false
-      item.children = formatList(item.childs)
-    } else {
-      item.children = null
-    }
-    item.label = item.nameCN
-    item.value = item.id
-    list.push(item)
-  })
-  return list
-}
-export default {
-  name: 'ProjectItem',
-  data () {
-    return {
-      loading: false,
-      selection: {},
-      activeKey: 1,
-      dialog: DIALOGCONFIG,
-      form: {},
-      rules: {
-        costCenterName: [
-          { required: true, message: '请填写成本中心名称', trigger: 'blur' }
-        ],
-        propertyTypeID: [{ required: true, message: '请选择业态标签', trigger: 'change' }],
-        developmentPurposeID: [{ required: true, message: '请选择产品业态属性', trigger: 'change' }],
-        secCostAllocateTypeID: [
-          { required: true, message: '请选择二次分摊', trigger: 'change' }
-        ],
-        totalCFAExcludeParking: [{ required: true, message: '请填写总建筑面积(不含停车库)(CFA)', trigger: 'blur' }],
-        totalCFAIncludeParking: [{ required: true, message: '请填写总建筑面积(含停车库)(CFA)', trigger: 'blur' }]
-      }
-    }
-  },
-  created () {
-    BaseService.centerTags().then(res => {
-      this.selection.tagTree = formatList([res.result.data])
-      this.$forceUpdate()
-    })
-    BaseService.centerTypes().then(res => {
-      this.selection.types = res.result.data
-      this.$forceUpdate()
-    })
-    this.getData()
-  },
-  computed: {
-    id () {
-      return this.$route.params.id
-    },
-    type () {
-      return this.$route.query.type
-    },
-    ProjectGUID () {
-      return this.$route.query.ProjectGUID
-    }
-  },
-  watch: {
-    'form.cfaUpperGround' () {
-      // a
-      this.form.totalCFAExcludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh
-      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
-    },
-    'form.cfafoh' () {
-      // b
-      this.form.totalCFAExcludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh
-      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
-    },
-    'form.cfaboh' () {
-      // c
-      this.form.totalCFAExcludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh
-      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
-    },
-    'form.cfaCarpark' () {
-      // d
-      this.form.totalCFAIncludeParking = this.form.cfaUpperGround + this.form.cfafoh + this.form.cfaboh + this.form.cfaCarpark
-    },
-    'form.gfaUpperGround' () {
-      // e
-      this.form.totalGFA = this.form.gfaUpperGround + this.form.gfaBasement
-    },
-    'form.gfaBasement' () {
-      // f
-      this.form.totalGFA = this.form.gfaUpperGround + this.form.gfaBasement
-    },
-    'form.raUpperGround' () {
-      // g
-      this.form.totalRA = this.form.raUpperGround + this.form.raBasement
-    },
-    'form.raBasement' () {
-      // h
-      this.form.totalRA = this.form.raUpperGround + this.form.raBasement
-    }
-  },
-  methods: {
-    getName (items, id) {
-      return getName(items, id)
-    },
-    getData () {
-      this.form = SwaggerService.getForm(DTO[this.type])
-      this.form.status = 0
-      if (this.id !== '0') {
-        CostService.item(this.id).then(res => {
-          this.form = SwaggerService.getValue(this.form, res.result.data)
-        })
+  const formatList = (items) => {
+    const list = []
+    items.forEach(item => {
+      if (item.childs && item.childs.length > 0) {
+        item.selectable = false
+        item.children = formatList(item.childs)
       } else {
-        this.form.projectGUID = this.ProjectGUID
+        item.children = null
+      }
+      item.label = item.nameCN
+      item.value = item.id
+      list.push(item)
+    })
+    return list
+  }
+  export default {
+    name: 'ProjectItem',
+    data () {
+      return {
+        loading: false,
+        selection: {},
+        activeKey: 1,
+        dialog: DIALOGCONFIG,
+        form: {},
+        rules: {
+          costCenterName: [
+            { required: true, message: '请填写成本中心名称', trigger: 'blur' }
+          ],
+          propertyTypeID: [{ required: true, message: '请选择业态标签', trigger: 'change' }],
+          developmentPurposeID: [{ required: true, message: '请选择产品业态属性', trigger: 'change' }],
+          secCostAllocateTypeID: [
+            { required: true, message: '请选择二次分摊', trigger: 'change' }
+          ],
+          totalCFAExcludeParking: [{ required: true, message: '请填写总建筑面积(不含停车库)(CFA)', trigger: 'blur' }],
+          totalCFAIncludeParking: [{ required: true, message: '请填写总建筑面积(含停车库)(CFA)', trigger: 'blur' }]
+        }
       }
     },
-    approve () {
-      console.log('approve')
+    created () {
+      BaseService.centerTags().then(res => {
+        this.selection.tagTree = formatList([res.result.data])
+        this.$forceUpdate()
+      })
+      BaseService.centerTypes().then(res => {
+        this.selection.types = res.result.data
+        this.$forceUpdate()
+      })
+      this.getData()
     },
-    save () {
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          this.loading = true
-          CostService[this.type](this.form).then(res => {
-            this.loading = false
-            if (res.result.statusCode === 200) {
+    computed: {
+      id () {
+        return this.$route.params.id
+      },
+      type () {
+        return this.$route.query.type
+      },
+      ProjectGUID () {
+        return this.$route.query.ProjectGUID
+      }
+    },
+    watch: {
+      'form.cfaUpperGround' () {
+        // a
+        const cfaUpperGround = this.form.cfaUpperGround || 0
+        const cfafoh = this.form.cfafoh || 0
+        const cfaboh = this.form.cfaboh || 0
+        const cfaCarpark = this.form.cfaCarpark || 0
+        console.log(cfaUpperGround, cfafoh, cfaboh, cfaCarpark)
+        this.form.totalCFAExcludeParking = cfaUpperGround + cfafoh + cfaboh
+        this.form.totalCFAIncludeParking = cfaUpperGround + cfafoh + cfaboh + cfaCarpark
+      },
+      'form.cfafoh' () {
+        // b
+
+        const cfaUpperGround = this.form.cfaUpperGround || 0
+        const cfafoh = this.form.cfafoh || 0
+        const cfaboh = this.form.cfaboh || 0
+        const cfaCarpark = this.form.cfaCarpark || 0
+        this.form.totalCFAExcludeParking = cfaUpperGround + cfafoh + cfaboh
+        this.form.totalCFAIncludeParking = cfaUpperGround + cfafoh + cfaboh + cfaCarpark
+      },
+      'form.cfaboh' () {
+        // c
+        const cfaUpperGround = this.form.cfaUpperGround || 0
+        const cfafoh = this.form.cfafoh || 0
+        const cfaboh = this.form.cfaboh || 0
+        const cfaCarpark = this.form.cfaCarpark || 0
+        this.form.totalCFAExcludeParking = cfaUpperGround + cfafoh + cfaboh
+        this.form.totalCFAIncludeParking = cfaUpperGround + cfafoh + cfaboh + cfaCarpark
+      },
+      'form.cfaCarpark' () {
+        // d
+
+        const cfaUpperGround = this.form.cfaUpperGround || 0
+        const cfafoh = this.form.cfafoh || 0
+        const cfaboh = this.form.cfaboh || 0
+        const cfaCarpark = this.form.cfaCarpark || 0
+        this.form.totalCFAIncludeParking = cfaUpperGround + cfafoh + cfaboh + cfaCarpark
+      },
+      'form.gfaUpperGround' () {
+        // e
+
+        const gfaUpperGround = this.form.gfaUpperGround || 0
+        const gfaBasement = this.form.gfaBasement || 0
+        this.form.totalGFA = gfaUpperGround + gfaBasement
+      },
+      'form.gfaBasement' () {
+        // f
+
+        const gfaUpperGround = this.form.gfaUpperGround || 0
+        const gfaBasement = this.form.gfaBasement || 0
+        this.form.totalGFA = gfaUpperGround + gfaBasement
+      },
+      'form.raUpperGround' () {
+        // g
+
+        const raUpperGround = this.form.raUpperGround || 0
+        const raBasement = this.form.raBasement || 0
+        this.form.totalRA = raUpperGround + raBasement
+      },
+      'form.raBasement' () {
+        // h
+
+        const raUpperGround = this.form.raUpperGround || 0
+        const raBasement = this.form.raBasement || 0
+        this.form.totalRA = raUpperGround + raBasement
+      }
+    },
+    methods: {
+      getName (items, id) {
+        return getName(items, id)
+      },
+      getData () {
+        this.form = SwaggerService.getForm(DTO[this.type])
+        this.form.status = 0
+        if (this.id !== '0') {
+          CostService.item(this.id).then(res => {
+            this.form = SwaggerService.getValue(this.form, res.result.data)
+          })
+        } else {
+          this.form.projectGUID = this.ProjectGUID
+        }
+      },
+      approve () {
+        console.log('approve')
+      },
+      save () {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.loading = true
+            CostService[this.type](this.form).then(res => {
+              this.loading = false
+              if (res.result.statusCode === 200) {
+                this.dialog.show({
+                  content: this.type === 'update' ? '修改成功' : '添加成功',
+                  title: '',
+                  confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+                  cancelText: '返回上一页'
+                }, (state) => {
+                  if (state) {
+                    if (this.type === 'create') {
+                      this.getData()
+                    }
+                  } else {
+                    this.$router.push({ path: '/project/cost/list' })
+                  }
+                })
+              }
+            }).catch(() => {
+              this.loading = false
               this.dialog.show({
-                content: this.type === 'update' ? '修改成功' : '添加成功',
+                content: '创建失败，表单未填写完整',
                 title: '',
-                confirmText: this.type === 'update' ? '继续修改' : '继续添加',
+                confirmText: '我知道了',
                 cancelText: '返回上一页'
               }, (state) => {
                 if (state) {
-                  if (this.type === 'create') {
-                    this.getData()
-                  }
+
                 } else {
-                  this.$router.push({ path: '/project/cost/list' })
                 }
               })
-            }
-          }).catch(() => {
-            this.loading = false
-            this.dialog.show({
-              content: '创建失败，表单未填写完整',
-              title: '',
-              confirmText: '我知道了',
-              cancelText: '返回上一页'
-            }, (state) => {
-              if (state) {
-
-              } else {
-              }
             })
-          })
-        } else {
-          this.activeKey = 1
-        }
-      })
-    },
-    back () {
-      console.log('back')
-      this.$router.push({ path: '/project/cost/list' })
+          } else {
+            this.activeKey = 1
+          }
+        })
+      },
+      back () {
+        console.log('back')
+        this.$router.push({ path: '/project/cost/list' })
+      }
     }
   }
-}
 </script>
 <style>.ant-btn-group {
   margin-right: 8px;
