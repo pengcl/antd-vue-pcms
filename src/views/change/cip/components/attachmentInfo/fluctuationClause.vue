@@ -44,7 +44,7 @@
               <a-input-number 
                 v-model="item.adjustableRange" 
                 :disabled="type === 'view'"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
                 ></a-input-number>

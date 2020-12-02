@@ -107,7 +107,7 @@
                 @change="valueChange(item)"
                 v-model="item.unitPriceMaterial"
                 :disabled="type === 'view'"
-                :formatter="(value) => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input-number>
@@ -116,7 +116,7 @@
               <a-input-number
                 :disabled="true"
                 v-model="item.subAmountMaterial"
-                :formatter="(value) => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input-number>
@@ -140,7 +140,7 @@
                 @change="valueChange(item)"
                 v-model="item.unitPriceWork"
                 :disabled="type === 'view'"
-                :formatter="(value) => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input-number>
@@ -149,7 +149,7 @@
               <a-input
                 :disabled="true"
                 v-model="item.subAmountWork"
-                :formatter="(value) => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input>
@@ -173,7 +173,7 @@
                 @change="valueChange(item)"
                 v-model="item.unitPriceWorkMat"
                 :disabled="type === 'view'"
-                :formatter="(value) => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input-number>
@@ -182,7 +182,7 @@
               <a-input-number
                 :disabled="true"
                 v-model="item.subAmountWorkMat"
-                :formatter="(value) => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input-number>
@@ -191,7 +191,7 @@
               <a-input-number
                 :disabled="true"
                 v-model="item.allAmount"
-                :formatter="(value) => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
               ></a-input-number>
