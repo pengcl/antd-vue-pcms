@@ -45,8 +45,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_7') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -57,8 +56,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_8') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -69,8 +67,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_9') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -81,8 +78,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_10') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -93,8 +89,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_11') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -105,8 +100,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_12') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -117,8 +111,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_1') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -129,8 +122,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_2') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -141,8 +133,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_3') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -153,8 +144,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_4') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -165,8 +155,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_5') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
@@ -177,8 +166,7 @@
                           :disabled="record.isRoot || type === 'view' || (status === 'month' && fiscalMonth.indexOf('Month_6') === -1 )"
                           :min="0"
                           :max="record.businessAmt"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
 
