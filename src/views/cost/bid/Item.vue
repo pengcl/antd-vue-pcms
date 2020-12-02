@@ -59,8 +59,8 @@
                 :disabled="true"
                 v-model="form.budgetAmount"
                 placeholder="汇总明细项金额"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
               ></a-input>
             </a-form-item>
           </a-col>

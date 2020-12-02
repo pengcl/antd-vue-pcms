@@ -20,8 +20,7 @@
           <a-input-number v-model="payDetail.contractAmount"
                           :disabled="true"
                           :min="0"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
@@ -30,8 +29,7 @@
           <a-input-number v-model="payDetail.contractEffectAmount"
                           :disabled="true"
                           :min="0"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
@@ -40,8 +38,7 @@
           <a-input-number v-model="payDetail.contractEstimateAmount"
                           :disabled="true"
                           :min="0"
-                          :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </a-form-model-item>
       </a-col>
@@ -65,12 +62,12 @@
           <tbody>
           <tr v-for="(item,index) in payDetail.itemList" :key="index">
             <td>{{item.paymentPhase}}</td>
-            <td>{{item.paymentRequestAmountTotal_Before}}</td>
-            <td>{{item.progressRequestAmount}}</td>
-            <td>{{item.paymentRequestAmount}}</td>
-            <td>{{item.paymentRequestAmountTotal}}</td>
+            <td>{{item.paymentRequestAmountTotal_Before | NumberFormat}}</td>
+            <td>{{item.progressRequestAmount | NumberFormat}}</td>
+            <td>{{item.paymentRequestAmount | NumberFormat}}</td>
+            <td>{{item.paymentRequestAmountTotal | NumberFormat}}</td>
             <td>{{item.paymentRequestAmountTotalRatio}}</td>
-            <td>{{item.paymentAmountTotal_Before}}</td>
+            <td>{{item.paymentAmountTotal_Before | NumberFormat}}</td>
             <td>{{item.paymentAmountTotalRatio}}</td>
           </tr>
           </tbody>

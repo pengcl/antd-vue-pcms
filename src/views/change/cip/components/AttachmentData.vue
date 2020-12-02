@@ -187,14 +187,14 @@
                 <td>
                   <a-input-number 
                     :disabled="type === 'view'"
-                    :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                    :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                     :precision="2"
                     ></a-input-number>
                 </td>
                 <td><a-input-number 
                   :disabled="true"
-                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                   :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                   :precision="2"
                   ></a-input-number></td>

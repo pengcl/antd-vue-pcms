@@ -83,8 +83,8 @@
                     <a-input-number
                       :disabled="form.costCenterItems[index].centers[aIndex].disabled"
                       v-model="form.costCenterItems[index].centers[aIndex].amount"
-                      :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                      :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                      :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      :parser="value => value.replace(/\\s?|(,*)/g, '')"
                     >
                     </a-input-number>
                   </a-form-model-item>
