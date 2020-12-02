@@ -83,6 +83,9 @@
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
+        <span slot="budgetIsConfirm" slot-scope="text">
+          {{ text ? '已确认' : '未确认' }}
+        </span>
         <span slot="contractAmount" slot-scope="text">{{ text | NumberFormat }}</span>
 
         <span slot="action" slot-scope="text, record">
@@ -159,6 +162,11 @@
       title: '审批状态',
       dataIndex: 'auditStatus',
       scopedSlots: { customRender: 'auditStatus' }
+    },
+    {
+      title: '预算确认状态',
+      dataIndex: 'budgetIsConfirm',
+      scopedSlots: { customRender: 'budgetIsConfirm' }
     },
     {
       title: '建立日期',

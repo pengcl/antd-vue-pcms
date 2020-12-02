@@ -13,7 +13,7 @@
 	    <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-radio-group v-model="useStore" button-style="solid" >
+            <a-radio-group v-model="useStore" button-style="solid" :disabled="useStore > 0 && stage==='VO'">
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
                 {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance | NumberFormat}}</span>元</span>）
               </a-radio>

@@ -219,7 +219,9 @@
     created () {
       ContractService.storeTypes().then(res => {
         this.selection.storeTypes = res.result.data
-        if (!this.queryParam.useStore) { this.queryParam.useStore = this.selection.storeTypes[0].id }
+        if (!this.queryParam.useStore) {
+          this.queryParam.useStore = this.selection.storeTypes[0].id
+        }
         this.$forceUpdate()
       })
     },
@@ -242,9 +244,10 @@
             const TemporaryAlterPlan = record.budgetPlanDetailAmount - record.contractSplitAmount
             record.TemporaryAlterPlan = TemporaryAlterPlan >= 0 ? TemporaryAlterPlan : 0
           }
-
-          const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan - record.TemporaryAlterPlan
-          record.tenderSurplus = tenderSurplus >= 0 ? tenderSurplus : 0
+          /* if (this.queryParam.useStore !== 106) { */
+            const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan - record.TemporaryAlterPlan
+            record.tenderSurplus = tenderSurplus >= 0 ? tenderSurplus : 0
+          /* } */
           record.balanceAmount = record.budgetPlanDetailAmount - record.contractSplitAmount - record.tenderSurplus - record.alterPlan - record.TemporaryAlterPlan
           this.getBalance(this.$refs.table.localDataSource)
           this.getBalances()
@@ -295,9 +298,9 @@
   }
 </script>
 <style lang="less" scoped>
-/deep/ table {
-  td {
-    min-width: 150px;
+  /deep/ table {
+    td {
+      min-width: 150px;
+    }
   }
-}
 </style>

@@ -56,7 +56,7 @@
         rowKey="contractGuid"
         :data="loadData"
         bordered
-        :scroll="{x : 1200}"
+        :scroll="{x : 1300}"
         :rowSelection="rowSelection"
         ref="table">
         <a slot="contractNo" slot-scope="text,record" href="javascript:void(0)" @click="handleToContractInfo(record)" >{{text}}</a>
@@ -179,13 +179,13 @@
       title: '合同金额',
       dataIndex: 'contractAmount',
       scopedSlots: { customRender: 'contractAmount' },
-      width : 100
+      width : 150
     },
     {
       title: '预计结算金额',
       dataIndex: 'preSettleAmount',
       scopedSlots: { customRender: 'preSettleAmount' },
-      wdith : 100
+      wdith : 150
     },
     {
       title: '签约日期',

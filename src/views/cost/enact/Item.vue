@@ -35,8 +35,8 @@
                 v-if="record.childs.length == 0"
                 v-model="record['cost' + item.costCenterId]"
                 @change="e => checkChange(e, record, item.costCenterId)"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"
               />
               <template v-else>
