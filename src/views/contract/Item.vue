@@ -140,10 +140,11 @@
 
   import { Company as CompanyService } from '@/api/company'
   import ContractComputeBudgets from '@/views/contract/components/computeBudgets/index'
+  import ContractComputeReplenishBudgets from '@/views/contract/components/computeBudgets/replenish'
 
   export default {
     name: 'ContractItem',
-    components: { ContractComputeBudgets, AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
+    components: { ContractComputeReplenishBudgets, ContractComputeBudgets, AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
     data () {
       return {
         disabled: true,

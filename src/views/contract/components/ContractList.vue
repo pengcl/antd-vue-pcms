@@ -640,7 +640,9 @@
         }
       },
       'data.contract.tenderPackageItemID' (value) {
+        console.log(value)
         ContractService.centers(value).then(res => {
+          console.log(res)
           this.selection.centers = res.result.data
           this.$forceUpdate()
         })
