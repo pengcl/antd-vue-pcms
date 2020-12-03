@@ -41,6 +41,7 @@ const constantRouterComponents = {
   // cost
   'CostEnactList': () => import('@/views/cost/enact/List'),
   'CostEnactItem': () => import('@/views/cost/enact/Item'),
+  'CostEnactCollect': () => import('@/views/cost/enact/Collect'),
   'CostResolveList': () => import('@/views/cost/resolve/List'),
   'CostResolveItem': () => import('@/views/cost/resolve/Item'),
   'CostIndustryList': () => import('@/views/cost/industry/List'),
