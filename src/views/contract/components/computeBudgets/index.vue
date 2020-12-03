@@ -24,7 +24,7 @@
         :rules="rules"
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }">
-        <a-row :gutter="48">
+        <a-row :gutter="48" v-if="this.contract.contractCategory !== 16">
           <a-col v-for="(item, index) in form.balances" :key="item.key" :md="12" :sm="24">
             <a-form-model-item
               required
@@ -73,6 +73,13 @@
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
           :precision="2"/>
       </template>
+      <template slot="surplusAmount" slot-scope="text, record">
+        <a-input-number
+          :disabled="true"
+          :value="record.surplusAmount"
+          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+          :precision="2"/>
+      </template>
       <template slot="alterPlan" slot-scope="text, record">
         <a-input-number
           :disabled="true"
@@ -87,12 +94,33 @@
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
           :precision="2"/>
       </template>
+      <template slot="addedUseAmount" slot-scope="text, record">
+        <a-form-model-item>
+          <a-input-number
+            style="margin-top: 18px"
+            :max="record.alterPlan || record.surplusAmount"
+            v-model="record.addedUseAmount"
+            @change="subChange(record)"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :precision="2"/>
+        </a-form-model-item>
+      </template>
       <template slot="useBalanceAmount" slot-scope="text, record">
         <a-form-model-item>
           <a-input-number
             style="margin-top: 18px"
             :disabled="true"
             :value="record.useBalanceAmount"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :precision="2"/>
+        </a-form-model-item>
+      </template>
+      <template slot="balanceAmount" slot-scope="text, record">
+        <a-form-model-item>
+          <a-input-number
+            style="margin-top: 18px"
+            :disabled="true"
+            :value="record.balanceAmount"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :precision="2"/>
         </a-form-model-item>
@@ -104,6 +132,7 @@
 <script>
   import { STable, Ellipsis } from '@/components'
   import { ContractService } from '@/views/contract/contract.service'
+  import { ChangeService } from '@/views/change/change.service'
 
   const columns = [
     {
@@ -155,6 +184,80 @@
       scopedSlots: { customRender: 'useBalanceAmount' }
     }
   ]
+  const _columns = {
+    108: [
+      {
+        title: '业态',
+        dataIndex: 'costCenterName'
+      },
+      {
+        title: '科目',
+        dataIndex: 'elementName'
+      },
+      {
+        title: '变更预留金额',
+        dataIndex: 'alterPlan',
+        scopedSlots: { customRender: 'alterPlan' }
+      },
+      {
+        title: '本次使用金额',
+        dataIndex: 'addedUseAmount',
+        scopedSlots: { customRender: 'addedUseAmount' }
+      },
+      {
+        title: '差额',
+        dataIndex: 'balanceAmount',
+        scopedSlots: { customRender: 'balanceAmount' }
+      }
+    ],
+    109: [
+      {
+        title: '业态',
+        dataIndex: 'costCenterName'
+      },
+      {
+        title: '定标盈余',
+        dataIndex: 'surplusAmount',
+        scopedSlots: { customRender: 'surplusAmount' }
+      },
+      {
+        title: '本次使用金额',
+        dataIndex: 'addedUseAmount',
+        scopedSlots: { customRender: 'addedUseAmount' }
+      },
+      {
+        title: '差额',
+        dataIndex: 'balanceAmount',
+        scopedSlots: { customRender: 'balanceAmount' }
+      }
+    ],
+    110: [
+      {
+        title: '业态',
+        dataIndex: 'costCenterName'
+      },
+      {
+        title: '科目',
+        dataIndex: 'elementName'
+      },
+      {
+        title: '预算余额',
+        dataIndex: 'alterPlan',
+        scopedSlots: { customRender: 'alterPlan' }
+      },
+      {
+        title: '本次使用金额',
+        dataIndex: 'voUseAmount',
+        scopedSlots: { customRender: 'voUseAmount' }
+      },
+      {
+        title: '差额',
+        dataIndex: 'balanceAmount',
+        scopedSlots: { customRender: 'balanceAmount' }
+      }
+    ]
+  }
+
   export default {
     name: 'ContractComputeBudgets',
     components: {
@@ -174,19 +277,57 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           this.queryParam.contractGuid = this.contractGuid
-          return ContractService.computeBudgets(this.queryParam).then(res => {
-            this.statusCode = res.result.statusCode
-            this.total = {}
-            this.balance = {}
-            this.balances = []
-            res.result.data.forEach((item, index) => {
-              item.index = index
+          console.log(this.queryParam.useStore)
+          const e = { target: {
+            value: this.queryParam.useStore
+          } }
+          this.storeChange(e, true)
+          if (this.contract.contractCategory === 16) {
+            if (this.queryParam.useStore === 108) {
+              return ContractService.computeBudgets_108(this.queryParam).then(res => {
+                this.statusCode = res.result.statusCode
+                this.total = {}
+                this.balance = {}
+                this.balances = []
+                res.result.data.forEach((item, index) => {
+                  item.index = index
+                })
+                this.getTotal(res.result.data)
+                this.getBalance(res.result.data)
+                this.getBalances()
+                return res.result
+              })
+            }
+            if (this.queryParam.useStore === 109) {
+              return ContractService.computeBudgets_109(this.queryParam).then(res => {
+                this.statusCode = res.result.statusCode
+                this.total = {}
+                this.balance = {}
+                this.balances = []
+                res.result.data.forEach((item, index) => {
+                  item.index = index
+                })
+                this.getTotal(res.result.data)
+                this.getBalance(res.result.data)
+                this.getBalances()
+                return res.result
+              })
+            }
+          } else {
+            return ContractService.computeBudgets(this.queryParam).then(res => {
+              this.statusCode = res.result.statusCode
+              this.total = {}
+              this.balance = {}
+              this.balances = []
+              res.result.data.forEach((item, index) => {
+                item.index = index
+              })
+              this.getTotal(res.result.data)
+              this.getBalance(res.result.data)
+              this.getBalances()
+              return res.result
             })
-            this.getTotal(res.result.data)
-            this.getBalance(res.result.data)
-            this.getBalances()
-            return res.result
-          })
+          }
         },
         rules: {
           value: [
@@ -217,22 +358,39 @@
     },
     computed: {},
     created () {
-      ContractService.storeTypes().then(res => {
-        this.selection.storeTypes = res.result.data
-        if (!this.queryParam.useStore) {
-          this.queryParam.useStore = this.selection.storeTypes[0].id
-        }
-        this.$forceUpdate()
-      })
     },
     watch: {
       'visible' (value) {
         if (value && this.$refs.table) {
           this.$refs.table.refresh()
         }
+      },
+      'contract.contractCategory' (value) {
+        if (value === 16) {
+          ChangeService.storeTypes().then(res => {
+            this.selection.storeTypes = res.result.data
+            this.queryParam.useStore = this.getStoreType(this.selection.storeTypes, this.queryParam.useStore)
+            this.$forceUpdate()
+          })
+        } else {
+          ContractService.storeTypes().then(res => {
+            this.selection.storeTypes = res.result.data
+            this.queryParam.useStore = this.getStoreType(this.selection.storeTypes, this.queryParam.useStore)
+            this.$forceUpdate()
+          })
+        }
       }
     },
     methods: {
+      getStoreType (items, value) {
+        let index = 0
+        items.forEach((item, i) => {
+          if (item.id === value) {
+            index = i
+          }
+        })
+        return items[index].id
+      },
       change (record) {
         setTimeout(() => {
           if (record.budgetPlanDetailAmount - record.contractSplitAmount >= record.contractSplitAmount * 0.05) {
@@ -245,13 +403,16 @@
             record.TemporaryAlterPlan = TemporaryAlterPlan >= 0 ? TemporaryAlterPlan : 0
           }
           /* if (this.queryParam.useStore !== 106) { */
-            const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan - record.TemporaryAlterPlan
-            record.tenderSurplus = tenderSurplus >= 0 ? tenderSurplus : 0
+          const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan - record.TemporaryAlterPlan
+          record.tenderSurplus = tenderSurplus >= 0 ? tenderSurplus : 0
           /* } */
           record.balanceAmount = record.budgetPlanDetailAmount - record.contractSplitAmount - record.tenderSurplus - record.alterPlan - record.TemporaryAlterPlan
           this.getBalance(this.$refs.table.localDataSource)
           this.getBalances()
         }, 100)
+      },
+      subChange (record) {
+        console.log(record)
       },
       getTotal (items) {
         if (items) {
@@ -290,9 +451,16 @@
         this.form.balances = balances
         this.$forceUpdate()
       },
-      storeChange (e) {
+      storeChange (e, nonRefresh) {
         this.queryParam.useStore = e.target.value
-        this.$refs.table.refresh()
+        if (this.contract.contractCategory === 16) {
+          this.columns = _columns[this.queryParam.useStore]
+        } else {
+          this.columns = columns
+        }
+        if (!nonRefresh) {
+          this.$refs.table.refresh()
+        }
       }
     }
   }

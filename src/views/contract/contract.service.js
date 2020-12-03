@@ -15,6 +15,8 @@ const API = {
   tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProjectToContract',
   viewBudgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid',
   computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid',
+  computeBudgets_108: '/api/services/app/Contract/GetContractUsePlanPreSplitByContractGuid',
+  computeBudgets_109: '/api/services/app/Contract/GetContrcatUseSurplusPreSplitByContractGuid',
   createBudgets: '/api/services/app/Contract/CreateContractBudget',
   updateBudgets: '/api/services/app/Contract/UpdateContractBudget',
   bpm: '/api/services/app/Contract/StartBPM'
@@ -138,6 +140,22 @@ ContractService.computeBudgets = function (params) {
     url: API.computeBudgets,
     method: 'POST',
     data: params
+  })
+}
+
+ContractService.computeBudgets_108 = function (params) {
+  return request({
+    url: API.computeBudgets_108,
+    method: 'GET',
+    params: params
+  })
+}
+
+ContractService.computeBudgets_109 = function (params) {
+  return request({
+    url: API.computeBudgets_109,
+    method: 'GET',
+    params: params
   })
 }
 

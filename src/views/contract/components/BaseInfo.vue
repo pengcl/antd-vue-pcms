@@ -34,7 +34,7 @@
           prop="contractCategory"
         >
           <a-select
-            :disabled="type === 'view'"
+            :disabled="type !== 'create'"
             placeholder="请选择合同类型"
             v-model="data.contract.contractCategory">
             <a-select-option
@@ -96,7 +96,7 @@
         >
           <a-input v-model="data.contract.tenderPackageItemID" :disabled="type === 'view'" :hidden="true"/>
           <a-input
-            :disabled="type === 'view'"
+            :disabled="type === 'view' || data.contract.contractCategory === 16"
             :value="tender.packageTitle ? (tender.packageTitle + ':' + tender.tradePackageCode) : ''"
             @click="showSelect('tender')"
             placeholder="请选择招投标分判包编号"
@@ -110,7 +110,7 @@
           prop="contractTypeCode"
         >
           <a-select
-            :disabled="type === 'view'"
+            :disabled="type === 'view' || data.contract.contractCategory === 16"
             placeholder="请选择成本预算分类"
             v-model="data.contract.contractTypeCode">
             <a-select-option v-for="(option,index) in selection.itemTypes" :key="index" :value="option.code">
@@ -467,6 +467,27 @@
       'companies' (val) {
         this.selection.companies = val
         this.$forceUpdate()
+      },
+      'data.contract.masterContractID' (value) {
+        if (this.data.contract.contractCategory === 16) {
+          ContractService.item(value).then(res => {
+            console.log(res)
+            this.data.contract.tenderPackageItemID = res.result.data.contract.tenderPackageItemID
+            this.data.contract.contractTypeCode = res.result.data.contract.contractTypeCode
+            const body = { ProjectTenderPackageGUID: this.data.contract.tenderPackageItemID, ProjectGUID: this.project.projectGUID, MaxResultCount: 999 }
+            ContractService.tenders(body).then(res => {
+              res.result.data.forEach(item => {
+                if (this.data.contract.tenderPackageItemID === item.projectTenderPackageGUID) {
+                  this.tender = item
+                  this.selection.itemTypes = [{
+                    name: this.tender.itemTypeNameCN,
+                    code: this.tender.itemTypeCode
+                  }]
+                }
+              })
+            })
+          })
+        }
       }
     },
     methods: {

@@ -127,6 +127,21 @@
     }
   ]
 
+  const showKeys = {
+    108 : {
+      'CIP' : 'voUsePlanlst',
+      'VO' : 'vocUsePlanlst'
+    },
+    109 : {
+      'CIP' : 'voUseSurpluslst',
+      'VO' : 'vocUseSurpluslst'
+    },
+    110 : {
+      'CIP' : 'voUsePlanlst',
+      'VO' : 'voCUsePlanlst'
+    }
+  }
+
   export default {
     name: 'BudgetList',
     components: {
@@ -140,8 +155,8 @@
       this.surplusColumns = surplusColumns
       this.generalTradeColumns = generalTradeColumns
       this.usePlanData = []
-      if(this.data.voUsePlanlst != null){
-        const usePlanDataTemp = Object.assign([],this.data.voUsePlanlst)
+      if(this.data[showKeys[108][this.stage]] != null){
+        const usePlanDataTemp = Object.assign([],this.data[showKeys[108][this.stage]])
         usePlanDataTemp.sort((a,b) =>{
           return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
         })
@@ -154,7 +169,7 @@
         })
         this.usePlanData = usePlanDataTemp
       }
-      this.surplusData = this.data.voUseSurpluslst
+      this.surplusData = this.data[showKeys[109][this.stage]]
       this.generalTradeData = []
       return {
         selection : {storeTypes : []}
@@ -212,6 +227,10 @@
       contract : {
         type : Object,
         default : null
+      },
+      stage : {
+        type : String,
+        default : 'CIP'
       }
     },
     methods : {
