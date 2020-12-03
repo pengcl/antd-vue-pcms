@@ -190,22 +190,49 @@
 
   const actions = {
     108 : {
-      'create' : 'createVoUsePlan',
-      'update' : 'updateVoUsePlan',
-      'table' : 'usePlanTable',
-      'list' : 'voUsePlanlst'
+      'CIP' : {
+        'create' : 'createVoUsePlan',
+        'update' : 'updateVoUsePlan',
+        'get' : 'getVoBudgetPreSplit',
+        'list' : 'voUsePlanlst'
+      },
+      'VO':{
+        'create' : 'createVOCUsePlan',
+        'update' : 'updateVOCUsePlan',
+        'get' : 'getVOCBudgetPreSplitByVOGuid',
+        'list' : 'voCUsePlanlst'
+      },
+      'table' : 'usePlanTable'
     },
     109 : {
-      'create' : 'createVOUseSurplus',
-      'update' : 'updateVOUseSurplus',
-      'table' : 'surplusTable',
-      'list' : 'voUseSurpluslst'
+      'CIP' : {
+        'create' : 'createVOUseSurplus',
+        'update' : 'updateVOUseSurplus',
+        'get' : 'getVOUseSurplusPreSplit',
+        'list' : 'voUseSurpluslst'
+      },
+      'VO':{
+        'create' : 'createVOCUseSurplus',
+        'update' : 'updateVOCUseSurplus',
+        'get' : 'getVOCUseSurplusPreSplitByVOGuid',
+        'list' : 'voCUseSurpluslst'
+      },
+      'table' : 'surplusTable'
     },
     110 : {
-      'create' : 'createVoUsePlan',
-      'update' : 'updateVoUsePlan',
-      'table' : 'generalTradeTable',
-      'list' : 'voUseSurpluslst'
+      'CIP' : {
+        'create' : 'createVoUsePlan',
+        'update' : 'updateVoUsePlan',
+        'get' : 'getVoBudgetPreSplit',
+        'list' : 'voUseSurpluslst'
+      },
+      'VO':{
+        'create' : 'createVoUsePlan',
+        'update' : 'updateVoUsePlan',
+        'get' : 'getVoBudgetPreSplit',
+        'list' : 'voCUseSurpluslst'
+      },
+      'table' : 'generalTradeTable'
     }
   }
 
@@ -235,7 +262,7 @@
         usePlanLoadData: parameter => {
           this.rowSpans = {}
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          return ChangeService.getVoBudgetPreSplit({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+          return ChangeService[actions[108][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
             .then(res => {
               if(res.result.data == null){
                 return new Promise((resolve, reject) => {
@@ -264,7 +291,7 @@
         },
         surplusLoadData :  parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          return ChangeService.getVOUseSurplusPreSplit({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+          return ChangeService[actions[109][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
             .then(res => {
               if(res.result.data == null){
                 return new Promise((resolve, reject) => {
@@ -352,7 +379,7 @@
       handleCancel(){
         this.visible = false
         const stageLower = this.stage.toLowerCase()
-        location.href = `/change/${stageLower}/item/${this.data.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
+        // location.href = `/change/${stageLower}/item/${this.data.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
       },
       loadData(){
       	return ChangeService.bqList(this.contract.contractGuid).then(res => {
@@ -377,9 +404,9 @@
           useStore : this.useStore,
           budgetIsConfirm : this.data.voMasterInfo.budgetIsConfirm
         }
-        reqData[actions[this.useStore].list] = this.$refs[actions[this.useStore].table].localDataSource
+        reqData[actions[this.useStore][this.stage].list] = this.$refs[actions[this.useStore].table].localDataSource
         console.log('reqData',reqData)
-        ChangeService[actions[this.useStore][methodName]](reqData).then(res =>{
+        ChangeService[actions[this.useStore][this.stage][methodName]](reqData).then(res =>{
           this.loading = false
           if(res.result.statusCode === 200){
             this.$message.success('预算确认成功')

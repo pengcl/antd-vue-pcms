@@ -66,7 +66,7 @@
               ></cost-estimates>
             </a-tab-pane>
             <a-tab-pane v-if="type !== 'add'" :key="3" tab="预算调整" >
-              <budget-list title="预算调整" :data="form" :contract="contract" :type="type" :id="id"></budget-list>
+              <budget-list title="预算调整" :data="form" :contract="contract" :type="type" :id="id" :stage="stage"></budget-list>
             </a-tab-pane>
             <a-tab-pane :key="4" tab="附加资料" >
               <attachment-data
