@@ -41,7 +41,7 @@
         </a-row>
       </a-form-model>
       <a-radio-group @change="storeChange" v-model="queryParam.useStore" button-style="solid">
-        <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
+        <a-radio :disabled="item.id === 110" v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
           {{ item.nameCN }}
         </a-radio>
       </a-radio-group>
@@ -412,7 +412,14 @@
         }, 100)
       },
       subChange (record) {
-        console.log(record)
+        let balanceAmount = 0
+        if (this.queryParam.useStore === 108) {
+          balanceAmount = record.alterPlan - record.addedUseAmount
+        }
+        if (this.queryParam.useStore === 109) {
+          balanceAmount = record.surplusAmount - record.addedUseAmount
+        }
+        record.balanceAmount = balanceAmount > 0 ? 0 : balanceAmount
       },
       getTotal (items) {
         if (items) {

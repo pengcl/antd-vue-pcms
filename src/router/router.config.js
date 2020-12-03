@@ -454,6 +454,20 @@ export const asyncRouterMap = [
         hidden: true,
         component: () => import('@/views/data/Item'),
         meta: { title: 'menu.data.item', icon: 'database', permission: ['data'] }
+      },
+      {
+        path: '/role/post',
+        name: 'PostRoles',
+        hidden: true,
+        component: () => import('@/views/role/PostRoles'),
+        meta: { title: 'menu.role.post', icon: 'database', permission: ['data'] }
+      },
+      {
+        path: '/role/project',
+        name: 'ProjectRoles',
+        hidden: true,
+        component: () => import('@/views/role/ProjectRoles'),
+        meta: { title: 'menu.role.project', icon: 'database', permission: ['data'] }
       }
       // settings
       /* {

@@ -47,6 +47,7 @@ import {
   Cascader,
   TreeSelect,
   AutoComplete,
+  Tree,
   message,
   notification
 } from 'ant-design-vue'
@@ -105,6 +106,7 @@ Vue.use(Descriptions)
 Vue.use(Cascader)
 Vue.use(TreeSelect)
 Vue.use(AutoComplete)
+Vue.use(Tree)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

@@ -144,7 +144,16 @@
 
   export default {
     name: 'ContractItem',
-    components: { ContractComputeReplenishBudgets, ContractComputeBudgets, AttachmentList, BudgetList, ContractList, PayInfo, ContractInfo, BaseInfo },
+    components: {
+      ContractComputeReplenishBudgets,
+      ContractComputeBudgets,
+      AttachmentList,
+      BudgetList,
+      ContractList,
+      PayInfo,
+      ContractInfo,
+      BaseInfo
+    },
     data () {
       return {
         disabled: true,
@@ -334,20 +343,36 @@
       handleOk () {
         this.$refs.budgets.$refs.form.validate(valid => {
           if (valid) {
+            const type = this.form.contract.budgetIsConfirm ? 'update' : 'create'
             const form = {
               contractGuid: this.contractGuid,
               useStore: this.$refs.budgets.queryParam.useStore,
-              budgetIsConfirm: true,
-              contractBudgetAdjustlst: this.$refs.budgets.$refs.table.localDataSource
+              budgetIsConfirm: true
             }
-            const type = this.form.contract.budgetIsConfirm ? 'update' : 'create'
-            ContractService[type + 'Budgets'](form).then(res => {
-              if (res.result.statusCode === 200) {
-                this.show = false
-                this.$message.success('确认成功')
-                this.$router.push({ path: `/contract/item/${res.result.data}?type=view` })
+            if (this.form.contract.contractCategory === 16) {
+              if (form.useStore === 108) {
+                form.contractUsePlanlst = this.$refs.budgets.$refs.table.localDataSource
               }
-            })
+              if (form.useStore === 109) {
+                form.contractUseSurpluslst = this.$refs.budgets.$refs.table.localDataSource
+              }
+              ContractService[type + 'Budgets_' + this.$refs.budgets.queryParam.useStore](form).then(res => {
+                if (res.result.statusCode === 200) {
+                  this.show = false
+                  this.$message.success('确认成功')
+                  location.href = `/contract/item/${res.result.data}?type=view`
+                }
+              })
+            } else {
+              form.contractBudgetAdjustlst = this.$refs.budgets.$refs.table.localDataSource
+              ContractService[type + 'Budgets'](form).then(res => {
+                if (res.result.statusCode === 200) {
+                  this.show = false
+                  this.$message.success('确认成功')
+                  location.href = `/contract/item/${res.result.data}?type=view`
+                }
+              })
+            }
           }
         })
       }

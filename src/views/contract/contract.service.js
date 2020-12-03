@@ -19,6 +19,10 @@ const API = {
   computeBudgets_109: '/api/services/app/Contract/GetContrcatUseSurplusPreSplitByContractGuid',
   createBudgets: '/api/services/app/Contract/CreateContractBudget',
   updateBudgets: '/api/services/app/Contract/UpdateContractBudget',
+  createBudgets_108: '/api/services/app/Contract/CreateContrcatUsePlan',
+  updateBudgets_108: '/api/services/app/Contract/UpdateContractUsePlan',
+  createBudgets_109: '/api/services/app/Contract/CreateVOUseSurplus',
+  updateBudgets_109: '/api/services/app/Contract/UpdateContractUseSurplus',
   bpm: '/api/services/app/Contract/StartBPM'
 }
 
@@ -170,6 +174,38 @@ ContractService.createBudgets = function (params) {
 ContractService.updateBudgets = function (params) {
   return request({
     url: API.updateBudgets,
+    method: 'PUT',
+    data: params
+  })
+}
+
+ContractService.createBudgets_108 = function (params) {
+  return request({
+    url: API.createBudgets_108,
+    method: 'POST',
+    data: params
+  })
+}
+
+ContractService.updateBudgets_108 = function (params) {
+  return request({
+    url: API.updateBudgets_108,
+    method: 'PUT',
+    data: params
+  })
+}
+
+ContractService.createBudgets_109 = function (params) {
+  return request({
+    url: API.createBudgets_109,
+    method: 'POST',
+    data: params
+  })
+}
+
+ContractService.updateBudgets_109 = function (params) {
+  return request({
+    url: API.updateBudgets_109,
     method: 'PUT',
     data: params
   })
