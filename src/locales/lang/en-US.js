@@ -46,6 +46,7 @@ const locale = {
   'menu.cost': 'Costs',
   'menu.cost.enact.list': 'Enact List',
   'menu.cost.enact.item': 'Enact Detail',
+  'menu.cost.enact.collect': 'Enact Collect edit',
   'menu.cost.resolve.list': 'Resolve List',
   'menu.cost.resolve.item': 'Resolve Detail',
   'menu.cost.industry.list': 'Industry List',

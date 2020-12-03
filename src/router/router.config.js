@@ -139,6 +139,13 @@ export const asyncRouterMap = [
             meta: { title: 'menu.cost.enact.item', keepAlive: true, permission: ['budget'] }
           },
           {
+            path: '/cost/enact/collect',
+            hidden: true,
+            name: 'CostEnactCollect',
+            component: () => import('@/views/cost/enact/Collect'),
+            meta: { title: 'menu.cost.enact.collect', keepAlive: true, permission: ['budget'] }
+          },
+          {
             path: '/cost/resolve/list',
             name: 'CostResolveList',
             component: () => import('@/views/cost/resolve/List'),

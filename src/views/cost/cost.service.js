@@ -7,6 +7,8 @@ const API = {
   subjectViewItems: '/api/services/app/BudgetSubPlan/GetBudgetPlanDetailTreeByProject',//成本预算制定详情接口
   update: '/api/services/app/BudgetSubPlan/CreateOrEditDetails', //更新成本预算制定接口
   centers: '/api/services/app/ProjectCostCenter/GetProjectCostCentersByGuid' ,//根据项目GUID获取成本中心集合
+  budgetPlanAuditItem: '/api/services/app/BudgetPlan/GetProjectCurrentBudgetPlanPackage' ,//获取项目的当前预算审核包信息
+  budgetPlanAuditSave: '/api/services/app/BudgetPlan/ProjectSaveBudgetPlanPackage', //保存项目的预算审核包信息
   //行业分判包
   industryItems: '/api/services/app/TenderPackage/GetPaged' ,//行业分判包列表
   industryCreate: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加行业分判包
@@ -315,7 +317,21 @@ CostService.industryRemove = function (TenderPackageId) {
   })
 }
 
+CostService.budgetPlanAuditItem = function (parameter) {
+  return request({
+    url: API.budgetPlanAuditItem,
+    method: 'get',
+    params: parameter
+  })
+}
 
+CostService.budgetPlanAuditSave = function (parameter) {
+  return request({
+    url: API.budgetPlanAuditSave,
+    method: 'POST',
+    data: parameter
+  })
+}
 
 /**
  * login func

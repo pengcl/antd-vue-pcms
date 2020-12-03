@@ -23,7 +23,7 @@
               </a-form-item>
             </a-col>
             <a-col :md="10" :sm="24">
-              <a-button type="success" style="margin-right: 5px">预算汇总</a-button>
+              <a-button type="success" style="margin-right: 5px" @click="handleToCollect">预算汇总</a-button>
               <a-button type="success" style="margin-right: 5px;">审批记录</a-button>
               <a-button type="success">导入导出</a-button>
             </a-col>
@@ -245,6 +245,9 @@
       },
       handleToEdit(record) {
         this.$router.push({path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}`})
+      },
+      handleToCollect() {
+        this.$router.push({path: `/cost/enact/collect?ProjectGUID=${this.queryParam.ProjectGUID}`})
       },
       handleToAdd() {
         this.$router.push({path: `/cost/enact/item/0?type=add`})
