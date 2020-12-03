@@ -22,7 +22,6 @@
           <a-col :md="24" :sm="24">
             <s-table 
               :style="useStore !== 108 ? 'display : none' : ''"
-              rowKey="index"
               :columns="columns" 
               :showPagination="false"
               :data="usePlanLoadData"
@@ -35,9 +34,8 @@
                 <template slot="voUseAmount" slot-scope="text,record">
                   <a-input-number 
                     :max="record.alterPlan" 
-                    :min="-record.alterPlan" 
                     v-model="record.voUseAmount" 
-                    @change="changeVoUseAmount(record)"
+                    @change="changeVoUseAmount(record,'alterPlan')"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                     :precision="2"
@@ -50,21 +48,20 @@
             </s-table>
             <s-table 
               :style="useStore !== 109 ? 'display : none' : ''"
-              :row-key="record => JSON.stringify(record)" 
               :columns="surplusColumns" 
               :showPagination="false"
               :data="surplusLoadData"
               bordered 
+              :alert="false"
               ref="surplusTable" >
                 <template slot="surplusAmount" slot-scope="text,record">
                   <a-input-number  :value="record.surplusAmount" :disabled="true"></a-input-number>
                 </template>
                 <template slot="voUseAmount" slot-scope="text,record">
                   <a-input-number 
-                    :max="record.alterPlan" 
-                    :min="-record.alterPlan" 
+                    :max="record.surplusAmount" 
                     v-model="record.voUseAmount" 
-                    @change="changeVoUseAmount(record)"
+                    @change="changeVoUseAmount(record,'surplusAmount')"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                     :precision="2"
@@ -77,10 +74,10 @@
             </s-table>
             <s-table 
               :style="useStore !== 110 ? 'display : none' : ''"
-              :row-key="record => JSON.stringify(record)" 
               :columns="generalTradeColumns" 
               :showPagination="false"
               :data="generalTradeLoadData"
+              :alert="false"
               bordered 
               ref="generalTradeTable" >
                 <template slot="alterPlan" slot-scope="text,record">
@@ -91,7 +88,7 @@
                     :max="record.alterPlan" 
                     :min="-record.alterPlan" 
                     v-model="record.voUseAmount" 
-                    @change="changeVoUseAmount(record)"
+                    @change="changeVoUseAmount(record,'alterPlan')"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                     :precision="2"
@@ -416,8 +413,8 @@
           this.loading = false
         })
       },
-      changeVoUseAmount(record){
-        const balanceAmount = record.alterPlan - record.voUseAmount
+      changeVoUseAmount(record,attr){
+        const balanceAmount = record[attr] - record.voUseAmount
         record.balanceAmount = balanceAmount > 0 ? 0 : balanceAmount
       },
       renderCost(value,row,index){ 
