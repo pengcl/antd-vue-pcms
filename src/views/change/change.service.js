@@ -40,6 +40,14 @@ const API = {
   getVOUseSurplusPreSplit : '/api/services/app/VO/GetVOUseSurplusPreSplitByVOGuid',//变更预分解（针对定标盈余）
   createVOUseSurplus : '/api/services/app/VO/CreateVOUseSurplus',//预算确认（针对定标盈余）
   updateVOUseSurplus : '/api/services/app/VO/UpdateVOUseSurplus',//更新变更预算调整（针对定标盈余）
+  getVOCBudgetPreSplitByVOGuid : '/api/services/app/VO/GetVOCBudgetPreSplitByVOGuid',//VO-变更预分解（针对预计变更金额）
+  createVOCUsePlan : '/api/services/app/VO/CreateVOCUsePlan',//VO-预算确认（针对预计变更金额）
+  updateVOCUsePlan : '/api/services/app/VO/UpdateVOCUsePlan',//VO-更新变更预算调整（针对预计结算金额）
+
+  getVOCUseSurplusPreSplitByVOGuid : '/api/services/app/VO/GetVOCUseSurplusPreSplitByVOGuid',//VO-变更预分解（针对定标盈余）
+  createVOCUseSurplus : '/api/services/app/VO/CreateVOCUseSurplus',//VO-预算确认（针对定标盈余）
+  updateVOCUseSurplus : '/api/services/app/VO/UpdateVOCUseSurplus',//VO-更新变更预算调整（针对定标盈余）
+
 }
 
 const ChangeService = {}
@@ -386,7 +394,7 @@ ChangeService.getCostCenters = function(contractGuid){
 }
 
 /**
- * 变更预分解（针对预计变更金额）
+ * CIP-变更预分解（针对预计变更金额）
  */
 ChangeService.getVoBudgetPreSplit = function(parameter){
 	return request({
@@ -398,7 +406,7 @@ ChangeService.getVoBudgetPreSplit = function(parameter){
 
 
 /**
- * 预算确认（针对预计结算金额）
+ * CIP-预算确认（针对预计结算金额）
  */
 ChangeService.createVoUsePlan = function(parameter){
 	return request({
@@ -410,7 +418,7 @@ ChangeService.createVoUsePlan = function(parameter){
 
 
 /**
- * 更新变更预算调整
+ * CIP-更新变更预算调整
  */
 ChangeService.updateVoUsePlan = function(parameter){
 	return request({
@@ -454,7 +462,7 @@ ChangeService.getVOUseStoreSum = function(contractGuid){
 }
 
 /**
- * 变更预分解（针对定标盈余）
+ * CIP-变更预分解（针对定标盈余）
  */
 ChangeService.getVOUseSurplusPreSplit = function(parameter){
 	return request({
@@ -464,9 +472,8 @@ ChangeService.getVOUseSurplusPreSplit = function(parameter){
 	  })
 }
 
-
 /**
- * 预算确认（针对定标盈余）
+ * CIP-预算确认（针对定标盈余）
  */
 ChangeService.createVOUseSurplus = function(parameter){
 	return request({
@@ -478,11 +485,79 @@ ChangeService.createVOUseSurplus = function(parameter){
 
 
 /**
- * 更新变更预算调整（针对定标盈余）
+ * CIP-更新变更预算调整（针对定标盈余）
  */
 ChangeService.updateVOUseSurplus = function(parameter){
 	return request({
 	    url: API.updateVOUseSurplus,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
+/**
+ * VO-变更预分解（针对预计变更金额）
+ */
+ChangeService.getVOCBudgetPreSplitByVOGuid = function(parameter){
+	return request({
+	    url: API.getVOCBudgetPreSplitByVOGuid,
+	    method: 'get',
+	    params: parameter
+	  })
+}
+
+/**
+ * VO-预算确认（针对预计变更金额）
+ */
+ChangeService.createVOCUsePlan = function(parameter){
+	return request({
+	    url: API.createVOCUsePlan,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+
+/**
+ * VO-更新变更预算调整（针对预计结算金额）
+ */
+ChangeService.updateVOCUsePlan = function(parameter){
+	return request({
+	    url: API.updateVOCUsePlan,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
+/**
+ * VO-变更预分解（针对定标盈余）
+ */
+ChangeService.getVOCUseSurplusPreSplitByVOGuid = function(parameter){
+	return request({
+	    url: API.getVOCUseSurplusPreSplitByVOGuid,
+	    method: 'get',
+	    params: parameter
+	  })
+}
+
+/**
+ * VO-预算确认（针对定标盈余）
+ */
+ChangeService.createVOCUseSurplus = function(parameter){
+	return request({
+	    url: API.createVOCUseSurplus,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+
+/**
+ * VO-更新变更预算调整（针对定标盈余）
+ */
+ChangeService.updateVOCUseSurplus = function(parameter){
+	return request({
+	    url: API.updateVOCUseSurplus,
 	    method: 'put',
 	    data: parameter
 	  })
