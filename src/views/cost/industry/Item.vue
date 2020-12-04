@@ -45,7 +45,7 @@
               </a-select>
             </a-form-model-item>
           </a-col>
-          <a-col :md="24" :sm="24">
+          <!-- <a-col :md="24" :sm="24">
             <a-form-model-item prop="itemTypeId" label="分判包类型">
               <a-select
                 :disabled="type !== 'add'"
@@ -58,7 +58,7 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-          </a-col>
+          </a-col> -->
           <a-col :md="24" :sm="24">
             <a-form-model-item prop="elementTypeId" label="科目类型">
               <a-select
@@ -118,7 +118,7 @@
           packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
           packageTitle: [{ required: true, message: '请输入分判包描述', trigger: 'blur' }],
           costCenters: [{ required: true, message: '请选择范围', trigger: 'change' }],
-          itemTypeId: [{ required: true, message: '请选择分判包类型', trigger: 'change' }],
+          // itemTypeId: [{ required: true, message: '请选择分判包类型', trigger: 'change' }],
           elementTypeId: [{ required: true, message: '请选择科目类型', trigger: 'change' }]
         }
       }
@@ -191,6 +191,7 @@
         this.$refs.form.validate(valid => {
           if(valid){
             this.form.projectGUID = this.ProjectGUID
+            this.form.itemTypeId = 0 //2020-12-04 新需求，取消行业分判包类型选项
             this.loading.save = true
             CostService[action](this.form).then(res => {
               if (res.result.statusCode === 200) {
