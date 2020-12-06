@@ -47,6 +47,7 @@ const API = {
   getVOCUseSurplusPreSplitByVOGuid : '/api/services/app/VO/GetVOCUseSurplusPreSplitByVOGuid',//VO-变更预分解（针对定标盈余）
   createVOCUseSurplus : '/api/services/app/VO/CreateVOCUseSurplus',//VO-预算确认（针对定标盈余）
   updateVOCUseSurplus : '/api/services/app/VO/UpdateVOCUseSurplus',//VO-更新变更预算调整（针对定标盈余）
+  getCIPTypes: '/api/services/app/GeneralType/GetCIPTypes'//CIP类型
 
 }
 
@@ -563,5 +564,15 @@ ChangeService.updateVOCUseSurplus = function(parameter){
 	  })
 }
 
+/**
+ * 变更类型
+ */
+ChangeService.getCIPTypes = function(){
+	return request({
+	    url: API.getCIPTypes,
+	    method: 'get',
+	    params: {}
+	  })
+}
 
 export { ChangeService }

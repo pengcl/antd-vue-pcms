@@ -324,7 +324,7 @@
       },
       stage : {
         type : String,
-        default : ''
+        default : 'CIP'
       }
     },
     computed: {
@@ -376,7 +376,7 @@
       handleCancel(){
         this.visible = false
         const stageLower = this.stage.toLowerCase()
-        // location.href = `/change/${stageLower}/item/${this.data.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
+        location.href = `/change/${stageLower}/item/${this.data.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
       },
       loadData(){
       	return ChangeService.bqList(this.contract.contractGuid).then(res => {
