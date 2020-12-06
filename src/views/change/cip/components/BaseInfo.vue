@@ -55,6 +55,14 @@
           ></a-input>
         </a-form-model-item>
       </a-col>
+      <a-col :md="12" :sm="24" >
+        <a-form-model-item label="变更名称" prop="voName">
+          <a-input
+            :disabled="type === 'VIEW'"
+            v-model="data.voMasterInfo.voName"
+          ></a-input>
+        </a-form-model-item>
+      </a-col>
       <a-col :md="24" :sm="24">
         承包 / 顾问单位名称：
       </a-col>
@@ -595,6 +603,7 @@
           voType: [{ required: true, message: '请选择变更类型', trigger: 'change' }],
           cipType : [{ required : true,message : '请选择类型',trigger : 'change'}],
           reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
+          voName : [{ required : true, message : '请输入变更名称'}],
           // packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
           // consultantEstimatedAmount: [{ required: true, message: '请输入顾问估算金额', trigger: 'change' }],
           sourceValue : [{required : true,message:'请选择估值来源',trigger : 'change'}],
