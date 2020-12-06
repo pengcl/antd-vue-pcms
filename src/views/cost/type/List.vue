@@ -137,7 +137,7 @@
               }
             }
             const temp = []
-            const tempCodes = ['B', 'C', 'D', 'G']
+            const tempCodes = ['B', 'C', 'D', 'E', 'F', 'G']
             if (res.result.data.childs) {
               res.result.data.childs.forEach(item => {
                 if (tempCodes.includes(item.code)) {
@@ -180,7 +180,8 @@
   /deep/ .ant-table-row-level-3 {
     background: #d7f4ff !important;
   }
-  /deep/ .ant-table-row-level-1{
+
+  /deep/ .ant-table-row-level-1 {
     background: #d7f4ff !important;
   }
 </style>
