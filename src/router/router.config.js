@@ -435,6 +435,28 @@ export const asyncRouterMap = [
         meta: { title: 'menu.report', icon: 'fund', permission: ['Report'] }
       },
       // data
+      // checkout
+      {
+        path: '/role',
+        name: 'role',
+        redirect: '/role/project',
+        component: RouteView,
+        meta: { title: 'menu.role', icon: 'database', permission: ['NwDataRoleProjectSetting'] },
+        children: [
+          {
+            path: '/role/project',
+            name: 'ProjectRoles',
+            component: () => import('@/views/role/ProjectRoles'),
+            meta: { title: 'menu.role.project', permission: ['NwDataRoleProjectSetting'] }
+          },
+          {
+            path: '/role/post',
+            name: 'PostRoles',
+            component: () => import('@/views/role/PostRoles'),
+            meta: { title: 'menu.role.post', permission: ['data'] }
+          }
+        ]
+      },
       {
         path: '/data/list',
         name: 'DataList',
@@ -447,20 +469,6 @@ export const asyncRouterMap = [
         hidden: true,
         component: () => import('@/views/data/Item'),
         meta: { title: 'menu.data.item', icon: 'database', permission: ['Setting'] }
-      },
-      {
-        path: '/role/post',
-        name: 'PostRoles',
-        hidden: true,
-        component: () => import('@/views/role/PostRoles'),
-        meta: { title: 'menu.role.post', icon: 'database', permission: ['data'] }
-      },
-      {
-        path: '/role/project',
-        name: 'ProjectRoles',
-        hidden: true,
-        component: () => import('@/views/role/ProjectRoles'),
-        meta: { title: 'menu.role.project', icon: 'database', permission: ['data'] }
       }
       // settings
       /* {

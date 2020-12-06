@@ -65,12 +65,14 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <a-button
+            v-if="ac('VIEW')"
             class="btn-success"
             type="primary"
             icon="file-text"
             title="查看"
             @click="handleToItem(record)"></a-button>
           <a-button
+            v-if="ac('Change')"
             :disabled="!record.logGID"
             class="btn-info"
             type="primary"
@@ -89,6 +91,7 @@
   import { fixedList, formatTree } from '@/utils/util'
   import { TreeSelect } from 'ant-design-vue'
   import { SupplierService } from '@/views/supplier/supplier.service'
+  import { acs, ac } from '@/views/user/user.service'
 
   const SHOW_PARENT = TreeSelect.SHOW_PARENT
   export default {
@@ -151,13 +154,16 @@
       }
     },
     created () {
-      // getRoleList({ t: new Date() })
+      console.log(acs(this.$route))
       SupplierService.types().then(res => {
         this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
         this.$forceUpdate()
       })
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       search () {
         this.$refs.table.refresh()
       },

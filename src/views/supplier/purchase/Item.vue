@@ -146,13 +146,13 @@
       </a-modal>
       <a-row :gutter="48" style="margin-top: 15px;">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && !form.vendor.logGID">
+          <a-button-group v-if="type === 'view' && !form.vendor.logGID && ac('Change')">
             <a-button @click="askUpdate()" type="success">
               供应商信息变更
             </a-button>
           </a-button-group>
           <a-button-group>
-            <a-button @click="approve()" type="success">
+            <a-button @click="bpm()" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
@@ -163,7 +163,7 @@
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type !== 'view'">
+          <a-button-group v-if="type !== 'view' && ac('Change')">
             <a-button @click="save" type="success">
               储存
             </a-button>
@@ -190,6 +190,7 @@
   import { TreeSelect } from 'ant-design-vue'
   import { City as CitySvc, formatCities } from '@/api/city'
   import { DIALOGCONFIG, Base as BaseService } from '@/api/base'
+  import { ac } from '@/views/user/user.service'
 
   const SHOW_PARENT = TreeSelect.SHOW_PARENT
   export default {
@@ -255,6 +256,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       checkName (name) {
         if (this.id === '0') {
           SupplierService.check(name).then(res => {

@@ -14,7 +14,8 @@ const API = {
   createStages: '/api/services/app/Project/CreateProjectStages', // 添加项目分期
   createStage: '/api/services/app/Project/CreateProjectStage', // 添加项目阶段
   updateStages: '/api/services/app/Project/UpdateProjectStages', // 添加项目分期
-  updateStage: '/api/services/app/Project/UpdateProjectStage' // 添加项目阶段
+  updateStage: '/api/services/app/Project/UpdateProjectStage', // 添加项目阶段
+  bpm: '/api/services/app/Project/StartBPM'
 }
 
 const ProjectService = {}
@@ -80,6 +81,14 @@ ProjectService.createProject = function (parameter) {
     url: API.create,
     method: 'POST',
     data: parameter
+  })
+}
+
+ProjectService.bpm = function (guid) {
+  return request({
+    url: API.bpm,
+    method: 'POST',
+    params: { guid }
   })
 }
 

@@ -84,6 +84,10 @@ const locale = {
   'menu.data.list': 'Data List',
   'menu.data.item': 'Data Item',
 
+  'menu.role': 'Data Roles',
+  'menu.role.project': 'Data Project Roles',
+  'menu.role.post': 'Data Post Roles',
+
   'menu.settings': 'Settings',
   'menu.settings.base': 'Settings base',
   'menu.settings.security': 'Settings security',

@@ -652,7 +652,7 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group>
+          <a-button-group v-if="ac('EDIT')">
             <a-button :loading="loading" :disabled="type === 'view'" @click="save" type="success">
               储存
             </a-button>
@@ -682,6 +682,7 @@
   import { SwaggerService } from '@/api/swagger.service'
   import { CostService } from '@/views/project/cost/cost.service'
   import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+  import { ac } from '@/views/user/user.service'
 
   function getName (items, id) {
     let name = ''
@@ -837,6 +838,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       getName (items, id) {
         return getName(items, id)
       },

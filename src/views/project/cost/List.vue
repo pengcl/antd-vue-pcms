@@ -75,9 +75,16 @@
             </a-button>
           </template>-->
           <template>
-            <a-button @click="handleToItem(record)" class="btn-success" type="primary" icon="file-text" title="查看">
+            <a-button
+              v-if="ac('VIEW')"
+              @click="handleToItem(record)"
+              class="btn-success"
+              type="primary"
+              icon="file-text"
+              title="查看">
             </a-button>
             <a-button
+              v-if="ac('EDIT')"
               @click="handleToEdit(record)"
               type="primary"
               class="btn-info"
@@ -97,6 +104,7 @@ import { STable, Ellipsis } from '@/components'
 import { CostService } from '@/views/project/cost/cost.service'
 import { fixedList, getPosValue } from '@/utils/util'
 import { ProjectService } from '@/views/project/project.service'
+import { acs, ac } from '@/views/user/user.service'
 import storage from 'store'
 
 const columns = [
@@ -187,7 +195,6 @@ export default {
     }
   },
   created () {
-    // getRoleList({ t: new Date() })
     ProjectService.tree().then(res => {
       const cities = []
       res.result.data.citys.forEach(item => {
@@ -209,6 +216,9 @@ export default {
     })
   },
   methods: {
+    ac (action) {
+      return ac(action, this.$route)
+    },
     handleToItem (record) {
       this.$router.push({ path: `/project/cost/item/${record.id}?type=view` })
     },
