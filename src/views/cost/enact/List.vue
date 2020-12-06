@@ -23,7 +23,7 @@
               </a-form-item>
             </a-col>
             <a-col :md="10" :sm="24">
-              <a-button type="success" style="margin-right: 5px" @click="handleToCollect">预算汇总</a-button>
+              <a-button :disabled="!queryParam.ProjectGUID" type="success" style="margin-right: 5px" @click="handleToCollect">预算汇总</a-button>
               <a-button type="success" style="margin-right: 5px;">审批记录</a-button>
               <a-button type="success">导入导出</a-button>
             </a-col>
@@ -82,7 +82,6 @@
 
 <script>
   import {STable, Ellipsis} from '@/components'
-  import {getRoleList} from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import {ProjectService} from '@/views/project/project.service'

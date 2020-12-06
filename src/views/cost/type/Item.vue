@@ -17,7 +17,7 @@
               </a-input>
             </a-form-model-item>
           </a-col>
-          <a-col :md="24" :sm="24">
+          <!-- <a-col :md="24" :sm="24">
             <a-form-model-item label="科目名称tradeName" prop="nameEN">
               <a-input
                 :disabled="type === 'view'"
@@ -25,7 +25,7 @@
               >
               </a-input>
             </a-form-model-item>
-          </a-col>
+          </a-col> -->
           <a-col :md="24" :sm="24">
             <a-form-model-item label="描述" prop="description">
               <a-textarea
@@ -65,7 +65,7 @@
         form: SwaggerService.getForm('ElementTradeTypeListOutputDtoListResultModel'),
         rules: {
           nameCN: [{ required: true, message: '请输入科目名称', trigger: 'blur' }],
-          nameEN: [{ required: true, message: '请输入科目名称tradeName', trigger: 'blur' }],
+          // nameEN: [{ required: true, message: '请输入科目名称tradeName', trigger: 'blur' }],
           description: [{ required: false, message: '请输入描述', trigger: 'change' }],
         }
       }
@@ -97,6 +97,7 @@
             this.loading.save = true
             const buttonType = this.type==='add' ? 'typeCreate' : 'typeUpdate'
             this.form.elementId = this.elementId
+            this.form.nameEN = ''
             CostService[buttonType](this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
