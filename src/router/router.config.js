@@ -178,13 +178,6 @@ export const asyncRouterMap = [
             meta: { title: 'menu.cost.bid.list', keepAlive: true, permission: ['CostBudgetBid'] }
           },
           {
-            path: '/cost/bid/edit',
-            name: 'CostBidEdit',
-            hidden: true,
-            component: () => import('@/views/cost/bid/Edit'),
-            meta: { title: 'menu.cost.bid.edit', keepAlive: true, permission: ['CostBudgetBid'] }
-          },
-          {
             path: '/cost/bid/item/:id',
             name: 'CostBidItem',
             hidden: true,

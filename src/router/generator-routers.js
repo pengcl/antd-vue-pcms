@@ -48,7 +48,6 @@ const constantRouterComponents = {
   'CostIndustryEdit': () => import('@/views/cost/industry/Edit'),
   'CostIndustryItem': () => import('@/views/cost/industry/Item'),
   'CostBidList': () => import('@/views/cost/bid/List'),
-  'CostBidEdit': () => import('@/views/cost/bid/Edit'),
   'CostBidItem': () => import('@/views/cost/bid/Item'),
 
   // list
