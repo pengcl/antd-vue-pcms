@@ -416,17 +416,17 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核'">
+          <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="approve()" type="success">
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && info.auditStatus === '未审核'">
+          <a-button-group v-if="type === 'view' && info.auditStatus === '未审核' && ac('EDIT')">
             <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type !== 'view' && ac('EDIT')">
+          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
             <a-button @click="save" type="success">
               储存
             </a-button>

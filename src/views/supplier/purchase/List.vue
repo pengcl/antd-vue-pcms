@@ -4,7 +4,7 @@
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-button type="success" @click="handleToAdd">新供应商录入</a-button>
+            <a-button v-if="ac('ADD')" type="success" @click="handleToAdd">新供应商录入</a-button>
             <a-button type="primary" style="margin-left: 5px" @click="show = !show">
               <a-icon type="search"></a-icon>
             </a-button>
@@ -72,7 +72,7 @@
             title="查看"
             @click="handleToItem(record)"></a-button>
           <a-button
-            v-if="ac('Change')"
+            v-if="ac('EDIT')"
             :disabled="!record.logGID"
             class="btn-info"
             type="primary"

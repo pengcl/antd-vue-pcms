@@ -147,19 +147,24 @@
       </a-modal>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && !form.vendor.logGID">
+          <a-button-group v-if="type === 'view' && !form.vendor.logGID && ac('EDIT')">
             <a-button @click="askUpdate()" type="success">
               供应商信息变更
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'update' && form.vendor.auditStatus === '未审核'">
-            <a-button @click="approve()" type="success">
+          <a-button-group v-if="ac('EDIT')">
+            <a-button @click="bpm()" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group>
+          <a-button-group v-if="type === 'view' && form.vendor.vendorStatus !== '未准入'">
+            <a-button type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
             <a-button :disabled="type === 'view'" @click="save" type="success">
               储存
             </a-button>
@@ -185,6 +190,7 @@ import { SupplierService } from '@/views/supplier/supplier.service'
 import { TreeSelect } from 'ant-design-vue'
 import { City as CitySvc, formatCities } from '@/api/city'
 import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+import { ac } from '@/views/user/user.service'
 
 function formatTree (data, keys) {
   const items = []
@@ -270,6 +276,9 @@ export default {
     }
   },
   methods: {
+    ac (action) {
+      return ac(action, this.$route)
+    },
     checkName (name) {
       if (this.id === '0') {
         SupplierService.check(name).then(res => {

@@ -25,7 +25,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.Id" type="success" @click="handleToAdd()">新增项目</a-button>
+        <a-button v-if="ac('ADD')" :disabled="!queryParam.Id" type="success" @click="handleToAdd()">新增项目</a-button>
         <a-button type="primary" style="margin-left: 5px">汇出</a-button>
       </div>
 

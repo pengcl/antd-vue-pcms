@@ -75,7 +75,7 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col
-          v-if="type === 'view' && form.contract.auditStatus === '未审核'"
+          v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('EDIT')"
           :md="24"
           :sm="24"
           style="margin-bottom: 10px">
@@ -86,12 +86,12 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view' && form.contract.auditStatus !== '未审核'">
+          <a-button-group v-if="type === 'view' && form.contract.auditStatus !== '未审核' && ac('VIEW')">
             <a-button :loading="loading.view" @click="view" type="success">
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type !== 'view'">
+          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
             <a-button :loading="loading.save" @click="save()" type="success">
               储存
             </a-button>
@@ -141,6 +141,7 @@
   import { Company as CompanyService } from '@/api/company'
   import ContractComputeBudgets from '@/views/contract/components/computeBudgets/index'
   import ContractComputeReplenishBudgets from '@/views/contract/components/computeBudgets/replenish'
+  import { ac } from '@/views/user/user.service'
 
   export default {
     name: 'ContractItem',
@@ -188,6 +189,9 @@
     },
     watch: {},
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       getCompanies () { // 获取甲方公司待选列表
         const companies = ContractService.filterParties(18, this.form.contractPartylst)
         CompanyService.item(this.project.companyCode).then(res => {

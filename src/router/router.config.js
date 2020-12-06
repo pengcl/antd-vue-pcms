@@ -446,7 +446,7 @@ export const asyncRouterMap = [
           {
             path: '/role/project',
             name: 'ProjectRoles',
-            component: () => import('@/views/role/ProjectRoles'),
+            component: () => import('@/views/role/project/ProjectRoles'),
             meta: { title: 'menu.role.project', permission: ['NwDataRoleProjectSetting'] }
           },
           {

@@ -22,7 +22,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success" @click="handleToAdd">新增业态成本中心</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心</a-button>
         <!--<a-button type="primary" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>-->
@@ -104,7 +104,7 @@ import { STable, Ellipsis } from '@/components'
 import { CostService } from '@/views/project/cost/cost.service'
 import { fixedList, getPosValue } from '@/utils/util'
 import { ProjectService } from '@/views/project/project.service'
-import { acs, ac } from '@/views/user/user.service'
+import { ac } from '@/views/user/user.service'
 import storage from 'store'
 
 const columns = [

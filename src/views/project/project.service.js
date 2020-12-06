@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 
 const API = {
+  all: '/api/services/app/Project/GetAllProjectTree',
   items: '/api/services/app/Project/GetCityProjectTree',
   list: '/api/services/app/Project/GetProjects', // 项目列表
   tree: '/api/services/app/Project/GetUserProjectTree',
@@ -19,6 +20,14 @@ const API = {
 }
 
 const ProjectService = {}
+
+ProjectService.all = function list (parameter) {
+  return request({
+    url: API.all,
+    method: 'GET',
+    params: parameter
+  })
+}
 
 ProjectService.list = function list (parameter) {
   return request({

@@ -4,7 +4,7 @@
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-button type="success" @click="handleToAdd">新供应商录入</a-button>
+            <a-button v-if="ac('ADD')" type="success" @click="handleToAdd">新供应商录入</a-button>
             <a-button type="primary" style="margin-left: 5px" @click="show = !show">
               <a-icon type="search"></a-icon>
             </a-button>
@@ -65,12 +65,14 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <a-button
+            v-if="ac('VIEW')"
             class="btn-success"
             type="primary"
             icon="file-text"
             title="查看"
             @click="handleToItem(record)"></a-button>
           <a-button
+            v-if="ac('EDIT')"
             :disabled="!record.logGID"
             class="btn-info"
             type="primary"
@@ -89,6 +91,7 @@ import { STable, Ellipsis } from '@/components'
 import { fixedList, formatTree } from '@/utils/util'
 import { TreeSelect } from 'ant-design-vue'
 import { SupplierService } from '@/views/supplier/supplier.service'
+import { ac } from '@/views/user/user.service'
 const SHOW_PARENT = TreeSelect.SHOW_PARENT
 
     export default {
@@ -147,13 +150,15 @@ const SHOW_PARENT = TreeSelect.SHOW_PARENT
         }
       },
       created () {
-        // getRoleList({ t: new Date() })
         SupplierService.types().then(res => {
           this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
           this.$forceUpdate()
         })
       },
       methods: {
+        ac (action) {
+          return ac(action, this.$route)
+        },
         search () {
           this.$refs.table.refresh()
         },
