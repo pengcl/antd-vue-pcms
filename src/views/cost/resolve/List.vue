@@ -53,6 +53,7 @@
           <template>
             {{ record.code }}
             <a-button
+              v-if="ac('EDIT')"
               @click="handleToResolve(record)"
               type="primary"
               icon="snippets"
@@ -76,6 +77,7 @@
   import {formatList} from '../../../mock/util'
   import {fixedList, getPosValue, nullFixedList} from '@/utils/util'
   import storage from "store";
+  import {ac} from "@/views/user/user.service";
 
   const defaultColumns = [
 
@@ -229,6 +231,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       handleToResolve(record) {
         this.$router.push({path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}`})
       },
