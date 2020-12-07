@@ -94,10 +94,10 @@
                        v-model="item.vendorBankAccounts"></a-input>
             </td>
           </tr>
-          <tr>
+          <!--<tr>
             <td colspan="3">合计</td>
             <td colspan="4">合计金额</td>
-          </tr>
+          </tr>-->
           </tbody>
         </table>
       </div>

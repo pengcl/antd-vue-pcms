@@ -13,6 +13,10 @@ const API = {
   delete: '/api/services/app/PaymentOther/DeletePaymentOther',
   approve: '/api/services/app/PaymentOther/StartBPM',
   initData: '/api/services/app/PaymentOther/GetPaymentOtherInitData',
+  tradeBudgetTree: '/api/services/app/TradeBudget/GetProjectTradeBudgetTree',
+  costCenterBudgetItems: '/api/services/app/TradeBudget/GetPaymentOtherAddCostCenterBudgetItems',
+  addTradeBudgets: '/api/services/app/TradeBudget/PaymentOtherBatchAddTradeBudgets',
+  useTradeBudgets: '/api/services/app/TradeBudget/PaymentOtherBatchUseTradeBudgets',
 }
 
 const UnSignedService = {}
@@ -85,6 +89,39 @@ UnSignedService.vendorTypes = function (vendorCodeOrName) {
     url: API.vendorTypes,
     method: 'get',
     params: { vendorCodeOrName }
+  })
+}
+
+UnSignedService.tradeBudgetTree = function (ProjectGUID, ElementTypeId) {
+  return request({
+    url: API.tradeBudgetTree,
+    method: 'get',
+    params: { ProjectGUID, ElementTypeId }
+  })
+}
+
+UnSignedService.costCenterBudgetItems = function (ProjectGUID, ElementTypeId) {
+  return request({
+    url: API.costCenterBudgetItems,
+    method: 'get',
+    params: { ProjectGUID, ElementTypeId }
+  })
+}
+
+UnSignedService.addTradeBudgets = function (parameter) {
+  return request({
+    url: API.addTradeBudgets,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+
+UnSignedService.useTradeBudgets = function (parameter) {
+  return request({
+    url: API.useTradeBudgets,
+    method: 'POST',
+    data: parameter
   })
 }
 

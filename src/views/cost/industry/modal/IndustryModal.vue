@@ -15,7 +15,7 @@
         v-if="columnDatas.length > 0"
         bordered
         :columns="columns"
-        :scroll="{x : tableWidth}"
+        :scroll="{x : tableWidth,y : 300}"
         :data-source="columnDatas"
         :alert="false"
         :pagination="false"
@@ -27,7 +27,7 @@
         slot-scope="text"
       >
         <template  v-if="text && text.length > 0">
-          <a-checkbox 
+          <a-checkbox
             v-for ="budgetItem in text"
             @change="value => checkChange(value,budgetItem)" >{{budgetItem.amount | NumberFormat}}</a-checkbox>
         </template>
@@ -106,7 +106,6 @@
                               //整理数据
                               const rows = [res.result.data]
                               this.forEachRow(rows,res2.result.data)
-                              console.log('rows',rows,'showColumnCodes',this.showColumnCodes)
                               const showRows = this.filterRows(rows)
                               this.columnDatas = showRows
                               this.tableWidth = (_columns.length) * 180

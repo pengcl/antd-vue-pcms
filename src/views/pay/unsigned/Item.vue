@@ -110,10 +110,26 @@
               </a-select>
             </a-form-model-item>
           </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-model-item prop="elementTypeId" label="科目类型">
+              <a-select
+                :disabled="type === 'view'"
+                placeholder="请选择"
+                v-model="form.elementTypeId"
+                @change="elementTypeChange"
+              >
+                <a-select-option v-for="(option,index) in elementItems"
+                                 :key="index"
+                                 :value="option.id">
+                  {{ option.nameCN }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
           <payment-info :data="form" :type="type" :id="id"></payment-info>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">预算列表</a-col>
-          <budget-list :data="form" :type="type" :id="id"></budget-list>
+          <budget-list :data="form" :type="type" :id="id" :projectGUID="projectGUID"></budget-list>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票管理</a-col>
           <bill-list :masterID="form.attachmentID" :data="form" :type="type" :id="id"
                      @on-change-masterId="changeMasterId"></bill-list>
@@ -159,6 +175,7 @@
     import { Base as BaseService } from '@/api/base'
     import { SignedService } from '@/views/pay/signed/signed.service'
     import { Currency } from '@/api/currency'
+    import { CostService } from '@/views/cost/cost.service'
 
     export default {
         name: 'Item',
@@ -173,6 +190,7 @@
                 paymentMethodTypes: [],
                 currencyList: [],
                 departmentList: [],
+                elementItems: [],
                 approveStatus: false,
                 rules: {
                     sponsorDeptName: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
@@ -182,12 +200,16 @@
                     paymentContent: [{ required: true, message: '请输入付款说明', trigger: 'change' }],
                     paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
                     paymentAmount: [{ required: true, message: '请输入申请付款金额', trigger: 'change' }],
-                    paymentCurrency: [{ required: true, message: '请选择币种', trigger: 'change' }]
+                    paymentCurrency: [{ required: true, message: '请选择币种', trigger: 'change' }],
+                    elementTypeId: [{ required: true, message: '请选择科目类型', trigger: 'change' }]
                 }
             }
         },
         watch: {},
         created () {
+            CostService.items().then(res => {
+                this.elementItems = JSON.parse(JSON.stringify(res.result.data))
+            })
             this.getData()
             UnSignedService.payTypeList().then(res => {
                 this.payTypeList = res.result.data
@@ -221,10 +243,19 @@
                 const index = option.data.key
                 this.form.sponsorDeptGID = this.departmentList[index].organizationalStructureId
             },
+            elementTypeChange (value, option) {
+                const index = option.data.key
+                this.form.elementCode = this.elementItems[index].code
+                this.form.elementName = this.elementItems[index].nameCN
+            },
             getData () {
                 if (this.id !== '0') {
                     UnSignedService.item(this.id).then(res => {
                         this.form = res.result.data
+                        const index = this.elementItems.findIndex(item => item.nameCN === this.form.elementName)
+                        if (index >= 0) {
+                            this.form.elementTypeId = this.elementItems[index]['id']
+                        }
                         BaseService.masterID(this.id).then(_res => {
                             this.form.attachmentID = _res.result.data
                         })
@@ -249,6 +280,7 @@
                     this.form.attachmentID = 0
                     this.form.detailList = []
                     this.form.billList = []
+                    this.form.tradeBudgetList = []
                 }
             },
             changeMasterId (val) {

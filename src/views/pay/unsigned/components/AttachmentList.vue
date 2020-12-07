@@ -76,7 +76,7 @@
             },
             masterID: {
                 type: Number,
-                default: null
+                default: 0
             }
         },
         created () {

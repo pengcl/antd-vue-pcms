@@ -153,7 +153,8 @@
             </td>
             <td>累计支付金额</td>
             <td>
-              {{data.contractMasterInfo.paymentAmountTotal | NumberFormat}} / {{data.contractMasterInfo.paymentAmountTotalRatio + '%'}}
+              {{data.contractMasterInfo.paymentAmountTotal | NumberFormat}} /
+              {{data.contractMasterInfo.paymentAmountTotalRatio + '%'}}
             </td>
           </tr>
           <tr>
@@ -233,6 +234,15 @@
                             :type="type"
                             :id="id"
                             @on-change-masterId="changeMasterId"></base-info-attachment>
+      <a-col :md="24" :sm="24">
+        <!--<a-button type="success" @click="handToShowcontractNSC">引入专业分包合同</a-button>-->
+        <view-contract-nsc ref="createModal"
+                           :visible="visible"
+                           :loading="confirmLoading"
+                           :model="mdl"
+                           @cancel="handleCancel"
+                           @ok="handleOk"></view-contract-nsc>
+      </a-col>
       <div v-for="(item,index) in data.contractNSCInfoList" :key="index">
         <a-col :md="24" :sm="24">
           <table>
@@ -454,10 +464,11 @@
     import BaseInfoPayment from '@/views/pay/signed/components/baseInfo/payment'
     import BaseInfoAttachment from '@/views/pay/signed/components/baseInfo/attachment'
     import { Base as BaseService } from '@/api/base'
+    import ViewContractNsc from '../modules/ViewContractNSC'
 
     export default {
         name: 'BaseInfo',
-        components: { BaseInfoAttachment, BaseInfoPayment, CreateBankForm },
+        components: { ViewContractNsc, BaseInfoAttachment, BaseInfoPayment, CreateBankForm },
         data () {
             return {
                 selection: {},
@@ -466,6 +477,8 @@
                 certificateTypes: [],
                 billTypeList: [],
                 visible: false,
+                confirmLoading: false,
+                mdl: null,
                 model: null,
                 form: this.$form.createForm(this),
                 index: 0,
@@ -556,6 +569,10 @@
             }
         },
         methods: {
+            handToShowcontractNSC () {
+                this.mdl = null
+                this.visible = true
+            },
             changePaymentAmount (value) {
                 const index = value.index
                 const detailList = value.detailList
@@ -702,13 +719,21 @@
                         this.$forceUpdate()
                         _this.$message.success('上传成功')
                         _this.$emit('ok', response.url)
-                        _this.visible = false
                     })
             },
             removeFile (id) {
                 BaseService.removeFile(id).then(res => {
                     console.log(res)
                 })
+            },
+            handleOk () {
+
+            },
+            handleCancel () {
+                this.visible = false
+
+                const form = this.$refs.createModal.form
+                form.resetFields() // 清理表单数据（可不做）
             },
         }
     }
