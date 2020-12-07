@@ -261,7 +261,6 @@
         }
 
         result['items'] = items
-        console.log(result)
         this.loading.save = true
         CostService.update(result).then(res => {
           if (res.result.statusCode === 200) {
@@ -284,12 +283,23 @@
         })
         let totalCost = 0
         this.datas.forEach(item => {
+
+        function childSum(datas,costCenterId) {
+          let result = null
+          for (var i in datas) {
+            const data = datas[i]
+            result += data['cost' + costCenterId]
+            if (data.childs && data.childs.length > 0) {
+              result += childSum(data.childs, costCenterId)
+            }
+          }
+          return result
+        }
+
           item.children.forEach(child => {
             let childCost = 0
             if (child.children) {
-              child.children.forEach(_child => {
-                childCost += _child['cost' + costCenterId]
-              })
+              childCost = childSum(child.children, costCenterId)
             } else {
               childCost += child['cost' + costCenterId]
             }
