@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import user from '@/store/modules/user'
 
 const userApi = {
   Login: '/api/TokenAuth/Authenticate',
@@ -72,4 +73,34 @@ export function get2step (parameter) {
     method: 'post',
     data: parameter
   })
+}
+
+// 获取当前所有action权限
+export function acs (route) {
+  const permissions = (() => {
+    const _permissions = []
+    route.meta.permission.forEach(id => {
+      user.state.roles.permissions.forEach(permission => {
+        if (id === permission.permissionId) {
+          _permissions.push(permission)
+        }
+      })
+    })
+    return _permissions
+  })()
+  const actions = []
+  permissions.forEach(permission => {
+    permission.actions.forEach(action => {
+      if (actions.indexOf(action.action) === -1) {
+        actions.push(action.action)
+      }
+    })
+  })
+  return actions
+}
+
+// 查看是否有action 权限 return true|false
+export function ac (action, route) {
+  const actions = acs(route)
+  return actions.indexOf(action) !== -1
 }

@@ -645,14 +645,14 @@
       </a-form-model>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
+          <a-button-group v-if="ac('EDIT')">
             <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group>
+          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
             <a-button :loading="loading" :disabled="type === 'view'" @click="save" type="success">
               储存
             </a-button>
@@ -682,6 +682,7 @@
   import { SwaggerService } from '@/api/swagger.service'
   import { CostService } from '@/views/project/cost/cost.service'
   import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+  import { ac } from '@/views/user/user.service'
 
   function getName (items, id) {
     let name = ''
@@ -837,6 +838,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       getName (items, id) {
         return getName(items, id)
       },
@@ -849,6 +853,10 @@
           })
         } else {
           this.form.projectGUID = this.ProjectGUID
+          this.form.cfaUpperGround = 0
+          this.form.cfafoh = 0
+          this.form.cfaboh = 0
+          this.form.cfaCarpark = 0
         }
       },
       approve () {
@@ -861,20 +869,8 @@
             CostService[this.type](this.form).then(res => {
               this.loading = false
               if (res.result.statusCode === 200) {
-                this.dialog.show({
-                  content: this.type === 'update' ? '修改成功' : '添加成功',
-                  title: '',
-                  confirmText: this.type === 'update' ? '继续修改' : '继续添加',
-                  cancelText: '返回上一页'
-                }, (state) => {
-                  if (state) {
-                    if (this.type === 'create') {
-                      this.getData()
-                    }
-                  } else {
-                    this.$router.push({ path: '/project/cost/list' })
-                  }
-                })
+                this.$message.success('保存成功')
+                this.$router.push({ path: '/project/cost/list' })
               }
             }).catch(() => {
               this.loading = false

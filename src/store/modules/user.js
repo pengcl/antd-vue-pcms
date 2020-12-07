@@ -82,7 +82,6 @@ const user = {
         getInfo().then((response) => {
           response.result = response.result.data
           const result = response.result
-          console.log(result)
           result.role.permissions.forEach(item => {
             item.permissionId = item.permissionCode
           })
@@ -124,7 +123,6 @@ const user = {
         resolve()
       })
     }
-
   }
 }
 

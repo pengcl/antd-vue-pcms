@@ -220,6 +220,7 @@
             this.loading.save = true
             CostService.budgetPlanAuditSave(this.form).then(res => {
               if (res.result.statusCode === 200) {
+                this.form = res.result.data
                 this.loading.save = false
                 const tempwindow = window.open('_blank')
                 tempwindow.location = this.form.startBPMUrl

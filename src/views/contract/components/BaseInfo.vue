@@ -107,13 +107,13 @@
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="成本预算分类"
-          prop="contractTypeCode"
+          prop="contractTypeName"
         >
           <a-select
             :disabled="type === 'view' || data.contract.contractCategory === 16"
             placeholder="请选择成本预算分类"
-            v-model="data.contract.contractTypeCode">
-            <a-select-option v-for="(option,index) in selection.itemTypes" :key="index" :value="option.code">
+            v-model="data.contract.contractTypeName">
+            <a-select-option v-for="(option,index) in selection.itemTypes" :key="index" :value="option.name">
               {{ option.name }}
             </a-select-option>
           </a-select>
@@ -473,7 +473,7 @@
           ContractService.item(value).then(res => {
             console.log(res)
             this.data.contract.tenderPackageItemID = res.result.data.contract.tenderPackageItemID
-            this.data.contract.contractTypeCode = res.result.data.contract.contractTypeCode
+            this.data.contract.contractTypeName = res.result.data.contract.contractTypeName
             const body = { ProjectTenderPackageGUID: this.data.contract.tenderPackageItemID, ProjectGUID: this.project.projectGUID, MaxResultCount: 999 }
             ContractService.tenders(body).then(res => {
               res.result.data.forEach(item => {
@@ -593,7 +593,7 @@
         } else if (target === 'tender') {
           this.tender = this.$refs.tenderPackage.selected
           this.data.contract.tenderPackageItemID = this.tender.projectTenderPackageGUID
-          this.data.contract.contractTypeCode = this.tender.itemTypeCode
+          this.data.contract.contractTypeName = this.tender.itemTypeNameCN
           this.selection.itemTypes = [{
             name: this.tender.itemTypeNameCN,
             code: this.tender.itemTypeCode

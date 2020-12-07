@@ -136,7 +136,7 @@ export const asyncRouterMap = [
             hidden: true,
             name: 'CostEnactCollect',
             component: () => import('@/views/cost/enact/Collect'),
-            meta: { title: 'menu.cost.enact.collect', keepAlive: true, permission: ['budget'] }
+            meta: { title: 'menu.cost.enact.collect', keepAlive: true, permission: ['CostBudgetEnact'] }
           },
           {
             path: '/cost/resolve/list',
@@ -176,13 +176,6 @@ export const asyncRouterMap = [
             name: 'CostBidList',
             component: () => import('@/views/cost/bid/List'),
             meta: { title: 'menu.cost.bid.list', keepAlive: true, permission: ['CostBudgetBid'] }
-          },
-          {
-            path: '/cost/bid/edit',
-            name: 'CostBidEdit',
-            hidden: true,
-            component: () => import('@/views/cost/bid/Edit'),
-            meta: { title: 'menu.cost.bid.edit', keepAlive: true, permission: ['CostBudgetBid'] }
           },
           {
             path: '/cost/bid/item/:id',
@@ -435,6 +428,28 @@ export const asyncRouterMap = [
         meta: { title: 'menu.report', icon: 'fund', permission: ['Report'] }
       },
       // data
+      // checkout
+      {
+        path: '/role',
+        name: 'role',
+        redirect: '/role/project',
+        component: RouteView,
+        meta: { title: 'menu.role', icon: 'database', permission: ['NwDataRoleProjectSetting'] },
+        children: [
+          {
+            path: '/role/project',
+            name: 'ProjectRoles',
+            component: () => import('@/views/role/project/ProjectRoles'),
+            meta: { title: 'menu.role.project', permission: ['NwDataRoleProjectSetting'] }
+          },
+          {
+            path: '/role/post',
+            name: 'PostRoles',
+            component: () => import('@/views/role/PostRoles'),
+            meta: { title: 'menu.role.post', permission: ['data'] }
+          }
+        ]
+      },
       {
         path: '/data/list',
         name: 'DataList',
@@ -447,20 +462,6 @@ export const asyncRouterMap = [
         hidden: true,
         component: () => import('@/views/data/Item'),
         meta: { title: 'menu.data.item', icon: 'database', permission: ['Setting'] }
-      },
-      {
-        path: '/role/post',
-        name: 'PostRoles',
-        hidden: true,
-        component: () => import('@/views/role/PostRoles'),
-        meta: { title: 'menu.role.post', icon: 'database', permission: ['data'] }
-      },
-      {
-        path: '/role/project',
-        name: 'ProjectRoles',
-        hidden: true,
-        component: () => import('@/views/role/ProjectRoles'),
-        meta: { title: 'menu.role.project', icon: 'database', permission: ['data'] }
       }
       // settings
       /* {

@@ -24,7 +24,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID || projectType === 'project'" type="success" @click="handleToAdd">
+        <a-button v-if="ac('ADD')" :disabled="!queryParam.ProjectGUID || projectType === 'project'" type="success" @click="handleToAdd">
           新增合同
         </a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
@@ -91,12 +91,14 @@
         <span slot="action" slot-scope="text, record">
           <template>
             <a-button
+              v-if="ac('VIEW')"
               class="btn-success"
               type="primary"
               icon="file-text"
               title="查看"
               @click="handleToItem(record)"></a-button>
             <a-button
+              v-if="ac('EDIT')"
               class="btn-info"
               :disabled="record.auditStatus !== '未审核'"
               type="primary"
@@ -105,18 +107,13 @@
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
+              v-if="ac('DELETE')"
               :disabled="record.auditStatus !== '未审核'"
               @click="handleToDel(record)"
               type="danger"
               title="删除"
               style="margin-left: 4px"
               icon="delete"></a-button>
-            <!--<a-button
-              type="primary"
-              class="btn-info"
-              icon="file-done"
-              style="margin-left: 4px"
-              title="审批记录"></a-button>-->
           </template>
         </span>
       </s-table>
@@ -131,6 +128,7 @@
   import { fixedList, getPosValue } from '@/utils/util'
   import { ProjectService } from '@/views/project/project.service'
   import { formatList } from '@/mock/util'
+  import { ac } from '@/views/user/user.service'
 
   const columns = [
     {
@@ -230,6 +228,9 @@
       })
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       handleToItem (record) {
         this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
       },

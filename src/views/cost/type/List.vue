@@ -26,7 +26,7 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a-button v-if="record.isEdit" type="success" icon="file-text" title="查看"
+            <a-button v-if="record.isEdit && ac('VIEW')" type="success" icon="file-text" title="查看"
                       @click="handleToItem(record)"></a-button>
             <!--            <a-button-->
             <!--              v-if="record.isEdit"-->
@@ -37,7 +37,7 @@
             <!--              title="编辑科目类型">-->
             <!--            </a-button>-->
             <a-button
-              v-if="record.isCreate"
+              v-if="record.isCreate && ac('ADD')"
               @click="handleToAdd(record)"
               type="primary"
               icon="plus-square"
@@ -58,6 +58,7 @@
   import {CostService} from '@/views/cost/cost.service'
   import {fixedList, nullFixedList} from '@/utils/util'
   import storage from "store";
+  import {ac} from "@/views/user/user.service";
 
   function getList(items) {
     const list = []
@@ -137,7 +138,7 @@
               }
             }
             const temp = []
-            const tempCodes = ['B', 'C', 'D', 'G']
+            const tempCodes = ['B', 'C', 'D', 'E', 'F', 'G']
             if (res.result.data.childs) {
               res.result.data.childs.forEach(item => {
                 if (tempCodes.includes(item.code)) {
@@ -164,6 +165,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       handleToItem(record) {
         this.$router.push({path: `/cost/type/item/${record.tradeTypeId}?type=view&elementId=${record.elementId}`})
       },
@@ -180,7 +184,8 @@
   /deep/ .ant-table-row-level-3 {
     background: #d7f4ff !important;
   }
-  /deep/ .ant-table-row-level-1{
+
+  /deep/ .ant-table-row-level-1 {
     background: #d7f4ff !important;
   }
 </style>

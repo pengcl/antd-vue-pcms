@@ -52,12 +52,12 @@
                 ref="baseInfo"
               ></base-info>
             </a-tab-pane>
-            <a-tab-pane :key="2" tab="造价估算" forceRender>
+            <a-tab-pane :key="2" tab="造价估算" forceRender v-if="form.voMasterInfo.cipType !== 129">
               <cost-estimates
                 title="造价估算"
                 :data="form"
                 :contract="contract"
-                v-if="contract.contractGuid && project"
+                v-if="contract.contractGuid && project "
                 :project="project"
                 :type="type"
                 :id="id"
@@ -65,7 +65,7 @@
                 ref="costEstimates"
               ></cost-estimates>
             </a-tab-pane>
-            <a-tab-pane v-if="type !== 'add'" :key="3" tab="预算调整" >
+            <a-tab-pane v-if="type !== 'add' && form.voMasterInfo.cipType !== 129" :key="3" tab="预算调整"  >
               <budget-list title="预算调整" :data="form" :contract="contract" :type="type" :id="id" :stage="stage"></budget-list>
             </a-tab-pane>
             <a-tab-pane :key="4" tab="附加资料" >
@@ -179,6 +179,7 @@
           ChangeService.voItem(this.id).then((res) => {
             this.form = res.result.data
             this.master.oldVoTotalAmountIncrease = this.form.voMasterInfo.voTotalAmountIncrease
+            console.log('change.item.data', this.form)
           })
         } else {
           this.contract.cnotractGuid = this.contractGuid
@@ -210,11 +211,14 @@
           {
             activeKey: 1,
             key: 'baseInfo'
-          }, {
-            activeKey: 2,
-            key: 'costEstimates'
           }
         ]
+        if( this.form.voMasterInfo.cipType != 129){
+          validateForms.push( {
+            activeKey: 2,
+            key: 'costEstimates'
+          })
+        }
         for (let i = 0; i < validateForms.length; i++) {
           const item = validateForms[i]
           console.log('refs',this.$refs[item.key],item.key,this.$refs)
@@ -242,6 +246,12 @@
             this.form.voMasterInfo.stage = this.stage // 为VO时则为cip转vo
             if (this.form.fileMasterId == undefined || this.form.fileMasterId == '') {
               this.form.fileMasterId = 0
+            }
+            // if(this.form.voMasterInfo.cipType == undefined || this.form.voMasterInfo.cipType == ''){
+            //   this.form.voMasterInfo.cipType = 0
+            // }
+            if( this.form.voMasterInfo.cipType === 129){
+              this.form.vobQlst = []
             }
             this.loading.save = true
             ChangeService.create(this.form).then((res) => {

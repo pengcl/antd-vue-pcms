@@ -23,7 +23,7 @@
               </a-form-item>
             </a-col>
             <a-col :md="10" :sm="24">
-              <a-button type="success" style="margin-right: 5px" @click="handleToCollect">预算汇总</a-button>
+              <a-button :disabled="!queryParam.ProjectGUID" type="success" style="margin-right: 5px" @click="handleToCollect">预算汇总</a-button>
               <a-button type="success" style="margin-right: 5px;">审批记录</a-button>
               <a-button type="success">导入导出</a-button>
             </a-col>
@@ -57,9 +57,15 @@
         <span slot="action" slot-scope="text, record">
           <template>
             {{ record.code }}
-            <a-button @click="handleToItem(record)" type="success" icon="file-text" title="查看">
+            <a-button
+              v-if="ac('VIEW')"
+              @click="handleToItem(record)"
+              type="success"
+              icon="file-text"
+              title="查看">
             </a-button>
             <a-button
+              v-if="ac('EDIT')"
               @click="handleToEdit(record)"
               type="primary"
               icon="form"
@@ -82,7 +88,6 @@
 
 <script>
   import {STable, Ellipsis} from '@/components'
-  import {getRoleList} from '@/api/manage'
 
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import {ProjectService} from '@/views/project/project.service'
@@ -90,6 +95,7 @@
   import {formatList} from '../../../mock/util'
   import {fixedList, getPosValue, nullFixedList} from '@/utils/util'
   import storage from "store";
+  import {ac} from "@/views/user/user.service";
 
   const defaultColumns = [
 
@@ -143,6 +149,7 @@
               data: []
             }
           }
+          console.log('1111',this.queryParam.ProjectGUID)
           if (this.queryParam.ProjectGUID) {
             return CostService.items(requestParameters).then(res => {
               const requestParameters2 = Object.assign({}, parameter, {Id: this.queryParam.ProjectGUID})
@@ -240,6 +247,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       handleToItem(record) {
         this.$router.push({path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}`})
       },

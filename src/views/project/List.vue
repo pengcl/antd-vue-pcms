@@ -25,7 +25,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.Id" type="success" @click="handleToAdd()">新增项目</a-button>
+        <a-button v-if="ac('ADD')" :disabled="!queryParam.Id" type="success" @click="handleToAdd()">新增项目</a-button>
         <a-button type="primary" style="margin-left: 5px">汇出</a-button>
       </div>
 
@@ -60,9 +60,16 @@
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a-button @click="handleToItem(record)" class="btn-success" type="primary" icon="file-text" title="查看">
+            <a-button
+              v-if="ac('VIEW')"
+              @click="handleToItem(record)"
+              class="btn-success"
+              type="primary"
+              icon="file-text"
+              title="查看">
             </a-button>
             <a-button
+              v-if="ac('EDIT')"
               :disabled="record.auditStatus !== '未审核'"
               @click="handleToEdit(record)"
               type="primary"
@@ -72,7 +79,7 @@
               title="编辑">
             </a-button>
             <a-button
-              v-if="record.projectDataType !== 'Stage'"
+              v-if="record.projectDataType !== 'Stage' && ac('ADD')"
               @click="handleToAdd(record)"
               type="primary"
               class="btn-info"
@@ -90,11 +97,11 @@
 <script>
 
 import { STable, Ellipsis } from '@/components'
-import { getRoleList } from '@/api/manage'
 import { ProjectService } from '@/views/project/project.service'
 import { City as CityService } from '@/api/city'
 import storage from 'store'
 import { getPosValue } from '@/utils/util'
+import { ac } from '@/views/user/user.service'
 
 function fixedList (res, params) {
   const result = {}
@@ -211,7 +218,6 @@ export default {
     }
   },
   created () {
-    getRoleList({ t: new Date() })
     ProjectService.tree().then(res => {
       this.cities = res.result.data.citys
       const value = getPosValue(this.cities)
@@ -224,6 +230,9 @@ export default {
     })
   },
   methods: {
+    ac (action) {
+      return ac(action, this.$route)
+    },
     getCity (id) {
       let city = {}
       this.cities.forEach(item => {
@@ -232,9 +241,6 @@ export default {
         }
       })
       return city.nameCN
-    },
-    getRegional (id) {
-
     },
     onChange (value, option) {
       storage.set('POS', '0-' + option.data.attrs.index + '-0-0-0')

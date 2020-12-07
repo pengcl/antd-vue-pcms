@@ -37,7 +37,7 @@ const locale = {
 
   'menu.change': '变更及成本管控',
   'menu.change.cip.list': '合同变更',
-  'menu.change.cip.item': '合同指令预先批核详细 (CIP)',
+  'menu.change.cip.item': '合同指令预先批核详细',
   'menu.change.vo.item': '变更指令详细（VO）',
   'menu.change.account.list': '变更指令',
   'menu.change.account.item': '变更指令详细',
@@ -85,6 +85,10 @@ const locale = {
 
   'menu.data.list': '基础数据设置',
   'menu.data.item': '基础数据设置',
+
+  'menu.role': '数据权限',
+  'menu.role.project': '岗位项目授权',
+  'menu.role.post': '项目岗位授权',
 
   'menu.settings': '系统设置',
   'menu.settings.base': '基本设置',

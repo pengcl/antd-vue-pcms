@@ -81,12 +81,12 @@
           <a-button 
             type="success" 
             @click="handleToAdd" 
-            :disabled="!queryParam2.contractGuid || (professionType.indexOf(contractSelected.contractProfession) > -1 && !contractSelected.bdIsComplete)">新增CIP</a-button>
+            :disabled="!queryParam2.contractGuid || (professionType.indexOf(contractSelected.contractProfession) > -1 && !contractSelected.bdIsComplete)">新增</a-button>
           <a-button
             type="success"
             style="margin-left: 20px"
             @click="handleCipToVo"
-            :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核'">CIP转VO
+            :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus.indexOf('已审核') < 0">CIP转VO
           </a-button>
           <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核' || tableSelected.voStatus !== '待确认'">现场签证</a-button>
           <a-button 
@@ -123,7 +123,7 @@
               icon="form"
               style="margin-left: 4px"
               title="编辑"
-              :disabled="record.auditStatus !== '未审核'"
+              :disabled="record.auditStatus.indexOf('未审核') < 0"
               @click="handleToEdit(record)"
             ></a-button>
           </template>
@@ -202,7 +202,7 @@
       scopedSlots: { customRender: 'action' }
     },
     {
-      title: '审核状态(CIP)',
+      title: '审核状态',
       dataIndex: 'auditStatus',
       scopedSlots: { customRender: 'auditStatus' },
       width : 100
@@ -230,7 +230,7 @@
       width : 120
     },
     {
-      title: '变更确认(VO)',
+      title: '变更确认',
       dataIndex: 'voStatus',
       scopedSlots: { customRender: 'voStatus' },
       width : 150

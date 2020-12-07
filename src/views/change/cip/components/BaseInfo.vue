@@ -31,6 +31,38 @@
           ></a-input>
         </a-form-model-item>
       </a-col>
+      <a-col :md="12" :sm="24" >
+        <a-form-model-item label="类型" prop="cipType" v-if="stage === 'CIP'">
+          <a-select
+            :disabled="type !== 'add'"
+            v-model="data.voMasterInfo.cipType"
+            @change="cipTypeChange"
+          >
+            <a-select-option
+              v-for="option in selection.cipTypes"
+              :key="option.id"
+              :value="option.id">
+              {{ option.nameCN }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24" >
+        <a-form-model-item label="本地指令编号">
+          <a-input
+            :disabled="type === 'view'"
+            v-model="data.voMasterInfo.localVONo"
+          ></a-input>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24" >
+        <a-form-model-item label="变更名称" prop="voName">
+          <a-input
+            :disabled="type === 'view'"
+            v-model="data.voMasterInfo.voName"
+          ></a-input>
+        </a-form-model-item>
+      </a-col>
       <a-col :md="24" :sm="24">
         承包 / 顾问单位名称：
       </a-col>
@@ -569,7 +601,9 @@
           effectResult : [ {requeired : false, message : '请选择增加或减少工期',type:'string' }],
           effectDay : [ { validator : this.checkEffectDay, type:'number' }],
           voType: [{ required: true, message: '请选择变更类型', trigger: 'change' }],
+          cipType : [{ required : true,message : '请选择类型',trigger : 'change'}],
           reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
+          voName : [{ required : true, message : '请输入变更名称'}],
           // packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
           // consultantEstimatedAmount: [{ required: true, message: '请输入顾问估算金额', trigger: 'change' }],
           sourceValue : [{required : true,message:'请选择估值来源',trigger : 'change'}],
@@ -580,6 +614,10 @@
     created () {
       ChangeService.getSourceTypes().then(res =>{
         this.selection.sourceTypes = res.result.data
+      })
+
+      ChangeService.getCIPTypes().then(res =>{
+        this.selection.cipTypes = res.result.data
       })
     },
     props: {
@@ -818,6 +856,9 @@
           }
         }
         callback()
+      },
+      cipTypeChange(value,option){
+        console.log('value,',value,option)
       }
     }
   }

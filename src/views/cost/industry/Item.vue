@@ -29,7 +29,7 @@
               </a-input>
             </a-form-model-item>
           </a-col>
-          <a-col :md="24" :sm="24">
+          <a-col :md="18" :sm="18">
             <a-form-model-item prop="costCenters" label="范围">
               <a-select
                 :disabled="type !== 'add'"
@@ -38,12 +38,16 @@
                 placeholder="请选择"
                 @change="onChange"
                 v-model="centers"
+                :allowClear="true"
               >
                 <a-select-option v-for="option in costCenters" :key="JSON.stringify(option)" :value="option.id">
                   {{ option.costCenterName }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
+          </a-col>
+          <a-col :md="6" :sm="6">
+            <a-button @click="selectAllCostCenter">全选</a-button>
           </a-col>
           <!-- <a-col :md="24" :sm="24">
             <a-form-model-item prop="itemTypeId" label="分判包类型">
@@ -117,7 +121,7 @@
         rules: {
           packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
           packageTitle: [{ required: true, message: '请输入分判包描述', trigger: 'blur' }],
-          costCenters: [{ required: true, message: '请选择范围', trigger: 'change' }],
+          costCenters: [{ required: true, message: '请选择范围', trigger: 'blur' }],
           // itemTypeId: [{ required: true, message: '请选择分判包类型', trigger: 'change' }],
           elementTypeId: [{ required: true, message: '请选择科目类型', trigger: 'change' }]
         }
@@ -218,6 +222,15 @@
       itemTypeChange(value,option){
         console.log('option',option.$options,option)
         this.form.itemTypeNameCN = JSON.parse(option.key).nameCN
+      },
+      selectAllCostCenter(){
+        const centers = []
+        this.costCenters.forEach(item =>{
+          centers.push(item.id)
+        })
+        this.centers = centers
+        this.form.costCenters = this.centers
+        this.$forceUpdate()
       }
     }
   }

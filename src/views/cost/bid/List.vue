@@ -22,7 +22,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增工程招标包</a-button>
+        <a-button v-if="ac('ADD')" :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增工程招标包</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -74,14 +74,22 @@
         </span>
         <span slot="action" slot-scope="text,record">
           <template>
-            <a-button type="success" icon="file-text" title="查看" @click="handleToItem(record)"></a-button>
             <a-button
+              v-if="ac('VIEW')"
+              type="success"
+              icon="file-text"
+              title="查看"
+              @click="handleToItem(record)">
+            </a-button>
+            <a-button
+              v-if="ac('EDIT')"
               type="primary"
               icon="form"
               style="margin-left: 4px"
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
+              v-if="ac('DELETE')"
               type="danger"
               icon="delete"
               style="margin-left: 4px"
@@ -104,6 +112,7 @@
     import {CostService} from "@/views/cost/cost.service";
     import {fixedList, getPosValue, nullFixedList} from "@/utils/util";
     import storage from "store";
+    import {ac} from "@/views/user/user.service";
 
     const columns = [
         {
@@ -207,6 +216,9 @@
             }
         },
         methods: {
+            ac (action) {
+              return ac(action, this.$route)
+            },
             handleToItem (record) {
               this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
             },

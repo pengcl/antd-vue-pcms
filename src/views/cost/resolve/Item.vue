@@ -35,7 +35,7 @@
             <span slot="action" slot-scope="text, record">
               <template>
                 <a-button
-                  v-if="record.isCreate"
+                  v-if="record.isCreate && ac('EDIT')"
                   @click="showModal(record,'add')"
                   type="primary"
                   icon="plus-square"
@@ -46,6 +46,7 @@
                   title="是否要删除此行？"
                   @confirm="handleToRemove(record)">
                   <a-button
+                    v-if="ac('DELETE')"
                     type="danger"
                     icon="delete"
                     style="margin-left: 4px"
@@ -71,6 +72,7 @@
   import {CostService} from '@/views/cost/cost.service'
   import {Ellipsis, STable} from '@/components'
   import ResolveModal from '@/views/cost/resolve/modal/ResolveModal'
+  import {ac} from "@/views/user/user.service";
 
   function fixedList(res, params) {
     const result = {}
@@ -395,6 +397,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       back() {
         this.$router.push({path: `/cost/resolve/list`})
       },
