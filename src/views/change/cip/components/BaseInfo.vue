@@ -50,7 +50,7 @@
       <a-col :md="12" :sm="24" >
         <a-form-model-item label="本地指令编号">
           <a-input
-            :disabled="type === 'VIEW'"
+            :disabled="type === 'view'"
             v-model="data.voMasterInfo.localVONo"
           ></a-input>
         </a-form-model-item>
@@ -58,7 +58,7 @@
       <a-col :md="12" :sm="24" >
         <a-form-model-item label="变更名称" prop="voName">
           <a-input
-            :disabled="type === 'VIEW'"
+            :disabled="type === 'view'"
             v-model="data.voMasterInfo.voName"
           ></a-input>
         </a-form-model-item>
