@@ -86,7 +86,7 @@
             type="success"
             style="margin-left: 20px"
             @click="handleCipToVo"
-            :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus.indexOf('已审核') < 0">CIP转VO
+            :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus.indexOf('已审核') < 0 || tableSelected.cipType === 131">CIP转VO
           </a-button>
           <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核' || tableSelected.voStatus !== '待确认'">现场签证</a-button>
           <a-button 

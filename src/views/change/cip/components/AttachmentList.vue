@@ -176,10 +176,11 @@
             },
             handleUpload (file) {
                 const formData = new FormData()
+                const businessType = this.data.voMasterInfo.cipType && this.data.voMasterInfo.cipType === 131 ? 'VO' : this.stage
                 formData.append('file', file)
                 formData.append('masterId', this.data.fileMasterId)
                 formData.append('businessID', '')
-                formData.append('businessType', this.stage)
+                formData.append('businessType', businessType)
                 formData.append('subInfo1', '') //
                 formData.append('subInfo2', '') // 
                 formData.append('subInfo3', '') // 
