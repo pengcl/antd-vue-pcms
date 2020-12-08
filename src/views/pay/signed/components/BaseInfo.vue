@@ -229,7 +229,7 @@
       </a-col>
       <base-info-payment :data="data.contractMasterInfo" :type="type" :id="id" :index="0"
                          @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
-      <base-info-attachment :master-id="data.masterID"
+      <base-info-attachment :master-id="data.masterID ? data.masterID : 0"
                             :data="data.contractMasterInfo"
                             :type="type"
                             :id="id"
@@ -340,7 +340,7 @@
         </a-col>
         <base-info-payment :data="item" :type="type" :id="id" :index="index+1"
                            @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
-        <base-info-attachment :master-id="data.masterID"
+        <base-info-attachment :master-id="data.masterID ? data.masterID : 0"
                               :data="item"
                               :type="type"
                               :id="id"

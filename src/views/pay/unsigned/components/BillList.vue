@@ -190,7 +190,6 @@
                         this.data.billList[this.index].billFileID = response.result.data.id
                         this.data.billList[this.index].billFileName = response.result.data.fileName
                         this.data.billList[this.index].billFileUrl = response.result.data.fileUrl
-                        this.masterID = response.result.data.masterID
                         this.$forceUpdate()
                         _this.$message.success('上传成功')
                         _this.$emit('ok', response.url)

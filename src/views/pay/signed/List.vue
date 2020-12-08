@@ -100,7 +100,7 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd" v-if="id && canAdd">新增付款</a-button>
+          <a-button type="success" @click="handleToAdd" v-if="id && canAdd && ac('ADD')">新增付款</a-button>
           <a-button type="success" style="margin-left: 10px" @click="handToInvoice">发票管理</a-button>
         </a-col>
       </a-row>
@@ -144,12 +144,14 @@
         <span slot="action" slot-scope="text, record">
           <template>
             <a-button
+              v-if="ac('VIEW')"
               class="btn-success"
               type="primary"
               icon="file-text"
               title="查看"
               @click="handleToItem(record)"></a-button>
             <a-button
+              v-if="ac('EDIT')"
               :disabled="record.auditStatus !== '未审核'"
               class="btn-info"
               type="primary"
@@ -158,6 +160,7 @@
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
+              v-if="ac('DELETE')"
               :disabled="record.auditStatus !== '未审核'"
               type="danger"
               icon="delete"
@@ -189,6 +192,7 @@
     import { formatList } from '@/mock/util'
     import { SignedService } from './signed.service'
     import storage from 'store'
+    import { ac } from '@/views/user/user.service'
 
     const columns = [
         {
@@ -357,6 +361,9 @@
             },
         },
         methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
             handleToContractInfo (record) {
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
             },

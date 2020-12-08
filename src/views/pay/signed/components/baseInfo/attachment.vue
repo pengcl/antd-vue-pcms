@@ -96,16 +96,13 @@
             },
             masterId: {
                 type: Number,
-                default: null
+                default: 0
             }
         },
         watch: {
             'data.mainContractGID' (value) {
                 if (this.type !== 'create') {
-                    SignedService.masterID(this.id).then(_res => {
-                        this.masterId = _res.result.data
-                        this.getFileList(this.masterId, this.data['mainContractGID'])
-                    })
+                    this.getFileList(this.masterId, this.data['mainContractGID'])
                 }
             }
         },

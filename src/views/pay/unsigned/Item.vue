@@ -131,24 +131,29 @@
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">预算列表</a-col>
           <budget-list :data="form" :type="type" :id="id" :projectGUID="projectGUID"></budget-list>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票管理</a-col>
-          <bill-list :masterID="form.attachmentID" :data="form" :type="type" :id="id"
+          <bill-list :masterID="form.attachmentID ? form.attachmentID : 0" :data="form" :type="type" :id="id"
                      @on-change-masterId="changeMasterId"></bill-list>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">附件管理</a-col>
-          <attachment-list :masterID="form.attachmentID" :data="form" :type="type" :id="id"
+          <attachment-list :masterID="form.attachmentID ? form.attachmentID : 0" :data="form" :type="type" :id="id"
                            @on-change-masterId="changeMasterId"></attachment-list>
         </a-row>
       </a-form-model>
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
-            <a-button :disabled="type === 'view'" @click="approve()" type="success">
+          <a-button-group v-if="type !== 'view' && form.auditStatus === '未审核' && ac('EDIT')">
+            <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type !== 'view'">
+          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
+            <a-button @click="view" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
             <a-button @click="save" type="success">
               储存
             </a-button>
@@ -176,6 +181,7 @@
     import { SignedService } from '@/views/pay/signed/signed.service'
     import { Currency } from '@/api/currency'
     import { CostService } from '@/views/cost/cost.service'
+    import { ac } from '@/views/user/user.service'
 
     export default {
         name: 'Item',
@@ -239,6 +245,9 @@
             }
         },
         methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
             onChange (value, option) {
                 const index = option.data.key
                 this.form.sponsorDeptGID = this.departmentList[index].organizationalStructureId
@@ -256,9 +265,6 @@
                         if (index >= 0) {
                             this.form.elementTypeId = this.elementItems[index]['id']
                         }
-                        BaseService.masterID(this.id).then(_res => {
-                            this.form.attachmentID = _res.result.data
-                        })
                         UnSignedService.initData(this.projectGUID).then(res => {
                             const initData = res.result.data
                             this.form.projectName = initData.projectName
@@ -342,7 +348,13 @@
                 this.$router.push({
                     path: '/pay/unsigned/list'
                 })
-            }
+            },
+            view () {
+                BaseService.viewBpm(this.id).then(res => {
+                    const tempwindow = window.open('_blank')
+                    tempwindow.location = res.result.data
+                })
+            },
         }
     }
 </script>

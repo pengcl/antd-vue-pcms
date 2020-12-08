@@ -80,12 +80,14 @@
             </a-button-group>
             <a-button-group v-if="!record.isRoot">
             <a-button
+              v-if="ac('VIEW')"
               class="btn-success"
               type="primary"
               icon="file-text"
               title="查看"
               @click="handleToItem(record)"></a-button>
             <a-button
+              v-if="ac('EDIT')"
               :disabled="record.yearVersionAuditStatus !== '未审核'"
               class="btn-info"
               type="primary"
@@ -94,6 +96,7 @@
               title="修改"
               @click="handleToEdit(record)"></a-button>
             <a-button
+              v-if="ac('EDIT')"
               :disabled="record.monthLastVersionAuditStatus !== '未审核'"
               type="primary"
               class="btn-info"
@@ -137,6 +140,7 @@
     import CreateViewHistoryVersion from '@/views/pay/fundplan/modules/CreateViewHistoryVersion'
     import { FundPlanService } from './fundplan.service'
     import storage from 'store'
+    import { ac } from '@/views/user/user.service'
 
     function fixedList (res, params) {
         const result = {}
@@ -277,6 +281,9 @@
             }
         },
         methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
             handleToItem (record) {
                 this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=view&projectCode=` + record.projectCode + `&year=` + record.year })
             },
