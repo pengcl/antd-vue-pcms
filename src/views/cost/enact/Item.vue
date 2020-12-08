@@ -244,6 +244,7 @@
         getResults(this.datas)
 
         function getResults(datas) {
+
           datas.forEach(item => {
             if (item.costCenters.length > 0) {
               item.costCenters.forEach(center => {
@@ -251,7 +252,8 @@
                 obj['costCenterId'] = center.costCenterId
                 obj['elementInfoId'] = center.elementInfoId
                 obj['amount'] = center.amount !== null ? center.amount : 0
-                items.push(center)
+
+                items.push(obj)
               })
             }
             if (item.children && item.children.length > 0) {
@@ -272,29 +274,29 @@
           this.loading.save = false
         })
       },
-      checkChange(value, record, costCenterId) {
+      checkChange(e, record, costCenterId) {
         // 找到如果数据内存在旧数据，先移除，再添加
         this.isUpdate = false
         record.costCenters.forEach(center => {
           if (center.costCenterId === costCenterId) {
-            center.amount = value
+            center.amount = e.target.value
             this.isUpdate = true
           }
         })
         let totalCost = 0
         this.datas.forEach(item => {
 
-        function childSum(datas,costCenterId) {
-          let result = null
-          for (var i in datas) {
-            const data = datas[i]
-            result += data['cost' + costCenterId]
-            if (data.childs && data.childs.length > 0) {
-              result += childSum(data.childs, costCenterId)
+          function childSum(datas,costCenterId) {
+            let result = null
+            for (var i in datas) {
+              const data = datas[i]
+              result += data['cost' + costCenterId]
+              if (data.childs && data.childs.length > 0) {
+                result += childSum(data.childs, costCenterId)
+              }
             }
+            return result
           }
-          return result
-        }
 
           item.children.forEach(child => {
             let childCost = 0
@@ -312,7 +314,8 @@
           const item = {}
           item['costCenterId'] = costCenterId
           item['elementInfoId'] = record.elementInfoId
-          item['amount'] = value
+          item['amount'] = e.target.value
+
           record.costCenters.push(item)
         }
         this.$forceUpdate()
