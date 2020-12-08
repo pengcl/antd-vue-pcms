@@ -9,6 +9,7 @@ const API = {
   centers: '/api/services/app/ProjectCostCenter/GetProjectCostCentersByGuid' ,//根据项目GUID获取成本中心集合
   budgetPlanAuditItem: '/api/services/app/BudgetPlan/GetProjectCurrentBudgetPlanPackage' ,//获取项目的当前预算审核包信息
   budgetPlanAuditSave: '/api/services/app/BudgetPlan/ProjectSaveBudgetPlanPackage', //保存项目的预算审核包信息
+  budgetTemplateFile: '/api/services/app/BudgetPlan/GetProjectBudgetImportTemplate', //获取预算模板文件
   //行业分判包
   industryItems: '/api/services/app/TenderPackage/GetPaged' ,//行业分判包列表
   industryCreate: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加行业分判包
@@ -330,6 +331,14 @@ CostService.budgetPlanAuditSave = function (parameter) {
     url: API.budgetPlanAuditSave,
     method: 'POST',
     data: parameter
+  })
+}
+
+CostService.budgetTemplateFile = function (parameter) {
+  return request({
+    url: API.budgetTemplateFile,
+    method: 'get',
+    params: parameter
   })
 }
 
