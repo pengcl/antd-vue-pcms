@@ -89,7 +89,6 @@
                 this.$forceUpdate()
             },
             industryChange (option) {
-                console.log(option)
                 option.forEach(item => {
                     const params = {
                         id: 0,

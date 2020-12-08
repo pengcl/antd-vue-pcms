@@ -158,7 +158,7 @@
                     UnSignedService.addTradeBudgets(result).then(res => {
                         if (res.result.statusCode === 200) {
                             this.$message.info('添加行业预算成功')
-                            this.$emit('on-change-industry',res.result.data)
+                            this.$emit('on-change-industry', res.result.data)
                             this.closeModal()
                         }
                     })
@@ -205,6 +205,7 @@
                             if (costColumn && costColumn.tradeBudgetInfo && data.tradeBudgetInfos && data.tradeBudgetInfos.length > 0) {
                                 data.tradeBudgetInfos.forEach(tradeType => {
                                     let child = {
+                                        id: tradeType.id,
                                         costCenterId: tradeType.costCenterId,
                                         budgetValue: tradeType.budgetValue,
                                         elementInfoId: tradeType.elementInfoId + '' + tradeType.id,
@@ -224,8 +225,8 @@
                                     const temp = costColumn.tradeBudgetInfo
                                     if (child.elementInfoId === temp.elementInfoId + '' + temp.id) {
                                         child[costName].push({
-                                            id: temp.id,
-                                            amount: temp.budgetValue,
+                                            id: child.id,
+                                            amount: child.budgetValue,
                                             checked: false
                                         })
                                     }
