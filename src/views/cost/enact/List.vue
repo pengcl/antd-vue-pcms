@@ -49,7 +49,7 @@
 
         <span slot="cost" slot-scope="text">
           <p style="text-align: right">
-            <span style="font-weight: bold;padding-right: 10px">{{text.amount|NumberFormat}}</span>
+            <span style="font-weight: bold;padding-right: 10px">{{text|NumberFormat}}</span>
             <!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
           </p>
         </span>
@@ -143,13 +143,11 @@
         loadData: parameter => {
           const _columns = JSON.parse(JSON.stringify(defaultColumns))
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          // console.log('loadData request parameters:', requestParameters)
           const result = {
             result: {
               data: []
             }
           }
-          console.log('1111',this.queryParam.ProjectGUID)
           if (this.queryParam.ProjectGUID) {
             return CostService.items(requestParameters).then(res => {
               const requestParameters2 = Object.assign({}, parameter, {Id: this.queryParam.ProjectGUID})
@@ -168,14 +166,12 @@
                       obj.className = 'title-center'
                       obj.dataIndex = 'cost' + subjectItem1.costCenterId
                       obj.scopedSlots = {customRender: 'cost'}
-                      console.log(index, res2.result.data.costCenterBudgetSubPlans.length)
                       if (index !== res2.result.data.costCenterBudgetSubPlans.length) {
                         obj.width = (this.columnsWidth - 500) / res2.result.data.costCenterBudgetSubPlans.length
                       }
                       _columns.push(obj)
                       this.titleIds.push('cost' + subjectItem1.costCenterId)
                     })
-                    console.log(_columns)
                     this.columns = _columns
                     this.$forceUpdate()
                     res.result.data.forEach(item => {
@@ -190,17 +186,11 @@
                           const costName = 'cost' + subjectItem2.costCenterId
                           subjectItem2.mainElements.forEach(itemA => {
                             if (item.id === itemA.elementTypeId) {
-                              obj[costName] = {
-                                amount: itemA.amount,
-                                percentage: itemA.percentage
-                              }
+                              obj[costName] = itemA.amount
                             }
                           })
                           if (!obj[costName]) {
-                            obj[costName] = {
-                              amount: 0,
-                              percentage: 0
-                            }
+                            obj[costName] = 0
                           }
                         })
                       }
