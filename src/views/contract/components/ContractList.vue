@@ -154,7 +154,6 @@
                   :disabled="type === 'view'"
                   :default-value="record | getValue(index)"
                   style="width: 200px;margin-top: 15px"
-                  mode="multiple"
                   @change="centerChange">
                   <a-select-option
                     :value="index + ';' + center.id + ';' + center.costCenterName"
@@ -176,6 +175,7 @@
                   :disabled="type === 'view'"
                   placeholder="请选择"
                   style="margin-top: 15px;width: 160px"
+                  @change="typeChange"
                   v-model="record.itemType">
                   <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">
                     {{ item.nameCN }}
@@ -367,28 +367,15 @@
           this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
         })
       },
-      centerChange (values) {
-        let ids = ''
-        let names = ''
-        let item = {}
-        values.forEach(value => {
-          const arr = value.split(';')
-          item = this.data.contractBQNewlst[arr[0]]
-          const id = arr[1]
-          const name = arr[2]
-          if (ids) {
-            ids = ids + ';' + id
-          } else {
-            ids = id
-          }
-          if (names) {
-            names = names + ';' + name
-          } else {
-            names = name
-          }
-        })
-        item.costCenter = ids
-        item.costCenterName = names
+      typeChange () {
+        this.getContractAmount()
+      },
+      centerChange (value) {
+        const arr = value.split(';')
+        const item = this.data.contractBQNewlst[arr[0]]
+        item.costCenter = arr[1]
+        item.costCenterName = arr[2]
+        this.getContractAmount()
       },
       valueChange (item, index) {
         if (!this.data.contract.contractCategory) {
