@@ -137,9 +137,6 @@
             :pagination="false"
             bordered>
             <template slot="action" slot-scope="text, record,index">
-              <a-button @click="add(record.srNo)" :disabled="type === 'view'" icon="plus">
-                添加子项
-              </a-button>
               <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
@@ -200,7 +197,7 @@
 </template>
 
 <script>
-  import { Base as BaseService, addItem, removeItem } from '@/api/base'
+  import { Base as BaseService, removeItem } from '@/api/base'
   import { SwaggerService } from '@/api/swagger.service'
   import { ContractService } from '@/views/contract/contract.service'
 
