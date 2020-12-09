@@ -5,7 +5,8 @@ const API = {
   item: '/api/services/app/ProjectCostCenter/GetById',
   create: '/api/services/app/ProjectCostCenter/Create',
   update: '/api/services/app/ProjectCostCenter/Update',
-  delete: '/api/services/app/ProjectCostCenter/Delete'
+  delete: '/api/services/app/ProjectCostCenter/Delete',
+  bpm: '/api/services/app/ProjectCostCenter/StartBPM'
 }
 
 const CostService = {}
@@ -54,6 +55,14 @@ CostService.delete = function (parameter) {
     url: API.delete,
     method: 'DELETE',
     params: parameter
+  })
+}
+
+CostService.bpm = function (guid) {
+  return request({
+    url: API.bpm,
+    method: 'POST',
+    params: { guid }
   })
 }
 
