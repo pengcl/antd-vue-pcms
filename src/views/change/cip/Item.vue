@@ -251,7 +251,7 @@
             //   this.form.voMasterInfo.cipType = 0
             // }
             if( this.form.voMasterInfo.cipType === 129){
-              this.form.vobQlst = []
+              this.form.vobqNewlst = []
             }
             this.loading.save = true
             ChangeService.create(this.form).then((res) => {
@@ -292,7 +292,7 @@
       },
       startBPM () {
         this.loading.startBPM = true
-        if(!this.form.voMasterInfo.budgetIsConfirm && this.form.vobQlst.length > 0){
+        if(!this.form.voMasterInfo.budgetIsConfirm && this.form.vobqNewlst.length > 0){
           this.$message.warn('未确认预算，无法发起审批流程')
           this.loading.startBPM= false
           return
@@ -364,9 +364,9 @@
       },
       //验证造价估算必填值
       checkBqList(){
-        if(this.form.vobQlst && this.form.vobQlst.length > 0){
-          for(var i in this.form.vobQlst){
-            var item = this.form.vobQlst[i]
+        if(this.form.vobqNewlst && this.form.vobqNewlst.length > 0){
+          for(var i in this.form.vobqNewlst){
+            var item = this.form.vobqNewlst[i]
             if(!item.isDeleted){
               if(item.costCenter == '' || item.itemType == ''){
                 this.$message.warn('请选择【造价估算】的“业态成本中心”和“清单项类别”')
@@ -427,7 +427,7 @@
       },
       showBudgets(bAmountIsChangeResult){
         const stageLower = this.stage.toLowerCase()
-        if(this.form.vobQlst != null && this.form.vobQlst.length > 0 && bAmountIsChangeResult){
+        if(this.form.vobqNewlst != null && this.form.vobqNewlst.length > 0 && bAmountIsChangeResult){
           this.$refs.budgets.showModal()
         }else{
           location.href = `/change/${stageLower}/item/${this.form.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`

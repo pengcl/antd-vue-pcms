@@ -11,7 +11,7 @@ const API = {
   delete: '/api/services/app/Contract/DeleteContractAllInfo',
   vendors: '/api/services/app/Contract/GetVendorList',
   centers: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackageCostCenters',
-  amount: '/api/services/app/Contract/GetContractAmountByBQList',
+  amount: '/api/services/app/Contract/GetContractAmountNewByBQList',
   tenders: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProjectToContract',
   viewBudgets: '/api/services/app/Contract/GetContractBudgetAdjustByContractGuid',
   computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid',
