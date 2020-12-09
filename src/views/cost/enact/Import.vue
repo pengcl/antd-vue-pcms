@@ -15,7 +15,10 @@
           <a-col :md="24" :sm="24">
             <a-form-model-item label="导入预算文件" extra="请按照模板文件格式导入" prop="file">
               <a-upload :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" accept=".xls">
-                <a-button> <a-icon type="upload" /> 选择文件 </a-button>
+                <a-button>
+                  <a-icon type="upload"/>
+                  选择文件
+                </a-button>
               </a-upload>
             </a-form-model-item>
           </a-col>
@@ -28,7 +31,8 @@
               :disabled="fileList.length === 0"
               :loading="uploading"
               type="success"
-              @click="handleUpload">{{ uploading ? 'Uploading' : '导入' }}</a-button>
+              @click="handleUpload">{{ uploading ? 'Uploading' : '导入' }}
+            </a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -38,31 +42,35 @@
 </template>
 
 <script>
-  import { CostService } from '@/views/cost/cost.service'
-  import { SwaggerService } from '@/api/swagger.service'
+  import {CostService} from '@/views/cost/cost.service'
+  import {SwaggerService} from '@/api/swagger.service'
   import {SupplierService} from "@/views/supplier/supplier.service";
 
   export default {
-    data () {
+    data() {
       return {
         tempUrl: '',
         fileList: [],
+        formData: new FormData(),
         uploading: false
       }
     },
     computed: {
-      id () {
+      id() {
         return this.$route.query.ProjectGUID
       }
     },
     filters: {},
-    created () {
-      CostService.budgetTemplateFile({ Id: this.id }).then(res => {
-        this.tempUrl = res.result.data
+    created() {
+      CostService.budgetTemplateFile({Id: this.id}).then(res => {
+        this.tempUrl = process.env.VUE_APP_API_BASE_URL + res.result.data
         this.$forceUpdate()
       })
     },
     methods: {
+      back() {
+        this.$router.push({path: `/cost/enact/list`})
+      },
       handleRemove(file) {
         const index = this.fileList.indexOf(file)
         const newFileList = this.fileList.slice()
@@ -70,28 +78,30 @@
         this.fileList = newFileList
       },
       beforeUpload(file) {
+        // 重新加载文件列表
+        this.fileList = []
         this.fileList = [...this.fileList, file]
+        // 组装提交的信息
+        this.formData = new FormData()
+        this.formData.append('File', file)
+        this.formData.append('Id', this.id)
         return false
       },
-      handleUpload () {
-        const { fileList } = this
-        const formData = new FormData()
-        fileList.forEach(file => {
-          formData.append('files[]', file)
-        })
+      handleUpload() {
         this.uploading = true
-        CostService.uploadBudgetFile(this.form).then(res => {
+        const _this = this
+        this.$http.post('/api/services/app/BudgetSubPlan/ProjectBudgetUpload', this.formData, {
+          contentType: false,
+          processData: false,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then((res) => {
           if (res.result.statusCode === 200) {
-            this.$message.info('上传成功')
-            this.uploading = false
+            _this.$message.success('上传成功')
             this.back()
           }
         }).catch(() => {
           this.uploading = false
         })
-      },
-      back () {
-        this.$router.push({ path: `/cost/type/list` })
       }
     }
   }
