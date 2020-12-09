@@ -5,7 +5,7 @@
         <thead>
         <tr>
           <th colspan="6">
-            <a-button icon="plus" @click="add">
+            <a-button icon="plus" @click="add" :disabled="!data.elementTypeId">
               新增
             </a-button>
           </th>
@@ -34,6 +34,9 @@
             <a-input-number :disabled="type === 'view'"
                             v-model="item.useAmount"
                             :min="0"
+                            :max="item.amount"
+                            @change="useAmountChange"
+                            :style="{color: item.useAmount > item.amount ? 'red' : ''}"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
           </td>
@@ -81,18 +84,13 @@
                 }
             },
             del (index) {
-                if (this.data.tradeBudgetList[index].isTemp) {
-                    this.data.tradeBudgetList.splice(index, 1)
-                } else {
-                    this.data.tradeBudgetList[index].isDeleted = true
-                }
+                this.data.tradeBudgetList.splice(index, 1)
                 this.$forceUpdate()
             },
             industryChange (option) {
                 option.forEach(item => {
                     const params = {
                         id: 0,
-                        isTemp:true,
                         gid: '00000000-0000-0000-0000-000000000000',
                         isDeleted: false,
                         paymentOtherGID: '00000000-0000-0000-0000-000000000000',
@@ -108,6 +106,13 @@
                     }
                     this.data.tradeBudgetList.push(params)
                 })
+            },
+            useAmountChange (value) {
+                let result = 0
+                this.data.tradeBudgetList.forEach(item => {
+                    result += item.useAmount
+                })
+                this.data.paymentAmount = result
             }
         }
 

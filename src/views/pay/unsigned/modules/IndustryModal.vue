@@ -27,10 +27,13 @@
           slot-scope="text"
         >
           <template v-if="text && text.length > 0">
-            <a-checkbox
-              v-for="budgetItem in text"
-              @change="value => checkChange(value,budgetItem)">{{budgetItem.amount | NumberFormat}}
+            <span v-for="budgetItem in text">
+              <a-checkbox
+                v-if="budgetItem.amount"
+                @change="value => checkChange(value,budgetItem)">{{budgetItem.amount | NumberFormat}}
             </a-checkbox>
+              <span v-else>0</span>
+            </span>
           </template>
           <template v-if="text == undefined || text.length < 1">
             0

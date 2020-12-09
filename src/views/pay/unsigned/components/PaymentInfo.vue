@@ -68,10 +68,16 @@
             <td>
               <a-select
                 @change="onChange"
+                @search="handleSearch"
                 :disabled="type === 'view'"
-                placeholder="请选择"
+                placeholder="请输入收款单位查询"
+                show-search
+                :default-active-first-option="false"
+                :show-arrow="false"
+                :filter-option="false"
+                :not-found-content="null"
                 v-model="item.vendorGID">
-                <a-select-option v-for="type in vendorTypes"
+                <a-select-option v-for="type in filterVendorTypes"
                                  :value="type.vendorGID"
                                  :key="index">{{type.vendorName}}
                 </a-select-option>
@@ -113,7 +119,8 @@
         data () {
             return {
                 moneyTypes: [],
-                vendorTypes: []
+                vendorTypes: [],
+                filterVendorTypes: null
             }
         },
         props: {
@@ -137,6 +144,9 @@
             })
             UnSignedService.vendorTypes().then(res => {
                 this.vendorTypes = res.result.data
+                if (this.type !== 'create') {
+                    this.filterVendorTypes = this.vendorTypes
+                }
                 this.$forceUpdate()
             })
         },
@@ -184,6 +194,7 @@
                 this.$forceUpdate()
             },
             onChange (value, option) {
+                this.fetch(value, data => (this.filterVendorTypes = data))
                 const index = option.data.key
                 this.data.detailList[index].vendorBankGID = ''
                 this.data.detailList[index].vendorBankAccounts = ''
@@ -206,6 +217,37 @@
                 })
                 this.$forceUpdate()
             },
+            handleSearch (value) {
+                this.fetch(value, data => (this.filterVendorTypes = data))
+            },
+            fetch (value, callback) {
+                let timeout
+                let currentValue
+
+                const vendorTypes = this.vendorTypes
+                if (timeout) {
+                    clearTimeout(timeout)
+                    timeout = null
+                }
+                currentValue = value
+
+                function fake () {
+                    if (currentValue === value) {
+                        const data = []
+                        vendorTypes.forEach(r => {
+                            if (r.vendorName.indexOf(currentValue) !== -1) {
+                                data.push({
+                                    vendorGID: r.vendorGID,
+                                    vendorName: r.vendorName,
+                                })
+                            }
+                        })
+                        callback(data)
+                    }
+                }
+
+                timeout = setTimeout(fake, 100)
+            }
         }
     }
 </script>
