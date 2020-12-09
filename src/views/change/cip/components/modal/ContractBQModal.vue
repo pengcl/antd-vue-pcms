@@ -7,7 +7,7 @@
     @ok="handleOk"
   >
     <div>
-	    <a-table :row-key="record => record.id" :columns="columns" :data-source="tableData" :scroll="{ x : ' calc(1200px + 50%)' }" :rowSelection="rowSelection" bordered ref="table" :pagination="false">
+	    <a-table :row-key="record => record.id" :columns="columns" :data-source="tableData"  :rowSelection="rowSelection" bordered ref="table" :pagination="false">
 	    		<label slot="isCarryData" slot-scope="text">{{ text ? '是' : '否' }}</label>
           <div slot="itemType" slot-scope="text, item, index">
             <a-select :value="item.itemType" style="width: 200px" :disabled="true">
@@ -29,37 +29,7 @@
   import { Base as BaseService } from '@/api/base'
 
   const columns = [
-    {
-      title: '带数项目',
-      dataIndex: 'isCarryData',
-      scopedSlots: { customRender: 'isCarryData' },
-      width : 50
-    },
-    {
-      title: '标段',
-      dataIndex: 'section',
-      width : 50
-    },
-    {
-      title: '楼栋',
-      dataIndex: 'building',
-      width : 50
-    },
-    {
-      title: '预留字段0',
-      dataIndex: 'remark1',
-      width : 50
-    },
-    {
-      title: '预留字段1',
-      dataIndex: 'remark2',
-      width : 50
-    },
-    {
-      title: '清单描述',
-      dataIndex: 'description',
-      width : 150
-    },
+    
     {
       title: '业态成本中心',
       dataIndex: 'costCenterName',
@@ -72,82 +42,7 @@
       width : 220
     },
     {
-      title: '供应',
-      children: [
-        {
-          title: '单位',
-          dataIndex : 'unitMaterial',
-      	  width : 100
-        },
-        {
-          title: '工程量',
-          dataIndex: 'quantityMaterial',
-      	  width : 100
-        },
-        {
-          title: '单价',
-          dataIndex: 'unitPriceMaterial',
-      	  width : 100
-        },
-        {
-          title: '小计',
-          dataIndex: 'subAmountMaterial',
-      	  width : 100
-        }
-      ]
-    },
-    {
-      title: '安装',
-      children: [
-        {
-          title: '单位',
-          dataIndex: 'unitWork',
-      	  width : 100
-        },
-        {
-          title: '工程量',
-          dataIndex: 'quantityWork',
-      	  width : 100
-        },
-        {
-          title: '单价',
-          dataIndex: 'unitPriceWork',
-      	  width : 100
-        },
-        {
-          title: '小计',
-          dataIndex: 'subAmountWork',
-      	  width : 100
-        }
-      ]
-    },
-    {
-      title: '供应+安装',
-      children: [
-        {
-          title: '单位',
-          dataIndex: 'unitWorkMat',
-      	  width : 100
-        },
-        {
-          title: '工程量',
-          dataIndex: 'quantityWorkMat',
-      	  width : 100
-        },
-        {
-          title: '单价',
-          dataIndex: 'unitPriceWorkMat',
-      	  width : 100
-        },
-        {
-          title: '小计',
-          dataIndex: 'subAmountWorkMat',
-      	  width : 100
-        }
-      ]
-    },
-    {
-      title: '合计',
+      title: '金额',
       dataIndex: 'allAmount',
       width : 80
     }
