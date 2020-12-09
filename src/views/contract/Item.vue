@@ -223,14 +223,14 @@
       },
       getData () {
         this.form = SwaggerService.getForm('ContractAllInfoDto')
-        this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQlst))
+        this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQNewlst))
         if (this.$refs.baseInfo) {
           this.$refs.baseInfo.tender = {}
         }
         if (this.id !== '0') {
           ContractService.item(this.id).then(res => {
             this.form = res.result.data
-            this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQlst))
+            this.contractSourceBQList = JSON.parse(JSON.stringify(this.form.contractBQNewlst))
             this.form.master = {}
             this.form.contract.currencyExchangeRate = 1
             ProjectService.view2(this.form.contract.projectID).then(res => {
@@ -309,7 +309,7 @@
         }
 
         if (isValid) {
-          let items = JSON.parse(JSON.stringify(this.form.contractBQlst))
+          let items = JSON.parse(JSON.stringify(this.form.contractBQNewlst))
           items = items.filter(item => item.isCarryData && !item.isDeleted)
           if (items.length > 0) {
             this.loading.save = true

@@ -645,15 +645,20 @@
       </a-form-model>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="ac('EDIT')">
-            <a-button @click="approve()" type="success">
+          <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核' && ac('VIEW')">
+            <a-button @click="view()" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type === 'update' && info.auditStatus === '未审核' && ac('EDIT')">
+            <a-button @click="bpm()" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
-            <a-button :loading="loading" :disabled="type === 'view'" @click="save" type="success">
+            <a-button :loading="loading.save" :disabled="type === 'view'" @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -728,11 +733,12 @@
     name: 'ProjectItem',
     data () {
       return {
-        loading: false,
+        loading: { bpm: false, save: false, view: false },
         selection: {},
         activeKey: 1,
         dialog: DIALOGCONFIG,
         form: {},
+        info: {},
         rules: {
           costCenterName: [
             { required: true, message: '请填写成本中心名称', trigger: 'blur' }
@@ -849,7 +855,9 @@
         this.form.status = 0
         if (this.id !== '0') {
           CostService.item(this.id).then(res => {
+            this.info = res.result.data
             this.form = SwaggerService.getValue(this.form, res.result.data)
+            console.log(this.form)
           })
         } else {
           this.form.projectGUID = this.ProjectGUID
@@ -859,21 +867,38 @@
           this.form.cfaCarpark = 0
         }
       },
+      view () {
+        this.loading.view = true
+        BaseService.viewBpm(this.form.costCenterGUID).then(res => {
+          this.loading.view = false
+          const _window = window.open('_blank')
+          _window.location = res.result.data
+        })
+      },
+      bpm () {
+        this.loading.bpm = true
+        CostService.bpm(this.form.costCenterGUID).then(res => {
+          this.loading.bpm = false
+          const _window = window.open('_blank')
+          this.getData()
+          _window.location = res.result.data
+        })
+      },
       approve () {
         console.log('approve')
       },
       save () {
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.loading = true
+            this.loading.save = true
             CostService[this.type](this.form).then(res => {
-              this.loading = false
+              this.loading.save = false
               if (res.result.statusCode === 200) {
                 this.$message.success('保存成功')
                 this.$router.push({ path: '/project/cost/list' })
               }
             }).catch(() => {
-              this.loading = false
+              this.loading.save = false
               this.dialog.show({
                 content: '创建失败，表单未填写完整',
                 title: '',

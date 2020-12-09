@@ -417,11 +417,11 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核' && ac('VIEW')">
-            <a-button @click="approve()" type="success">
+            <a-button @click="view()" type="success">
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && info.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'update' && info.auditStatus === '未审核' && ac('EDIT')">
             <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
             </a-button>
@@ -464,7 +464,7 @@
   import { ProjectService } from '@/views/project/project.service'
   import { Currency as CurrencyService } from '@/api/currency'
   import { Company as CompanyService } from '@/api/company'
-  import { DIALOGCONFIG } from '@/api/base'
+  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
   import SelectCompany from '@/views/project/components/selectComany/index'
   import notification from 'ant-design-vue/es/notification'
   import { acs, ac } from '@/views/user/user.service'
@@ -483,7 +483,8 @@
         info: {},
         loading: {
           bpm: false,
-          save: false
+          save: false,
+          view: false
         },
         rules: {
           cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
@@ -587,8 +588,13 @@
         }
         return name
       },
-      approve () {
-        console.log('approve')
+      view () {
+        this.loading.view = true
+        BaseService.viewBpm(this.form.projectGUID).then(res => {
+          this.loading.view = false
+          const _window = window.open('_blank')
+          _window.location = res.result.data
+        })
       },
       bpm () {
         this.loading.bpm = true

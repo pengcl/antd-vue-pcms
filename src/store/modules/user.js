@@ -3,7 +3,42 @@ import { login, getInfo, logout } from '@/views/user/user.service'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 /* import { info } from '@/mock/services/user' */
-import { INFO } from '@/mock/services/info'
+
+const DASHBOARD = {
+  'roleId': 'admin',
+  'permissionId': 'dashboard',
+  'permissionName': '任务管理',
+  'actions': [{ 'action': 'add', 'defaultCheck': false, 'describe': '新增' }, { 'action': 'query', 'defaultCheck': false, 'describe': '查询' }, { 'action': 'get', 'defaultCheck': false, 'describe': '详情' }, { 'action': 'update', 'defaultCheck': false, 'describe': '修改' }, { 'action': 'delete', 'defaultCheck': false, 'describe': '删除' }],
+  'actionEntitySet': [
+    {
+      'action': 'add',
+      'describe': '新增',
+      'defaultCheck': false
+    },
+    {
+      'action': 'query',
+      'describe': '查询',
+      'defaultCheck': false
+    },
+    {
+      'action': 'get',
+      'describe': '详情',
+      'defaultCheck': false
+    },
+    {
+      'action': 'update',
+      'describe': '修改',
+      'defaultCheck': false
+    },
+    {
+      'action': 'delete',
+      'describe': '删除',
+      'defaultCheck': false
+    }
+  ],
+  'actionList': null,
+  'dataAccess': null
+}
 
 const user = {
   state: {
@@ -82,6 +117,7 @@ const user = {
         getInfo().then((response) => {
           response.result = response.result.data
           const result = response.result
+          result.role.permissions.push(DASHBOARD)
           result.role.permissions.forEach(item => {
             item.permissionId = item.permissionCode
           })

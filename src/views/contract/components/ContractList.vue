@@ -119,59 +119,31 @@
             <a-button :disabled="type === 'view'" icon="plus" @click="add()">
               新增
             </a-button>
-            <a-button :loading="loading" :disabled="type === 'view'" style="margin-left: 15px" type="primary" @click="getContractAmount()">
+            <a-button
+              :loading="loading"
+              :disabled="type === 'view'"
+              style="margin-left: 15px"
+              type="primary"
+              @click="getContractAmount()">
               计算金额
             </a-button>
           </div>
           <a-table
             :columns="columns"
-            :data-source="data.contractBQlst | filterDeleted"
+            :data-source="data.contractBQNewlst | filterDeleted"
             size="default"
             rowKey="srNo"
-            :scroll="{ x : '1500px',y : '600px' }"
+            :scroll="{ x : '1000px',y : '600px' }"
             :pagination="false"
             bordered>
-            <template slot="action" slot-scope="text, record">
-              <a-button @click="add(record.srNo)" :disabled="type === 'view'" icon="plus">
-                添加子项
-              </a-button>
-              <a-button @click="del(record)" :disabled="type === 'view'" icon="close">
+            <template slot="action" slot-scope="text, record,index">
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                 删除
               </a-button>
             </template>
-            <template slot="isCarryData" slot-scope="text, record, index">
-              <a-icon
-                :disabled="type === 'view'"
-                @click="checkCarry(record,type === 'view',index)"
-                :type="record.isCarryData ? 'check-square' : 'border'"/>
-            </template>
-            <template slot="srNo" slot-scope="text, record">
-              <a-input style="width:100%" :disabled="true" v-model="record.srNo"></a-input>
-            </template>
-            <template slot="section" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.section"></a-input>
-            </template>
-            <template slot="building" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.building"></a-input>
-            </template>
-            <template slot="subsection" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.subsection"></a-input>
-            </template>
-            <template slot="segmentation" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.segmentation"></a-input>
-            </template>
-            <template slot="remark1" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.remark1"></a-input>
-            </template>
-            <template slot="remark2" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.remark2"></a-input>
-            </template>
-            <template slot="description" slot-scope="text, record">
-              <a-input :disabled="type === 'view'" style="width:100%" v-model="record.description"></a-input>
-            </template>
             <template slot="costCenter" slot-scope="text, record, index">
               <a-form-model-item
-                :prop="'contractBQlst.' + index + '.costCenter'"
+                :prop="'contractBQNewlst.' + index + '.costCenter'"
                 :rules="[{required: !record.isDeleted, message: '请选择成本中心' }]"
               >
                 <a-input :disabled="type === 'view'" :hidden="true" v-model="record.costCenter"/>
@@ -179,7 +151,6 @@
                   :disabled="type === 'view'"
                   :default-value="record | getValue(index)"
                   style="width: 200px;margin-top: 15px"
-                  mode="multiple"
                   @change="centerChange">
                   <a-select-option
                     :value="index + ';' + center.id + ';' + center.costCenterName"
@@ -194,13 +165,14 @@
 
             <template slot="itemType" slot-scope="text, record, index">
               <a-form-model-item
-                :prop="'contractBQlst.' + index + '.itemType'"
+                :prop="'contractBQNewlst.' + index + '.itemType'"
                 :rules="[{required: !record.isDeleted, message: '请选择清单项类别' }]"
               >
                 <a-select
                   :disabled="type === 'view'"
                   placeholder="请选择"
                   style="margin-top: 15px;width: 160px"
+                  @change="typeChange"
                   v-model="record.itemType">
                   <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code">
                     {{ item.nameCN }}
@@ -208,160 +180,11 @@
                 </a-select>
               </a-form-model-item>
             </template>
-
-            <template slot="unitMaterial" slot-scope="text, record">
-              <a-select
-                :disabled="type === 'view'"
-                placeholder="请选择"
-                v-model="record.unitMaterial">
-                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
-                  {{ item.nameCN }}
-                </a-select-option>
-              </a-select>
-            </template>
-
-            <template slot="quantityMaterial" slot-scope="text, record">
-              <a-input
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.quantityMaterial"></a-input>
-            </template>
-
-            <template slot="unitPriceMaterial" slot-scope="text, record">
+            <template slot="allAmount" slot-scope="text, record,index">
               <a-input-number
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.unitPriceMaterial"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-
-            <template slot="subAmountMaterial" slot-scope="text, record">
-              <a-input-number
-                :disabled="true"
-                v-model="record.subAmountMaterial"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-
-            <template slot="unitWork" slot-scope="text, record">
-              <a-select
-                :disabled="type === 'view'"
-                placeholder="请选择"
-                v-model="record.unitWork">
-                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
-                  {{ item.nameCN }}
-                </a-select-option>
-              </a-select>
-            </template>
-
-            <template slot="quantityWork" slot-scope="text, record">
-              <a-input-number
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.quantityWork"></a-input-number>
-            </template>
-
-            <template slot="unitPriceWork" slot-scope="text, record">
-              <a-input-number
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.unitPriceWork"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-
-            <template slot="subAmountWork" slot-scope="text, record">
-              <a-input-number
-                :disabled="true"
-                v-model="record.subAmountWork"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-
-            <template slot="unitWork" slot-scope="text, record">
-              <a-select
-                :disabled="type === 'view'"
-                placeholder="请选择"
-                v-model="record.unitWork">
-                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
-                  {{ item.nameCN }}
-                </a-select-option>
-              </a-select>
-            </template>
-            <template slot="quantityWork" slot-scope="text, record">
-              <a-input-number
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.quantityWork"></a-input-number>
-            </template>
-            <template slot="unitPriceWork" slot-scope="text, record">
-              <a-input-number
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.unitPriceWork"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-            <template slot="subAmountWork" slot-scope="text, record">
-              <a-input-number
-                :disabled="true"
-                v-model="record.subAmountWork"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-            <template slot="unitWorkMat" slot-scope="text, record">
-              <a-select
-                :disabled="type === 'view'"
-                placeholder="请选择"
-                v-model="record.unitWorkMat">
-                <a-select-option v-for="(item, index) in selection.unitTypes" :key="index" :value="item.nameCN">
-                  {{ item.nameCN }}
-                </a-select-option>
-              </a-select>
-            </template>
-            <template slot="quantityWorkMat" slot-scope="text, record">
-              <a-input-number
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.quantityWorkMat"></a-input-number>
-            </template>
-            <template slot="unitPriceWorkMat" slot-scope="text, record">
-              <a-input-number
-                :disabled="type === 'view'"
-                @change="valueChange(record)"
-                v-model="record.unitPriceWorkMat"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-            <template slot="subAmountWorkMat" slot-scope="text, record">
-              <a-input-number
-                :disabled="true"
-                v-model="record.subAmountWorkMat"
-                :min="0"
-                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\\s?|(,*)/g, '')"
-                :precision="2"></a-input-number>
-            </template>
-            <template slot="allAmount" slot-scope="text, record">
-              <a-input-number
-                :disabled="true"
                 v-model="record.allAmount"
                 :min="0"
+                @change="valueChange(record,index)"
                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\\s?|(,*)/g, '')"
                 :precision="2"></a-input-number>
@@ -374,8 +197,7 @@
 </template>
 
 <script>
-  import { compare } from '@/utils/util'
-  import { Base as BaseService } from '@/api/base'
+  import { Base as BaseService, removeItem } from '@/api/base'
   import { SwaggerService } from '@/api/swagger.service'
   import { ContractService } from '@/views/contract/contract.service'
 
@@ -384,201 +206,31 @@
       title: '操作',
       dataIndex: 'action',
       scopedSlots: { customRender: 'action' },
-      width: 250
-    },
-    {
-      title: '带数项目',
-      dataIndex: 'isCarryData',
-      scopedSlots: { customRender: 'isCarryData' },
-      width: 80,
-      align: 'center'
-    },
-    {
-      title: '清单编号',
-      dataIndex: 'srNo',
-      scopedSlots: { customRender: 'srNo' },
-      width: 160
-    },
-    {
-      title: '标段',
-      dataIndex: 'section',
-      scopedSlots: { customRender: 'section' },
-      width: 160
-    },
-    {
-      title: '楼栋',
-      dataIndex: 'building',
-      scopedSlots: { customRender: 'building' },
-      width: 160
-    },
-    {
-      title: '分部',
-      dataIndex: 'subsection',
-      scopedSlots: { customRender: 'subsection' },
-      width: 160
-    },
-    {
-      title: '分项',
-      dataIndex: 'segmentation',
-      scopedSlots: { customRender: 'segmentation' },
-      width: 160
-    },
-    {
-      title: '预留字段0',
-      dataIndex: 'remark1',
-      scopedSlots: { customRender: 'remark1' },
-      width: 160
-    },
-    {
-      title: '预留字段1',
-      dataIndex: 'remark2',
-      scopedSlots: { customRender: 'remark2' },
-      width: 160
-    },
-    {
-      title: '清单描述',
-      dataIndex: 'description',
-      scopedSlots: { customRender: 'description' },
-      width: 160
+      width: 200
     },
     {
       title: '业态成本中心',
       dataIndex: 'costCenter',
       scopedSlots: { customRender: 'costCenter' },
-      width: 250
+      width: 200
     },
     {
       title: '清单项类别',
       dataIndex: 'itemType',
       scopedSlots: { customRender: 'itemType' },
-      width: 210
+      width: 200
     },
     {
-      title: '供应',
-      children: [
-        {
-          title: '单位',
-          dataIndex: 'unitMaterial',
-          scopedSlots: { customRender: 'unitMaterial' },
-          width: 160
-        },
-        {
-          title: '工程量',
-          dataIndex: 'quantityMaterial',
-          scopedSlots: { customRender: 'quantityMaterial' },
-          width: 160
-        },
-        {
-          title: '单价',
-          dataIndex: 'unitPriceMaterial',
-          scopedSlots: { customRender: 'unitPriceMaterial' },
-          width: 160
-        },
-        {
-          title: '小计',
-          dataIndex: 'subAmountMaterial',
-          scopedSlots: { customRender: 'subAmountMaterial' },
-          width: 160
-        }
-      ]
-    },
-    {
-      title: '安装',
-      children: [
-        {
-          title: '单位',
-          dataIndex: 'unitWork',
-          scopedSlots: { customRender: 'unitWork' },
-          width: 160
-        },
-        {
-          title: '工程量',
-          dataIndex: 'quantityWork',
-          scopedSlots: { customRender: 'quantityWork' },
-          width: 160
-        },
-        {
-          title: '单价',
-          dataIndex: 'unitPriceWork',
-          scopedSlots: { customRender: 'unitPriceWork' },
-          width: 160
-        },
-        {
-          title: '小计',
-          dataIndex: 'subAmountWork',
-          scopedSlots: { customRender: 'subAmountWork' },
-          width: 160
-        }
-      ]
-    },
-    {
-      title: '供应+安装',
-      children: [
-        {
-          title: '单位',
-          dataIndex: 'unitWorkMat',
-          scopedSlots: { customRender: 'unitWorkMat' },
-          width: 160
-        },
-        {
-          title: '工程量',
-          dataIndex: 'quantityWorkMat',
-          scopedSlots: { customRender: 'quantityWorkMat' },
-          width: 160
-        },
-        {
-          title: '单价',
-          dataIndex: 'unitPriceWorkMat',
-          scopedSlots: { customRender: 'unitPriceWorkMat' },
-          width: 160
-        },
-        {
-          title: '小计',
-          dataIndex: 'subAmountWorkMat',
-          scopedSlots: { customRender: 'subAmountWorkMat' },
-          width: 160
-        }
-      ]
-    },
-    {
-      title: '合计',
+      title: '金额',
       dataIndex: 'allAmount',
       scopedSlots: { customRender: 'allAmount' },
-      width: 160
+      width: 200
     }
   ]
   const contractTypes = {
     '15': 'contract',
     '16': 'sa',
     '17': 'nsc'
-  }
-
-  function getNo (str, key, items) {
-    const isRoot = str === '0' || !str
-    let result
-    items = items.filter(item => !item.isDeleted)
-    items.sort((a, b) => {
-      return compare(b[key], a[key])
-    })
-    if (items.length === 0) {
-      return '1'
-    }
-    let arr
-    if (isRoot) {
-      arr = items[0][key].split('.')
-      arr[0] = parseInt(arr[0], 10) + 1 + ''
-      result = arr[0]
-    } else {
-      items = items.filter(item => item[key].indexOf(str) === 0)
-      arr = items[0][key].split('.')
-      if (items.length === 1) {
-        arr.push('0')
-      }
-      arr.reverse()
-      arr[0] = parseInt(arr[0], 10) + 1 + ''
-      result = arr.reverse().join('.')
-    }
-    return result
   }
 
   export default {
@@ -598,16 +250,13 @@
           contractPSAmount: [{ required: true, message: '请选择带数项请生成合同内暂定款金额', trigger: 'change' }]
         },
         tableRules: {
-          contractBQlst: []
+          contractBQNewlst: []
         }
       }
     },
     created () {
-      this.data.contractBQlst.forEach((item, index) => {
+      this.data.contractBQNewlst.forEach((item, index) => {
         item._id = index
-      })
-      this.data.contractBQlst.sort((a, b) => {
-        return compare(a.srNo, b.srNo)
       })
       if (this.data.contract.contractCategory) {
         const contractTypeKey = contractTypes[this.data.contract.contractCategory + '']
@@ -640,9 +289,7 @@
         }
       },
       'data.contract.tenderPackageItemID' (value) {
-        console.log(value)
         ContractService.centers(value).then(res => {
-          console.log(res)
           this.selection.centers = res.result.data
           this.$forceUpdate()
         })
@@ -687,54 +334,23 @@
     },
     methods: {
       add (stringNo) {
-        const newSrNo = getNo(stringNo, 'srNo', this.data.contractBQlst)
         const data = SwaggerService.getForm('ContractBQDto')
         data.id = 0
         data.isDeleted = false
         data.isTemp = true
         data.contractID = this.id === '0' ? '' : this.id
-        data.srNo = newSrNo
-        data.isCarryData = false
-        data.quantityMaterial = 0
-        data.unitPriceMaterial = 0
-        data.subAmountMaterial = 0
-        data.quantityWork = 0
-        data.unitPriceWork = 0
-        data.subAmountWork = 0
-        data.quantityWorkMat = 0
-        data.unitPriceWorkMat = 0
-        data.subAmountWorkMat = 0
         data.allAmount = 0
-        this.data.contractBQlst.push(data)
-        this.data.contractBQlst.sort((a, b) => {
-          return compare(a.srNo, b.srNo)
-        })
+        this.data.contractBQNewlst.push(data)
       },
-      del (record) {
-        const str = record.srNo
-        const items = this.data.contractBQlst.filter(item => item.srNo.indexOf(str) === 0)
-        items.forEach((item) => {
-          item.isDeleted = true
-        })
-        this.data.contractBQlst = this.data.contractBQlst.filter(item => !(item.isDeleted && item.isTemp))
-        if (record.isCarryData) {
-          this.getContractAmount()
-        }
+      del (index) {
+        const items = this.data.contractBQNewlst
+        removeItem(index, items)
+        this.getContractAmount()
         this.$forceUpdate()
-      },
-      clear () {
-        const list = []
-        this.data.contractBQlst.forEach(item => {
-          item.isDeleted = true
-          if (!item.isTemp) {
-            list.push(item)
-          }
-          this.$forceUpdate()
-        })
       },
       getContractAmount () {
         this.loading = true
-        ContractService.amount(this.data.contract.contractCategory, this.data.contractBQlst).then(res => {
+        ContractService.amount(this.data.contract.contractCategory, this.data.contractBQNewlst).then(res => {
           this.loading = false
           const data = res.result.data
           this.data.contract.contractAmount = data.contractAmount
@@ -748,14 +364,26 @@
           this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
         })
       },
-      checkCarry (item, isDisabled, index) {
+      typeChange () {
+        this.getContractAmount()
+      },
+      centerChange (value) {
+        const arr = value.split(';')
+        const item = this.data.contractBQNewlst[arr[0]]
+        item.costCenter = arr[1]
+        item.costCenterName = arr[2]
+        this.getContractAmount()
+      },
+      valueChange (item, index) {
         if (!this.data.contract.contractCategory) {
+          item.allAmount = 0
           this.$emit('validate-field', {
             activeKey: 1,
             component: 'baseInfo',
             filed: 'contractCategory'
           })
         } else if (!this.data.contract.tenderPackageItemID) {
+          item.allAmount = 0
           this.$emit('validate-field', {
             activeKey: 1,
             component: 'baseInfo',
@@ -764,52 +392,23 @@
         } else {
           let isValid = true
           this.$refs.tableForm.validateField([
-            'contractBQlst.' + index + '.costCenter',
-            'contractBQlst.' + index + '.itemType'], valid => {
+            'contractBQNewlst.' + index + '.costCenter',
+            'contractBQNewlst.' + index + '.itemType'], valid => {
             if (valid) {
-              alert(valid)
+              if (item.allAmount !== 0) {
+                alert(valid)
+              }
+              item.allAmount = 0
               isValid = false
             }
           })
           if (isValid) {
-            item.isCarryData = !item.isCarryData
-            this.getContractAmount()
-          }
-        }
-      },
-      centerChange (values) {
-        console.log(values)
-        let ids = ''
-        let names = ''
-        let item = {}
-        values.forEach(value => {
-          const arr = value.split(';')
-          item = this.data.contractBQlst[arr[0]]
-          const id = arr[1]
-          const name = arr[2]
-          if (ids) {
-            ids = ids + ';' + id
-          } else {
-            ids = id
-          }
-          if (names) {
-            names = names + ';' + name
-          } else {
-            names = name
-          }
-        })
-        item.costCenter = ids
-        item.costCenterName = names
-      },
-      valueChange (item) {
-        item.subAmountMaterial = item.quantityMaterial * item.unitPriceMaterial
-        item.subAmountWork = item.quantityWork * item.unitPriceWork
-        item.subAmountWorkMat = item.quantityWorkMat * item.unitPriceWorkMat
-        item.allAmount = item.subAmountMaterial + item.subAmountWork + item.subAmountWorkMat
-
-        if (item.isCarryData) {
-          if (typeof item.allAmount === 'number') {
-            this.getContractAmount()
+            const value = item.allAmount
+            setTimeout(() => {
+              if (value === item.allAmount) {
+                this.getContractAmount()
+              }
+            }, 1500)
           }
         }
       }
