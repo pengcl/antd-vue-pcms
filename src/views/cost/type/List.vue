@@ -172,7 +172,8 @@
         this.$router.push({path: `/cost/type/item/${record.tradeTypeId}?type=view&elementId=${record.elementId}`})
       },
       handleToEdit(record) {
-        this.$router.push({path: `/cost/type/item/${record.tradeTypeId}?type=edit&elementId=${record.elementId}`})
+        this.$message.error(`暂无接口，功能无法使用`)
+        // this.$router.push({path: `/cost/type/item/${record.tradeTypeId}?type=edit&elementId=${record.elementId}`})
       },
       handleToAdd(record) {
         this.$router.push({path: `/cost/type/item/0?type=add&elementId=${record.id}`})

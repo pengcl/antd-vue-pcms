@@ -75,7 +75,7 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col
-          v-if="type !== 'view' && form.contract.auditStatus === '未审核' && ac('EDIT')"
+          v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('EDIT')"
           :md="24"
           :sm="24"
           style="margin-bottom: 10px">
@@ -270,6 +270,7 @@
           this.loading.bpm = false
           const _window = window.open('_blank')
           _window.location = res.result.data
+            this.$router.push({ path: `/contract/list` })
         })
       },
       save () {
