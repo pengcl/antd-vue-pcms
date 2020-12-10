@@ -270,6 +270,7 @@
           this.loading.bpm = false
           const _window = window.open('_blank')
           _window.location = res.result.data
+            this.$router.push({ path: `/contract/list` })
         })
       },
       save () {
