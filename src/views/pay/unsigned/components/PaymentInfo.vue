@@ -68,11 +68,18 @@
             <td>
               <a-select
                 @change="onChange"
-                :disabled="type === 'view'"
-                placeholder="请选择"
+                @search="handleSearch"
+                :disabled="type === 'view' || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
+                placeholder="请输入收款单位查询"
+                show-search
+                :default-active-first-option="false"
+                :show-arrow="false"
+                :filter-option="false"
+                :not-found-content="null"
                 v-model="item.vendorGID">
-                <a-select-option v-for="type in vendorTypes"
+                <a-select-option v-for="type in filterVendorTypes"
                                  :value="type.vendorGID"
+                                 :title="type.vendorName"
                                  :key="index">{{type.vendorName}}
                 </a-select-option>
               </a-select>
@@ -81,7 +88,7 @@
               <a-select
                 @change="bankChange"
                 placeholder="请选择"
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
                 v-model="item.vendorBankGID">
                 <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
                                  :value="type.gid"
@@ -113,7 +120,8 @@
         data () {
             return {
                 moneyTypes: [],
-                vendorTypes: []
+                vendorTypes: [],
+                filterVendorTypes: []
             }
         },
         props: {
@@ -130,6 +138,21 @@
                 default: '0'
             }
         },
+        watch: {
+            'data.detailList' (value) {
+                if (this.type !== 'create') {
+                    if (this.data.detailList.length > 0) {
+                        this.data.detailList.forEach(item => {
+                            const params = {
+                                vendorGID: item.vendorGID,
+                                vendorName: item.vendorName,
+                            }
+                            this.filterVendorTypes.push(params)
+                        })
+                    }
+                }
+            }
+        },
         created () {
             UnSignedService.moneyTypes().then(res => {
                 this.moneyTypes = res.result.data
@@ -139,6 +162,7 @@
                 this.vendorTypes = res.result.data
                 this.$forceUpdate()
             })
+
         },
         methods: {
             getBankList (vendorGID, vendorTypes) {
@@ -184,6 +208,7 @@
                 this.$forceUpdate()
             },
             onChange (value, option) {
+                this.fetch(value, data => (this.filterVendorTypes = data))
                 const index = option.data.key
                 this.data.detailList[index].vendorBankGID = ''
                 this.data.detailList[index].vendorBankAccounts = ''
@@ -206,6 +231,41 @@
                 })
                 this.$forceUpdate()
             },
+            handleSearch (value) {
+                this.fetch(value, data => (this.filterVendorTypes = data))
+            },
+            fetch (value, callback) {
+                let timeout
+                let currentValue
+                let vendorTypes = []
+                if (value) {
+                    UnSignedService.vendorTypes(value).then(res => {
+                        vendorTypes = res.result.data
+                    })
+                }
+                if (timeout) {
+                    clearTimeout(timeout)
+                    timeout = null
+                }
+                currentValue = value
+
+                function fake () {
+                    if (currentValue === value) {
+                        const data = []
+                        vendorTypes.forEach(r => {
+                            if (r.vendorName.indexOf(currentValue) !== -1) {
+                                data.push({
+                                    vendorGID: r.vendorGID,
+                                    vendorName: r.vendorName,
+                                })
+                            }
+                        })
+                        callback(data)
+                    }
+                }
+
+                timeout = setTimeout(fake, 1000)
+            }
         }
     }
 </script>

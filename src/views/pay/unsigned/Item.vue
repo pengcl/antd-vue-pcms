@@ -75,7 +75,7 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="申请付款金额" prop="paymentAmount">
-              <a-input-number :disabled="type === 'view'"
+              <a-input-number :disabled="true"
                               v-model="form.paymentAmount"
                               :min="0"
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -211,7 +211,17 @@
                 }
             }
         },
-        watch: {},
+        watch: {
+            'form.tradeBudgetList' (value) {
+                let result = 0
+                if (this.form.tradeBudgetList.length > 0) {
+                    this.form.tradeBudgetList.forEach(item => {
+                        result += item.useAmount
+                    })
+                }
+                this.form.paymentAmount = result
+            }
+        },
         created () {
             CostService.items().then(res => {
                 this.elementItems = JSON.parse(JSON.stringify(res.result.data))
@@ -256,6 +266,8 @@
                 const index = option.data.key
                 this.form.elementCode = this.elementItems[index].code
                 this.form.elementName = this.elementItems[index].nameCN
+                this.form.tradeBudgetList = []
+                this.$forceUpdate()
             },
             getData () {
                 if (this.id !== '0') {

@@ -310,7 +310,7 @@
 
         if (isValid) {
           let items = JSON.parse(JSON.stringify(this.form.contractBQNewlst))
-          items = items.filter(item => item.isCarryData && !item.isDeleted)
+          items = items.filter(item => !item.isDeleted)
           if (items.length > 0) {
             this.loading.save = true
             ContractService[this.type](this.form).then((res, err) => {

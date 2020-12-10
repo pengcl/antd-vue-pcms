@@ -107,8 +107,6 @@
       :wrapper-col="{ span: 16 }">
       <a-row :gutter="48">
         <a-col :md="12" :sm="24">
-          <a-button type="success">按编码排序</a-button>
-          <a-button type="success" style="margin-left: 5px">恢复原来排序</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button type="success" style="float: right">导入导出</a-button>
@@ -119,20 +117,20 @@
             <a-button :disabled="type === 'view'" icon="plus" @click="add()">
               新增
             </a-button>
-            <a-button
+            <!--<a-button
               :loading="loading"
               :disabled="type === 'view'"
               style="margin-left: 15px"
               type="primary"
               @click="getContractAmount()">
               计算金额
-            </a-button>
+            </a-button>-->
           </div>
           <a-table
             :columns="columns"
             :data-source="data.contractBQNewlst | filterDeleted"
             size="default"
-            rowKey="srNo"
+            rowKey="_id"
             :scroll="{ x : '1000px',y : '600px' }"
             :pagination="false"
             bordered>
@@ -335,6 +333,7 @@
     methods: {
       add (stringNo) {
         const data = SwaggerService.getForm('ContractBQDto')
+        data._id = new Date().getTime()
         data.id = 0
         data.isDeleted = false
         data.isTemp = true
@@ -349,20 +348,34 @@
         this.$forceUpdate()
       },
       getContractAmount () {
-        this.loading = true
-        ContractService.amount(this.data.contract.contractCategory, this.data.contractBQNewlst).then(res => {
-          this.loading = false
-          const data = res.result.data
-          this.data.contract.contractAmount = data.contractAmount
-          this.data.contract.contractEffectAmount = data.contractEffectAmount
-          this.data.contract.contractAmountText = data.contractAmountText
-          this.data.contract.contractDSAmount = data.contractDSAmount
-          this.data.contract.contractOPTAmount = data.contractOPTAmount
-          this.data.contract.contractPCPreAmount = data.contractPCPreAmount
-          this.data.contract.contractPSAmount = data.contractPSAmount
-          this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
-          this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
-        })
+        if (this.data.contract.contractCategory && this.data.contract.tenderPackageItemID) {
+          let isValid = true
+          this.data.contractBQNewlst.forEach((item, index) => {
+            this.$refs.tableForm.validateField([
+              'contractBQNewlst.' + index + '.costCenter',
+              'contractBQNewlst.' + index + '.itemType'], valid => {
+              if (valid) {
+                isValid = false
+              }
+            })
+          })
+          if (isValid) {
+            this.loading = true
+            ContractService.amount(this.data.contract.contractCategory, this.data.contractBQNewlst).then(res => {
+              this.loading = false
+              const data = res.result.data
+              this.data.contract.contractAmount = data.contractAmount
+              this.data.contract.contractEffectAmount = data.contractEffectAmount
+              this.data.contract.contractAmountText = data.contractAmountText
+              this.data.contract.contractDSAmount = data.contractDSAmount
+              this.data.contract.contractOPTAmount = data.contractOPTAmount
+              this.data.contract.contractPCPreAmount = data.contractPCPreAmount
+              this.data.contract.contractPSAmount = data.contractPSAmount
+              this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
+              this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+            })
+          }
+        }
       },
       typeChange () {
         this.getContractAmount()
