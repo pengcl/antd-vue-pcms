@@ -305,7 +305,8 @@
             if(res.result.statusCode === 200){
               window.open(res.result.data)
               // window.location.reload()
-              that.loading.startBPM = true
+              that.loading.startBPM = false
+              that.back()
             }
           }).catch(() =>{
             that.loading.startBPM = false
