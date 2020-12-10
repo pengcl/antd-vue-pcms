@@ -85,6 +85,7 @@
             </a-button>
             <a-button
               v-if="ac('EDIT')"
+              :disabled="record.auditStatus !== '未审核'"
               @click="handleToEdit(record)"
               type="primary"
               class="btn-info"
