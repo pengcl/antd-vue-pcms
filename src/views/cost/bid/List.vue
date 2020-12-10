@@ -72,6 +72,11 @@
         <span slot="budgetAmount" slot-scope="text,record">
             {{record.budgetAmount|NumberFormat}}
         </span>
+
+        <span slot="packageDate" slot-scope="text, record">
+          {{ record.packageDate | date }}
+        </span>
+
         <span slot="action" slot-scope="text,record">
           <template>
             <a-button
@@ -133,6 +138,11 @@
             title: '预算金额',
             dataIndex: 'budgetAmount',
           scopedSlots: { customRender: 'budgetAmount' }
+        },
+        {
+          title: '日期',
+          dataIndex: 'packageDate',
+          scopedSlots: { customRender: 'packageDate' }
         },
         {
             title: '经办人',
@@ -223,7 +233,8 @@
               this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
             },
             handleToEdit (record) {
-              this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
+              // this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
+              this.$message.error(`暂无接口，功能无法使用`)
             },
             handleToAdd (record) {
               if (this.queryParam.ProjectGUID === '') {
@@ -232,68 +243,9 @@
                 this.$router.push({ path: `/cost/bid/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
               }
             },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
-            },
-            handleEdit (record) {
-                this.visible = true
-                this.mdl = { ...record }
-            },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading = false
-                    }
-                })
-            },
-            handleCancel () {
-                this.visible = false
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
-            },
-            toggleAdvanced () {
-                this.advanced = !this.advanced
             },
             resetSearchForm () {
                 this.queryParam = {
