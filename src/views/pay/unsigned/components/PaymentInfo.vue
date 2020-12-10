@@ -69,7 +69,7 @@
               <a-select
                 @change="onChange"
                 @search="handleSearch"
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
                 placeholder="请输入收款单位查询"
                 show-search
                 :default-active-first-option="false"
@@ -79,6 +79,7 @@
                 v-model="item.vendorGID">
                 <a-select-option v-for="type in filterVendorTypes"
                                  :value="type.vendorGID"
+                                 :title="type.vendorName"
                                  :key="index">{{type.vendorName}}
                 </a-select-option>
               </a-select>
@@ -87,7 +88,7 @@
               <a-select
                 @change="bankChange"
                 placeholder="请选择"
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
                 v-model="item.vendorBankGID">
                 <a-select-option v-for="type in getBankList(item.vendorGID,vendorTypes)"
                                  :value="type.gid"
@@ -120,7 +121,7 @@
             return {
                 moneyTypes: [],
                 vendorTypes: [],
-                filterVendorTypes: null
+                filterVendorTypes: []
             }
         },
         props: {
@@ -137,6 +138,21 @@
                 default: '0'
             }
         },
+        watch: {
+            'data.detailList' (value) {
+                if (this.type !== 'create') {
+                    if (this.data.detailList.length > 0) {
+                        this.data.detailList.forEach(item => {
+                            const params = {
+                                vendorGID: item.vendorGID,
+                                vendorName: item.vendorName,
+                            }
+                            this.filterVendorTypes.push(params)
+                        })
+                    }
+                }
+            }
+        },
         created () {
             UnSignedService.moneyTypes().then(res => {
                 this.moneyTypes = res.result.data
@@ -144,11 +160,9 @@
             })
             UnSignedService.vendorTypes().then(res => {
                 this.vendorTypes = res.result.data
-                if (this.type !== 'create') {
-                    this.filterVendorTypes = this.vendorTypes
-                }
                 this.$forceUpdate()
             })
+
         },
         methods: {
             getBankList (vendorGID, vendorTypes) {
@@ -223,8 +237,12 @@
             fetch (value, callback) {
                 let timeout
                 let currentValue
-
-                const vendorTypes = this.vendorTypes
+                let vendorTypes = []
+                if (value) {
+                    UnSignedService.vendorTypes(value).then(res => {
+                        vendorTypes = res.result.data
+                    })
+                }
                 if (timeout) {
                     clearTimeout(timeout)
                     timeout = null
@@ -246,7 +264,7 @@
                     }
                 }
 
-                timeout = setTimeout(fake, 100)
+                timeout = setTimeout(fake, 1000)
             }
         }
     }
