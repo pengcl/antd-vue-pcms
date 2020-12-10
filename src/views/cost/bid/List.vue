@@ -98,7 +98,8 @@
               type="danger"
               icon="delete"
               style="margin-left: 4px"
-              title="删除"></a-button>
+              title="删除"
+              @click="handleToRemove(record)"></a-button>
           </template>
         </span>
       </s-table>
@@ -242,6 +243,9 @@
               } else {
                 this.$router.push({ path: `/cost/bid/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
               }
+            },
+            handleToRemove () {
+              this.$message.error(`暂无接口，功能无法使用`)
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
