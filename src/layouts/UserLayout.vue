@@ -5,7 +5,7 @@
         <a class="header-logo" href="javascript:;">
           <img src="~@/assets/login-logo.png">
         </a>
-        <div data-bind="text: environmentTag" class="EnvironmentTag">{{appType === 'production' ? 'UAT' : 'DEV'}} (#uat_202003-003)</div>
+        <div data-bind="text: environmentTag" class="EnvironmentTag">{{ appType === 'production' ? 'UAT' : 'DEV' }} (#uat_202003-003)</div>
       </div>
       <router-view/>
 
@@ -22,7 +22,7 @@
       <footer class="footer fixed-bottom footer-dark navbar-border navbar-shadow">
         <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
           <span class="float-md-left d-block d-md-inline-block">
-            © 新世界中国 2020。 版权所有。
+            © 新世界中国 版权所有。
 
           </span>
 
