@@ -26,6 +26,7 @@ const API = {
   bidBudgetCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算
   matterItems: 'api/services/app/ProjectTenderPackage/GetPlanMatterModelList',//工作项列表
   bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//行业分判包下拉列表
+  bidUpdate: '/api/services/app/ProjectTenderPackage/UpdateProjectTenderPackage', //修改招投标分判包
   //行业预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
