@@ -116,7 +116,11 @@ export const asyncRouterMap = [
         name: 'cost',
         redirect: '/cost/enact/list',
         component: RouteView,
-        meta: { title: 'menu.cost', icon: 'property-safety', permission: ['CostBudgetEnact', 'CostBudgetResolve', 'CostBudgetIndustry', 'CostBudgetBid', 'CostBudgetType'] },
+        meta: {
+          title: 'menu.cost',
+          icon: 'property-safety',
+          permission: ['CostBudgetEnact', 'CostBudgetResolve', 'CostBudgetIndustry', 'CostBudgetBid', 'CostBudgetType']
+        },
         children: [
           {
             path: '/cost/enact/list',
@@ -431,8 +435,17 @@ export const asyncRouterMap = [
       {
         path: '/report',
         name: 'report',
-        component: () => import('@/views/report/Item'),
-        meta: { title: 'menu.report', icon: 'fund', permission: ['Report'] }
+        meta: { title: 'menu.report', icon: 'fund', permission: ['ProjectContractBookReport'] },
+        redirect: '/report/contract',
+        component: RouteView,
+        children: [
+          {
+            path: '/report/contract',
+            name: 'ReportContract',
+            component: () => import('@/views/report/Item'),
+            meta: { title: 'menu.report.contract', keepAlive: true, permission: ['ProjectContractBookReport'] }
+          }
+        ]
       },
       // data
       // checkout
