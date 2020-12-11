@@ -234,8 +234,7 @@
               this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
             },
             handleToEdit (record) {
-              // this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
-              this.$message.error(`暂无接口，功能无法使用`)
+              this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
             },
             handleToAdd (record) {
               if (this.queryParam.ProjectGUID === '') {
