@@ -603,6 +603,7 @@
           const _window = window.open('_blank')
           this.getData()
           _window.location = res.result.data
+          this.$router.push({ path: `/project/list` })
         })
       },
       save () {
