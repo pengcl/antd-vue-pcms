@@ -111,13 +111,9 @@
                 this.attachmentTypeList = res.result.data
             })
             if (this.type !== 'create') {
-                SignedService.masterID(this.id).then(_res => {
-                    this.masterId = _res.result.data
-                    if (this.data['mainContractGID']) {
-                        this.getFileList(this.masterId, this.data['mainContractGID'])
-                    }
-
-                })
+                if (this.data['mainContractGID']) {
+                    this.getFileList(this.masterId, this.data['mainContractGID'])
+                }
             }
         },
         methods: {

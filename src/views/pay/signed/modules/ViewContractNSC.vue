@@ -10,18 +10,29 @@
   >
     <a-spin :spinning="loading">
       <s-table
-        style="margin-top: 10px"
-        ref="tenderPacakge"
+        ref="table"
         size="default"
-        rowKey="tenderPackageGUID"
+        rowKey="contractGuid"
         bordered
         :columns="columns"
         :data="loadData"
         :alert="false"
         :rowSelection="rowSelection"
         showPagination="auto"
-        :scroll="{ y:200 }"
       >
+
+        <span slot="contractEffectAmount" slot-scope="text">
+          {{text | NumberFormat}}
+        </span>
+
+        <span slot="prePayAmount" slot-scope="text">
+          {{text | NumberFormat}}
+        </span>
+
+        <span slot="paymentAmountTotal" slot-scope="text,record">
+          {{text | NumberFormat}} / {{record.paymentAmountTotalRatio + '%'}}
+        </span>
+
       </s-table>
     </a-spin>
   </a-modal>
@@ -30,39 +41,41 @@
 <script>
     import pick from 'lodash.pick'
     import { STable } from '@/components'
-    import { fixedList, getPosValue } from '@/utils/util'
-    import { FundPlanService } from '@/views/pay/fundplan/fundplan.service'
-    import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '@/mock/util'
+    import { fixedList } from '@/utils/util'
+    import { SignedService } from '../signed.service'
 
     const columns = [
         {
             title: '合同编号',
-            dataIndex: 'tradePackageCode',
+            dataIndex: 'contractNo',
         },
         {
             title: '合同名称',
-            dataIndex: 'packageTitle'
+            dataIndex: 'contractName'
         },
         {
             title: '审批状态',
-            dataIndex: 'elementInfoNameCN',
+            dataIndex: 'auditStatus',
+            width: '78px'
         },
         {
             title: '合作方',
-            dataIndex: 'budgetAmount'
+            dataIndex: 'partyInfo'
         },
         {
             title: '有效签约金额',
-            dataIndex: 'description',
+            dataIndex: 'contractEffectAmount',
+            scopedSlots: { customRender: 'contractEffectAmount' }
         },
         {
             title: '预计结算金额',
-            dataIndex: 'description',
+            dataIndex: 'prePayAmount',
+            scopedSlots: { customRender: 'prePayAmount' }
         },
         {
             title: '累计支付金额',
-            dataIndex: 'description',
+            dataIndex: 'paymentAmountTotal',
+            scopedSlots: { customRender: 'paymentAmountTotal' }
         },
     ]
     const fields = []
@@ -83,26 +96,27 @@
                 type: Object,
                 default: () => null
             },
-            elementID: {
-                type: Number,
-                default: 0
+            contractGID: {
+                type: String,
+                default: null
             }
         },
         data () {
             this.columns = columns
             return {
                 form: this.$form.createForm(this),
-                queryParam: { IsToContract: false },
+                queryParam: {},
                 selectedRowKeys: [],
                 selectedRows: [],
                 selected: [],
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    this.queryParam.elementTypeId = this.elementID
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return FundPlanService.tenderPacakges(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
+                    if (this.contractGID) {
+                        return SignedService.NSCInfoList(this.contractGID).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    }
                 },
             }
         },
@@ -113,21 +127,6 @@
             // 当 model 发生改变时，为表单设置值
             this.$watch('model', () => {
                 this.model && this.form.setFieldsValue(pick(this.model, fields))
-            })
-            ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items)
-                    cities.push({
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
-                })
-                const value = getPosValue(cities)
-                this.queryParam.ProjectGUID = value.projectGUID
-                this.$refs.tenderPacakge.refresh()
-                this.$forceUpdate()
             })
         },
         computed: {
@@ -141,7 +140,7 @@
                         if (selected) {
                             that.selected.push(record)
                         } else {
-                            const index = that.selected.findIndex(item => item.tenderPackageGUID === record.tenderPackageGUID)
+                            const index = that.selected.findIndex(item => item.contractGuid === record.contractGuid)
                             that.selected.splice(index, 1)
                         }
                     }
@@ -153,9 +152,6 @@
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
             },
-            search () {
-                this.$refs.tenderPacakge.refresh(true)
-            }
         }
     }
 </script>

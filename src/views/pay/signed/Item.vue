@@ -12,7 +12,7 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type !== 'view' && form.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="approve" type="success">
               启动审批流程
             </a-button>
@@ -67,175 +67,82 @@
             }
         },
         created () {
-            if (this.type === 'view') {
-                SignedService.viewInfo(this.id).then(res => {
-                    this.form = res.result.data
-                    SignedService.masterID(this.id).then(_res => {
-                        this.form.masterID = _res.result.data
-                    })
-                })
-            } else if (this.type === 'update') {
-                SignedService.updateInfo(this.id).then(res => {
-                    this.form = res.result.data
-                    SignedService.masterID(this.id).then(_res => {
-                        this.form.masterID = _res.result.data
-                    })
-                })
-            } else {
-                SignedService.getCreateData(this.id).then(res => {
-                    this.form = res.result.data
-                    this.form.masterID = 0
-                    this.form.contractMasterInfo.detailList = []
-                    this.form.billList = []
-                })
+            this.getData()
+        },
+        watch: {
+            '$route' (path) {
+                this.getData()
             }
-
         },
         methods: {
+            getData () {
+                if (this.type === 'view') {
+                    SignedService.viewInfo(this.id).then(res => {
+                        this.form = res.result.data
+                    })
+                } else if (this.type === 'update') {
+                    SignedService.updateInfo(this.id).then(res => {
+                        this.form = res.result.data
+                    })
+                } else {
+                    SignedService.getCreateData(this.id).then(res => {
+                        this.form = res.result.data
+                        this.form.attachmentID = 0
+                        this.form.id = 0
+                        this.form.gid = '00000000-0000-0000-0000-000000000000'
+                        this.form.isDeleted = false
+                        this.form.isAudit = false
+                        this.form.auditStatus = ''
+                        this.form.auditTime = ''
+                        this.form.contractMasterInfo.detailList = []
+                        this.form.contractNSCInfoList = []
+                        this.form.billList = []
+                    })
+                }
+            },
             ac (action) {
                 return ac(action, this.$route)
             },
             save () {
                 if (this.type === 'create') {
-                    const contractList = []
-                    let masterInfoDetailList = []
-                    if (this.form.contractMasterInfo['detailList'].length > 0) {
-                        this.form.contractMasterInfo['detailList'].forEach(item => {
-                                const params = {
-                                    detailContractType: '主合同',
-                                    mainContractGID: this.form.contractMasterInfo['contractGID'],
-                                    secondaryContractGID: this.form.contractMasterInfo['contractGID'],
-                                    paymentType: item.paymentType,
-                                    paymentAmount: item.paymentAmount,
-                                    paymentUse: item.paymentUse,
-                                    vendorGID: item.vendorGID,
-                                    vendorName: item.vendorName,
-                                    vendorBankGID: item.vendorBankGID,
-                                    vendorBankName: item.vendorBankName,
-                                    vendorBankAccounts: item.vendorBankAccounts
-                                }
-                                masterInfoDetailList.push(params)
-                            }
-                        )
-                    }
-                    const contractMasterInfo = {
-                        contractType: '主合同',
-                        mainContractGID: this.form.contractMasterInfo['contractGID'],
-                        secondaryContractGID: this.form.contractMasterInfo['contractGID'],
-                        paymentRequestAmount: this.form.contractMasterInfo['paymentRequestAmount'],
-                        progressSendDate: this.form.contractMasterInfo['progressSendDate'],
-                        progressRequestAmount: this.form.contractMasterInfo['progressRequestAmount'],
-                        progressConfirmDate: this.form.contractMasterInfo['progressConfirmDate'],
-                        progressValuationDate: this.form.contractMasterInfo['progressValuationDate'],
-                        progressApproveDate: this.form.contractMasterInfo['progressApproveDate'],
-                        paymentBusinessType: this.form.contractMasterInfo['paymentBusinessType'],
-                        detailList: masterInfoDetailList
-                    }
-                    let contractNSCInfoList = []
+                    this.form.contractMasterInfo.id = 0
+                    this.form.contractMasterInfo.gid = '00000000-0000-0000-0000-000000000000'
+                    this.form.contractMasterInfo.contractType = '主合同'
+                    this.form.contractMasterInfo.mainContractGID = this.id
+                    this.form.contractMasterInfo.secondaryContractGID = this.id
+
                     if (this.form.contractNSCInfoList.length > 0) {
                         this.form.contractNSCInfoList.forEach(item => {
-                            if (item.detailList) {
-                                item.detailList.forEach(v => {
-                                    v.detailContractType = '分合同'
-                                    v.mainContractGID = this.id
-                                    v.secondaryContractGID = item.contractGID
-                                })
-                            }
-                            const params = {
-                                contractType: '分合同',
-                                mainContractGID: this.id,
-                                secondaryContractGID: item.contractGID,
-                                paymentRequestAmount: item.paymentRequestAmount,
-                                progressSendDate: item.progressSendDate,
-                                progressRequestAmount: item.progressRequestAmount,
-                                progressConfirmDate: item.progressConfirmDate,
-                                progressValuationDate: item.progressValuationDate,
-                                progressApproveDate: item.progressApproveDate,
-                                paymentBusinessType: item.paymentBusinessType,
-                                detailList: item.detailList
-                            }
-                            contractNSCInfoList.push(params)
+                            item.id = 0
+                            item.gid = '00000000-0000-0000-0000-000000000000'
+                            item.contractType = '分合同'
+                            item.mainContractGID = this.id
+                            item.secondaryContractGID = item.contractGID
                         })
                     }
-                    contractList.push(contractMasterInfo)
-                    if (contractNSCInfoList.length > 0) {
-                        contractNSCInfoList.forEach(item => {
-                            contractList.push(item)
-                        })
-                    }
-                    if (this.form.billList.length > 0) {
-                        this.form.billList.forEach(item => {
-                            item.contractGID = this.id
-                        })
-                    }
-                    const body = {
-                        contractGID: this.id,
-                        paymentPhase: this.form['paymentPhase'],
-                        paymentReceiveDate: this.form['paymentReceiveDate'],
-                        expenseAccountType: this.form['expenseAccountType'],
-                        paymentMethod: this.form['paymentMethod'],
-                        paymentContent: this.form['paymentContent'],
-                        attachmentID: this.form['masterID'],
-                        contractList: contractList,
-                        billList: this.form.billList
-                    }
-                    SignedService.create(body).then(res => {
+
+                    SignedService.create(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('创建成功')
-                            if (this.approveStatus) {
-                                SignedService.approve(res.result.data).then(_res => {
-                                    if (_res.result.data) {
-                                        this.$message.success('已启动审批流程')
-                                        const tempwindow = window.open('_blank')
-                                        tempwindow.location = _res.result.data
-                                        this.$router.push({
-                                            path: '/pay/signed/list'
-                                        })
-                                    }
-                                })
-                            } else {
-                                this.$router.push({
-                                    path: '/pay/signed/list'
-                                })
-                            }
+                            this.$router.push({
+                                path: `/pay/signed/item/${res.result.data}?type=view`
+                            })
+
                         }
                     })
                 } else {
-                    if (this.form.contractNSCInfoList.length > 0) {
-                        this.form.contractNSCInfoList.forEach(item => {
-                            if (item.detailList) {
-                                item.detailList.forEach(v => {
-                                    v.mainContractGID = this.form.contractGID
-                                    v.secondaryContractGID = item.contractGID
-                                })
-                            }
-                        })
-                    }
                     if (this.form.billList.length > 0) {
                         this.form.billList.forEach(item => {
-                            item.contractGID = this.form.contractGID
                             item.paymentGID = this.id
                         })
                     }
                     SignedService.update(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('修改成功')
-                            if (this.approveStatus) {
-                                SignedService.approve(this.id).then(_res => {
-                                    if (_res.result.data) {
-                                        this.$message.success('已启动审批流程')
-                                        const tempwindow = window.open('_blank')
-                                        tempwindow.location = _res.result.data
-                                        this.$router.push({
-                                            path: '/pay/signed/list'
-                                        })
-                                    }
-                                })
-                            } else {
-                                this.$router.push({
-                                    path: '/pay/signed/list'
-                                })
-                            }
+                            this.$router.push({
+                                path: '/pay/signed/list'
+                            })
+
                         }
                     })
                 }
@@ -246,8 +153,16 @@
                 })
             },
             approve () {
-                this.approveStatus = true
-                this.save()
+                SignedService.approve(this.id).then(_res => {
+                    if (_res.result.data) {
+                        this.$message.success('已启动审批流程')
+                        const tempwindow = window.open('_blank')
+                        tempwindow.location = _res.result.data
+                        this.$router.push({
+                            path: '/pay/signed/list'
+                        })
+                    }
+                })
             },
             view () {
                 BaseService.viewBpm(this.id).then(res => {

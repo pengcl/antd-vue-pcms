@@ -199,13 +199,25 @@
             </td>
             <td>申请批准金额</td>
             <td>
-              <a-input-number :disabled="type === 'view'"
+              <!--<a-input-number :disabled="type === 'view'"
                               v-model="data.contractMasterInfo.paymentRequestAmount"
                               @change="paymentRequestAmountChange"
                               :min="0"
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"
-                              v-decorator="['paymentRequestAmount', { rules: [{required: true, message: '请输入申请批准金额'}] }]"></a-input-number>
+                              v-decorator="['paymentRequestAmount', { rules: [{required: true, message: '请输入申请批准金额'}] }]"></a-input-number>-->
+              <span v-if="data.contractMasterInfo.paymentRequestAmount" style="margin-right: 10px">{{data.contractMasterInfo.paymentRequestAmount | NumberFormat}}</span>
+              <a-button @click="handleShowPaymentRequestAmount">
+                {{data.contractMasterInfo.paymentRequestAmount ? '修改金额' : '填写明细'}}
+              </a-button>
+              <payment-request-amount-form ref="paymentRequestAmountModal"
+                                           :visible="visible2"
+                                           :loading="confirmLoading2"
+                                           :model="mdl2"
+                                           :contractGID="data.contractMasterInfo.contractGID"
+                                           :type="'contractMasterInfo'"
+                                           @cancel="handleCancel2"
+                                           @ok="handleOk2"></payment-request-amount-form>
             </td>
           </tr>
           <tr>
@@ -227,19 +239,25 @@
           </tbody>
         </table>
       </a-col>
-      <base-info-payment :data="data.contractMasterInfo" :type="type" :id="id" :index="0"
+      <base-info-payment :data="data.contractMasterInfo"
+                         :type="type"
+                         :id="id"
+                         :index="0"
                          @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
-      <base-info-attachment :master-id="data.masterID ? data.masterID : 0"
+      <base-info-attachment :master-id="data.attachmentID ? data.attachmentID : 0"
                             :data="data.contractMasterInfo"
                             :type="type"
                             :id="id"
                             @on-change-masterId="changeMasterId"></base-info-attachment>
       <a-col :md="24" :sm="24">
-        <!--<a-button type="success" @click="handToShowcontractNSC">引入专业分包合同</a-button>-->
+        <a-button type="success" @click="handToShowcontractNSC"
+                  v-if="type === 'create' &&  data.contractNSCInfoList.length < 1">引入专业分包合同
+        </a-button>
         <view-contract-nsc ref="createModal"
                            :visible="visible"
                            :loading="confirmLoading"
                            :model="mdl"
+                           :contractGID="data.contractGID"
                            @cancel="handleCancel"
                            @ok="handleOk"></view-contract-nsc>
       </a-col>
@@ -311,12 +329,24 @@
               </td>
               <td>申请批准金额</td>
               <td>
-                <a-input-number :disabled="type === 'view'"
+                <!--<a-input-number :disabled="type === 'view'"
                                 v-model="item.paymentRequestAmount"
                                 @change="paymentRequestAmountChange2"
                                 :min="0"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :precision="2"></a-input-number>
+                                :precision="2"></a-input-number>-->
+                <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
+                <a-button @click="handleShowPaymentRequestAmount">
+                  {{item.paymentRequestAmount ? '修改金额' : '填写明细'}}
+                </a-button>
+                <payment-request-amount-form ref="paymentRequestAmountModal"
+                                             :visible="visible2"
+                                             :loading="confirmLoading2"
+                                             :model="mdl2"
+                                             :contractGID="item.contractGID"
+                                             :type="'contractNSCInfo'"
+                                             @cancel="handleCancel2"
+                                             @ok="handleOk2"></payment-request-amount-form>
               </td>
             </tr>
             <tr>
@@ -340,7 +370,7 @@
         </a-col>
         <base-info-payment :data="item" :type="type" :id="id" :index="index+1"
                            @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
-        <base-info-attachment :master-id="data.masterID ? data.masterID : 0"
+        <base-info-attachment :master-id="data.attachmentID ? data.attachmentID : 0"
                               :data="item"
                               :type="type"
                               :id="id"
@@ -465,10 +495,11 @@
     import BaseInfoAttachment from '@/views/pay/signed/components/baseInfo/attachment'
     import { Base as BaseService } from '@/api/base'
     import ViewContractNsc from '../modules/ViewContractNSC'
+    import PaymentRequestAmountForm from '../modules/PaymentRequestAmountForm'
 
     export default {
         name: 'BaseInfo',
-        components: { ViewContractNsc, BaseInfoAttachment, BaseInfoPayment, CreateBankForm },
+        components: { PaymentRequestAmountForm, ViewContractNsc, BaseInfoAttachment, BaseInfoPayment, CreateBankForm },
         data () {
             return {
                 selection: {},
@@ -479,6 +510,9 @@
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
+                visible2: false,
+                confirmLoading2: false,
+                mdl2: null,
                 model: null,
                 form: this.$form.createForm(this),
                 index: 0,
@@ -516,7 +550,7 @@
                 }
             },
             'data.contractNSCInfoList' (value) {
-                if (this.data.contractNSCInfoList.length > 0) {
+                if (this.data.contractNSCInfoList && this.data.contractNSCInfoList.length > 0) {
                     const list = this.data.contractNSCInfoList
                     for (const key in list) {
                         const _key = Number(key)
@@ -569,6 +603,10 @@
             }
         },
         methods: {
+            handleShowPaymentRequestAmount () {
+                this.mdl2 = null
+                this.visible2 = true
+            },
             handToShowcontractNSC () {
                 this.mdl = null
                 this.visible = true
@@ -641,7 +679,7 @@
                 this.data.paymentDeadline = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate()
             },
             changeMasterId (val) {
-                this.data.masterID = val
+                this.data.attachmentID = val
                 this.$forceUpdate()
             },
             dateChange (value) {
@@ -656,6 +694,9 @@
             },
             add (target) {
                 const item = {
+                    id: 0,
+                    paymentGID: '00000000-0000-0000-0000-000000000000',
+                    contractGID: this.data['contractGID'],
                     isDeleted: false,
                     isTemp: true,
                     billType: '',
@@ -698,7 +739,7 @@
             handleUpload (file) {
                 const formData = new FormData()
                 formData.append('file', file)
-                formData.append('masterId', this.data['masterID'])
+                formData.append('masterId', this.data['attachmentID'])
                 formData.append('businessID', this.id)
                 formData.append('businessType', 'bill')
                 formData.append('subInfo1', this.billType) //文件类型
@@ -715,7 +756,7 @@
                         this.data.billList[this.index].billFileID = response.result.data.id
                         this.data.billList[this.index].billFileName = response.result.data.fileName
                         this.data.billList[this.index].billFileUrl = response.result.data.fileUrl
-                        this.data.masterID = response.result.data.masterID
+                        this.data.attachmentID = response.result.data.masterID
                         this.$forceUpdate()
                         _this.$message.success('上传成功')
                         _this.$emit('ok', response.url)
@@ -727,13 +768,50 @@
                 })
             },
             handleOk () {
-
+                this.confirmLoading = true
+                const selected = this.$refs.createModal.selected
+                selected.forEach(item => {
+                    if (item.contractGuid) {
+                        SignedService.NSCContract(this.data.contractGID, item.contractGuid).then(res => {
+                            if (res.result.data) {
+                                this.$message.success('引入专业分包合同成功！')
+                                this.data.contractNSCInfoList.push(res.result.data)
+                                this.$refs.createModal.form.resetFields()
+                                this.confirmLoading = false
+                                this.visible = false
+                            }
+                        })
+                    }
+                })
             },
             handleCancel () {
                 this.visible = false
 
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
+            },
+            handleOk2 () {
+                const data = this.$refs.paymentRequestAmountModal
+                console.log(data)
+                if (data.type === 'contractMasterInfo') {
+                    this.data.contractMasterInfo.paymentRequestAmount = data.requestAmountTotal
+                    this.paymentRequestAmountChange(data.requestAmountTotal)
+                    this.data.contractMasterInfo.requestList = data.requestList
+                } else {
+                    this.data.contractNSCInfoList.forEach(item => {
+                        data.forEach(d => {
+                            if (item.contractGID === d.contractGID) {
+                                item.paymentRequestAmount = d.requestAmountTotal
+                                this.paymentRequestAmountChange2(d.requestAmountTotal)
+                                item.requestList = d.requestList
+                            }
+                        })
+                    })
+                }
+                this.visible2 = false
+            },
+            handleCancel2 () {
+                this.visible2 = false
+                const form = this.$refs.paymentRequestAmountModal.form
+                form.resetFields()
             },
         }
     }

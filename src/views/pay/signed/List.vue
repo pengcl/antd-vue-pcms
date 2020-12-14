@@ -212,6 +212,7 @@
         {
             title: '币种',
             dataIndex: 'currency',
+            width: '78px'
         },
         {
             title: '合同金额',
@@ -221,11 +222,13 @@
         {
             title: '审核状态',
             dataIndex: 'auditStatus',
-            scopedSlots: { customRender: 'auditStatus' }
+            scopedSlots: { customRender: 'auditStatus' },
+            width: '78px'
         },
         {
             title: '结算状态',
             dataIndex: 'balanceStatus',
+            width: '78px'
         }
     ]
 

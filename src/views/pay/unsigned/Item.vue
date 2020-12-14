@@ -141,7 +141,7 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type !== 'view' && form.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
@@ -220,6 +220,9 @@
                     })
                 }
                 this.form.paymentAmount = result
+            },
+            '$route' (path){
+                this.getData()
             }
         },
         created () {
@@ -306,52 +309,34 @@
                 this.$forceUpdate()
             },
             approve () {
-                this.approveStatus = true
-                this.save()
+                UnSignedService.approve(this.id).then(_res => {
+                    if (_res.result.data) {
+                        this.$message.success('已启动审批流程')
+                        const tempwindow = window.open('_blank')
+                        tempwindow.location = _res.result.data
+                        this.$router.push({
+                            path: '/pay/unsigned/list'
+                        })
+                    }
+                })
             },
             save () {
                 if (this.type === 'create') {
                     UnSignedService.create(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('创建成功')
-                            if (this.approveStatus) {
-                                UnSignedService.approve(res.result.data).then(_res => {
-                                    if (_res.result.data) {
-                                        this.$message.success('已启动审批流程')
-                                        const tempwindow = window.open('_blank')
-                                        tempwindow.location = _res.result.data
-                                        this.$router.push({
-                                            path: '/pay/unsigned/list'
-                                        })
-                                    }
-                                })
-                            } else {
-                                this.$router.push({
-                                    path: '/pay/unsigned/list'
-                                })
-                            }
+                            this.$router.push({
+                                path: `/pay/unsigned/item/${res.result.data}?type=view&projectGUID=` + this.projectGUID
+                            })
                         }
                     })
                 } else {
                     UnSignedService.update(this.form).then(res => {
                         if (res.result.data) {
                             this.$message.success('修改成功')
-                            if (this.approveStatus) {
-                                UnSignedService.approve(this.id).then(_res => {
-                                    if (_res.result.data) {
-                                        this.$message.success('已启动审批流程')
-                                        const tempwindow = window.open('_blank')
-                                        tempwindow.location = _res.result.data
-                                        this.$router.push({
-                                            path: '/pay/unsigned/list'
-                                        })
-                                    }
-                                })
-                            } else {
-                                this.$router.push({
-                                    path: '/pay/unsigned/list'
-                                })
-                            }
+                            this.$router.push({
+                                path: '/pay/unsigned/list'
+                            })
                         }
                     })
                 }

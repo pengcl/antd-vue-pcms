@@ -280,7 +280,7 @@
             },
             onSelect (value, option) {
                 storage.set('POS', option.pos)
-                this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+                this.queryParam.ProjectCode = option.$options.propsData.dataRef.projectCode
                 this.projectType = option.$options.propsData.dataRef.type
                 if (typeof value === 'number') {
                     this.city = value
