@@ -26,6 +26,9 @@ const API = {
   masterID: '/api/services/app/UploadAppservice/GetMasterIDByBusinessGuid',
   approve: '/api/services/app/Payment/StartBPM',
   paymentMethodTypes: '/api/services/app/GeneralType/GetPaymentMethodTypes',
+  requestList: '/api/services/app/Payment/GetPaymentRequestList',
+  NSCContract: '/api/services/app/Payment/GetPaymentNSCContract',
+  NSCInfoList: '/api/services/app/Payment/GetContractNSCInfoList',
 }
 
 const SignedService = {}
@@ -186,6 +189,30 @@ SignedService.fileList = function (masterID, businessID, sSubInfo1, sSubInfo2) {
     url: API.fileList,
     method: 'get',
     params: { masterID, businessID, sSubInfo1, sSubInfo2 }
+  })
+}
+
+SignedService.requestList = function (contractGID, paymentGID) {
+  return request({
+    url: API.requestList,
+    method: 'get',
+    params: { contractGID, paymentGID }
+  })
+}
+
+SignedService.NSCContract = function (contractGID, secondaryContractGID) {
+  return request({
+    url: API.NSCContract,
+    method: 'get',
+    params: { contractGID, secondaryContractGID }
+  })
+}
+
+SignedService.NSCInfoList = function (contractGID) {
+  return request({
+    url: API.NSCInfoList,
+    method: 'get',
+    params: { contractGID }
   })
 }
 
