@@ -47,7 +47,14 @@ const API = {
   getVOCUseSurplusPreSplitByVOGuid : '/api/services/app/VO/GetVOCUseSurplusPreSplitByVOGuid',//VO-变更预分解（针对定标盈余）
   createVOCUseSurplus : '/api/services/app/VO/CreateVOCUseSurplus',//VO-预算确认（针对定标盈余）
   updateVOCUseSurplus : '/api/services/app/VO/UpdateVOCUseSurplus',//VO-更新变更预算调整（针对定标盈余）
-  getCIPTypes: '/api/services/app/GeneralType/GetCIPTypes'//CIP类型
+  getCIPTypes: '/api/services/app/GeneralType/GetCIPTypes',//CIP类型
+  getVOUseGeneralTradePreSplitByVOGuid : '/api/services/app/VO/GetVOUseGeneralTradePreSplitByVOGuid',//CIP-变更预分解（针对预算余额）
+  createVOUseGeneralTrade : '/api/services/app/VO/CreateVOUseGeneralTrade',//CIP-预算确认（针对预算余额）
+  updateVOGeneralTrade : '/api/services/app/VO/UpdateVOGeneralTrade',//CIP-更新变更预算调整（针对预算余额）
+
+  getVOCUseGeneralTradePreSplitByVOGuid : '/api/services/app/VO/GetVOCUseGeneralTradePreSplitByVOGuid',//VO-变更预分解（针对预算余额）
+  createVOCUseGeneralTrade : '/api/services/app/VO/CreateVOCUseGeneralTrade',//VO-预算确认（针对预算余额）
+  updateVOCGeneralTrade : '/api/services/app/VO/UpdateVOCGeneralTrade',//VO-更新变更预算调整（针对预算余额）
 
 }
 
@@ -572,6 +579,74 @@ ChangeService.getCIPTypes = function(){
 	    url: API.getCIPTypes,
 	    method: 'get',
 	    params: {}
+	  })
+}
+
+/**
+ * CIP-变更预分解（针对预算余额）
+ */
+ChangeService.getVOUseGeneralTradePreSplitByVOGuid = function(parameter){
+	return request({
+	    url: API.getVOUseGeneralTradePreSplitByVOGuid,
+	    method: 'get',
+	    params: parameter
+	  })
+}
+
+/**
+ * CIP-预算确认（针对预算余额）
+ */
+ChangeService.createVOUseGeneralTrade = function(parameter){
+	return request({
+	    url: API.createVOUseGeneralTrade,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+
+/**
+ * CIP-更新变更预算调整（针对预算余额）
+ */
+ChangeService.updateVOGeneralTrade = function(parameter){
+	return request({
+	    url: API.updateVOGeneralTrade,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
+/**
+ * VO-变更预分解（针对预算余额）
+ */
+ChangeService.getVOCUseGeneralTradePreSplitByVOGuid = function(parameter){
+	return request({
+	    url: API.getVOCUseGeneralTradePreSplitByVOGuid,
+	    method: 'get',
+	    params: parameter
+	  })
+}
+
+/**
+ * VO-预算确认（针对预算余额）
+ */
+ChangeService.createVOCUseGeneralTrade = function(parameter){
+	return request({
+	    url: API.createVOCUseGeneralTrade,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+
+/**
+ * VO-更新变更预算调整（针对预算余额）
+ */
+ChangeService.updateVOCGeneralTrade = function(parameter){
+	return request({
+	    url: API.updateVOCGeneralTrade,
+	    method: 'put',
+	    data: parameter
 	  })
 }
 

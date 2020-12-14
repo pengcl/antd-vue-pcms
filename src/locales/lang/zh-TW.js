@@ -84,6 +84,7 @@ const locale = {
   'menu.checkout.finance.item': '财务结算书详情',
 
   'menu.report': '报表管理',
+  'menu.report.contract': '项目合同台账表',
 
   'menu.data.list': '基础数据设置',
   'menu.data.item': '基础数据设置',
