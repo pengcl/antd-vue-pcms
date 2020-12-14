@@ -352,6 +352,14 @@ CostService.uploadBudgetFile = function (parameter) {
   })
 }
 
+CostService.bidUpdate = function (parameter) {
+  return request({
+    url: API.bidUpdate,
+    method: 'PUT',
+    data: parameter
+  })
+}
+
 /**
  * login func
  * parameter: {
