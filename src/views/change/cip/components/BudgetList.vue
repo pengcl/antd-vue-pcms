@@ -41,6 +41,9 @@
           :data-source="generalTradeData"
           bordered 
           ref="generalTradeTable" >
+          <label slot="tradeBalanceAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="voUseAmount" slot-scope="text">{{text | NumberFormat}}</label>
+          <label slot="balanceAmount" slot-scope="text">{{text | NumberFormat}}</label>
         </a-table>
       </a-col>
     </a-row>
@@ -112,8 +115,8 @@
     },
     {
       title: '预算余额',
-      dataIndex: 'alterPlan',
-      scopedSlots: { customRender: 'alterPlan' }
+      dataIndex: 'tradeBalanceAmount',
+      scopedSlots: { customRender: 'tradeBalanceAmount' }
     },
     {
       title: '本次使用金额',
@@ -137,8 +140,8 @@
       'VO' : 'vocUseSurpluslst'
     },
     110 : {
-      'CIP' : 'voUsePlanlst',
-      'VO' : 'voCUsePlanlst'
+      'CIP' : 'voUseGeneralTradelst',
+      'VO' : 'vocUseGeneralTradelst'
     }
   }
 
@@ -170,7 +173,7 @@
         this.usePlanData = usePlanDataTemp
       }
       this.surplusData = this.data[showKeys[109][this.stage]]
-      this.generalTradeData = []
+      this.generalTradeData = this.data[showKeys[110][this.stage]]
       return {
         selection : {storeTypes : []}
       }

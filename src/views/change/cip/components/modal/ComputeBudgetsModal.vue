@@ -15,7 +15,7 @@
           <a-col :md="24" :sm="24">
             <a-radio-group v-model="useStore" button-style="solid" :disabled="useStore > 0 && stage==='VO'">
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
-                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance | NumberFormat}}</span>元</span>）
+                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance | NumberFormat}}</span><span v-if="item.balance <= 0">--余额不足</span>元</span>）
               </a-radio>
             </a-radio-group>
           </a-col>
@@ -60,7 +60,7 @@
                 <template slot="voUseAmount" slot-scope="text,record">
                   <a-input-number 
                     :max="record.surplusAmount" 
-                    v-model="record.voUseAmount" 
+                    v-model="record.voUseAmount"
                     @change="changeVoUseAmount(record,'surplusAmount')"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
@@ -80,15 +80,14 @@
               :alert="false"
               bordered 
               ref="generalTradeTable" >
-                <template slot="alterPlan" slot-scope="text,record">
-                  <a-input-number  :value="record.alterPlan" :disabled="true"></a-input-number>
+                <template slot="tradeBalanceAmount" slot-scope="text,record">
+                  <a-input-number  :value="record.tradeBalanceAmount" :disabled="true"></a-input-number>
                 </template>
                 <template slot="voUseAmount" slot-scope="text,record">
                   <a-input-number 
-                    :max="record.alterPlan" 
-                    :min="-record.alterPlan" 
+                    :max="record.tradeBalanceAmount" 
                     v-model="record.voUseAmount" 
-                    @change="changeVoUseAmount(record,'alterPlan')"
+                    @change="changeVoUseAmount(record,'tradeBalanceAmount')"
                     :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
                     :precision="2"
@@ -170,8 +169,8 @@
     },
     {
       title: '预算余额',
-      dataIndex: 'alterPlan',
-      scopedSlots: { customRender: 'alterPlan' }
+      dataIndex: 'tradeBalanceAmount',
+      scopedSlots: { customRender: 'tradeBalanceAmount' }
     },
     {
       title: '本次使用金额',
@@ -218,16 +217,16 @@
     },
     110 : {
       'CIP' : {
-        'create' : 'createVoUsePlan',
-        'update' : 'updateVoUsePlan',
-        'get' : 'getVoBudgetPreSplit',
-        'list' : 'voUseSurpluslst'
+        'create' : 'createVOUseGeneralTrade',
+        'update' : 'updateVOGeneralTrade',
+        'get' : 'getVOUseGeneralTradePreSplitByVOGuid',
+        'list' : 'voUseGeneralTradelst'
       },
       'VO':{
-        'create' : 'createVoUsePlan',
-        'update' : 'updateVoUsePlan',
-        'get' : 'getVoBudgetPreSplit',
-        'list' : 'voCUseSurpluslst'
+        'create' : 'createVOCUseGeneralTrade',
+        'update' : 'updateVOCGeneralTrade',
+        'get' : 'getVOCUseGeneralTradePreSplitByVOGuid',
+        'list' : 'vocUseGeneralTradelst'
       },
       'table' : 'generalTradeTable'
     }
@@ -305,9 +304,20 @@
         },
         generalTradeLoadData : parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          return new Promise((resolve, reject) => {
-            resolve({ data : [] })
-          })
+          return ChangeService[actions[110][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+            .then(res => {
+              if(res.result.data == null){
+                return new Promise((resolve, reject) => {
+                resolve({ data : [] })
+              })
+              }
+              return res.result
+            }).catch((e) =>{
+              this.$message.error('获取预算余额列表错误')
+              return new Promise((resolve, reject) => {
+                resolve({ data : [] })
+              })
+            })
         },
         selectedRowKeys: [],
         selectedRows: []
@@ -387,11 +397,6 @@
         this.loading = true
         if(this.useStore != 108 && this.useStore != 109 && this.useStore != 110){
           this.$message.warn('请选择预算确认类别')
-          this.loading = false
-          return
-        }
-        if(this.useStore === 110){
-          this.$message.warn('暂无接口，无法完成预算确认，请选择【变更预留金额】进行操作')
           this.loading = false
           return
         }
