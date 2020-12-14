@@ -17,12 +17,15 @@ const API = {
   computeBudgets: '/api/services/app/Contract/ComputeContractBudgetByContractGuid',
   computeBudgets_108: '/api/services/app/Contract/GetContractUsePlanPreSplitByContractGuid',
   computeBudgets_109: '/api/services/app/Contract/GetContrcatUseSurplusPreSplitByContractGuid',
+  computeBudgets_110: '/api/services/app/Contract/GetContractGeneralTradePreSplitByContractGuid',
   createBudgets: '/api/services/app/Contract/CreateContractBudget',
   updateBudgets: '/api/services/app/Contract/UpdateContractBudget',
   createBudgets_108: '/api/services/app/Contract/CreateContrcatUsePlan',
   updateBudgets_108: '/api/services/app/Contract/UpdateContractUsePlan',
   createBudgets_109: '/api/services/app/Contract/CreateVOUseSurplus',
   updateBudgets_109: '/api/services/app/Contract/UpdateContractUseSurplus',
+  createBudgets_110: '/api/services/app/Contract/CreateContrcatUseGeneralTrade',
+  updateBudgets_110: '/api/services/app/Contract/UpdateContractUseGeneralTrade',
   bpm: '/api/services/app/Contract/StartBPM'
 }
 
@@ -163,6 +166,14 @@ ContractService.computeBudgets_109 = function (params) {
   })
 }
 
+ContractService.computeBudgets_110 = function (params) {
+  return request({
+    url: API.computeBudgets_110,
+    method: 'GET',
+    params: params
+  })
+}
+
 ContractService.createBudgets = function (params) {
   return request({
     url: API.createBudgets,
@@ -206,6 +217,22 @@ ContractService.createBudgets_109 = function (params) {
 ContractService.updateBudgets_109 = function (params) {
   return request({
     url: API.updateBudgets_109,
+    method: 'PUT',
+    data: params
+  })
+}
+
+ContractService.createBudgets_110 = function (params) {
+  return request({
+    url: API.createBudgets_110,
+    method: 'POST',
+    data: params
+  })
+}
+
+ContractService.updateBudgets_110 = function (params) {
+  return request({
+    url: API.updateBudgets_110,
     method: 'PUT',
     data: params
   })

@@ -361,6 +361,9 @@
               if (form.useStore === 109) {
                 form.contractUseSurpluslst = this.$refs.budgets.$refs.table.localDataSource
               }
+              if (form.useStore === 110) {
+                form.contractUseGeneralTradePlanlst = this.$refs.budgets.$refs.table.localDataSource
+              }
               ContractService[type + 'Budgets_' + this.$refs.budgets.queryParam.useStore](form).then(res => {
                 if (res.result.statusCode === 200) {
                   this.show = false

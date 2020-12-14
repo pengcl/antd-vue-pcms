@@ -41,7 +41,7 @@
         </a-row>
       </a-form-model>
       <a-radio-group @change="storeChange" v-model="queryParam.useStore" button-style="solid">
-        <a-radio :disabled="item.id === 110" v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
+        <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
           {{ item.nameCN }}
         </a-radio>
       </a-radio-group>
@@ -98,7 +98,7 @@
         <a-form-model-item>
           <a-input-number
             style="margin-top: 18px"
-            :max="record.alterPlan || record.surplusAmount"
+            :max="record.alterPlan || record.surplusAmount || record.tradeBalanceAmount"
             v-model="record.addedUseAmount"
             @change="subChange(record)"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -121,6 +121,16 @@
             style="margin-top: 18px"
             :disabled="true"
             :value="record.balanceAmount"
+            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+            :precision="2"/>
+        </a-form-model-item>
+      </template>
+      <template slot="tradeBalanceAmount" slot-scope="text, record">
+        <a-form-model-item>
+          <a-input-number
+            style="margin-top: 18px"
+            :disabled="true"
+            :value="record.tradeBalanceAmount"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :precision="2"/>
         </a-form-model-item>
@@ -242,13 +252,13 @@
       },
       {
         title: '预算余额',
-        dataIndex: 'alterPlan',
-        scopedSlots: { customRender: 'alterPlan' }
+        dataIndex: 'tradeBalanceAmount',
+        scopedSlots: { customRender: 'tradeBalanceAmount' }
       },
       {
         title: '本次使用金额',
-        dataIndex: 'voUseAmount',
-        scopedSlots: { customRender: 'voUseAmount' }
+        dataIndex: 'addedUseAmount',
+        scopedSlots: { customRender: 'addedUseAmount' }
       },
       {
         title: '差额',
@@ -277,7 +287,6 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           this.queryParam.contractGuid = this.contractGuid
-          console.log(this.queryParam.useStore)
           const e = { target: {
             value: this.queryParam.useStore
           } }
@@ -313,6 +322,21 @@
                 return res.result
               })
             }
+            if (this.queryParam.useStore === 110) {
+                  return ContractService.computeBudgets_110(this.queryParam).then(res => {
+                      this.statusCode = res.result.statusCode
+                      this.total = {}
+                      this.balance = {}
+                      this.balances = []
+                      res.result.data.forEach((item, index) => {
+                          item.index = index
+                      })
+                      this.getTotal(res.result.data)
+                      this.getBalance(res.result.data)
+                      this.getBalances()
+                      return res.result
+                  })
+              }
           } else {
             return ContractService.computeBudgets(this.queryParam).then(res => {
               this.statusCode = res.result.statusCode
