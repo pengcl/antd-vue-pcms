@@ -100,7 +100,7 @@
                     :rules="[{required: true, message: '请选择行业分判包', trigger: 'change' }]"
                   >
                     <a-select
-                      v-if="industryItems.length > 0 && form.tenderPackages[index]"
+                      v-if="industryItems.length > 0"
                       :disabled="getDisabled(index)"
                       showSearch
                       option-filter-prop="children"
@@ -110,7 +110,7 @@
                     >
                       <a-select-option
                         v-for="(option,i) in getIndustrysList(industryItems,form.tenderPackages,form.tenderPackages[index])"
-                        :key="i"
+                        :key="option.id"
                         :value="option.id">
                         {{ option.packageTitle }}
                       </a-select-option>
@@ -179,7 +179,6 @@
                     :prop="'plans.' + index +'.planStartDate'"
                     :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
                     <a-date-picker
-                      v-if="form.plans[index].planStartDate"
                       :disabled="getPlanDisabled(index)"
                       v-model="form.plans[index].planStartDate"></a-date-picker>
                   </a-form-model-item>
@@ -191,7 +190,6 @@
                     :prop="'plans.' + index +'.planEndDate'"
                     :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
                     <a-date-picker
-                      v-if="form.plans[index].planEndDate"
                       :disabled="getPlanDisabled(index)"
                       v-model="form.plans[index].planEndDate"></a-date-picker>
                   </a-form-model-item>
@@ -322,7 +320,6 @@
                 item.isEditItem = true
               })
             })
-            console.log(this.form.plans)
           }
           this.$forceUpdate()
         })
@@ -460,7 +457,6 @@
         const items = this.form.tenderPackages
         if (this.type === 'edit') {
           const item = items[index]
-          console.log(item)
           this.industryItems.forEach(industryItem => {
             if (industryItem.id === item && industryItem.isEditItem) {
               // 移除的计划放到移除对象
@@ -469,7 +465,6 @@
           })
         }
         items.splice(index, 1)
-        console.log(this.removeTenderPackages)
       },
       delPlan(index) {
         const items = this.form.plans
@@ -500,7 +495,6 @@
         if (typeof index === 'number') {
           _industrysItems.push(industrysItems[index])
         }
-        console.log("_industrysItems",_industrysItems)
         return _industrysItems
       },
       getIndex(items, value) {
