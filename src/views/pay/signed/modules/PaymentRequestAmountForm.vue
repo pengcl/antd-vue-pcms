@@ -4,7 +4,7 @@
     :width="900"
     :visible="visible"
     :confirmLoading="loading"
-    :ok-button-props="{ props: { disabled: !requestAmountTotal } }"
+    :ok-button-props="{ props: { disabled: !requestAmountTotal || requestAmountTotal < 0 } }"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
@@ -12,7 +12,7 @@
       <s-table
         ref="table"
         size="default"
-        rowKey="id"
+        rowKey="businessGuid"
         bordered
         :columns="columns"
         :data="loadData"
@@ -33,10 +33,10 @@
 
         <span slot="requestAmount" slot-scope="text,record">
           <a-input-number :value="text"
+                          :disabled="record.amountPayable < 0"
                           @change="e => onChange(e,record,'requestAmount')"
-                          :min="0"
                           :max="record.amountPayable"
-                          :style="{color: record.requestAmount > record.amountPayable ? 'red' : ''}"
+                          :style="{color: (record.amountPayable > 0 && record.requestAmount > record.amountPayable) || (record.businessType === 'CIP' && record.amountPayable > 0 && record.requestAmountTotal+record.requestAmount > record.businessAmount*0.3) ? 'red' : ''}"
                           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                           :precision="2"></a-input-number>
         </span>
@@ -44,7 +44,7 @@
         <span slot="footer">
           <a-row :gutter="48">
             <a-col :md="20" :sm="24" style="text-align: right"><b>申请批准金额：</b></a-col>
-            <a-col :md="4" :sm="24">{{requestAmountTotal | NumberFormat}}</a-col>
+            <a-col :md="4" :sm="24" :style="{color : requestAmountTotal <= 0 ? 'red' : '' }">{{requestAmountTotal | NumberFormat}}</a-col>
           </a-row>
         </span>
 
@@ -132,6 +132,11 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     return SignedService.requestList(this.contractGID).then(res => {
+                        res.result.data.forEach(item => {
+                            if (item.amountPayable < 0) {
+                                item.requestAmount = item.amountPayable
+                            }
+                        })
                         this.requestList = res.result.data
                         return fixedList(res, requestParameters)
                     })
