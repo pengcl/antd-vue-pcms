@@ -658,7 +658,7 @@
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
-            <a-button :loading="loading.save" :disabled="type === 'view'" @click="save" type="success">
+            <a-button :loading="loading.save" :disabled="disabled" @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -739,6 +739,7 @@
         dialog: DIALOGCONFIG,
         form: {},
         info: {},
+        disabled:false,
         rules: {
           costCenterName: [
             { required: true, message: '请填写成本中心名称', trigger: 'blur' }
@@ -889,6 +890,7 @@
         console.log('approve')
       },
       save () {
+        this.disabled = true
         this.$refs.form.validate(valid => {
           if (valid) {
             this.loading.save = true
@@ -899,6 +901,7 @@
                 this.$router.push({ path: '/project/cost/list' })
               }
             }).catch(() => {
+              this.disabled = false
               this.loading.save = false
               this.dialog.show({
                 content: '创建失败，表单未填写完整',

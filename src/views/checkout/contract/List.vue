@@ -64,6 +64,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
+        :rowSelection="rowSelection"
         showPagination="auto"
       >
         <span slot="contractNo" slot-scope="text, record">
@@ -78,31 +79,6 @@
             {{text | NumberFormat}}
         </span>
 
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a-button
-              class="btn-success"
-              type="primary"
-              icon="file-text"
-              title="查看"
-              @click="handleToItem(record)"></a-button>
-            <a-button
-              :disabled="record.auditStatus !== '未审核'"
-              class="btn-info"
-              type="primary"
-              icon="form"
-              style="margin-left: 4px"
-              title="编辑"
-              @click="handleToEdit(record)"></a-button>
-            <a-button
-              :disabled="record.auditStatus !== '未审核'"
-              type="danger"
-              icon="delete"
-              style="margin-left: 4px"
-              title="删除"
-              @click="remove(record)"></a-button>
-          </template>
-        </span>
       </s-table>
 
 
@@ -166,7 +142,6 @@
 </template>
 
 <script>
-    import moment from 'moment'
     import { STable } from '@/components'
     import { getRoleList } from '@/api/manage'
     import CreateForm from '@/views/list/modules/CreateForm'
@@ -299,6 +274,7 @@
             this._columns = _columns
             return {
                 // create model
+                contractGID: '',
                 projectType: '',
                 cities: null,
                 show: false,
@@ -313,10 +289,12 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return ChangeService.items(requestParameters)
-                        .then(res => {
+                    if (this.queryParam.ProjectID) {
+                        return ChangeService.items(requestParameters).then(res => {
                             return fixedList(res, parameter)
                         })
+                    }
+
                 },
                 loadData2: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam2)
@@ -340,7 +318,7 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                this.queryParam.ProjectCode = value.projectCode
+                this.queryParam.ProjectID = value.projectCode
                 this.projectType = value.type
                 this.queryParam.ProjectGUID = value.projectGUID
                 this.$refs.table.refresh()
@@ -349,9 +327,15 @@
         },
         computed: {
             rowSelection () {
+                const that = this
                 return {
                     selectedRowKeys: this.selectedRowKeys,
-                    onChange: this.onSelectChange
+                    onChange: this.onSelectChange,
+                    type: 'radio',
+                    onSelect: function (record, selected, selectRows, nativeEvent) {
+                        that.contractGID = record.contractGuid
+                        that.$refs._table.refresh()
+                    }
                 }
             }
         },

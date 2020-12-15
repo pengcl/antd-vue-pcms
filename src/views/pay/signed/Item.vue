@@ -25,7 +25,7 @@
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
-            <a-button @click="save" type="success">
+            <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
           </a-button-group>
@@ -54,7 +54,7 @@
         data () {
             return {
                 baseInfo: null,
-                approveStatus: false,
+                disabled: false,
                 form: SwaggerService.getForm('PaymentViewDto')
             }
         },
@@ -104,6 +104,7 @@
                 return ac(action, this.$route)
             },
             save () {
+                this.disabled = true
                 if (this.type === 'create') {
                     this.form.contractMasterInfo.id = 0
                     this.form.contractMasterInfo.gid = '00000000-0000-0000-0000-000000000000'

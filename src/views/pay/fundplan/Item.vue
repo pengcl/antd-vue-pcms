@@ -522,6 +522,7 @@
                 form.resetFields() // 清理表单数据（可不做）
             },
             save () {
+                this.disabled = true
                 const body = this.originData.result.data
                 FundPlanService.update(body).then(res => {
                     if (res.result.data) {

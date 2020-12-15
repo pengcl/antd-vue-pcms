@@ -427,7 +427,7 @@
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
-            <a-button @click="save" type="success">
+            <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
           </a-button-group>
@@ -486,6 +486,7 @@
           save: false,
           view: false
         },
+        disabled:false,
         rules: {
           cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
           projectShortCode: [{ required: true, message: '请填写编码', trigger: 'blur' }],
@@ -607,6 +608,7 @@
         })
       },
       save () {
+        this.disabled = true
         if (!this.form.projectShortName) {
           this.form.projectShortName = this.form.projectName
         }

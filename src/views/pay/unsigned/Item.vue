@@ -154,7 +154,7 @@
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
-            <a-button @click="save" type="success">
+            <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
           </a-button-group>
@@ -197,7 +197,7 @@
                 currencyList: [],
                 departmentList: [],
                 elementItems: [],
-                approveStatus: false,
+                disabled: false,
                 rules: {
                     sponsorDeptName: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
                     paymentBusinessType: [{ required: true, message: '请选择付款类型', trigger: 'change' }],
@@ -221,7 +221,7 @@
                 }
                 this.form.paymentAmount = result
             },
-            '$route' (path){
+            '$route' (path) {
                 this.getData()
             }
         },
@@ -321,6 +321,7 @@
                 })
             },
             save () {
+                this.disabled = true
                 if (this.type === 'create') {
                     UnSignedService.create(this.form).then(res => {
                         if (res.result.data) {

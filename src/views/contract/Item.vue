@@ -92,7 +92,7 @@
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
-            <a-button :loading="loading.save" @click="save()" type="success">
+            <a-button :loading="loading.save" @click="save()" type="success" :disabled="disabled">
               储存
             </a-button>
           </a-button-group>
@@ -157,7 +157,7 @@
     },
     data () {
       return {
-        disabled: true,
+        disabled: false,
         activeKey: 1,
         loading: {
           bpm: false,
@@ -274,6 +274,7 @@
         })
       },
       save () {
+        this.disabled = true
         let isValid = true
         const validateForms = [
           {
@@ -328,6 +329,7 @@
             })
           } else {
             alert('您要在合同量清单中至少选择一条带数项！')
+            this.disabled = false
             this.activeKey = 4
           }
         }
