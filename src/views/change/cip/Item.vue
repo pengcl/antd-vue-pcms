@@ -39,7 +39,7 @@
             </a-col>
           </a-row>
 
-          <a-tabs v-model="tabActiveKey" :animated="false" @change="handleTabChange"> 
+          <a-tabs v-model="tabActiveKey" :animated="false" @change="handleTabChange">
             <a-tab-pane :key="1" tab="基本资料">
               <base-info
                 title="基本资料"
@@ -91,18 +91,18 @@
       <div class="table-operator" style="margin-top:8px;">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核'" @click="startBPM">启动审批流程</a-button>
-            <a-button type="success" :loading="loading.showBPM" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中'" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核'  && ac('EDIT')" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
 
-            <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !this.pmiUrl" @click="createPMI">生成项目指令</a-button>
-            <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl " @click="showPMI">查看项目指令</a-button>
+            <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !this.pmiUrl && ac('ADD')" @click="createPMI">生成项目指令</a-button>
+            <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl " @click="showPMI && ac('VIEW')">查看项目指令</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO'" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
-            <a-button type="success" :loading="loading.save" v-if="type !== 'view'" @click="save()">储存</a-button>
-            <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' " @click="cancel">废弃</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO' && ac('EDIT')" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type !== 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()" :disabled="disabled">储存</a-button>
+            <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' && ac('DELETE')" @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -130,6 +130,7 @@
   import { ProjectService } from '@/views/project/project.service'
   import { SwaggerService } from '@/api/swagger.service'
   import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+  import { ac } from '@/views/user/user.service'
 
   export default {
     name: 'ChangeItem',
@@ -147,6 +148,7 @@
           createPMI : false,
           showPMI : false
         },
+        disabled:false,
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
         master:{oldVoTotalAmountIncrease : 0},
@@ -202,10 +204,14 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       approve () {
         console.log('approve')
       },
       save (callback) {
+        this.disabled = true
         let isValid = true
         const validateForms = [
           {
@@ -263,6 +269,7 @@
               }
             }).catch((e) => {
               console.log('e',e)
+              this.disabled = false
               this.loading.save = false
               this.$message.error('创建失败，表单未填写完整')
             })
@@ -281,6 +288,7 @@
               }
             }).catch((e) => {
               console.log('error',e)
+              this.disabled = false
               this.loading.save = false
               this.$message.error('修改失败，表单未填写完整')
               if(callback !== undefined){
@@ -361,7 +369,7 @@
         }else{
           this.preActiveKey = activieKey
         }
-        
+
       },
       //验证造价估算必填值
       checkBqList(){
@@ -392,7 +400,7 @@
               if(res.result.statusCode === 200){
                 that.$message.success('废弃成功')
                 that.$router.push({ path: `/change/cip/list` })
-                
+
               }
             }).catch((e) =>{
               console.log('e',e)

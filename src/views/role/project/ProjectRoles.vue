@@ -51,7 +51,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
           <a-button-group v-if=" ac('EDIT')">
-            <a-button @click="save" type="success">
+            <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
           </a-button-group>
@@ -108,6 +108,7 @@
         posts: null,
         OrgGID: '',
         loading: true,
+        disabled:false,
         permissions: [],
         rules: {
           OrgGID: [
@@ -187,6 +188,7 @@
         })
       },
       save () {
+        this.disabled = true
         this.$refs.form.validate(valid => {
           if (valid) {
             const keys = []
@@ -199,6 +201,8 @@
             ProjectRolesService.save(this.form).then(res => {
               if (res.result.statusCode === 200) {
                 this.$message.success('保存成功')
+              }else {
+                this.disabled = false
               }
             })
           }

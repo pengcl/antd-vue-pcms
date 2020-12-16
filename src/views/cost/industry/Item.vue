@@ -89,7 +89,7 @@
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button :disabled="type === 'view'" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
+            <a-button :disabled="type === 'view' || disabled" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -117,6 +117,7 @@
           save : false,
           startBPM : false
         },
+        disabled:false,
         form: SwaggerService.getForm('TenderPackageCreateInputDto'),
         rules: {
           packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
@@ -188,6 +189,7 @@
         })
       },
       handleToSave () {
+        this.disabled = true
         let action = 'industryCreate'
         if(this.type === 'edit'){
           action = 'industryUpdate'
@@ -206,6 +208,7 @@
               }
             }).catch(() => {
               this.loading.save = false
+              this.disabled = false
             })
           }
         })

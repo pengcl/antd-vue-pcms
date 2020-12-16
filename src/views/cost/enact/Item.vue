@@ -49,7 +49,7 @@
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button style="margin-right: 20px" type="success">启动审批流程</a-button>
-          <a-button :disabled="type === 'view'" :loading="loading.save" @click="handleToSave" type="success">储存
+          <a-button :disabled="type === 'view' || disabled" :loading="loading.save" @click="handleToSave" type="success">储存
           </a-button>
           <a-button @click="back" style="margin-left: 5px" type="danger">关闭</a-button>
         </a-col>
@@ -109,6 +109,7 @@
         loading: {
           save: false
         },
+        disabled:false,
         active: '',
         // 高级搜索 展开/关闭
         advanced: false,
@@ -235,6 +236,7 @@
         this.$router.push({path: `/cost/enact/list`})
       },
       handleToSave() {
+        this.disabled = true
         const result = {}
         const items = []
         // 组装保存数据
@@ -272,6 +274,7 @@
           }
         }).catch(() => {
           this.loading.save = false
+          this.disabled = false
         })
       },
       checkChange(e, record, costCenterId) {

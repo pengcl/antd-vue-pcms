@@ -165,7 +165,7 @@
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
-            <a-button :disabled="type === 'view'" @click="save" type="success">
+            <a-button :disabled="type === 'view' || disabled" @click="save" type="success">
               储存
             </a-button>
           </a-button-group>
@@ -226,6 +226,7 @@ export default {
         vendorEmployeeList: [],
         vendorBankList: []
       },
+      disabled:false,
       rules: {
         vendorCode: [{ required: false, message: '请填写供应商编号', trigger: 'blur' }],
         vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
@@ -303,6 +304,7 @@ export default {
       })
     },
     save () {
+      this.disabled = true
       this.form.vendorEmployeeList.forEach(item => {
         item.logGID = this.form.vendor.logGID
         item.vendorGID = this.form.vendor.vendorGID
@@ -318,6 +320,8 @@ export default {
             if (res.result.statusCode === 200) {
               this.$message.success('保存成功')
               this.$router.push({ path: `/supplier/other/list` })
+            }else {
+              this.disabled = false
             }
           })
         }

@@ -149,7 +149,7 @@
             :disabled="type === 'view'"
             v-model="data.voMasterInfo.voType"
             @change="changeVoType">
-            <a-select-option :key="index" v-for="(item,index) in resonTypes" :value="index">{{index}}</a-select-option>
+            <a-select-option :key="index" v-for="(item,index) in resonTypes" v-if="item.show" :value="index">{{index}}</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-col>
@@ -159,7 +159,7 @@
             v-model="reasonType"
             :disabled="type === 'view'"
             @change="changeReasonType">
-            <a-checkbox v-for="item in resonTypes[data.voMasterInfo.voType]" :key="item.value" :value="item.value">{{item.text}}</a-checkbox>
+            <a-checkbox v-for="item in (resonTypes[data.voMasterInfo.voType] ? resonTypes[data.voMasterInfo.voType].items : [])" :key="item.value" :value="item.value">{{item.text}}</a-checkbox>
           </a-checkbox-group>
         </a-form-model-item>
       </a-col>
@@ -504,78 +504,90 @@
   import moment from 'moment'
 
   const resonTypes = {
-    "现场管理" : [
-      {
-        value : '增加工作范围',
-        text : '增加工作范围'
-      },
-      {
-        value : '抢险',
-        text : '抢险'
-      },
-      {
-        value : '索偿',
-        text : '索偿'
-      },
-      {
-        value : '其他',
-        text : '其他'
-      }
-    ],
-    "设计变更" : [
-      {
-        value : '设计要求',
-        text : '设计要求'
-      },
-      {
-        value : '其他',
-        text : '其他'
-      }
-    ],
-    "暂转固" : [
-      {
-        value : '暂定款使用',
-        text : '暂定款使用'
-      },
-      {
-        value : '选择項目使用',
-        text : '选择項目使用'
-      },
-      {
-        value : '暂定料价及单价调整',
-        text : '暂定料价及单价调整'
-      },
-      {
-        value : '暂定数量调整',
-        text : '暂定数量调整'
-      },
-      {
-        value : '指定承判商(NSC)',
-        text : '指定承判商(NSC)'
-      },
-      {
-        value : '其他',
-        text : '其他'
-      }
-    ],
-    "其他变更" : [
-      {
-        value : '法规要求',
-        text : '法规要求'
-      },
-      {
-        value : '人工/材料差价',
-        text : '人工/材料差价'
-      },
-      {
-        value : '延长顾问服务期之费用',
-        text : '延长顾问服务期之费用'
-      },
-      {
-        value : '其他',
-        text : '其他'
-      }
-    ]
+    "现场管理" : {
+      show : true,
+      items : [
+        {
+          value : '增加工作范围',
+          text : '增加工作范围'
+        },
+        {
+          value : '抢险',
+          text : '抢险'
+        },
+        {
+          value : '索偿',
+          text : '索偿'
+        },
+        {
+          value : '其他',
+          text : '其他'
+        }
+      ]
+    },
+    "设计变更" : {
+      show : true,
+      items : [
+        {
+          value : '设计要求',
+          text : '设计要求'
+        },
+        {
+          value : '其他',
+          text : '其他'
+        }
+      ]
+    },
+    "暂转固" : {
+      show : true,
+      items : [
+        {
+          value : '暂定款使用',
+          text : '暂定款使用'
+        },
+        {
+          value : '选择項目使用',
+          text : '选择項目使用'
+        },
+        {
+          value : '暂定料价及单价调整',
+          text : '暂定料价及单价调整'
+        },
+        {
+          value : '暂定数量调整',
+          text : '暂定数量调整'
+        },
+        {
+          value : '指定承判商(NSC)',
+          text : '指定承判商(NSC)'
+        },
+        {
+          value : '其他',
+          text : '其他'
+        }
+      ]
+    },
+    "其他变更" : {
+      show : true,
+      items : [
+        {
+          value : '法规要求',
+          text : '法规要求'
+        },
+        {
+          value : '人工/材料差价',
+          text : '人工/材料差价'
+        },
+        {
+          value : '延长顾问服务期之费用',
+          text : '延长顾问服务期之费用'
+        },
+        {
+          value : '其他',
+          text : '其他'
+        }
+      ]
+    }
   }
 
   export default {
@@ -858,7 +870,17 @@
         callback()
       },
       cipTypeChange(value,option){
-        console.log('value,',value,option)
+        if(value === 131){
+          resonTypes['暂转固'].show = true
+        }else{
+          resonTypes['暂转固'].show = false
+          if(this.data.voMasterInfo.voType == '暂转固'){
+            this.data.voMasterInfo.voType = ''
+            this.data.voMasterInfo.reasonType = ''
+            this.reasonType = []
+          }
+        }
+        this.$forceUpdate()
       }
     }
   }

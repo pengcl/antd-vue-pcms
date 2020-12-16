@@ -74,7 +74,7 @@
           {{ index + 1 }}
         </span>
         <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
+          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
         </span>
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
@@ -117,7 +117,8 @@
             type="success"
             :disabled="selectedPackage === null || !!selectedPackage.contractGUID"
             @click="hanldeAddBugetItem"
-            >新增预算</a-button
+          >新增预算
+          </a-button
           >
           <!-- <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button> -->
         </a-col>
@@ -168,341 +169,344 @@
           <a @click="jumpToContract">{{ selectedPackage != null ? selectedPackage.contractNo : ''}}</a>
         </template>
         <template slot="projectTenderPackageId">
-          <a @click="jumpToProjectTenderPackage">{{ selectedPackage != null ? selectedPackage.projectTenderPackageCode : ''}}</a>
+          <a @click="jumpToProjectTenderPackage">{{ selectedPackage != null ? selectedPackage.projectTenderPackageCode :
+            ''}}</a>
         </template>
       </s-table>
-    <cost-industry-modal ref="industryModal" :refreshAllTable="refreshAllTable"></cost-industry-modal>
+      <cost-industry-modal ref="industryModal" :refreshAllTable="refreshAllTable"></cost-industry-modal>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-import moment from 'moment'
-import { STable, Ellipsis } from '@/components'
-import StepByStepModal from '@/views/list/modules/StepByStepModal'
-import { ProjectService } from '@/views/project/project.service'
-import { formatList } from '../../../mock/util'
-import { CostService } from '@/views/cost/cost.service'
-import { fixedList, getPosValue } from '@/utils/util'
-import { nullFixedList } from '@/utils/util'
-import CostIndustryModal from '@/views/cost/industry/modal/IndustryModal'
-import storage from 'store'
+    import moment from 'moment'
+    import { STable, Ellipsis } from '@/components'
+    import StepByStepModal from '@/views/list/modules/StepByStepModal'
+    import { ProjectService } from '@/views/project/project.service'
+    import { formatList } from '../../../mock/util'
+    import { CostService } from '@/views/cost/cost.service'
+    import { fixedList, getPosValue, getList } from '@/utils/util'
+    import CostIndustryModal from '@/views/cost/industry/modal/IndustryModal'
+    import storage from 'store'
 
-const columns = [
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '150px',
-    scopedSlots: { customRender: 'action' },
-  },
-  {
-    title: '分判包编号',
-    dataIndex: 'tradePackageCode',
-    scopedSlots: { customRender: 'tradePackageCode' },
-  },
-  {
-    title: '分判包描述',
-    dataIndex: 'packageTitle',
-  },
-  {
-    title: '预算金额',
-    dataIndex: 'budgetAmount',
-    scopedSlots: { customRender: 'budgetAmount' },
-  },
-  {
-    title: '日期',
-    dataIndex: 'packageDate',
-    scopedSlots: { customRender: 'packageDate' },
-  },
-  {
-    title: '状态',
-    dataIndex: 'auditStatus',
-  },
-]
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' },
+        },
+        {
+            title: '分判包编号',
+            dataIndex: 'tradePackageCode',
+            scopedSlots: { customRender: 'tradePackageCode' },
+        },
+        {
+            title: '分判包描述',
+            dataIndex: 'packageTitle',
+        },
+        {
+            title: '预算金额',
+            dataIndex: 'budgetAmount',
+            scopedSlots: { customRender: 'budgetAmount' },
+        },
+        {
+            title: '日期',
+            dataIndex: 'packageDate',
+            scopedSlots: { customRender: 'packageDate' },
+        },
+        {
+            title: '状态',
+            dataIndex: 'auditStatus',
+        },
+    ]
 
-const _columns = [
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '150px',
-    scopedSlots: { customRender: 'itemAction' },
-  },
-  {
-    title: '业态成本中心',
-    dataIndex: 'costCenterName',
-  },
-  {
-    title: '科目名称',
-    dataIndex: 'elementInfoNameCN',
-  },
-  {
-    title: '行业',
-    dataIndex: 'budgetTitle',
-  },
-  {
-    title: '金额',
-    dataIndex: 'budgetValue',
-    scopedSlots: { customRender: 'budgetValue' },
-  },
-  {
-    title: '招投标包',
-    dataIndex: 'projectTenderPackageId',
-    scopedSlots: { customRender: 'projectTenderPackageId' },
-  },
-  {
-    title: '合同',
-    dataIndex: 'contractGUID',
-    scopedSlots: { customRender: 'contractGUID' },
-  },
-]
-export default {
-  name: 'TableList',
-  components: {
-    STable,
-    Ellipsis,
-    StepByStepModal,
-    CostIndustryModal,
-  },
-  data() {
-    this.columns = columns
-    this._columns = _columns
-    return {
-      pid: '',
-      cities: null,
-      show: false,
-      visible: false,
-      confirmLoading: false,
-      mdl: null,
-      budgetId: '',
-      selectedPackage: null,
-      handleSelected : false,
-      // 高级搜索 展开/关闭
-      advanced: false,
-      // 查询参数
-      queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
-      // 加载数据方法 必须为 Promise 对象
-      loadData: (parameter) => {
-        console.log('handle',this.handleSelected)
-        if(!this.handleSelected){
-          this.selectedPackage = null
-          this.pid = ''
-        }else{
-          this.handleSelected = false
-        }
-        const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
-        if (typeof requestParameters.ProjectGUID != 'undefined' && requestParameters.ProjectGUID != '') {
-          return CostService.industryItems(requestParameters).then((res) => {
-            if (res.result.data != null) {
-              this.$refs.table2.refresh()
-              return fixedList(res, requestParameters)
-            }
-          })
-        }
-      },
-      loadData2: (parameter) => {
-        const requestParameters = Object.assign({}, parameter, this.queryParam)
-        if (this.pid) {
-          return CostService.budgetItems({ Id: this.pid }).then((res) => {
-            if (res.result.data != null) {
-              return res.result
-            }
-          })
-        } else {
-          return new Promise((resolve, reject) => {
-            resolve({ data: [] })
-          })
-        }
-      },
-      selectedRowKeys: [],
-      selectedRows: [],
-    }
-  },
-  filters: {
-    statusFilter(type) {
-      return statusMap[type].text
-    },
-    statusTypeFilter(type) {
-      return statusMap[type].status
-    },
-  },
-  created() {
-    ProjectService.tree().then((res) => {
-      const cities = []
-      res.result.data.citys.forEach((item) => {
-        const children = formatList(item.projects.items, { key: 'type', value: 'project' })
-        cities.push({
-          selectable: false,
-          label: item.city.nameCN,
-          value: item.city.id,
-          children: children,
-        })
-      })
-      this.cities = cities
-      const value = getPosValue(this.cities)
-      this.queryParam.ProjectID = value.projectCode
-      this.queryParam.ProjectGUID = value.projectGUID
-      this.$forceUpdate()
-      this.$refs.table.refresh(true)
-    })
-    function setSelectable(datas) {
-      datas.forEach((item) => {
-        if (item.children && item.children.length > 0) {
-          item.selectable = false
-          setSelectable(item.children)
-        }
-      })
-    }
-  },
-  props: {
-    type: {
-      type: String,
-      default: 'view',
-    },
-  },
-  computed: {
-    ProjectGUID() {
-      return this.$route.query.ProjectGUID
-    },
-    rowSelection() {
-      return {
-        selectedRowKeys: this.selectedRowKeys,
-        onChange: this.onSelectChange,
-      }
-    },
-  },
-  methods: {
-    getBudgetAmt(record) {
-      this.selectedPackage = record
-      this.pid = record.id
-      this.$refs.table2.refresh(true)
-      // CostService.budgetItems({ Id: this.pid }).then(res => {
-      //   this.budgetItems = res.result.data
-      // })
-    },
-    handleToItem(record) {
-      this.$router.push({
-        path: `/cost/industry/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view`,
-      })
-    },
-    handleToEdit(record) {
-      this.$router.push({
-        path: `/cost/industry/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit`,
-      })
-    },
-    handleToAdd(record) {
-      if (this.queryParam.ProjectGUID === '') {
-        this.$message.error(`请选择项目`)
-      } else {
-        this.$router.push({ path: `/cost/industry/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
-      }
-    },
-    handleAdd() {
-      if (this.pid === '') {
-        this.$message.error(`请选择分判包记录`)
-      } else {
-        this.$router.push({ path: `/cost/industry/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
-      }
-    },
-    handleCancel() {
-      this.visible = false
-      const form = this.$refs.createModal.form
-      form.resetFields() // 清理表单数据（可不做）
-    },
-    handleToRemove(record) {
-      const that = this
-      this.$confirm({
-        title: '删除行业分判包',
-        content: '是否确定删除选中分判包?',
-        onOk() {
-          CostService.industryRemove(record.id)
-            .then((res) => {
-              if (res.result.statusCode === 200) {
-                that.$message.info('行业分判包删除成功')
-                that.$refs.table.refresh()
-              }
-            })
-            .catch(() => {
-              that.$message.error(res.rseult.msg)
-            })
+    const _columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'itemAction' },
         },
-        onCancel() {},
-      })
-    },
-    onSelectChange(selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
-    },
-    toggleAdvanced() {
-      this.advanced = !this.advanced
-    },
-    resetSearchForm() {
-      this.queryParam = {
-        date: moment(new Date()),
-      }
-    },
-    onSelect(value, option) {
-      storage.set('POS', option.pos)
-      this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
-      if (typeof value === 'number') {
-        this.city = value
-        this.queryParam.ProjectGUID = ''
-      } else {
-        this.queryParam.ProjectGUID = value
-      }
-      this.auditStatus = option.dataRef.auditStatus
-      this.$refs.table.refresh()
-      this.$forceUpdate()
-    },
-    search() {
-      this.show = !this.show
-      this.$refs.table.refresh(true)
-    },
-    hanldeAddBugetItem() {
-      if (this.pid) {
-        this.$refs.industryModal.show(this.pid)
-      }
-    },
-    handleRemoveBudgetItem(record) {
-      const that = this
-      this.$confirm({
-        title: '删除预算',
-        content: '是否确定删除选中预算?',
-        onOk() {
-          console.log('record', record, that.pid)
-          CostService.removeBudgetItem({ packageId: that.pid, budgetItemId: record.id }).then((res) => {
-            if (res.result.statusCode === 200) {
-              that.$message.info('预算删除成功')
-              that.$refs.table2.refresh()
-            }
-          })
+        {
+            title: '业态成本中心',
+            dataIndex: 'costCenterName',
         },
-        onCancel() {},
-      })
-    },
-    jumpToContract() {
-      this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGUID}?type=view` })
-    },
-    jumpToProjectTenderPackage() {
-      this.$router.push({ path: `/cost/bid/item/${this.selectedPackage.projectTenderPackageId}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
-    },
-    refreshAllTable(args) {
-      if(args){
-        this.handleSelected = true
-      }
-      this.$refs.table.refresh()
+        {
+            title: '科目名称',
+            dataIndex: 'elementInfoNameCN',
+        },
+        {
+            title: '行业',
+            dataIndex: 'budgetTitle',
+        },
+        {
+            title: '金额',
+            dataIndex: 'budgetValue',
+            scopedSlots: { customRender: 'budgetValue' },
+        },
+        {
+            title: '招投标包',
+            dataIndex: 'projectTenderPackageId',
+            scopedSlots: { customRender: 'projectTenderPackageId' },
+        },
+        {
+            title: '合同',
+            dataIndex: 'contractGUID',
+            scopedSlots: { customRender: 'contractGUID' },
+        },
+    ]
+    export default {
+        name: 'TableList',
+        components: {
+            STable,
+            Ellipsis,
+            StepByStepModal,
+            CostIndustryModal,
+        },
+        data () {
+            this.columns = columns
+            this._columns = _columns
+            return {
+                pid: '',
+                cities: null,
+                show: false,
+                visible: false,
+                confirmLoading: false,
+                mdl: null,
+                budgetId: '',
+                selectedPackage: null,
+                handleSelected: false,
+                // 高级搜索 展开/关闭
+                advanced: false,
+                // 查询参数
+                queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
+                // 加载数据方法 必须为 Promise 对象
+                loadData: (parameter) => {
+                    console.log('handle', this.handleSelected)
+                    if (!this.handleSelected) {
+                        this.selectedPackage = null
+                        this.pid = ''
+                    } else {
+                        this.handleSelected = false
+                    }
+                    const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
+                    if (typeof requestParameters.ProjectGUID != 'undefined' && requestParameters.ProjectGUID != '') {
+                        return CostService.industryItems(requestParameters).then((res) => {
+                            if (res.result.data != null) {
+                                this.$refs.table2.refresh()
+                                return fixedList(res, requestParameters)
+                            }
+                        })
+                    }
+                },
+                loadData2: (parameter) => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    if (this.pid) {
+                        return CostService.budgetItems({ Id: this.pid }).then((res) => {
+                            if (res.result.data != null) {
+                                return res.result
+                            }
+                        })
+                    } else {
+                        return new Promise((resolve, reject) => {
+                            resolve({ data: [] })
+                        })
+                    }
+                },
+                selectedRowKeys: [],
+                selectedRows: [],
+            }
+        },
+        filters: {
+            statusFilter (type) {
+                return statusMap[type].text
+            },
+            statusTypeFilter (type) {
+                return statusMap[type].status
+            },
+        },
+        created () {
+            ProjectService.tree().then((res) => {
+                const cities = []
+                res.result.data.citys.forEach((item) => {
+                    const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+                    cities.push({
+                        selectable: false,
+                        label: item.city.nameCN,
+                        value: item.city.id,
+                        children: children,
+                    })
+                })
+                this.cities = cities
+                const value = getPosValue(this.cities)
+                this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
+                this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
+                this.$forceUpdate()
+                this.$refs.table.refresh(true)
+            })
+
+            function setSelectable (datas) {
+                datas.forEach((item) => {
+                    if (item.children && item.children.length > 0) {
+                        item.selectable = false
+                        setSelectable(item.children)
+                    }
+                })
+            }
+        },
+        props: {
+            type: {
+                type: String,
+                default: 'view',
+            },
+        },
+        computed: {
+            ProjectGUID () {
+                return this.$route.query.ProjectGUID
+            },
+            rowSelection () {
+                return {
+                    selectedRowKeys: this.selectedRowKeys,
+                    onChange: this.onSelectChange,
+                }
+            },
+        },
+        methods: {
+            getBudgetAmt (record) {
+                this.selectedPackage = record
+                this.pid = record.id
+                this.$refs.table2.refresh(true)
+                // CostService.budgetItems({ Id: this.pid }).then(res => {
+                //   this.budgetItems = res.result.data
+                // })
+            },
+            handleToItem (record) {
+                this.$router.push({
+                    path: `/cost/industry/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view`,
+                })
+            },
+            handleToEdit (record) {
+                this.$router.push({
+                    path: `/cost/industry/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit`,
+                })
+            },
+            handleToAdd (record) {
+                if (this.queryParam.ProjectGUID === '') {
+                    this.$message.error(`请选择项目`)
+                } else {
+                    this.$router.push({ path: `/cost/industry/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
+                }
+            },
+            handleAdd () {
+                if (this.pid === '') {
+                    this.$message.error(`请选择分判包记录`)
+                } else {
+                    this.$router.push({ path: `/cost/industry/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
+                }
+            },
+            handleCancel () {
+                this.visible = false
+                const form = this.$refs.createModal.form
+                form.resetFields() // 清理表单数据（可不做）
+            },
+            handleToRemove (record) {
+                const that = this
+                this.$confirm({
+                    title: '删除行业分判包',
+                    content: '是否确定删除选中分判包?',
+                    onOk () {
+                        CostService.industryRemove(record.id)
+                            .then((res) => {
+                                if (res.result.statusCode === 200) {
+                                    that.$message.info('行业分判包删除成功')
+                                    that.$refs.table.refresh()
+                                }
+                            })
+                            .catch(() => {
+                                that.$message.error(res.rseult.msg)
+                            })
+                    },
+                    onCancel () {
+                    },
+                })
+            },
+            onSelectChange (selectedRowKeys, selectedRows) {
+                this.selectedRowKeys = selectedRowKeys
+                this.selectedRows = selectedRows
+            },
+            toggleAdvanced () {
+                this.advanced = !this.advanced
+            },
+            resetSearchForm () {
+                this.queryParam = {
+                    date: moment(new Date()),
+                }
+            },
+            onSelect (value, option) {
+                storage.set('POS', option.pos)
+                this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
+                if (typeof value === 'number') {
+                    this.city = value
+                    this.queryParam.ProjectGUID = ''
+                } else {
+                    this.queryParam.ProjectGUID = value
+                }
+                this.auditStatus = option.dataRef.auditStatus
+                this.$refs.table.refresh()
+                this.$forceUpdate()
+            },
+            search () {
+                this.show = !this.show
+                this.$refs.table.refresh(true)
+            },
+            hanldeAddBugetItem () {
+                if (this.pid) {
+                    this.$refs.industryModal.show(this.pid)
+                }
+            },
+            handleRemoveBudgetItem (record) {
+                const that = this
+                this.$confirm({
+                    title: '删除预算',
+                    content: '是否确定删除选中预算?',
+                    onOk () {
+                        console.log('record', record, that.pid)
+                        CostService.removeBudgetItem({ packageId: that.pid, budgetItemId: record.id }).then((res) => {
+                            if (res.result.statusCode === 200) {
+                                that.$message.info('预算删除成功')
+                                that.$refs.table2.refresh()
+                            }
+                        })
+                    },
+                    onCancel () {
+                    },
+                })
+            },
+            jumpToContract () {
+                this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGUID}?type=view` })
+            },
+            jumpToProjectTenderPackage () {
+                this.$router.push({ path: `/cost/bid/item/${this.selectedPackage.projectTenderPackageId}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
+            },
+            refreshAllTable (args) {
+                if (args) {
+                    this.handleSelected = true
+                }
+                this.$refs.table.refresh()
+            }
+        }
     }
-  }
-}
 </script>
 
 <style lang="less" scoped>
-.search-form {
-  background-color: #1e9ff2;
-  padding: 20px;
-  border-radius: 0.35rem;
+  .search-form {
+    background-color: #1e9ff2;
+    padding: 20px;
+    border-radius: 0.35rem;
 
-  /deep/ .ant-form-item-label label {
-    color: #fff;
+    /deep/ .ant-form-item-label label {
+      color: #fff;
+    }
   }
-}
 </style>

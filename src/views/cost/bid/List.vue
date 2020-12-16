@@ -22,7 +22,8 @@
       </div>
 
       <div class="table-operator">
-        <a-button v-if="ac('ADD')" :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增工程招标包</a-button>
+        <a-button v-if="ac('ADD')" :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增工程招标包
+        </a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -115,10 +116,10 @@
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
-    import {CostService} from "@/views/cost/cost.service";
-    import {fixedList, getPosValue, nullFixedList} from "@/utils/util";
-    import storage from "store";
-    import {ac} from "@/views/user/user.service";
+    import { CostService } from '@/views/cost/cost.service'
+    import { fixedList, getPosValue, getList } from '@/utils/util'
+    import storage from 'store'
+    import { ac } from '@/views/user/user.service'
 
     const columns = [
         {
@@ -138,12 +139,12 @@
         {
             title: '预算金额',
             dataIndex: 'budgetAmount',
-          scopedSlots: { customRender: 'budgetAmount' }
+            scopedSlots: { customRender: 'budgetAmount' }
         },
         {
-          title: '日期',
-          dataIndex: 'packageDate',
-          scopedSlots: { customRender: 'packageDate' }
+            title: '日期',
+            dataIndex: 'packageDate',
+            scopedSlots: { customRender: 'packageDate' }
         },
         {
             title: '经办人',
@@ -174,49 +175,48 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: { ProjectGUID:this.$route.query.ProjectGUID },
+                queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                  const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
-                  if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID!='') {
-                    return CostService.bidItems(requestParameters)
-                      .then(res => {
-                        if(res.result.data.items) {
-                          return fixedList(res, requestParameters)
-                        }
-                      })
-                  }
+                    const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
+                    if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
+                        return CostService.bidItems(requestParameters)
+                            .then(res => {
+                                if (res.result.data.items) {
+                                    return fixedList(res, requestParameters)
+                                }
+                            })
+                    }
                 },
                 selectedRowKeys: [],
                 selectedRows: []
             }
         },
-        filters: {
-        },
+        filters: {},
         created () {
-          ProjectService.tree().then(res => {
-            const cities = []
-            res.result.data.citys.forEach(item => {
-              const children = formatList(item.projects.items, { key: 'type', value: 'project' })
-              cities.push({
-                selectable: false,
-                label: item.city.nameCN,
-                value: item.city.id,
-                children: children
-              })
+            ProjectService.tree().then(res => {
+                const cities = []
+                res.result.data.citys.forEach(item => {
+                    const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+                    cities.push({
+                        selectable: false,
+                        label: item.city.nameCN,
+                        value: item.city.id,
+                        children: children
+                    })
+                })
+                this.cities = cities
+                const value = getPosValue(this.cities)
+                this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
+                this.$forceUpdate()
+                this.$refs.table.refresh(true)
             })
-            this.cities = cities
-            const value = getPosValue(this.cities)
-            this.queryParam.ProjectGUID = value.projectGUID
-            this.$forceUpdate()
-            this.$refs.table.refresh(true)
-          })
         },
         props: {
-          type: {
-            type: String,
-            default: 'view'
-          }
+            type: {
+                type: String,
+                default: 'view'
+            }
         },
         computed: {
             rowSelection () {
@@ -228,23 +228,23 @@
         },
         methods: {
             ac (action) {
-              return ac(action, this.$route)
+                return ac(action, this.$route)
             },
             handleToItem (record) {
-              this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
+                this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=view` })
             },
             handleToEdit (record) {
-              this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
+                this.$router.push({ path: `/cost/bid/item/${record.id}?ProjectGUID=${this.queryParam.ProjectGUID}&type=edit` })
             },
             handleToAdd (record) {
-              if (this.queryParam.ProjectGUID === '') {
-                this.$message.error(`请选择项目`)
-              } else {
-                this.$router.push({ path: `/cost/bid/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
-              }
+                if (this.queryParam.ProjectGUID === '') {
+                    this.$message.error(`请选择项目`)
+                } else {
+                    this.$router.push({ path: `/cost/bid/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
+                }
             },
             handleToRemove () {
-              this.$message.error(`暂无接口，功能无法使用`)
+                this.$message.error(`暂无接口，功能无法使用`)
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
@@ -256,17 +256,17 @@
                 }
             },
             onSelect (value, option) {
-              storage.set('POS', option.pos)
-              this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
-              if (typeof value === 'number') {
-                this.city = value
-                this.queryParam.ProjectGUID = ''
-              } else {
-                this.queryParam.ProjectGUID = value
-              }
-              this.auditStatus = option.dataRef.auditStatus
-              this.$refs.table.refresh()
-              this.$forceUpdate()
+                storage.set('POS', option.pos)
+                this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
+                if (typeof value === 'number') {
+                    this.city = value
+                    this.queryParam.ProjectGUID = ''
+                } else {
+                    this.queryParam.ProjectGUID = value
+                }
+                this.auditStatus = option.dataRef.auditStatus
+                this.$refs.table.refresh()
+                this.$forceUpdate()
             }
         }
     }

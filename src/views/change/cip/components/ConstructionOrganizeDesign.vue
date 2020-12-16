@@ -106,15 +106,15 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'edit' && (data.auditStatus === '未审核')" @click="startBPM"
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'edit' && (data.auditStatus === '未审核') && ac('EDIT')" @click="startBPM"
               >启动审批流程</a-button
             >
-            <a-button type="success" :loading="loading.showBPM" v-if="data.auditStatus == '审核中' || data.auditStatus == '已审核'" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="data.auditStatus == '审核中' || data.auditStatus == '已审核' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type != 'view'" @click="save()">{{data.id ? '编辑' : '储存'}}</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type != 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()">{{data.id ? '编辑' : '储存'}}</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -129,6 +129,7 @@ import { ProjectService } from '@/views/project/project.service'
 import moment from 'moment'
 import { SwaggerService } from '@/api/swagger.service'
 import { Base as BaseService } from '@/api/base'
+  import { ac } from '@/views/user/user.service'
 
 export default {
   name: 'ConstrctionOrganizeDesign',
@@ -200,6 +201,9 @@ export default {
     })
   },
   methods: {
+    ac (action) {
+        return ac(action, this.$route)
+      },
     splitVal(val) {
       return val ? val.split(';') : null
     },

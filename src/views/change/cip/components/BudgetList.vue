@@ -212,6 +212,22 @@
     watch :{
       'selection.storeTypes'(){
         this.$forceUpdate()
+      },
+      'type'(){
+        if(this.data[showKeys[108][this.stage]] != null){
+          const usePlanDataTemp = Object.assign([],this.data[showKeys[108][this.stage]])
+          usePlanDataTemp.sort((a,b) =>{
+            return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
+          })
+          usePlanDataTemp.forEach(item =>{
+            if(this.rowSpans['cost'+item.costCenterId]){
+              this.rowSpans['cost'+item.costCenterId]++
+            }else{
+              this.rowSpans['cost'+item.costCenterId] = 1
+            }
+          })
+          this.usePlanData = usePlanDataTemp
+        }
       }
     },
     props: {

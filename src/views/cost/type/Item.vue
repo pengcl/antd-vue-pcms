@@ -41,7 +41,7 @@
       <a-row>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: left">
-            <a-button :disabled="type === 'view'" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
+            <a-button :disabled="type === 'view' || disabled" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -62,6 +62,7 @@
         loading: {
           save: false
         },
+        disabled:false,
         form: SwaggerService.getForm('ElementTradeTypeListOutputDtoListResultModel'),
         rules: {
           nameCN: [{ required: true, message: '请输入科目名称', trigger: 'blur' }],
@@ -92,6 +93,7 @@
     },
     methods: {
       handleToSave () {
+        this.disabled = true
         this.$refs.form.validate(valid => {
           if (valid) {
             this.loading.save = true
@@ -106,6 +108,7 @@
               }
             }).catch(() => {
               this.loading.save = false
+              this.disabled = false
             })
           }
         })

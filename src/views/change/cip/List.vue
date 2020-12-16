@@ -59,14 +59,14 @@
         :scroll="{x : 1300}"
         :rowSelection="rowSelection"
         ref="table">
-        <a slot="contractNo" slot-scope="text,record" href="javascript:void(0)" @click="handleToContractInfo(record)" >{{text}}</a>
+        <a slot="contractNo" slot-scope="text,record" href="javascript:void(0)" @click="handleToContractInfo(record)">{{text}}</a>
         <span slot="contractAmount" slot-scope="text">{{text | NumberFormat}}</span>
         <span slot="preSettleAmount" slot-scope="text">{{text | NumberFormat}}</span>
         <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="12" :sm="24">
-                <a-form-item label="累计变更金额">{{ totalChangeAmt }}</a-form-item>
+                <a-form-item label="累计变更金额">{{ totalChangeAmt | NumberFormat}}</a-form-item>
               </a-col>
               <a-col :md="12" :sm="24">
                 <a-form-item label="变更比例">{{ totalChangeRate }}</a-form-item>
@@ -78,21 +78,24 @@
       </s-table>
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button 
-            type="success" 
-            @click="handleToAdd" 
+          <a-button
+            type="success"
+            v-if="ac('ADD')"
+            @click="handleToAdd"
             :disabled="!queryParam2.contractGuid || (professionType.indexOf(contractSelected.contractProfession) > -1 && !contractSelected.bdIsComplete)">新增</a-button>
           <a-button
             type="success"
             style="margin-left: 20px"
             @click="handleCipToVo"
+            v-if="ac('ADD')"
             :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus.indexOf('已审核') < 0 || tableSelected.cipType === 131">CIP转VO
           </a-button>
           <a-button type="success" style="margin-left: 20px" :disabled="tableSelected.cipGuid == undefined || tableSelected.auditStatus !== '已审核' || tableSelected.voStatus !== '待确认'">现场签证</a-button>
-          <a-button 
-          type="success" 
-          style="margin-left: 20px" 
-          :disabled="contractSelected.contractGuid == undefined || professionType.indexOf(contractSelected.contractProfession) < 0" @click="handleDesign"
+          <a-button
+            type="success"
+            v-if="ac('ADD')"
+            style="margin-left: 20px"
+            :disabled="contractSelected.contractGuid == undefined || professionType.indexOf(contractSelected.contractProfession) < 0" @click="handleDesign"
           >施工组织设计</a-button>
         </a-col>
         <a-col :md="24" :sm="24"> 变更列表</a-col>
@@ -111,11 +114,11 @@
           <a v-if="text !== '待确认'" @click="showVO(record)">{{ text }}</a>
           <span v-if="text === '待确认'">{{ text }}</span>
         </div>
-        
+
         <span slot="cipAmount" slot-scope="text">{{text | NumberFormat}}</span>
         <span slot="action" slot-scope="text, record">
           <template>
-            <a-button class="btn-success" type="primary" icon="file-text" title="查看" @click="handleToItem(record)">
+            <a-button class="btn-success" type="primary" icon="file-text" v-if="ac('VIEW')" title="查看" @click="handleToItem(record)">
             </a-button>
             <a-button
               class="btn-info"
@@ -123,6 +126,7 @@
               icon="form"
               style="margin-left: 4px"
               title="编辑"
+              v-if="ac('EDIT')"
               :disabled="record.auditStatus.indexOf('未审核') < 0"
               @click="handleToEdit(record)"
             ></a-button>
@@ -145,6 +149,7 @@
   import { ProjectService } from '@/views/project/project.service'
   import { fixedList, getPosValue,nullFixedList } from '@/utils/util'
   import { formatList } from '../../../mock/util'
+  import { ac } from '@/views/user/user.service'
 
   const columns = [
     {
@@ -313,7 +318,7 @@
             selectable: false
           })
         })
-        this.cities = cities 
+        this.cities = cities
         const value = getPosValue(this.cities)
         this.queryParam.ProjectID = value.projectCode
         this.queryParam.ProjectGUID = value.projectGUID
@@ -356,6 +361,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       handleToItem (record) {
         this.$router.push({
           path: `/change/cip/item/${record.cipGuid}?type=view&contractGuid=${this.queryParam2.contractGuid}&stage=CIP`

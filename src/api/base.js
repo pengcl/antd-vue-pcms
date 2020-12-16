@@ -16,6 +16,7 @@ const API = {
   viewBpm: '/api/services/app/Bpm/GetBPMAuditInfo',
   professionTypes: '/api/services/app/GeneralType/GetProfessionTypes',
   departmentList: '/api/services/app/BasicData/GetDepartmentList',
+  shareRuleTypes: '/api/services/app/GeneralType/GetShareRuleTypes',
 }
 
 const Base = {}
@@ -30,6 +31,14 @@ const Base = {}
 Base.secretTypes = function () {
   return request({
     url: API.secretTypes,
+    method: 'GET',
+    params: {}
+  })
+}
+
+Base.shareRuleTypes = function () {
+  return request({
+    url: API.shareRuleTypes,
     method: 'GET',
     params: {}
   })

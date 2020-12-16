@@ -528,6 +528,8 @@
                     if (res.result.data) {
                         this.$message.success('修改成功')
                         this.$router.push({ path: '/pay/fundplan/list' })
+                    } else {
+                        this.disabled = false
                     }
                 })
 

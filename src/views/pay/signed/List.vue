@@ -187,7 +187,7 @@
 <script>
     import { STable } from '@/components'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
+    import { fixedList, getPosValue, nullFixedList, getList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '@/mock/util'
     import { SignedService } from './signed.service'
@@ -340,9 +340,9 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                this.queryParam2.ProjectID = value.projectCode
-                this.projectType = value.type
-                this.queryParam2.ProjectGUID = value.projectGUID
+                this.queryParam2.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
+                this.projectType = value.type ? value.type : getList(this.cities, 0).type
+                this.queryParam2.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.$refs.contractTable.refresh()
                 this.$forceUpdate()
             })

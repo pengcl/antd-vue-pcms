@@ -1,4 +1,5 @@
 import storage from 'store'
+
 export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
@@ -172,4 +173,18 @@ export function getPosValue (cities) {
     }
   })
   return value
+}
+
+let list = null
+export function getList (items, deepIndex) {
+  items.forEach(item => {
+    if (item.children.length > 0) {
+      getList(item.children, deepIndex + 1)
+    } else {
+      if (!list && deepIndex >= 1) {
+        list = item
+      }
+    }
+  })
+  return list
 }
