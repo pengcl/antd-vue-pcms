@@ -38,10 +38,10 @@ const locale = {
 
   'menu.change': '变更及成本管控',
   'menu.change.cip.list': '合同变更',
-  'menu.change.cip.item': '合同指令预先批核详细',
+  'menu.change.cip.item': '合同指令预先批核详情',
   'menu.change.vo.item': '变更指令详细（VO）',
   'menu.change.account.list': '变更台账',
-  'menu.change.account.item': '变更台账详细',
+  'menu.change.account.item': '变更台账详情',
   'menu.change.certificate': '现场签证',
   'menu.change.constructionOrganizeDesign': '施工组织设计',
 
@@ -54,10 +54,10 @@ const locale = {
   'menu.cost.resolve.item': '行业预算查看',
   'menu.cost.industry.list': '行业分判包',
   'menu.cost.industry.edit': '新增行业分判包',
-  'menu.cost.industry.item': '行业分判包详细',
+  'menu.cost.industry.item': '行业分判包详情',
   'menu.cost.bid.list': '招投标分判包',
   'menu.cost.bid.edit': '新增招投标分判包',
-  'menu.cost.bid.item': '招投标分判包详细',
+  'menu.cost.bid.item': '招投标分判包详情',
   'menu.cost.type.list': '行业档案管理',
   'menu.cost.type.item': '行业档案详情',
 
