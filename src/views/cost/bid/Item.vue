@@ -100,7 +100,6 @@
                     :rules="[{required: true, message: '请选择行业分判包', trigger: 'change' }]"
                   >
                     <a-select
-                      v-if="industryItems.length > 0"
                       :disabled="getDisabled(index)"
                       showSearch
                       option-filter-prop="children"
@@ -110,7 +109,7 @@
                     >
                       <a-select-option
                         v-for="(option,i) in getIndustrysList(industryItems,form.tenderPackages,form.tenderPackages[index])"
-                        :key="option.id"
+                        :key="i"
                         :value="option.id">
                         {{ option.packageTitle }}
                       </a-select-option>
