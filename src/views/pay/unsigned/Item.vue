@@ -329,6 +329,8 @@
                             this.$router.push({
                                 path: `/pay/unsigned/item/${res.result.data}?type=view&projectGUID=` + this.projectGUID
                             })
+                        } else {
+                            this.disabled = false
                         }
                     })
                 } else {
@@ -338,6 +340,8 @@
                             this.$router.push({
                                 path: '/pay/unsigned/list'
                             })
+                        } else {
+                            this.disabled = false
                         }
                     })
                 }

@@ -217,7 +217,7 @@
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button :disabled="type === 'view'" :loading="loading.save" type="success" @click="handleToSave">储存
+            <a-button :disabled="type === 'view' || disabled" :loading="loading.save" type="success" @click="handleToSave">储存
             </a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
@@ -251,6 +251,7 @@
         loading: {
           save: false
         },
+        disabled:false,
         form: SwaggerService.getForm('ProjectTenderPackageCreateInputDto'),
         rules: {
           packageDate: [{required: true, message: '请选择日期', trigger: 'blur'}],
@@ -387,6 +388,7 @@
         addItem(item, this.form.plans)
       },
       handleToSave() {
+        this.disabled = true
         this.form.itemTypeId = 0
         this.form.projectGUID = this.ProjectGUID
         this.$refs.form.validate(valid => {
@@ -401,6 +403,7 @@
                 }
               }).catch(() => {
                 this.loading.save = false
+                this.disabled = false
               })
             } else {
               // 处理新增的分判包列表
@@ -445,6 +448,7 @@
                 }
               }).catch(() => {
                 this.loading.save = false
+                this.disabled = false
               })
             }
           }

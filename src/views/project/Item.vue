@@ -624,6 +624,8 @@
                   description: `您已成功${this.type === 'update' ? '修改' : '添加'}${this.name} "${this.form.projectShortName}"`
                 })
                 this.$router.push('/project/list')
+              }else {
+                this.disabled = false
               }
             })
           }

@@ -128,7 +128,8 @@
                             this.$router.push({
                                 path: `/pay/signed/item/${res.result.data}?type=view`
                             })
-
+                        } else {
+                            this.disabled = false
                         }
                     })
                 } else {
@@ -143,7 +144,8 @@
                             this.$router.push({
                                 path: '/pay/signed/list'
                             })
-
+                        } else {
+                            this.disabled = false
                         }
                     })
                 }
