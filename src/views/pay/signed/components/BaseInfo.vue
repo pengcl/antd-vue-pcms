@@ -200,14 +200,14 @@
             <td>申请批准金额</td>
             <td>
               <span v-if="data.contractMasterInfo.paymentRequestAmount" style="margin-right: 10px">{{data.contractMasterInfo.paymentRequestAmount | NumberFormat}}</span>
-              <a-button @click="handleShowPaymentRequestAmount('0')">
+              <a-button @click="handleShowPaymentRequestAmount('0',data.contractMasterInfo.contractGID)">
                 {{data.contractMasterInfo.paymentRequestAmount ? '修改金额' : '填写明细'}}
               </a-button>
-              <payment-request-amount-form ref="paymentRequestAmountModal"
+              <payment-request-amount-form ref="paymentRequestAmountModal0"
                                            :visible="visibles['0'] ? visibles['0'] : false"
                                            :loading="confirmLoadings['0'] ? confirmLoadings['0'] : false"
                                            :model="mdls['0'] ? mdls['0'] : null"
-                                           :contractGID="data.contractMasterInfo.contractGID"
+                                           :contractGID="contractGIDs['0']"
                                            :type="'contractMasterInfo'"
                                            @cancel="handleCancel2('0')"
                                            @ok="handleOk2('0')"></payment-request-amount-form>
@@ -311,14 +311,14 @@
               <td>申请批准金额</td>
               <td>
                 <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
-                <a-button @click="handleShowPaymentRequestAmount(''+(index+1))">
+                <a-button @click="handleShowPaymentRequestAmount(''+(index+1),item.contractGID)">
                   {{item.paymentRequestAmount ? '修改金额' : '填写明细'}}
                 </a-button>
-                <payment-request-amount-form ref="paymentRequestAmountModal"
+                <payment-request-amount-form :ref="'paymentRequestAmountModal'+(index+1)"
                                              :visible="visibles[''+(index+1)] ? visibles[''+(index+1)] : false"
                                              :loading="confirmLoadings[''+(index+1)] ? confirmLoadings[''+(index+1)] : false"
                                              :model="mdls[''+(index+1)] ? mdls[''+(index+1)] : null"
-                                             :contractGID="item.contractGID"
+                                             :contractGID="contractGIDs[''+(index+1)]"
                                              :type="'contractNSCInfo'"
                                              @cancel="handleCancel2(''+(index+1))"
                                              @ok="handleOk2(''+(index+1))"></payment-request-amount-form>
@@ -501,6 +501,7 @@
                 visibles: {},
                 confirmLoadings: {},
                 mdls: {},
+                contractGIDs: {},
                 form: this.$form.createForm(this),
                 index: 0,
                 paymentAmount: {},
@@ -596,9 +597,10 @@
             }
         },
         methods: {
-            handleShowPaymentRequestAmount (e) {
+            handleShowPaymentRequestAmount (e, contractGID) {
                 this.$set(this.mdls, e, null)
                 this.$set(this.visibles, e, true)
+                this.$set(this.contractGIDs, e, contractGID)
             },
             handToShowcontractNSC () {
                 this.mdl = null
@@ -788,7 +790,7 @@
                 this.visible = false
             },
             handleOk2 (e) {
-                const data = this.$refs.paymentRequestAmountModal
+                const data = this.$refs['paymentRequestAmountModal' + e]
                 if (data.type === 'contractMasterInfo') {
                     this.data.contractMasterInfo.paymentRequestAmount = data.requestAmountTotal
                     this.paymentRequestAmountChange(data.requestAmountTotal)

@@ -133,7 +133,7 @@
 
 <script>
     import { STable } from '@/components'
-    import { getPosValue } from '@/utils/util'
+    import { getPosValue, getList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'
     import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
@@ -264,9 +264,9 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                this.queryParam.ProjectID = value.projectCode
-                this.projectType = value.type
-                this.queryParam.ProjectGUID = value.projectGUID
+                this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
+                this.projectType = value.type ? value.type : getList(this.cities, 0).type
+                this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.projectValue = { projectName: value.projectName, projectCode: value.projectCode }
                 this.$refs.table.refresh()
                 this.$forceUpdate()

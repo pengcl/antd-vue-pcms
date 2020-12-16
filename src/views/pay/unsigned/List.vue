@@ -141,7 +141,7 @@
     import { getRoleList } from '@/api/manage'
 
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList, getPosValue } from '@/utils/util'
+    import { fixedList, getPosValue, getList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '@/mock/util'
     import { UnSignedService } from './unsigned.service'
@@ -242,9 +242,9 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                this.queryParam.ProjectCode = value.projectCode
-                this.projectType = value.type
-                this.queryParam.ProjectGUID = value.projectGUID
+                this.queryParam.ProjectCode = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
+                this.projectType = value.type ? value.type : getList(this.cities, 0).type
+                this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.$refs.table.refresh()
                 this.$forceUpdate()
             })

@@ -106,18 +106,18 @@
             },
             loading: {
                 type: Boolean,
-                default: () => false
+                default: false
             },
             model: {
-                type: Object,
-                default: () => null
+                type: Array,
+                default: null
             },
             type: {
                 type: String,
                 default: null
             },
-            contractGID: {
-                type: String,
+            contractGID:{
+                type:String,
                 default: null
             }
         },
@@ -131,28 +131,37 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return SignedService.requestList(this.contractGID).then(res => {
-                        res.result.data.forEach(item => {
-                            if (item.amountPayable < 0) {
-                                item.requestAmount = item.amountPayable
-                            }
+                    if (this.contractGID) {
+                        return SignedService.requestList(this.contractGID).then(res => {
+                            res.result.data.forEach(item => {
+                                if (item.amountPayable < 0) {
+                                    item.requestAmount = item.amountPayable
+                                }
+                            })
+                            this.requestList = res.result.data
+                            return fixedList(res, requestParameters)
                         })
-                        this.requestList = res.result.data
-                        return fixedList(res, requestParameters)
-                    })
+                    }
+
                 },
             }
+        },
+        watch: {
+
         },
         created () {
             // 防止表单未注册
             fields.forEach(v => this.form.getFieldDecorator(v))
 
             // 当 model 发生改变时，为表单设置值
-            this.$watch('model', () => {
+            this.$watch('model', (value) => {
+                console.log(value)
                 this.model && this.form.setFieldsValue(pick(this.model, fields))
             })
         },
-        computed: {},
+        computed: {
+
+        },
         methods: {
             onChange (value, record, key) {
                 record[key] = value

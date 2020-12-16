@@ -56,7 +56,7 @@
   import {STable, Ellipsis} from '@/components'
   import StepByStepModal from '@/views/list/modules/StepByStepModal'
   import {CostService} from '@/views/cost/cost.service'
-  import {fixedList, nullFixedList} from '@/utils/util'
+  import {fixedList} from '@/utils/util'
   import storage from "store";
   import {ac} from "@/views/user/user.service";
 

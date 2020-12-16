@@ -22,7 +22,8 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
+        </a-button>
         <!--<a-button type="primary" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>-->
@@ -101,156 +102,156 @@
 </template>
 
 <script>
-import { STable, Ellipsis } from '@/components'
-import { CostService } from '@/views/project/cost/cost.service'
-import { fixedList, getPosValue } from '@/utils/util'
-import { ProjectService } from '@/views/project/project.service'
-import { ac } from '@/views/user/user.service'
-import storage from 'store'
+    import { STable, Ellipsis } from '@/components'
+    import { CostService } from '@/views/project/cost/cost.service'
+    import { fixedList, getPosValue, getList } from '@/utils/util'
+    import { ProjectService } from '@/views/project/project.service'
+    import { ac } from '@/views/user/user.service'
+    import storage from 'store'
 
-const columns = [
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '150px',
-    scopedSlots: { customRender: 'action' }
-  },
-  {
-    title: '成本中心编号',
-    dataIndex: 'costCenterCode'
-  },
-  {
-    title: '成本中心名称',
-    dataIndex: 'costCenterName',
-    scopedSlots: { customRender: 'costCenterName' }
-  },
-  {
-    title: '审批状态',
-    dataIndex: 'auditStatus',
-    scopedSlots: { customRender: 'auditStatus' }
-  },
-  {
-    title: '创建者',
-    dataIndex: 'creatorUser',
-    scopedSlots: { customRender: 'creatorUser' }
-  },
-  {
-    title: '创建日期',
-    dataIndex: 'creationTime',
-    scopedSlots: { customRender: 'creationTime' }
-  },
-  {
-    title: '最后更新者',
-    dataIndex: 'lastModifierUser',
-    scopedSlots: { customRender: 'lastModifierUser' }
-  },
-  {
-    title: '最后更新日期',
-    dataIndex: 'lastModificationTime',
-    scopedSlots: { customRender: 'lastModificationTime' }
-  }
-]
-
-const formatList = (items, option) => {
-  const list = []
-  items.forEach(item => {
-    if (item.childs) {
-      item.selectable = item.childs.items.length < 1
-      item.children = formatList(item.childs.items)
-    } else {
-      item.selectable = true
-      item.children = null
-    }
-    if (option) {
-      item.selectable = false
-      item[option.key] = option.value
-    }
-    item.label = item.projectName
-    item.value = item.projectGUID
-    list.push(item)
-  })
-  return list
-}
-
-export default {
-  name: 'ProjectCostList',
-  components: {
-    STable,
-    Ellipsis
-  },
-  data () {
-    this.columns = columns
-    return {
-      show: false,
-      cities: null,
-      queryParam: {},
-      // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        if (this.queryParam.ProjectGUID) {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return CostService.list(requestParameters).then(res => {
-            return fixedList(res, requestParameters)
-          })
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' }
+        },
+        {
+            title: '成本中心编号',
+            dataIndex: 'costCenterCode'
+        },
+        {
+            title: '成本中心名称',
+            dataIndex: 'costCenterName',
+            scopedSlots: { customRender: 'costCenterName' }
+        },
+        {
+            title: '审批状态',
+            dataIndex: 'auditStatus',
+            scopedSlots: { customRender: 'auditStatus' }
+        },
+        {
+            title: '创建者',
+            dataIndex: 'creatorUser',
+            scopedSlots: { customRender: 'creatorUser' }
+        },
+        {
+            title: '创建日期',
+            dataIndex: 'creationTime',
+            scopedSlots: { customRender: 'creationTime' }
+        },
+        {
+            title: '最后更新者',
+            dataIndex: 'lastModifierUser',
+            scopedSlots: { customRender: 'lastModifierUser' }
+        },
+        {
+            title: '最后更新日期',
+            dataIndex: 'lastModificationTime',
+            scopedSlots: { customRender: 'lastModificationTime' }
         }
-      }
-    }
-  },
-  created () {
-    ProjectService.tree().then(res => {
-      const cities = []
-      res.result.data.citys.forEach(item => {
-        const children = formatList(item.projects.items, { key: 'type', value: 'project' })
-        cities.push({
-          selectable: false,
-          label: item.city.nameCN,
-          value: item.city.id,
-          children: children
+    ]
+
+    const formatList = (items, option) => {
+        const list = []
+        items.forEach(item => {
+            if (item.childs) {
+                item.selectable = item.childs.items.length < 1
+                item.children = formatList(item.childs.items)
+            } else {
+                item.selectable = true
+                item.children = null
+            }
+            if (option) {
+                item.selectable = false
+                item[option.key] = option.value
+            }
+            item.label = item.projectName
+            item.value = item.projectGUID
+            list.push(item)
         })
-      })
-      this.cities = cities
-      const value = getPosValue(this.cities)
-      if (value.type !== 'project') {
-        this.queryParam.ProjectGUID = value.projectGUID
-      }
-      this.$refs.table.refresh()
-      this.$forceUpdate()
-    })
-  },
-  methods: {
-    ac (action) {
-      return ac(action, this.$route)
-    },
-    handleToItem (record) {
-      this.$router.push({ path: `/project/cost/item/${record.id}?type=view` })
-    },
-    handleToEdit (record) {
-      this.$router.push({ path: `/project/cost/item/${record.id}?type=update` })
-    },
-    handleToAdd () {
-      this.$router.push({ path: `/project/cost/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
-    },
-    onSelect (value, option) {
-      storage.set('POS', option.pos)
-      this.queryParam.ProjectGUID = value
-      this.$refs.table.refresh()
-      this.$forceUpdate()
-    },
-    search () {
-      this.$refs.table.refresh()
+        return list
     }
-  }
-}
+
+    export default {
+        name: 'ProjectCostList',
+        components: {
+            STable,
+            Ellipsis
+        },
+        data () {
+            this.columns = columns
+            return {
+                show: false,
+                cities: null,
+                queryParam: {},
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    if (this.queryParam.ProjectGUID) {
+                        const requestParameters = Object.assign({}, parameter, this.queryParam)
+                        return CostService.list(requestParameters).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    }
+                }
+            }
+        },
+        created () {
+            ProjectService.tree().then(res => {
+                const cities = []
+                res.result.data.citys.forEach(item => {
+                    const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+                    cities.push({
+                        selectable: false,
+                        label: item.city.nameCN,
+                        value: item.city.id,
+                        children: children
+                    })
+                })
+                this.cities = cities
+                const value = getPosValue(this.cities)
+                if (value.type !== 'project') {
+                    this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
+                }
+                this.$refs.table.refresh()
+                this.$forceUpdate()
+            })
+        },
+        methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
+            handleToItem (record) {
+                this.$router.push({ path: `/project/cost/item/${record.id}?type=view` })
+            },
+            handleToEdit (record) {
+                this.$router.push({ path: `/project/cost/item/${record.id}?type=update` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: `/project/cost/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })
+            },
+            onSelect (value, option) {
+                storage.set('POS', option.pos)
+                this.queryParam.ProjectGUID = value
+                this.$refs.table.refresh()
+                this.$forceUpdate()
+            },
+            search () {
+                this.$refs.table.refresh()
+            }
+        }
+    }
 </script>
 
 <style lang="less" scoped>
-.search-form {
-  background-color: #1E9FF2;
-  padding: 20px;
-  border-radius: 0.35rem;
+  .search-form {
+    background-color: #1E9FF2;
+    padding: 20px;
+    border-radius: 0.35rem;
 
-  /deep/ .ant-form-item-label label {
-    color: #fff;
+    /deep/ .ant-form-item-label label {
+      color: #fff;
+    }
   }
-}
 
 </style>
