@@ -13,8 +13,8 @@
 	    <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-radio-group v-model="useStore" button-style="solid" :disabled="useStore > 0 && stage==='VO'">
-              <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id">
+            <a-radio-group v-model="useStore" button-style="solid" :disabled="useStore > 0 && stage==='VO'" @change="changeStore">
+              <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id" >
                 {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance | NumberFormat}}</span><span v-if="item.balance <= 0">--余额不足</span>元</span>）
               </a-radio>
             </a-radio-group>
@@ -258,66 +258,84 @@
         usePlanLoadData: parameter => {
           this.rowSpans = {}
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          return ChangeService[actions[108][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
-            .then(res => {
-              if(res.result.data == null){
-                return new Promise((resolve, reject) => {
-                resolve({ data : [] })
-              })
-              }
-              res.result.data.sort((a,b) =>{
-                return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
-              })
-              res.result.data.forEach(item =>{
-                item.voGuid = this.data.voMasterInfo.voGuid
-                if(this.rowSpans['cost'+item.costCenterId]){
-                  this.rowSpans['cost'+item.costCenterId]++
-                }else{
-                  this.rowSpans['cost'+item.costCenterId] = 1
+          if(this.useStore === 108){
+            return ChangeService[actions[108][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+              .then(res => {
+                if(res.result.data == null){
+                  return new Promise((resolve, reject) => {
+                  resolve({ data : [] })
+                })
                 }
+                res.result.data.sort((a,b) =>{
+                  return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
+                })
+                res.result.data.forEach(item =>{
+                  item.voGuid = this.data.voMasterInfo.voGuid
+                  if(this.rowSpans['cost'+item.costCenterId]){
+                    this.rowSpans['cost'+item.costCenterId]++
+                  }else{
+                    this.rowSpans['cost'+item.costCenterId] = 1
+                  }
+                })
+                console.log('results',res.result)
+                return res.result
+              }).catch((e) =>{
+                this.$message.error('获取预算变更金额列表错误')
+                return new Promise((resolve, reject) => {
+                  resolve({ data : [] })
+                })
               })
-              console.log('results',res.result)
-              return res.result
-            }).catch((e) =>{
-              this.$message.error('获取预算变更金额列表错误')
-              return new Promise((resolve, reject) => {
-                resolve({ data : [] })
-              })
+          }else{
+            return new Promise((resolve, reject) => {
+              resolve({ data : [] })
             })
+          }
         },
         surplusLoadData :  parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          return ChangeService[actions[109][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
-            .then(res => {
-              if(res.result.data == null){
+          if(this.useStore === 109){
+            return ChangeService[actions[109][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+              .then(res => {
+                if(res.result.data == null){
+                  return new Promise((resolve, reject) => {
+                  resolve({ data : [] })
+                })
+                }
+                return res.result
+              }).catch((e) =>{
+                this.$message.error('获取定标盈余列表错误')
                 return new Promise((resolve, reject) => {
-                resolve({ data : [] })
+                  resolve({ data : [] })
+                })
               })
-              }
-              return res.result
-            }).catch((e) =>{
-              this.$message.error('获取定标盈余列表错误')
-              return new Promise((resolve, reject) => {
-                resolve({ data : [] })
-              })
+          }else{
+            return new Promise((resolve, reject) => {
+              resolve({ data : [] })
             })
+          }
         },
         generalTradeLoadData : parameter => {
           // 108 预算变更； 109 ： 定标余额； 110: 预算余额
-          return ChangeService[actions[110][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
-            .then(res => {
-              if(res.result.data == null){
+          if(this.useStore === 110){
+            return ChangeService[actions[110][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
+              .then(res => {
+                if(res.result.data == null){
+                  return new Promise((resolve, reject) => {
+                  resolve({ data : [] })
+                })
+                }
+                return res.result
+              }).catch((e) =>{
+                this.$message.error('获取预算余额列表错误')
                 return new Promise((resolve, reject) => {
-                resolve({ data : [] })
+                  resolve({ data : [] })
+                })
               })
-              }
-              return res.result
-            }).catch((e) =>{
-              this.$message.error('获取预算余额列表错误')
-              return new Promise((resolve, reject) => {
-                resolve({ data : [] })
-              })
+          }else{
+            return new Promise((resolve, reject) => {
+              resolve({ data : [] })
             })
+          }
         },
         selectedRowKeys: [],
         selectedRows: []
@@ -431,6 +449,16 @@
         }
         this.rowSpans['cost'+row.costCenterId] = undefined
         return obj
+      },
+      changeStore(obj){
+        const value = obj.target.value
+        if(value === 108){
+          this.$refs.usePlanTable.refresh()
+        }else if(value === 109){
+          this.$refs.surplusTable.refresh()
+        }else if(value === 110){
+          this.$refs.generalTradeTable.refresh()
+        }
       }
     }
   }
