@@ -707,13 +707,6 @@
     >
       <p>{{ dialog.content }}</p>
     </a-modal>
-    <select-cost-center ref="costCenterModal"
-                        :visible="visible"
-                        :loading="confirmLoading"
-                        :model="mdls"
-                        :projectGUID="ProjectGUID"
-                        @cancel="handleCancel"
-                        @ok="handleOk"></select-cost-center>
   </page-header-wrapper>
 </template>
 <script>
@@ -810,7 +803,7 @@
                 this.$forceUpdate()
             })
             this.getData()
-            CostService.list({ ProjectGUID: this.ProjectGUID, SkipCount: 0, MaxResultCount: 10 }).then(res => {
+            CostService.list({ ProjectGUID: this.ProjectGUID, SkipCount: 0, MaxResultCount: 9999 }).then(res => {
                 this.costList = res.result.data.items
             })
         },
@@ -909,7 +902,6 @@
                 }
             },
             sharesChange (value) {
-                console.log(value)
                 let list = []
                 if (value.length > 0) {
                     value.forEach(item => {

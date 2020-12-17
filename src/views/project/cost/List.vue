@@ -222,10 +222,10 @@
                 return ac(action, this.$route)
             },
             handleToItem (record) {
-                this.$router.push({ path: `/project/cost/item/${record.id}?type=view` })
+                this.$router.push({ path: `/project/cost/item/${record.id}?type=view&ProjectGUID=` + this.queryParam.ProjectGUID })
             },
             handleToEdit (record) {
-                this.$router.push({ path: `/project/cost/item/${record.id}?type=update` })
+                this.$router.push({ path: `/project/cost/item/${record.id}?type=update&ProjectGUID=` + this.queryParam.ProjectGUID })
             },
             handleToAdd () {
                 this.$router.push({ path: `/project/cost/item/0?type=create&ProjectGUID=` + this.queryParam.ProjectGUID })

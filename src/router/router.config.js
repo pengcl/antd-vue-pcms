@@ -388,7 +388,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.checkout.contract.edit', keepAlive: true, permission: ['BalanceAndCertificate'] }
           },
           {
-            path: '/checkout/completed/list',
+            path: '/checkout/completed/list/:id',
             name: 'CheckoutCompletedList',
             hidden: true,
             component: () => import('@/views/checkout/completed/List'),

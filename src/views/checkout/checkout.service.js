@@ -1,7 +1,9 @@
 import request from '@/utils/request'
 
 const API = {
-  balanceCertificateList: '/api/services/app/Balance/GetBalanceCertificatePage',
+  list: '/api/services/app/Balance/GetBalanceCertificatePage',
+  createInitData: '/api/services/app/Balance/GetBalanceCertificateCreateInitData',
+  partyList:'/api/services/app/Balance/GetBalanceContractPartyList',
 }
 
 const CheckoutService = {}
@@ -13,9 +15,25 @@ const CheckoutService = {}
  * @returns {*}
  */
 
-CheckoutService.balanceCertificateList = function (contractGID) {
+CheckoutService.list = function (contractGID) {
   return request({
-    url: API.balanceCertificateList,
+    url: API.list,
+    method: 'get',
+    params: { contractGID }
+  })
+}
+
+CheckoutService.createInitData = function (contractGID) {
+  return request({
+    url: API.createInitData,
+    method: 'get',
+    params: { contractGID }
+  })
+}
+
+CheckoutService.partyList = function (contractGID) {
+  return request({
+    url: API.partyList,
     method: 'get',
     params: { contractGID }
   })

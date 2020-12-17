@@ -84,7 +84,7 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button type="success" @click="handleToCompleted">新增竣工证书</a-button>
+          <a-button type="success" @click="handleToCompleted" :disabled="!contractGID">新增竣工证书</a-button>
           <a-button type="success" style="margin-left: 10px" @click="handleToAdd">新增合同结算</a-button>
           <a-button type="success" style="margin-left: 10px">打印工程财务结算书</a-button>
         </a-col>
@@ -150,6 +150,7 @@
     import { ChangeService } from '@/views/change/change.service'
     import { formatList } from '@/mock/util'
     import storage from 'store'
+    import { CheckoutService } from '../checkout.service'
 
     const columns = [
         {
@@ -298,7 +299,13 @@
                 },
                 loadData2: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam2)
-                    return nullFixedList(requestParameters)
+                    if (this.contractGID) {
+                        return CheckoutService.list(this.contractGID).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    } else {
+                        return nullFixedList(requestParameters)
+                    }
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -357,7 +364,7 @@
                 this.$forceUpdate()
             },
             handleToCompleted () {
-                this.$router.push({ path: '/checkout/completed/list' })
+                this.$router.push({ path: `/checkout/completed/list/0?type=create&contractGID=` + this.contractGID })
             },
             handleToItem (record) {
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
