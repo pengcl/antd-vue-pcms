@@ -130,6 +130,7 @@
               <a-col :md="12" :sm="24">
                 <a-form-model-item
                   label="分摊成本中心"
+                  prop="shareCostCenter"
                 >
                   <a-select
                     :disabled="type === 'view'"
@@ -788,7 +789,8 @@
                     secCostAllocateTypeID: [
                         { required: true, message: '请选择二次分摊', trigger: 'change' }
                     ],
-                    shareRule:[{ required: true, message: '请选择分摊原则', trigger: 'change' }],
+                    shareCostCenter: [{ required: true, message: '请选择分摊成本中心', trigger: 'change' }],
+                    shareRule: [{ required: true, message: '请选择分摊原则', trigger: 'change' }],
                     totalCFAExcludeParking: [{ required: true, message: '请填写总建筑面积(不含停车库)(CFA)', trigger: 'blur' }],
                     totalCFAIncludeParking: [{ required: true, message: '请填写总建筑面积(含停车库)(CFA)', trigger: 'blur' }]
                 }
@@ -889,27 +891,38 @@
                 const raUpperGround = this.form.raUpperGround || 0
                 const raBasement = this.form.raBasement || 0
                 this.form.totalRA = raUpperGround + raBasement
+            },
+            'form.secCostAllocateTypeID' (value) {
+                if (value === 1) {
+                    this.rules.shareCostCenter[0].required = false
+                } else {
+                    this.rules.shareCostCenter[0].required = true
+                }
             }
         },
         methods: {
             secCostAllocateTypeChange (value) {
                 if (value === 1) {
                     this.form.shareRule = 133
+                } else {
+                    this.form.shareRule = ''
                 }
             },
             sharesChange (value) {
+                console.log(value)
                 let list = []
                 if (value.length > 0) {
                     value.forEach(item => {
                         const params = {
                             mainCostCenterId: 0,
-                            shareCostCenterId: 0,
-                            id: item
+                            shareCostCenterId: item,
+                            id: 0
                         }
                         list.push(params)
                     })
                 }
                 this.form.shares = list
+                this.$forceUpdate()
             },
             ac (action) {
                 return ac(action, this.$route)
@@ -923,7 +936,15 @@
                 if (this.id !== '0') {
                     CostService.item(this.id).then(res => {
                         this.info = res.result.data
-                        this.form = SwaggerService.getValue(this.form, res.result.data)
+                        this.form = res.result.data
+                        if (this.info.shares.length > 0) {
+                            const shares = []
+                            this.info.shares.forEach(item => {
+                                shares.push(item.shareCostCenterId)
+                            })
+                            this.form.shareCostCenter = shares
+                        }
+
                     })
                 } else {
                     this.form.projectGUID = this.ProjectGUID
