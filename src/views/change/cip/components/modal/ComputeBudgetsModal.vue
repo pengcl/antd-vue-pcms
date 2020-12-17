@@ -8,6 +8,7 @@
     :closable="false"
     :maskClosable="false"
     :confirm-loading="loading"
+    :okButtonProps="{ props: { disabled: okDisabled }}"
   >
     <div>
 	    <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
@@ -15,7 +16,7 @@
           <a-col :md="24" :sm="24">
             <a-radio-group v-model="useStore" button-style="solid" :disabled="useStore > 0 && stage==='VO'" @change="changeStore">
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id" >
-                {{ item.nameCN }}（<span class="redText">余额：<span>{{item.balance | NumberFormat}}</span><span v-if="item.balance <= 0">--余额不足</span>元</span>）
+                {{ item.nameCN }}（<span class="redText"><span v-if="item.showBalance > 0">余额：{{item.showBalance | NumberFormat}}元</span><span v-if="item.showBalance <= 0">余额不足</span></span>）
               </a-radio>
             </a-radio-group>
           </a-col>
@@ -252,6 +253,7 @@
         rowSpans : {},
         selection : {},
         useStore : 0,
+        okDisabled : false,
         // 高级搜索 展开/关闭
         advanced: false,
         // 加载数据方法 必须为 Promise 对象
@@ -261,11 +263,14 @@
           if(this.useStore === 108){
             return ChangeService[actions[108][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
               .then(res => {
-                if(res.result.data == null){
+                if(res.result.statusCode == 900){
+                  this.refreshStoreBalance(108,true)
                   return new Promise((resolve, reject) => {
-                  resolve({ data : [] })
-                })
+                    resolve({ data : [] })
+                  })
                 }
+
+                this.refreshStoreBalance(108,false)
                 res.result.data.sort((a,b) =>{
                   return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
                 })
@@ -281,6 +286,7 @@
                 return res.result
               }).catch((e) =>{
                 this.$message.error('获取预算变更金额列表错误')
+                  this.refreshStoreBalance(108,true)
                 return new Promise((resolve, reject) => {
                   resolve({ data : [] })
                 })
@@ -296,14 +302,19 @@
           if(this.useStore === 109){
             return ChangeService[actions[109][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
               .then(res => {
-                if(res.result.data == null){
+                if(res.result.statusCode == 900){
+                 
+                  this.refreshStoreBalance(109,true)
                   return new Promise((resolve, reject) => {
-                  resolve({ data : [] })
-                })
+                    resolve({ data : [] })
+                  })
                 }
+
+                this.refreshStoreBalance(109,false)
                 return res.result
               }).catch((e) =>{
                 this.$message.error('获取定标盈余列表错误')
+                  this.refreshStoreBalance(109,true)
                 return new Promise((resolve, reject) => {
                   resolve({ data : [] })
                 })
@@ -319,14 +330,18 @@
           if(this.useStore === 110){
             return ChangeService[actions[110][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
               .then(res => {
-                if(res.result.data == null){
+                if(res.result.statusCode == 900){
+                  this.refreshStoreBalance(110,true)
                   return new Promise((resolve, reject) => {
-                  resolve({ data : [] })
-                })
+                    resolve({ data : [] })
+                  })
                 }
+
+                this.refreshStoreBalance(110,false)
                 return res.result
               }).catch((e) =>{
                 this.$message.error('获取预算余额列表错误')
+                this.refreshStoreBalance(110,true)
                 return new Promise((resolve, reject) => {
                   resolve({ data : [] })
                 })
@@ -366,17 +381,21 @@
               switch(item.id){
                 case 108 :
                   item.balance = res2.result.data.alterPlanSumAmount
+                  item.showBalance = item.balance
                   break
                 case 109 :
                   item.balance = res2.result.data.surplusSumAmount
+                  item.showBalance = item.balance
                   break
                 case 110:
                   item.balance = res2.result.data.generalTradeSumAmount
+                  item.showBalance = item.balance
               }
             })
           }else{
             res.result.data.forEach(item =>{
               item.balance = 0
+              item.showBalance = item.balance
             })
           }
           this.selection.storeTypes = res.result.data
@@ -384,6 +403,7 @@
           console.log('通过合同编号获取对应的三种变更类型预算余额失败',e)
           res.result.data.forEach(item =>{
             item.balance = 0
+            item.showBalance = item.balance
           })
           this.selection.storeTypes = res.result.data
         })
@@ -459,6 +479,20 @@
         }else if(value === 110){
           this.$refs.generalTradeTable.refresh()
         }
+      },
+      refreshStoreBalance(id,disabled){
+        this.selection.storeTypes.forEach(item=>{
+          if(item.id === id){
+            if(disabled){
+              this.okDisabled = true
+              item.showBalance = 0
+            }else{
+              this.okDisabled = false
+              item.showBalance = item.balance
+            }
+          }
+        })
+        this.$forceUpdate()
       }
     }
   }
