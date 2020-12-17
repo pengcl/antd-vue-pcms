@@ -215,7 +215,8 @@
                         elementInfoCode : tradeType.code,
                         elementInfoNameCN : tradeType.nameCN,
                         parentID : tradeType.elementId,
-                        orderSeq : 0
+                        orderSeq : 0,
+                        children : []
                       }
                       const repeatChilds = data.children.filter(childTemp => childTemp.elementInfoId === child.elementInfoId)
                       if(repeatChilds.length > 0){
@@ -223,16 +224,36 @@
                       }else{
                         data.children.push(child)
                       }
-                      if(child[costName] == undefined){
-                        child[costName] = []
-                      }
-                      costColumn.tradeBudgetItems.forEach(temp => {
-                        if( child.elementInfoId == temp.elementInfoId+''+temp.tradeTypeId){
-                          child[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
-                        }
-                      })
-                      if(child[costName].length > 0){
-                        this.showColumnCodes.push(child.elementInfoCode)
+                      //判断科目组是否存在
+                      if(tradeType.tradeBudgetItemGroups && tradeType.tradeBudgetItemGroups.length > 0){
+                        tradeType.tradeBudgetItemGroups.forEach(group =>{
+                          let tradeChild = {
+                            elementInfoId : tradeType.elementId+''+tradeType.id+''+group.id,
+                            elementInfoCode : tradeType.code+''+group.id+'',
+                            elementInfoNameCN : group.budgetTitle,
+                            parentID : tradeType.elementId+''+tradeType.id,
+                            orderSeq : 0
+                          }
+                          const repeatTradeChilds = child.children.filter(childTemp => childTemp.elementInfoId === tradeChild.elementInfoId)
+                          if(repeatTradeChilds.length > 0){
+                            tradeChild = repeatTradeChilds[0]
+                          }else{
+                            child.children.push(tradeChild)
+                          }
+                          if(tradeChild[costName] == undefined){
+                            tradeChild[costName] = []
+                          }
+                          costColumn.tradeBudgetItems.forEach(temp => {
+                            if( tradeChild.elementInfoId == temp.elementInfoId+''+temp.tradeTypeId+""+temp.groupId){
+                              tradeChild[costName].push({ id : temp.id , amount : temp.budgetValue,checked : false})
+                            }
+                          })
+                          if(tradeChild[costName].length > 0){
+                            this.showColumnCodes.push(tradeChild.elementInfoCode)
+                          }
+
+                        })
+                        
                       }
                     })
                   }
