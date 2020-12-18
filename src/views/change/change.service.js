@@ -55,7 +55,7 @@ const API = {
   getVOCUseGeneralTradePreSplitByVOGuid : '/api/services/app/VO/GetVOCUseGeneralTradePreSplitByVOGuid',//VO-变更预分解（针对预算余额）
   createVOCUseGeneralTrade : '/api/services/app/VO/CreateVOCUseGeneralTrade',//VO-预算确认（针对预算余额）
   updateVOCGeneralTrade : '/api/services/app/VO/UpdateVOCGeneralTrade',//VO-更新变更预算调整（针对预算余额）
-
+  getVOTypeTree : '/api/services/app/VO/GetVOTypeTree'//根据ciptype获取voType树信息
 }
 
 const ChangeService = {}
@@ -649,5 +649,17 @@ ChangeService.updateVOCGeneralTrade = function(parameter){
 	    data: parameter
 	  })
 }
+
+/**
+ * 根据cipType获取VOType
+ */
+ChangeService.getVOTypeTree = function(cipType){
+	return request({
+	    url: API.getVOTypeTree,
+	    method: 'get',
+	    params: {cipType}
+	  })
+}
+
 
 export { ChangeService }

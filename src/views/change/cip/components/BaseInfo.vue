@@ -143,13 +143,13 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="变更类型" prop="voType">
+        <a-form-model-item label="变更类型" prop="voTypeId">
           <a-select
             placeholder="请选择"
             :disabled="type === 'view'"
-            v-model="data.voMasterInfo.voType"
+            v-model="data.voMasterInfo.voTypeId"
             @change="changeVoType">
-            <a-select-option :key="index" v-for="(item,index) in resonTypes" v-if="item.show" :value="index">{{index}}</a-select-option>
+            <a-select-option :key="index" v-for="(item,index) in selection.voTypes" :value="item.id">{{item.nameCN}}</a-select-option>
           </a-select>
         </a-form-model-item>
       </a-col>
@@ -159,7 +159,7 @@
             v-model="reasonType"
             :disabled="type === 'view'"
             @change="changeReasonType">
-            <a-checkbox v-for="item in (resonTypes[data.voMasterInfo.voType] ? resonTypes[data.voMasterInfo.voType].items : [])" :key="item.value" :value="item.value">{{item.text}}</a-checkbox>
+            <a-checkbox v-for="item in selection.reasonTypes" :key="item.id" :value="item.id+''">{{item.nameCN}}</a-checkbox>
           </a-checkbox-group>
         </a-form-model-item>
       </a-col>
@@ -503,103 +503,15 @@
   import { ChangeService } from '@/views/change/change.service'
   import moment from 'moment'
 
-  const resonTypes = {
-    "现场管理" : {
-      show : true,
-      items : [
-        {
-          value : '增加工作范围',
-          text : '增加工作范围'
-        },
-        {
-          value : '抢险',
-          text : '抢险'
-        },
-        {
-          value : '索偿',
-          text : '索偿'
-        },
-        {
-          value : '其他',
-          text : '其他'
-        }
-      ]
-    },
-    "设计变更" : {
-      show : true,
-      items : [
-        {
-          value : '设计要求',
-          text : '设计要求'
-        },
-        {
-          value : '其他',
-          text : '其他'
-        }
-      ]
-    },
-    "暂转固" : {
-      show : true,
-      items : [
-        {
-          value : '暂定款使用',
-          text : '暂定款使用'
-        },
-        {
-          value : '选择項目使用',
-          text : '选择項目使用'
-        },
-        {
-          value : '暂定料价及单价调整',
-          text : '暂定料价及单价调整'
-        },
-        {
-          value : '暂定数量调整',
-          text : '暂定数量调整'
-        },
-        {
-          value : '指定承判商(NSC)',
-          text : '指定承判商(NSC)'
-        },
-        {
-          value : '其他',
-          text : '其他'
-        }
-      ]
-    },
-    "其他变更" : {
-      show : true,
-      items : [
-        {
-          value : '法规要求',
-          text : '法规要求'
-        },
-        {
-          value : '人工/材料差价',
-          text : '人工/材料差价'
-        },
-        {
-          value : '延长顾问服务期之费用',
-          text : '延长顾问服务期之费用'
-        },
-        {
-          value : '其他',
-          text : '其他'
-        }
-      ]
-    }
-  }
-
   export default {
     name: 'BaseInfo',
     data () {
       return {
         to: '',
         cc: [],
-        resonTypes : resonTypes,
         toRate: 0,
         reasonType: [],
-        selection: {},
+        selection: {reasonTypes : [],voTypes : []},
         loading: false,
         rules: {
           to: [
@@ -612,7 +524,7 @@
           voHasEffect : [ {requeired : true, message : '请选择是否影响工期',type:'boolean' }],
           effectResult : [ {requeired : false, message : '请选择增加或减少工期',type:'string' }],
           effectDay : [ { validator : this.checkEffectDay, type:'number' }],
-          voType: [{ required: true, message: '请选择变更类型', trigger: 'change' }],
+          voTypeId: [{ required: true, message: '请选择变更类型', trigger: 'change' }],
           cipType : [{ required : true,message : '请选择类型',trigger : 'change'}],
           reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
           voName : [{ required : true, message : '请输入变更名称'}],
@@ -690,8 +602,8 @@
       },
       'data.voMasterInfo' (value) {
         // 初始化reasonType值，转换为checkboxgroup认同的值
-        if (this.data.voMasterInfo.reasonType) {
-          this.reasonType = this.splitVal(this.data.voMasterInfo.reasonType)
+        if (this.data.voMasterInfo.reasonTypeIDs) {
+          this.reasonType = this.splitVal(this.data.voMasterInfo.reasonTypeIDs)
         }
         // 转换接收公司，抄送公司选中信息为下拉框识别的值
         if (this.data.voPartylst) {
@@ -705,6 +617,9 @@
               }
             }
           })
+          if(this.data.voMasterInfo.cipType){
+            this.cipTypeChange(this.data.voMasterInfo.cipType,null,true)
+          }
         }
         this.$forceUpdate()
       }
@@ -774,12 +689,20 @@
       // 监听的同时转换checkboxgroup选中值为保存接口所需的以;号分隔的字符串
       changeReasonType (checkedValues) {
         if(checkedValues.length > 0){
-          this.data.voMasterInfo.reasonType = checkedValues.join(';')
+          this.data.voMasterInfo.reasonTypeIds = checkedValues.join(';')
         }
       },
       // 变更类型change监听，变更后清空reasonType值
-      changeVoType (value) {
-        this.reasonType = []
+      changeVoType (value,option,flag) {
+        console.log('flag2',flag)
+        if(!flag){
+          this.reasonType = []
+        }
+        this.selection.reasonTypes = []
+        const voTypeData = this.selection.voTypes.filter(item => item.id === value)
+        if(voTypeData.length > 0){
+          this.selection.reasonTypes = voTypeData[0].reasonTypelst
+        }
         this.$forceUpdate()
       },
       // 合并接口差异金额数据
@@ -869,18 +792,24 @@
         }
         callback()
       },
-      cipTypeChange(value,option){
-        if(value === 131){
-          resonTypes['暂转固'].show = true
-        }else{
-          resonTypes['暂转固'].show = false
-          if(this.data.voMasterInfo.voType == '暂转固'){
-            this.data.voMasterInfo.voType = ''
-            this.data.voMasterInfo.reasonType = ''
-            this.reasonType = []
-          }
+      cipTypeChange(value,option,flag){
+        console.log('flag',flag)
+        if(!flag){
+          this.data.voMasterInfo.voTypeId = null
+          this.data.voMasterInfo.reasonTypeIds = ''
+          this.reasonType = []
+          this.selection.voTypes = []
+          this.selection.reasonTypes = []
         }
-        this.$forceUpdate()
+        ChangeService.getVOTypeTree(value).then(res =>{
+          if(res.result.statusCode === 200){
+            this.selection.voTypes = res.result.data.voTypeTree
+            if(this.data.voMasterInfo.voTypeId){
+              this.changeVoType(this.data.voMasterInfo.voTypeId,null,flag)
+            }
+            this.$forceUpdate()
+          }
+        })
       }
     }
   }
