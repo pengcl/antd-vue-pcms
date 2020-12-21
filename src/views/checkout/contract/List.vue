@@ -85,7 +85,9 @@
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button type="success" @click="handleToCompleted" :disabled="!contractGID">新增竣工证书</a-button>
-          <a-button type="success" style="margin-left: 10px" @click="handleToAdd">新增合同结算</a-button>
+          <a-button type="success" style="margin-left: 10px" @click="handleToAdd" :disabled="!balanceCertificateGID">
+            新增合同结算
+          </a-button>
           <a-button type="success" style="margin-left: 10px">打印工程财务结算书</a-button>
         </a-col>
         <a-col :md="24" :sm="24">
@@ -100,43 +102,43 @@
         bordered
         :columns="_columns"
         :data="loadData2"
+        :rowSelection="rowSelection2"
         :alert="false"
         showPagination="auto"
+        :scroll="{ x: 'calc(700px + 50%)'}"
       >
-
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a-button
-              class="btn-success"
-              type="primary"
-              icon="file-text"
-              title="查看"
-              @click="handleToItem(record)"></a-button>
-            <a-button
-              class="btn-info"
-              type="primary"
-              icon="form"
-              style="margin-left: 4px"
-              title="编辑"
-              @click="handleToEdit(record)"></a-button>
-            <a-button
-              type="primary"
-              class="btn-info"
-              icon="file-done"
-              style="margin-left: 4px"
-              title="审批记录"></a-button>
-          </template>
+        <span slot="completionDate" slot-scope="text,record">
+          <a @click="handleToCompletedItem(record.gid,'update')">{{text | date}}</a>
         </span>
+
+        <span slot="file_PdfPath" slot-scope="text,record">
+            <a :href="record.file_PdfPathUrl" target="_blank" v-if="text">{{text}}</a>
+        </span>
+
+
+        <span slot="auditStatus" slot-scope="text,record">
+            <a @click="handleToCompletedItem(record.gid,'view')">{{text}}</a>
+        </span>
+
+        <span slot="isLastBalance" slot-scope="text">
+          {{text ? '是' : '否'}}
+        </span>
+
+        <span slot="progressBalanceDate" slot-scope="text,record">
+          <a @click="handleToContractItem(record.bContractGID,'update')">{{text | date}}</a>
+        </span>
+
+        <span slot="bContractAuditStatus" slot-scope="text,record">
+          <a @click="handleToContractItem(record.bContractGID,'view')">{{text}}</a>
+        </span>
+
+        <span slot="progressBalanceAmount" slot-scope="text">
+          {{text | NumberFormat}}
+        </span>
+
+
       </s-table>
 
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -144,7 +146,6 @@
 <script>
     import { STable } from '@/components'
     import { getRoleList } from '@/api/manage'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { fixedList, getPosValue, nullFixedList, getList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { ChangeService } from '@/views/change/change.service'
@@ -195,23 +196,34 @@
             children: [
                 {
                     title: '竣工日期',
-                    dataIndex: 'completedDate'
+                    width: 110,
+                    dataIndex: 'completionDate',
+                    scopedSlots: { customRender: 'completionDate' }
                 },
                 {
                     title: '竣工证书',
-                    dataIndex: 'completedCertificate'
+                    dataIndex: 'file_PdfPath',
+                    width: 200,
+                    scopedSlots: { customRender: 'file_PdfPath' }
                 },
                 {
                     title: '是否最终竣工',
-                    dataIndex: 'isLastCompleted'
+                    dataIndex: 'isLastBalance',
+                    width: 110,
+                    align: 'center',
+                    scopedSlots: { customRender: 'isLastBalance' }
                 },
                 {
                     title: '发起日期',
-                    dataIndex: 'launchDate'
+                    width: 110,
+                    dataIndex: 'launchDate',
+                    scopedSlots: { customRender: 'launchDate' }
                 },
                 {
                     title: '审批状态',
-                    dataIndex: 'approvalStatus'
+                    width: 78,
+                    dataIndex: 'auditStatus',
+                    scopedSlots: { customRender: 'auditStatus' }
                 }
             ]
         },
@@ -220,19 +232,28 @@
             children: [
                 {
                     title: '结算日期',
-                    dataIndex: 'balanceDate'
+                    width: 110,
+                    dataIndex: 'progressBalanceDate',
+                    scopedSlots: { customRender: 'progressBalanceDate' }
                 },
                 {
                     title: '结算申请金额',
-                    dataIndex: 'balanceAmount'
+                    dataIndex: 'progressBalanceAmount',
+                    align: 'center',
+                    width: 180,
+                    scopedSlots: { customRender: 'progressBalanceAmount' }
                 },
                 {
                     title: '发起日期',
-                    dataIndex: 'launchDate'
+                    width: 110,
+                    dataIndex: 'launchDate',
+                    scopedSlots: { customRender: 'launchDate' }
                 },
                 {
                     title: '审批状态',
-                    dataIndex: 'approvalStatus'
+                    width: 78,
+                    dataIndex: 'bContractAuditStatus',
+                    scopedSlots: { customRender: 'bContractAuditStatus' }
                 }
             ]
         },
@@ -241,11 +262,14 @@
             children: [
                 {
                     title: '发起日期',
-                    dataIndex: 'launchDate'
+                    dataIndex: 'launchDate',
+                    width: 110,
+                    scopedSlots: { customRender: 'launchDate' }
                 },
                 {
                     title: '审批状态',
-                    dataIndex: 'approvalStatus'
+                    width: 78,
+                    dataIndex: 'bProjectAuditStatus'
                 }
             ]
         },
@@ -254,11 +278,14 @@
             children: [
                 {
                     title: '发起日期',
-                    dataIndex: 'launchDate'
+                    dataIndex: 'launchDate',
+                    width: 110,
+                    scopedSlots: { customRender: 'launchDate' }
                 },
                 {
                     title: '审批状态',
-                    dataIndex: 'approvalStatus'
+                    width: 78,
+                    dataIndex: 'bFinanceAuditTime'
                 }
             ]
         }
@@ -268,7 +295,6 @@
         name: 'CheckoutContractList',
         components: {
             STable,
-            CreateForm,
         },
         data () {
             this.columns = columns
@@ -276,6 +302,7 @@
             return {
                 // create model
                 contractGID: '',
+                balanceCertificateGID: '',
                 projectType: '',
                 cities: null,
                 show: false,
@@ -301,6 +328,13 @@
                     const requestParameters = Object.assign({}, parameter, this.queryParam2)
                     if (this.contractGID) {
                         return CheckoutService.list(this.contractGID).then(res => {
+                            if (res.result.data) {
+                                res.result.data.items.forEach(item => {
+                                    if (item.file_PdfPath) {
+                                        item.file_PdfPathUrl = (process.env.VUE_APP_API_BASE_URL + '/' + item.file_PdfPath)
+                                    }
+                                })
+                            }
                             return fixedList(res, requestParameters)
                         })
                     } else {
@@ -308,7 +342,9 @@
                     }
                 },
                 selectedRowKeys: [],
-                selectedRows: []
+                selectedRows: [],
+                selectedRowKeys2: [],
+                selectedRows2: []
             }
         },
         created () {
@@ -344,11 +380,28 @@
                         that.$refs._table.refresh()
                     }
                 }
+            },
+            rowSelection2 () {
+                const that = this
+                return {
+                    selectedRowKeys: this.selectedRowKeys2,
+                    onChange: this.onSelectChange2,
+                    type: 'radio',
+                    onSelect: function (record, selected, selectRows, nativeEvent) {
+                        that.balanceCertificateGID = record.gid
+                    }
+                }
             }
         },
         methods: {
             handleToContractInfo (record) {
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
+            },
+            handleToCompletedItem (id, type) {
+                this.$router.push({ path: `/checkout/completed/list/${id}?type=${type}&contractGID=` + this.contractGID })
+            },
+            handleToContractItem (id, type) {
+                this.$router.push({ path: `/checkout/contract/item/${id}?type=${type}` })
             },
             onSelect (value, option) {
                 storage.set('POS', option.pos)
@@ -360,6 +413,10 @@
                 } else {
                     this.queryParam.ProjectGUID = value
                 }
+                this.contractGID = ''
+                this.balanceCertificateGID = ''
+                this.$refs.table.clearSelected()
+                this.$refs._table.clearSelected()
                 this.$refs.table.refresh()
                 this.$forceUpdate()
             },
@@ -373,78 +430,19 @@
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
             },
             handleToAdd () {
-                this.$router.push({ path: '/checkout/contract/edit' })
-            },
-            handleAdd () {
-                this.mdl = null
-                this.visible = true
+                this.$router.push({ path: '/checkout/contract/item/0?type=create&balanceCertificateGID=' + this.balanceCertificateGID })
             },
             search () {
                 this.show = !this.show
                 this.$refs.table.refresh(true)
             },
-            onChange (value) {
-                if (value.length >= 2) {
-                    this.queryParam.ProjectGUID = value[value.length - 1]
-                    this.$refs.table.refresh(true)
-                } else {
-                    this.queryParam.ProjectGUID = ''
-                    this.$refs.table.refresh(true)
-                }
-            },
-            handleOk () {
-                const form = this.$refs.createModal.form
-                this.confirmLoading = true
-                form.validateFields((errors, values) => {
-                    if (!errors) {
-                        console.log('values', values)
-                        if (values.id > 0) {
-                            // 修改 e.g.
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('修改成功')
-                            })
-                        } else {
-                            // 新增
-                            new Promise((resolve, reject) => {
-                                setTimeout(() => {
-                                    resolve()
-                                }, 1000)
-                            }).then(res => {
-                                this.visible = false
-                                this.confirmLoading = false
-                                // 重置表单数据
-                                form.resetFields()
-                                // 刷新表格
-                                this.$refs.table.refresh()
-
-                                this.$message.info('新增成功')
-                            })
-                        }
-                    } else {
-                        this.confirmLoading = false
-                    }
-                })
-            },
-            handleCancel () {
-                this.visible = false
-
-                const form = this.$refs.createModal.form
-                form.resetFields() // 清理表单数据（可不做）
-            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 this.selectedRows = selectedRows
+            },
+            onSelectChange2 (selectedRowKeys, selectedRows) {
+                this.selectedRowKeys2 = selectedRowKeys
+                this.selectedRows2 = selectedRows
             },
         }
     }

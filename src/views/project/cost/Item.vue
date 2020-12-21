@@ -133,7 +133,7 @@
                   prop="shareCostCenter"
                 >
                   <a-select
-                    :disabled="type === 'view'"
+                    :disabled="type === 'view' || form.secCostAllocateTypeID === 1"
                     mode="multiple"
                     placeholder="请选择分摊成本中心"
                     v-model="form.shareCostCenter"
@@ -782,7 +782,7 @@
                     secCostAllocateTypeID: [
                         { required: true, message: '请选择二次分摊', trigger: 'change' }
                     ],
-                    shareCostCenter: [{ required: true, message: '请选择分摊成本中心', trigger: 'change' }],
+                    shareCostCenter: [{ required: false, trigger: 'change' }],
                     shareRule: [{ required: true, message: '请选择分摊原则', trigger: 'change' }],
                     totalCFAExcludeParking: [{ required: true, message: '请填写总建筑面积(不含停车库)(CFA)', trigger: 'blur' }],
                     totalCFAIncludeParking: [{ required: true, message: '请填写总建筑面积(含停车库)(CFA)', trigger: 'blur' }]
@@ -887,9 +887,9 @@
             },
             'form.secCostAllocateTypeID' (value) {
                 if (value === 1) {
-                    this.rules.shareCostCenter[0].required = false
+                    this.rules.shareCostCenter = [{ required: false, trigger: 'change' }]
                 } else {
-                    this.rules.shareCostCenter[0].required = true
+                    this.rules.shareCostCenter = [{ required: true, message: '请选择分摊成本中心', trigger: 'change' }]
                 }
             }
         },
@@ -897,6 +897,10 @@
             secCostAllocateTypeChange (value) {
                 if (value === 1) {
                     this.form.shareRule = 133
+                    this.form.shares = []
+                    if (this.form.shareCostCenter && this.form.shareCostCenter.length > 0) {
+                        this.form.shareCostCenter = []
+                    }
                 } else {
                     this.form.shareRule = ''
                 }

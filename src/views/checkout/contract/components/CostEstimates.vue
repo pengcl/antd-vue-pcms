@@ -1,90 +1,288 @@
 <template>
-  <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
-    <a-row :gutter="48">
-      <a-col :md="24" :sm="24">
-        <table>
-          <thead>
-          <tr>
-            <th colspan="23">
-              <a-button :disabled="type === 'view'" icon="plus">
-                新增
-              </a-button>
-              <a-button :disabled="type === 'view'">
-                按原合同条款
-              </a-button>
-            </th>
-          </tr>
-          <tr>
-            <th style="width: 5%" rowspan="2">清单编号</th>
-            <th style="width: 5%" rowspan="2">标段</th>
-            <th style="width: 5%" rowspan="2">楼栋</th>
-            <th style="width: 5%" rowspan="2">分部</th>
-            <th style="width: 5%" rowspan="2">分项</th>
-            <th style="width: 5%" rowspan="2">预留字段0</th>
-            <th style="width: 5%" rowspan="2">预留字段1</th>
-            <th style="width: 5%" rowspan="2">变更原因描述</th>
-            <th style="width: 5%" rowspan="2">业态成本中心</th>
-            <th style="width: 5%" rowspan="2">清单项类别</th>
-            <th style="width: 15%" colspan="4">供应</th>
-            <th style="width: 15%" colspan="4">安装</th>
-            <th style="width: 15%" colspan="4">供应+安装</th>
-            <th style="width: 5%" rowspan="2">合计</th>
-          </tr>
-          <tr>
-            <th>单位</th>
-            <th>工程量</th>
-            <th>单价</th>
-            <th>小计</th>
-            <th>单位</th>
-            <th>工程量</th>
-            <th>单价</th>
-            <th>小计</th>
-            <th>单位</th>
-            <th>工程量</th>
-            <th>单价</th>
-            <th>小计</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          </tbody>
-        </table>
-      </a-col>
-    </a-row>
-  </a-form>
+  <div>
+    <a-form-model ref="form" :model="data" :rules="tableRules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+      <a-row>
+        <a-col>
+          <div
+            style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
+            <a-button :disabled="type === 'view'" icon="plus" @click="add">新增</a-button>
+            <a-button @click="clear" :disabled="type === 'view'" icon="stop">重置</a-button>
+            <a-button :disabled="type === 'view'" @click="replaceByContract">按原合同条款</a-button>
+          </div>
+          <a-table
+            ref="table"
+            :row-key="record => record._id"
+            :columns="columns"
+            :data-source="data.bqList"
+            :scroll="{  y: '300px' }"
+            bordered
+            :pagination="false"
+            :rowClassName="setRowClassName"
+          >
+            <span slot="action" slot-scope="text, item, index">
+              <template>
+                <a-button @click="del(index)" :disabled="type === 'view'" icon="close"> 删除 </a-button>
+              </template>
+            </span>
+            <div slot="costCenter" slot-scope="text, item, index">
+              <a-form-model-item
+                :prop="'vobqNewlst.' + index + '.costCenter'"
+                :rules="[{ required: !item.isDeleted, message: '请选择成本中心'}]"
+              >
+                <a-select
+                  v-model="item.costCenter"
+                  style="width: 200px"
+                  :disabled="type === 'view'"
+                >
+                  <a-select-option :value="center.id+''" v-for="center in selection.centers"
+                                   :text="center.costCenterName" :key="JSON.stringify(center)">
+                    {{ center.costCenterName }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </div>
+            <div slot="itemType" slot-scope="text, item, index">
+              <a-form-model-item
+                :prop="'vobqNewlst.' + index + '.itemType'"
+                :rules="[{ required: !item.isDeleted, message: '请选择清单项类别' }]"
+              >
+                <a-select placeholder="请选择" v-model="item.itemType" style="width: 200px" :disabled="type === 'view'">
+                  <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code"
+                  >{{ item.nameCN }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </div>
+            <div slot="allAmount" slot-scope="text, item, index">
+              <a-form-model-item
+                :prop="'vobqNewlst.' + index + '.allAmount'"
+                :rules="[{ required: !item.isDeleted, message: '请输入金额' }]"
+              >
+                <a-input-number
+                  :disabled="type === 'view'"
+                  v-model="item.allAmount"
+                  :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="(value) => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"
+                  @change="amountChange(item,index)"
+                ></a-input-number>
+              </a-form-model-item>
+            </div>
+          </a-table>
+        </a-col>
+      </a-row>
+    </a-form-model>
+    <contract-bq-modal ref="bqModal" :contract="contract" :data="data"></contract-bq-modal>
+  </div>
 </template>
 
 <script>
+    import ContractBqModal from '@/views/change/cip/components/modal/ContractBQModal'
+    import { Base as BaseService } from '@/api/base'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { ChangeService } from '@/views/change/change.service'
+
+
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            width: 150,
+        },
+        {
+            title: '业态成本中心',
+            dataIndex: 'costCenter',
+            scopedSlots: { customRender: 'costCenter' },
+            width: 220,
+        },
+        {
+            title: '清单项类别',
+            dataIndex: 'itemType',
+            scopedSlots: { customRender: 'itemType' },
+            width: 220,
+        },
+        {
+            title: '金额',
+            dataIndex: 'allAmount',
+            scopedSlots: { customRender: 'allAmount' },
+            width: 160,
+        }
+    ]
+
     export default {
-        name: 'CostEstimates'
+        name: 'CostEstimates',
+        components: { ContractBqModal },
+        data () {
+            return {
+                columns: columns,
+                selection: {},
+                form: this.$form.createForm(this),
+                loading: false,
+                maxId: 0,
+                tableRules: {
+                    vobqNewlst: [],
+                },
+            }
+        },
+        created () {
+            BaseService.itemTypes('vo').then((res) => {
+                this.selection.itemTypes = res.result.data
+                this.$forceUpdate()
+            })
+            ChangeService.getCostCenters(this.contract.contractGuid).then((res) => {
+                this.selection.centers = res.result.data
+                this.$forceUpdate()
+            })
+        },
+        filters: {
+            getValue (item) {
+                const list = item.costCenter ? item.costCenter.split(';').map(Number) : []
+                list.forEach((item, index) => {
+                    if (isNaN(item)) {
+                        list.splice(index, 1)
+                    }
+                })
+                return list
+            },
+        },
+        props: {
+            data: {
+                type: Object,
+                default: null,
+            },
+            type: {
+                type: String,
+                default: 'view',
+            },
+            id: {
+                type: String,
+                default: '0',
+            },
+            contract: {
+                type: Object,
+                default: null,
+            },
+            project: {
+                type: Object,
+                default: null,
+            },
+        },
+        methods: {
+            add (item, addData) {
+                let data = SwaggerService.getForm('VOBQNewDto')
+                if (addData) {
+                    data = Object.assign({}, addData)
+                    data.contractBQGuid = ''
+                    data.contractID = ''
+                } else {
+                    data.allAmount = 0
+                }
+                data.isTemp = true
+                data.id = 0
+                data.isDeleted = false
+                data.vobqGuid = ''
+                data.void = ''
+                this.data.vobqNewlst.push(data)
+                if (addData) {
+                    this.countAmount()
+                }
+                this.$forceUpdate()
+            },
+            del (index) {
+                const item = this.data.vobqNewlst[index]
+                if (item.isTemp) {
+                    this.data.vobqNewlst.splice(index, 1)
+                } else {
+                    item.isDeleted = true
+                }
+                this.countAmount()
+                this.$forceUpdate()
+            },
+            clear () {
+                const list = []
+                this.data.vobqNewlst.forEach((item) => {
+                    item.isDeleted = true
+                    if (!item.isTemp) {
+                        list.push(item)
+                    }
+                    this.data.vobqNewlst = list
+                    this.$forceUpdate()
+                })
+                this.countAmount()
+            },
+            centerChange (value, target, item) {
+                item.costCenterName = target.data.attrs.text
+                console.log('target', target)
+            },
+            amountChange (item, index) {
+                let isValid = true
+                this.$refs.form.validateField([
+                    'vobqNewlst.' + index + '.costCenter',
+                    'vobqNewlst.' + index + '.itemType'], valid => {
+                    if (valid) {
+                        isValid = false
+                    }
+                })
+                if (isValid) {
+                    const value = item.allAmount
+                    setTimeout(() => {
+                        if (value === item.allAmount) {
+                            this.countAmount()
+                        }
+                    }, 1500)
+                }
+
+            },
+            countAmount () {
+                ChangeService.bqAmount(this.data.vobqNewlst).then((item) => {
+                    if (item.result.statusCode === 200) {
+                        this.data.voMasterInfo.voTotalAmountDecrease = item.result.data.voTotalAmountDecrease
+                        this.data.voMasterInfo.voTotalAmountIncrease = item.result.data.voTotalAmountIncrease
+                        this.data.voMasterInfo.voAmount = item.result.data.voAmount
+                    }
+                    // this.$message.info('计算金额完成')
+                })
+            },
+            replaceByContract () {
+                this.$refs.bqModal.showTable()
+            },
+            setRowClassName (record, index) {
+                if (record.isDeleted) {
+                    return 'delete-row'
+                }
+                return ''
+            }
+        },
     }
 </script>
 
 <style lang="less" scoped>
+  .ant-form .ant-form-item .ant-form-item-label.ant-col-8 {
+    width: 15em;
+  }
+
+  .ant-form .ant-form-item .ant-form-item-control-wrapper.ant-col-16 {
+    width: calc(100% - 15em);
+  }
+
+  /deep/ .has-error .ant-form-explain {
+    white-space: nowrap;
+  }
+
+  /deep/ .ant-table-tbody > tr > td {
+    padding: 8px 10px !important;
+    text-align: center;
+  }
+
+  /deep/ .delete-row {
+    display: none;
+  }
+
+  button {
+    margin-right: 10px;
+  }
+
   table {
     margin: 15px 0;
     width: 100%;
@@ -95,11 +293,12 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;
@@ -107,10 +306,7 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
+          white-space: nowrap;
         }
       }
     }
@@ -122,9 +318,14 @@
           border-width: 0 0 1px 1px;
           border-style: solid;
           border-color: #ccc;
+          text-align: center;
 
-          button {
-            margin-right: 10px;
+          .ant-input {
+            min-width: 60px;
+          }
+
+          /deep/ .has-error .ant-form-explain {
+            white-space: nowrap;
           }
         }
       }

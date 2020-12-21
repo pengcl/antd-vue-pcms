@@ -135,6 +135,14 @@
         return list
     }
 
+    function getCityId (items) {
+        let id = 0
+        if (items.length > 0) {
+            id = items[0].city.id
+        }
+        return id
+    }
+
     const columns = [
         {
             title: '操作',
@@ -221,7 +229,7 @@
             ProjectService.tree().then(res => {
                 this.cities = res.result.data.citys
                 const value = getPosValue(this.cities)
-                this.queryParam.Id = value.city.id
+                this.queryParam.Id = value.city ? value.city.id : getCityId(value)
                 this.$refs.table.refresh()
             })
 

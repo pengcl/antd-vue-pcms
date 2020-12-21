@@ -18,7 +18,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="是否最终结算">
+            <a-form-model-item label="是否最终竣工"
+                               prop="isLastBalance">
               <a-radio-group v-model="form.isLastBalance"
                              :disabled="type === 'view'">
                 <a-radio :value="true">是</a-radio>
@@ -27,7 +28,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="合作单位（结算方）">
+            <a-form-model-item label="合作单位（结算方）"
+                               prop="payeePartyGID">
               <a-select :disabled="type === 'view'"
                         v-model="form.payeePartyGID">
                 <a-select-option v-for="(item,index) in partyList"
@@ -40,7 +42,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="抄送方" prop="ccParty">
+            <a-form-model-item label="抄送方">
               <a-select :disabled="type === 'view'"
                         mode="multiple"
                         v-model="form.ccParty"
@@ -54,7 +56,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="竣工日期">
+            <a-form-model-item label="竣工日期" prop="completionDate">
               <a-date-picker style="width: 100%"
                              v-model="form.completionDate"
                              :disabled="type === 'view'"></a-date-picker>
@@ -87,11 +89,11 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="文件编号">
-              <a-input v-model="form.file_Num" :disabled="true"></a-input>
+              <a-input v-model="form.file_Num" :disabled="type === 'view'"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="合作单位负责人">
+            <a-form-model-item label="合作单位负责人" prop="file_PayeeDirector">
               <a-input-group compact>
                 <a-input :disabled="type === 'view'"
                          style="width: 79%"
@@ -113,6 +115,7 @@
             <a-form-model-item label="根据的合同条款">
               <a-input prefix="第"
                        suffix="条"
+                       style="text-align: center"
                        v-model="form.file_ContractTermsNum"
                        :disabled="type === 'view'"></a-input>
             </a-form-model-item>
@@ -123,29 +126,36 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="验收日期">
+            <a-form-model-item label="验收日期" prop="file_AcceptanceDate">
               <a-date-picker style="width: 100%"
                              v-model="form.file_AcceptanceDate"
                              :disabled="type === 'view'"></a-date-picker>
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="竣工证书"></a-form-model-item>
+            <a-form-model-item label="竣工证书">
+              <a :href="docUrl" target="_blank">{{doc}}</a>
+            </a-form-model-item>
           </a-col>
         </a-row>
       </a-form-model>
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group>
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="approve" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group>
-            <a-button :disabled="type === 'view'" @click="save" type="success">
+          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
+            <a-button @click="view" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
+            <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
           </a-button-group>
@@ -164,6 +174,8 @@
 <script>
     import { SwaggerService } from '@/api/swagger.service'
     import { CheckoutService } from '../checkout.service'
+    import { ac } from '@/views/user/user.service'
+    import { Base as BaseService } from '@/api/base'
 
     export default {
         name: 'CheckoutCompletedList',
@@ -171,8 +183,15 @@
             return {
                 form: SwaggerService.getForm('BalanceCertificateDto'),
                 partyList: [],
+                disabled: false,
+                doc: null,
+                docUrl: null,
                 rules: {
-                    ccParty: [{ required: true, message: '请选择抄送方', trigger: 'change' }]
+                    payeePartyGID: [{ required: true, message: '请选择合作单位(结算方)', trigger: 'change' }],
+                    isLastBalance: [{ required: true, message: '请选择是否最终结算', trigger: 'change' }],
+                    completionDate: [{ required: true, message: '请选择竣工日期', trigger: 'change' }],
+                    file_AcceptanceDate: [{ required: true, message: '请选择验收日期', trigger: 'change' }],
+                    file_PayeeDirector: [{ required: true, message: '请输入合作单位负责人', trigger: 'change' }]
                 }
             }
         },
@@ -187,13 +206,25 @@
                 return this.$route.query.contractGID
             }
         },
+        watch: {
+            '$route' (path) {
+                this.getData()
+            }
+        },
         created () {
             this.getData()
             CheckoutService.partyList(this.contractGID).then(res => {
                 this.partyList = res.result.data
             })
+            CheckoutService.doc().then(res => {
+                this.docUrl = (process.env.VUE_APP_API_BASE_URL + res.result).replace(/#/gi, '/')
+                this.doc = res.result
+            })
         },
         methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
             partyChange (value) {
                 const index = this.partyList.findIndex(item => item.partyGuid === value)
                 this.form.payeePartyName = this.partyList[index].partyName
@@ -210,7 +241,6 @@
                         })
                     })
                     this.form.ccPartyNames = list.join(',')
-                    console.log(this.form.ccPartyGIDs, this.form.ccPartyNames)
                 }
             },
             getData () {
@@ -220,17 +250,50 @@
                         this.form.file_PayeeDirectorTitle = '先生'
                     })
                 } else {
-
+                    CheckoutService.certificateInfo(this.id).then(res => {
+                        this.form = res.result.data
+                        if (this.form.ccPartyGIDs) {
+                            this.form.ccParty = this.form.ccPartyGIDs.split(',')
+                        }
+                    })
                 }
             },
             back () {
                 this.$router.push({ path: '/checkout/contract/list' })
             },
             save () {
+                // this.disabled = true
+                CheckoutService[this.type + 'BalanceCertificate'](this.form).then(res => {
+                    if (res.result.data) {
+                        this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
+                        if (this.type === 'create') {
+                            this.$router.push({
+                                path: `/checkout/completed/list/${res.result.data}?type=view&contractGID=` + this.contractGID
+                            })
+                        } else {
+                            this.$router.push({ path: '/checkout/contract/list' })
+                        }
 
+                    }
+                })
             },
             approve () {
-
+                CheckoutService.startBPM_BalanceCertificate(this.id).then(res => {
+                    if (res.result.data) {
+                        this.$message.success('已启动审批流程')
+                        const tempwindow = window.open('_blank')
+                        tempwindow.location = res.result.data
+                        this.$router.push({
+                            path: '/checkout/contract/list'
+                        })
+                    }
+                })
+            },
+            view () {
+                BaseService.viewBpm(this.id).then(res => {
+                    const tempwindow = window.open('_blank')
+                    tempwindow.location = res.result.data
+                })
             }
         },
 
