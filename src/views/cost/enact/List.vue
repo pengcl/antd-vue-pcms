@@ -31,6 +31,7 @@
           <a-row :gutter="48">
             <a-col :md="10" :sm="24">
               <a-button
+                v-if="ac('BudgetGather')"
                 :disabled="projectType === undefined || projectType === 'noProject'"
                 type="success"
                 style="margin-right: 5px"
@@ -41,6 +42,7 @@
                 type="success"
                 style="margin-right: 5px;">审批记录</a-button>
               <a-button
+                v-if="ac('ImportExport')"
                 :disabled="projectType === undefined || projectType === 'noProject'"
                 type="success"
                 @click="handleToImport">导入导出</a-button>
