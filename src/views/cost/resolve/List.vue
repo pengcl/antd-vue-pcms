@@ -17,11 +17,8 @@
                 </a-tree-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="状态">
-                {{ auditStatus }}
-              </a-form-item>
-            </a-col>
+            <a-col :md="12" :sm="24"><span
+              class="project-type-tips">{{ projectType === 'noProject' ? '请选择末级项目' : '' }}</span></a-col>
           </a-row>
         </a-form>
       </div>
@@ -44,7 +41,7 @@
 
         <span slot="cost" slot-scope="text">
           <p style="text-align: right">
-            <span style="font-weight: bold;padding-right: 10px">{{text.amount|NumberFormat}}</span>
+            <span style="font-weight: bold;padding-right: 10px">{{ text.amount|NumberFormat }}</span>
             <!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
           </p>
         </span>
@@ -69,8 +66,6 @@
 
 <script>
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList } from '@/api/manage'
-
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import { ProjectService } from '@/views/project/project.service'
     import { CostService } from '@/views/cost/cost.service'
@@ -121,6 +116,7 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
+                projectType: undefined,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
@@ -131,7 +127,7 @@
                             data: []
                         }
                     }
-                    if (this.queryParam.ProjectGUID) {
+                    if (this.queryParam.ProjectGUID && this.projectType !== 'noProject') {
                         return CostService.items(requestParameters).then(res => {
                             const requestParameters2 = Object.assign({}, parameter, { Id: this.queryParam.ProjectGUID })
                             return CostService.subjectItems(requestParameters2)
@@ -195,6 +191,10 @@
                                     return fixedList(result, parameter)
                                 })
                         })
+                    } else {
+                      return new Promise((resolve) => {
+                        resolve(fixedList(result, parameter))
+                      })
                     }
                 },
                 selectedRowKeys: [],
@@ -203,24 +203,30 @@
         },
         filters: {},
         created () {
-            ProjectService.tree().then(res => {
-                const cities = []
-                res.result.data.citys.forEach(item => {
-                    const children = formatList(item.projects.items, { key: 'type', value: 'project' })
-                    cities.push({
-                        selectable: false,
-                        label: item.city.nameCN,
-                        value: item.city.id,
-                        children: children
-                    })
-                })
-                this.cities = cities
-                const value = getPosValue(this.cities)
-                this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
-                this.auditStatus = value.auditStatus ? value.auditStatus : getList(this.cities, 0).auditStatus
-                this.$forceUpdate()
-                this.$refs.table.refresh(true)
+          ProjectService.tree().then(res => {
+            const cities = []
+            res.result.data.citys.forEach(item => {
+              const children = formatList(item.projects.items, { key: 'type', value: 'project' })
+              cities.push({
+                selectable: false,
+                label: item.city.nameCN,
+                value: item.city.id,
+                children: children
+              })
             })
+            this.cities = cities
+            const value = getPosValue(this.cities)
+            this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
+            this.projectType = value.type ? value.type : getList(this.cities, 0).type
+            this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
+            if (value.children.length > 0) {
+              this.projectType = 'noProject'
+            } else {
+              this.projectType = 'project'
+            }
+            this.$refs.table.refresh()
+            this.$forceUpdate()
+          })
         },
         computed: {
             rowSelection () {
@@ -232,23 +238,28 @@
         },
         methods: {
             ac (action) {
-                return ac(action, this.$route)
+              return ac(action, this.$route)
             },
             handleToResolve (record) {
-                this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
+              this.$router.push({ path: `/cost/resolve/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
             },
             onSelect (value, option) {
-                storage.set('POS', option.pos)
-                this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
-                if (typeof value === 'number') {
-                    this.city = value
-                    this.queryParam.ProjectGUID = ''
-                } else {
-                    this.queryParam.ProjectGUID = value
-                }
-                this.auditStatus = option.dataRef.auditStatus
-                this.$refs.table.refresh()
-                this.$forceUpdate()
+              storage.set('POS', option.pos)
+              this.projectType = option.$options.propsData.dataRef.type
+              this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+              if (typeof value === 'number') {
+                this.city = value
+                this.queryParam.ProjectGUID = ''
+              } else {
+                this.queryParam.ProjectGUID = value
+              }
+              if (option.$children.length > 0) {
+                this.projectType = 'noProject'
+              } else {
+                this.projectType = 'project'
+              }
+              this.$refs.table.refresh()
+              this.$forceUpdate()
             }
         }
     }
@@ -258,5 +269,18 @@
   td.title-center {
     text-align: center !important;
   }
-</style>
+  .search-form {
+    background-color: #1E9FF2;
+    padding: 20px;
+    border-radius: 0.35rem;
 
+    /deep/ .ant-form-item-label label {
+      color: #fff
+    }
+  }
+
+  .project-type-tips {
+    line-height: 32px;
+    color: #ff0000;
+  }
+</style>
