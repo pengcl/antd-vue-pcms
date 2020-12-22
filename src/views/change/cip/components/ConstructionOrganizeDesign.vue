@@ -334,15 +334,14 @@ export default {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         })
         .then((response) => {
-          console.log('upload response:', response)
-
-          _this.fileList[this.index] = Object.assign(this.fileList[this.index], response.result.data)
-          console.log('fileList[index]', this.fileList[this.index])
-          _this.data.fileMasterId = response.result.data.masterID
-          _this.$message.success('上传成功')
-          _this.$emit('ok', response.url)
-          _this.visible = false
-          _this.$forceUpdate
+          if(response.result.statusCode === 200){
+            _this.fileList[this.index] = Object.assign(this.fileList[this.index], response.result.data)
+            _this.data.fileMasterId = response.result.data.masterID
+            _this.$message.success('上传成功')
+            _this.$emit('ok', response.url)
+            _this.visible = false
+            _this.$forceUpdate()
+          }
         })
     },
     back (){
