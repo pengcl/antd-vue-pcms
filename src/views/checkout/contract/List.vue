@@ -85,7 +85,7 @@
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button type="success" @click="handleToCompleted" :disabled="!contractGID">新增竣工证书</a-button>
-          <a-button type="success" style="margin-left: 10px" @click="handleToAdd" :disabled="!balanceCertificateGID">
+          <a-button type="success" style="margin-left: 10px" @click="handleToAdd" :disabled="!balanceCertificateGID || !!balanceContractGID">
             新增合同结算
           </a-button>
           <a-button type="success" style="margin-left: 10px">打印工程财务结算书</a-button>
@@ -98,7 +98,7 @@
         style="margin-top: 5px"
         ref="_table"
         size="default"
-        rowKey="contractGuid"
+        rowKey="id"
         bordered
         :columns="_columns"
         :data="loadData2"
@@ -136,6 +136,21 @@
           {{text | NumberFormat}}
         </span>
 
+        <span slot="creationTime" slot-scope="text">
+         {{text | date}}
+        </span>
+
+        <span slot="bContractCreationTime" slot-scope="text">
+         {{text | date}}
+        </span>
+
+        <span slot="bProjectCreationTime" slot-scope="text">
+         {{text | date}}
+        </span>
+
+        <span slot="bFinanceCreationTime" slot-scope="text">
+         {{text | date}}
+        </span>
 
       </s-table>
 
@@ -216,8 +231,8 @@
                 {
                     title: '发起日期',
                     width: 110,
-                    dataIndex: 'launchDate',
-                    scopedSlots: { customRender: 'launchDate' }
+                    dataIndex: 'creationTime',
+                    scopedSlots: { customRender: 'creationTime' }
                 },
                 {
                     title: '审批状态',
@@ -246,8 +261,8 @@
                 {
                     title: '发起日期',
                     width: 110,
-                    dataIndex: 'launchDate',
-                    scopedSlots: { customRender: 'launchDate' }
+                    dataIndex: 'bContractCreationTime',
+                    scopedSlots: { customRender: 'bContractCreationTime' }
                 },
                 {
                     title: '审批状态',
@@ -262,9 +277,9 @@
             children: [
                 {
                     title: '发起日期',
-                    dataIndex: 'launchDate',
+                    dataIndex: 'bProjectCreationTime',
                     width: 110,
-                    scopedSlots: { customRender: 'launchDate' }
+                    scopedSlots: { customRender: 'bProjectCreationTime' }
                 },
                 {
                     title: '审批状态',
@@ -278,9 +293,9 @@
             children: [
                 {
                     title: '发起日期',
-                    dataIndex: 'launchDate',
+                    dataIndex: 'bFinanceCreationTime',
                     width: 110,
-                    scopedSlots: { customRender: 'launchDate' }
+                    scopedSlots: { customRender: 'bFinanceCreationTime' }
                 },
                 {
                     title: '审批状态',
@@ -303,6 +318,7 @@
                 // create model
                 contractGID: '',
                 balanceCertificateGID: '',
+                balanceContractGID: '',
                 projectType: '',
                 cities: null,
                 show: false,
@@ -389,6 +405,7 @@
                     type: 'radio',
                     onSelect: function (record, selected, selectRows, nativeEvent) {
                         that.balanceCertificateGID = record.gid
+                        that.balanceContractGID = record.bContractGID
                     }
                 }
             }

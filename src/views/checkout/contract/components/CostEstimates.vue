@@ -21,17 +21,17 @@
           >
             <span slot="action" slot-scope="text, item, index">
               <template>
-                <a-button @click="del(index)" :disabled="type === 'view'" icon="close"> 删除 </a-button>
+                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">删除</a-button>
               </template>
             </span>
             <div slot="costCenter" slot-scope="text, item, index">
               <a-form-model-item
-                :prop="'vobqNewlst.' + index + '.costCenter'"
+                :prop="'bqList.' + index + '.costCenter'"
                 :rules="[{ required: !item.isDeleted, message: '请选择成本中心'}]"
               >
                 <a-select
                   v-model="item.costCenter"
-                  style="width: 200px"
+                  style="width: 200px;margin-top: 12px"
                   :disabled="type === 'view'"
                 >
                   <a-select-option :value="center.id+''" v-for="center in selection.centers"
@@ -43,10 +43,11 @@
             </div>
             <div slot="itemType" slot-scope="text, item, index">
               <a-form-model-item
-                :prop="'vobqNewlst.' + index + '.itemType'"
+                :prop="'bqList.' + index + '.itemType'"
                 :rules="[{ required: !item.isDeleted, message: '请选择清单项类别' }]"
               >
-                <a-select placeholder="请选择" v-model="item.itemType" style="width: 200px" :disabled="type === 'view'">
+                <a-select placeholder="请选择" v-model="item.itemType" style="width: 200px;margin-top: 12px"
+                          :disabled="type === 'view'">
                   <a-select-option v-for="(item, index) in selection.itemTypes" :key="index" :value="item.code"
                   >{{ item.nameCN }}
                   </a-select-option>
@@ -55,10 +56,11 @@
             </div>
             <div slot="allAmount" slot-scope="text, item, index">
               <a-form-model-item
-                :prop="'vobqNewlst.' + index + '.allAmount'"
+                :prop="'bqList.' + index + '.allAmount'"
                 :rules="[{ required: !item.isDeleted, message: '请输入金额' }]"
               >
                 <a-input-number
+                  style="margin-top: 12px"
                   :disabled="type === 'view'"
                   v-model="item.allAmount"
                   :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -72,7 +74,7 @@
         </a-col>
       </a-row>
     </a-form-model>
-    <contract-bq-modal ref="bqModal" :contract="contract" :data="data"></contract-bq-modal>
+    <contract-bq-modal ref="bqModal" :contract="data" :data="data"></contract-bq-modal>
   </div>
 </template>
 
@@ -81,7 +83,6 @@
     import { Base as BaseService } from '@/api/base'
     import { SwaggerService } from '@/api/swagger.service'
     import { ChangeService } from '@/views/change/change.service'
-
 
     const columns = [
         {
@@ -121,7 +122,7 @@
                 loading: false,
                 maxId: 0,
                 tableRules: {
-                    vobqNewlst: [],
+                    bqList: [],
                 },
             }
         },
@@ -130,7 +131,7 @@
                 this.selection.itemTypes = res.result.data
                 this.$forceUpdate()
             })
-            ChangeService.getCostCenters(this.contract.contractGuid).then((res) => {
+            ChangeService.getCostCenters(this.data.contractGID).then((res) => {
                 this.selection.centers = res.result.data
                 this.$forceUpdate()
             })
@@ -159,18 +160,11 @@
                 type: String,
                 default: '0',
             },
-            contract: {
-                type: Object,
-                default: null,
-            },
-            project: {
-                type: Object,
-                default: null,
-            },
         },
         methods: {
             add (item, addData) {
-                let data = SwaggerService.getForm('VOBQNewDto')
+                let data = SwaggerService.getForm('BalanceContractDto_BQ')
+                console.log(data)
                 if (addData) {
                     data = Object.assign({}, addData)
                     data.contractBQGuid = ''
@@ -181,32 +175,32 @@
                 data.isTemp = true
                 data.id = 0
                 data.isDeleted = false
+                data.gid = '00000000-0000-0000-0000-000000000000'
+                data.balanceContractGID = '00000000-0000-0000-0000-000000000000'
                 data.vobqGuid = ''
                 data.void = ''
-                this.data.vobqNewlst.push(data)
+                this.data.bqList.push(data)
                 if (addData) {
                     this.countAmount()
                 }
-                this.$forceUpdate()
             },
             del (index) {
-                const item = this.data.vobqNewlst[index]
+                const item = this.data.bqList[index]
                 if (item.isTemp) {
-                    this.data.vobqNewlst.splice(index, 1)
+                    this.data.bqList.splice(index, 1)
                 } else {
                     item.isDeleted = true
                 }
-                this.countAmount()
                 this.$forceUpdate()
             },
             clear () {
                 const list = []
-                this.data.vobqNewlst.forEach((item) => {
+                this.data.bqList.forEach((item) => {
                     item.isDeleted = true
                     if (!item.isTemp) {
                         list.push(item)
                     }
-                    this.data.vobqNewlst = list
+                    this.data.bqList = list
                     this.$forceUpdate()
                 })
                 this.countAmount()
@@ -218,8 +212,8 @@
             amountChange (item, index) {
                 let isValid = true
                 this.$refs.form.validateField([
-                    'vobqNewlst.' + index + '.costCenter',
-                    'vobqNewlst.' + index + '.itemType'], valid => {
+                    'bqList.' + index + '.costCenter',
+                    'bqList.' + index + '.itemType'], valid => {
                     if (valid) {
                         isValid = false
                     }
@@ -235,11 +229,12 @@
 
             },
             countAmount () {
-                ChangeService.bqAmount(this.data.vobqNewlst).then((item) => {
-                    if (item.result.statusCode === 200) {
-                        this.data.voMasterInfo.voTotalAmountDecrease = item.result.data.voTotalAmountDecrease
-                        this.data.voMasterInfo.voTotalAmountIncrease = item.result.data.voTotalAmountIncrease
-                        this.data.voMasterInfo.voAmount = item.result.data.voAmount
+                ChangeService.bqAmount(this.data.bqList).then((res) => {
+                    if (res.result.statusCode === 200) {
+                        this.data.voAmount = res.result.data.voAmount
+                        /*this.data.voMasterInfo.voTotalAmountDecrease = res.result.data.voTotalAmountDecrease
+                        this.data.voMasterInfo.voTotalAmountIncrease = res.result.data.voTotalAmountIncrease
+                        this.data.voMasterInfo.voAmount = res.result.data.voAmount*/
                     }
                     // this.$message.info('计算金额完成')
                 })

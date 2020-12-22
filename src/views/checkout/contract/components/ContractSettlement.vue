@@ -133,7 +133,7 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item label="专业分包（预计）结算金额">
-          <a-input-number v-model="data.contractEffectAmount"
+          <a-input-number v-model="data.contractNSCPreBalanceAmount"
                           :disabled="true"
                           :min="0"
                           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"

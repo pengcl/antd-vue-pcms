@@ -24,7 +24,7 @@
                 <a-button @click="del(index)" :disabled="type === 'view'" icon="close"> 删除 </a-button>
               </template>
             </span>
-            <div slot="costCenter" slot-scope="text, item, index">
+            <span slot="costCenter" slot-scope="text, item, index">
               <a-form-model-item
                 :prop="'vobqNewlst.' + index + '.costCenter'"
                 :rules="[{ required: !item.isDeleted, message: '请选择成本中心'}]"
@@ -39,8 +39,8 @@
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
-            </div>
-            <div slot="itemType" slot-scope="text, item, index">
+            </span>
+            <span slot="itemType" slot-scope="text, item, index">
               <a-form-model-item
                 :prop="'vobqNewlst.' + index + '.itemType'"
                 :rules="[{ required: !item.isDeleted, message: '请选择清单项类别' }]"
@@ -51,7 +51,7 @@
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
-            </div>
+            </span>
             <div slot="allAmount" slot-scope="text, item, index">
               <a-form-model-item
                 :prop="'vobqNewlst.' + index + '.allAmount'"
@@ -233,7 +233,7 @@ export default {
           }
         }, 1500)
       }
-      
+
     },
     countAmount(){
       ChangeService.bqAmount(this.data.vobqNewlst).then((item) => {

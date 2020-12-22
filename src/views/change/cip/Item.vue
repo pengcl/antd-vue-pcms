@@ -230,6 +230,7 @@
           console.log('refs',this.$refs[item.key],item.key,this.$refs)
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
+              this.disabled = false
               isValid = false
               this.tabActiveKey = item.activeKey
             }

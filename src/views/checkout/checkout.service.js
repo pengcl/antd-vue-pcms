@@ -10,7 +10,7 @@ const API = {
   startBPM_BalanceCertificate: '/api/services/app/Balance/StartBPM_BalanceCertificate',
   doc: '/api/services/app/Balance/GetBalanceCertificateDoc',
   contractCreateInitData: '/api/services/app/Balance/GetBalanceContractCreateInitData',
-  contractInfo: '/api/services/app/Balance/GetBalanceContractCreate',
+  contractInfo: '/api/services/app/Balance/GetBalanceContract',
   createBalanceContract: '/api/services/app/Balance/CreateBalanceContract',
   updateBalanceContract: '/api/services/app/Balance/UpdateBalanceContract',
 }

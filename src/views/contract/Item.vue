@@ -291,6 +291,7 @@
         validateForms.forEach((item, index) => {
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
+              this.disabled = false
               isValid = false
               this.activeKey = item.activeKey
             }
@@ -301,6 +302,7 @@
           const item = validateForms[i]
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
+              this.disabled = false
               isValid = false
               this.activeKey = item.activeKey
             }

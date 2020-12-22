@@ -31,11 +31,11 @@
             <a-form-model-item label="合作单位（结算方）"
                                prop="payeePartyGID">
               <a-select :disabled="type === 'view'"
-                        v-model="form.payeePartyGID">
+                        v-model="form.payeePartyGID"
+                        placeholder="请选择合作单位（结算方）"
+                        @change="partyChange">
                 <a-select-option v-for="(item,index) in partyList"
                                  :value="item.partyGuid"
-                                 placeholder="请选择合作单位（结算方）"
-                                 @change="partyChange"
                                  :key="index">{{item.partyName}}
                 </a-select-option>
               </a-select>

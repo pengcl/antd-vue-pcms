@@ -5,22 +5,35 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
-              <a-input></a-input>
+              <a-input v-model="form.contractNo" :disabled="true"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
-              <a-input></a-input>
+              <a-input v-model="form.contractName" :disabled="true"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="结算方">
-              <a-input></a-input>
+              <a-select :disabled="true"
+                        v-model="form.payeePartyName">
+                <a-select-option v-for="(item,index) in partyList"
+                                 :value="item.partyName"
+                                 :key="index">{{item.partyName}}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="抄送方">
-              <a-input></a-input>
+              <a-select :disabled="true"
+                        mode="multiple"
+                        v-model="form.ccPartyNames">
+                <a-select-option v-for="(item,index) in partyList"
+                                 :value="item.partyName"
+                                 :key="index">{{item.partyName}}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -86,7 +99,8 @@
         data () {
             return {
                 form: SwaggerService.getForm('BalanceContractDto'),
-                disabled: false
+                disabled: false,
+                partyList: []
             }
         },
         computed: {
@@ -102,6 +116,7 @@
         },
         created () {
             this.getData()
+
         },
         watch: {
             '$route' (path) {
@@ -115,14 +130,28 @@
             changeAttachmentID (value) {
                 this.form.attachmentID = value
             },
+            getPartyList (id) {
+                CheckoutService.partyList(id).then(res => {
+                    this.partyList = res.result.data
+                })
+            },
             getData () {
                 if (this.type === 'create') {
                     CheckoutService.contractCreateInitData(this.balanceCertificateGID).then(res => {
                         this.form = res.result.data
+                        this.form.bqList = []
+                        this.getPartyList(this.form.contractGID)
+                        if (this.form.ccPartyNames) {
+                            this.form.ccPartyNames = this.form.ccPartyNames.split(',')
+                        }
                     })
                 } else {
                     CheckoutService.contractInfo(this.id).then(res => {
                         this.form = res.result.data
+                        this.getPartyList(this.form.contractGID)
+                        if (this.form.ccPartyNames) {
+                            this.form.ccPartyNames = this.form.ccPartyNames.split(',')
+                        }
                     })
                 }
             },

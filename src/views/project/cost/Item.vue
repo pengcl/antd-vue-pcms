@@ -156,7 +156,7 @@
                     placeholder="请选择分摊原则"
                     v-model="form.shareRule"
                   >
-                    <a-select-option v-for="(item,index) in shareRuleTypes"
+                    <a-select-option v-for="(item,index) in filterShareRuleTypes"
                                      :value="item.id"
                                      :key="index">{{item.nameCN}}
                     </a-select-option>
@@ -770,6 +770,7 @@
                 disabled: false,
                 costList: [],
                 shareRuleTypes: [],
+                filterShareRuleTypes: [],
                 visible: false,
                 confirmLoading: false,
                 mdls: null,
@@ -800,6 +801,7 @@
             })
             BaseService.shareRuleTypes().then(res => {
                 this.shareRuleTypes = res.result.data
+                this.filterShareRuleTypes = this.shareRuleTypes
                 this.$forceUpdate()
             })
             this.getData()
@@ -887,8 +889,10 @@
             },
             'form.secCostAllocateTypeID' (value) {
                 if (value === 1) {
+                    this.filterShareRuleTypes = this.shareRuleTypes
                     this.rules.shareCostCenter = [{ required: false, trigger: 'change' }]
                 } else {
+                    this.filterShareRuleTypes = this.shareRuleTypes.slice(1)
                     this.rules.shareCostCenter = [{ required: true, message: '请选择分摊成本中心', trigger: 'change' }]
                 }
             }
