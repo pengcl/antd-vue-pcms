@@ -142,7 +142,7 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item label="结算金额">
-          <a-input-number v-model="data.contractEffectAmount"
+          <a-input-number v-model="data.settlementAmount"
                           :disabled="true"
                           :min="0"
                           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -171,7 +171,7 @@
     <a-col :md="24" :sm="24">
       <a-form-model-item label="结算调整">
         <a-input-number v-model="data.balanceAdjustAmount"
-                        :disabled="type === 'view'"
+                        :disabled="true"
                         :min="0"
                         :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                         :precision="2"></a-input-number>
@@ -272,7 +272,7 @@
                 const formData = new FormData()
                 formData.append('file', file)
                 formData.append('masterId', this.data.attachmentID)
-                formData.append('businessID', this.data.contractGID)
+                formData.append('businessID', this.id === '0' ? '' : this.id)
                 formData.append('businessType', 'balanceContract')
                 formData.append('subInfo1', file.name) // 文件名
                 formData.append('subInfo2', this.data.balanceCertificateGID)

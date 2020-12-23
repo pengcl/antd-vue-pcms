@@ -85,7 +85,8 @@
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button type="success" @click="handleToCompleted" :disabled="!contractGID">新增竣工证书</a-button>
-          <a-button type="success" style="margin-left: 10px" @click="handleToAdd" :disabled="!balanceCertificateGID || !!balanceContractGID">
+          <a-button type="success" style="margin-left: 10px" @click="handleToAdd"
+                    :disabled="!balanceCertificateGID || !!balanceContractGID">
             新增合同结算
           </a-button>
           <a-button type="success" style="margin-left: 10px">打印工程财务结算书</a-button>

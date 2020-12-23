@@ -33,9 +33,10 @@
                   v-model="item.costCenter"
                   style="width: 200px;margin-top: 12px"
                   :disabled="type === 'view'"
+                  @change="costCenterChange"
                 >
                   <a-select-option :value="center.id+''" v-for="center in selection.centers"
-                                   :text="center.costCenterName" :key="JSON.stringify(center)">
+                                   :text="center.costCenterName" :key="index">
                     {{ center.costCenterName }}
                   </a-select-option>
                 </a-select>
@@ -162,9 +163,13 @@
             },
         },
         methods: {
+            costCenterChange (value, option) {
+                const index = option.data.key
+                const _index = this.selection.centers.findIndex(item => item.id + '' === value)
+                this.data.bqList[index].costCenterName = this.selection.centers[_index].costCenterName
+            },
             add (item, addData) {
                 let data = SwaggerService.getForm('BalanceContractDto_BQ')
-                console.log(data)
                 if (addData) {
                     data = Object.assign({}, addData)
                     data.contractBQGuid = ''
@@ -231,12 +236,11 @@
             countAmount () {
                 ChangeService.bqAmount(this.data.bqList).then((res) => {
                     if (res.result.statusCode === 200) {
-                        this.data.voAmount = res.result.data.voAmount
-                        /*this.data.voMasterInfo.voTotalAmountDecrease = res.result.data.voTotalAmountDecrease
-                        this.data.voMasterInfo.voTotalAmountIncrease = res.result.data.voTotalAmountIncrease
-                        this.data.voMasterInfo.voAmount = res.result.data.voAmount*/
+                        this.data.balanceAdjustAmount = res.result.data.voAmount
+                        this.data.progressBalanceAmount = this.data.preBalanceAmount + this.data.balanceAdjustAmount
+                        this.data.settlementAmount = this.data.progressBalanceAmount + this.data.contractNSCPreBalanceAmount
+                        this.data.payableAmount = this.data.settlementAmount - this.data.paymentAmount
                     }
-                    // this.$message.info('计算金额完成')
                 })
             },
             replaceByContract () {

@@ -40,7 +40,12 @@
 
 <script>
     export default {
-        name: 'BudgetList'
+        name: 'BudgetList',
+        data(){
+            return {
+                form: this.$form.createForm(this)
+            }
+        }
     }
 </script>
 

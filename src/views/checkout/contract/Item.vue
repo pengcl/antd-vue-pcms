@@ -28,7 +28,7 @@
             <a-form-item label="抄送方">
               <a-select :disabled="true"
                         mode="multiple"
-                        v-model="form.ccPartyNames">
+                        v-model="form.ccParty">
                 <a-select-option v-for="(item,index) in partyList"
                                  :value="item.partyName"
                                  :key="index">{{item.partyName}}
@@ -47,11 +47,11 @@
         <a-tab-pane key="2" tab="造价估算">
           <cost-estimates :data="form" :id="id" :type="type"></cost-estimates>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="预算调整">
-          <budget-list></budget-list>
+        <a-tab-pane key="3" tab="预算调整" forceRender v-if="type !== 'create'">
+          <budget-list :data="form" :id="id" :type="type"></budget-list>
         </a-tab-pane>
         <a-tab-pane key="4" tab="附件">
-          <attachment-list></attachment-list>
+          <attachment-list :data="form" :id="id" :type="type"></attachment-list>
         </a-tab-pane>
       </a-tabs>
       <a-row :gutter="48">
@@ -81,6 +81,12 @@
         </a-col>
       </a-row>
     </a-card>
+
+    <compute-budgets ref="budgets"
+                     :data="form"
+                     :contractGuid="form.contractGID"
+                     :destroyOnClose="true">
+    </compute-budgets>
   </page-header-wrapper>
 </template>
 
@@ -92,10 +98,11 @@
     import { CheckoutService } from '../checkout.service'
     import { SwaggerService } from '@/api/swagger.service'
     import { ac } from '@/views/user/user.service'
+    import ComputeBudgets from './modules/ComputeBudgets'
 
     export default {
         name: 'Edit',
-        components: { AttachmentList, BudgetList, CostEstimates, ContractSettlement },
+        components: { ComputeBudgets, AttachmentList, BudgetList, CostEstimates, ContractSettlement },
         data () {
             return {
                 form: SwaggerService.getForm('BalanceContractDto'),
@@ -121,7 +128,7 @@
         watch: {
             '$route' (path) {
                 this.getData()
-            }
+            },
         },
         methods: {
             ac (action) {
@@ -139,10 +146,11 @@
                 if (this.type === 'create') {
                     CheckoutService.contractCreateInitData(this.balanceCertificateGID).then(res => {
                         this.form = res.result.data
+                        this.form.settlementAmount = 0
                         this.form.bqList = []
                         this.getPartyList(this.form.contractGID)
                         if (this.form.ccPartyNames) {
-                            this.form.ccPartyNames = this.form.ccPartyNames.split(',')
+                            this.form.ccParty = this.form.ccPartyNames.split(',')
                         }
                     })
                 } else {
@@ -150,7 +158,7 @@
                         this.form = res.result.data
                         this.getPartyList(this.form.contractGID)
                         if (this.form.ccPartyNames) {
-                            this.form.ccPartyNames = this.form.ccPartyNames.split(',')
+                            this.form.ccParty = this.form.ccPartyNames.split(',')
                         }
                     })
                 }
@@ -165,14 +173,15 @@
                 CheckoutService[this.type + 'BalanceContract'](this.form).then(res => {
                     if (res.result.data) {
                         this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
-                        if (this.type === 'create') {
-                            this.$router.push({ path: `/checkout/contract/item/${res.result.data}?type=view` })
-                        } else {
-                            this.$router.push({ path: '/checkout/contract/list' })
-                        }
-
+                        this.showBudgets(res.result.data)
                     }
                 })
+            },
+            showBudgets (id) {
+                this.$refs.budgets.showModal(id)
+                /*if (this.form.bqList.length > 0 && bAmountIsChangeResult) {
+                    this.$refs.budgets.showModal()
+                }*/
             }
         }
     }

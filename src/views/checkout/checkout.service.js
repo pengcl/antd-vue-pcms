@@ -13,6 +13,12 @@ const API = {
   contractInfo: '/api/services/app/Balance/GetBalanceContract',
   createBalanceContract: '/api/services/app/Balance/CreateBalanceContract',
   updateBalanceContract: '/api/services/app/Balance/UpdateBalanceContract',
+  budgetList_108: '/api/services/app/Balance/GetBalanceContractPlanBudgetPreSplit',
+  budgetList_109: '/api/services/app/Balance/GetBalanceContractSurplusPreSplit',
+  budgetList_110: '/api/services/app/Balance/GetBalanceContractTradePreSplitByVOGuid',
+  create_108: '/api/services/app/Balance/CreateBalanceContractPlan',
+  create_109: '/api/services/app/Balance/CreateBalanceContractSurplus',
+  create_110: '/api/services/app/Balance/CreateBalanceContractTrade',
 }
 
 const CheckoutService = {}
@@ -72,6 +78,30 @@ CheckoutService.partyList = function (contractGID) {
   })
 }
 
+CheckoutService.budgetList_108 = function (GID) {
+  return request({
+    url: API.budgetList_108,
+    method: 'get',
+    params: { GID }
+  })
+}
+
+CheckoutService.budgetList_109 = function (GID) {
+  return request({
+    url: API.budgetList_109,
+    method: 'get',
+    params: { GID }
+  })
+}
+
+CheckoutService.budgetList_110 = function (GID) {
+  return request({
+    url: API.budgetList_110,
+    method: 'get',
+    params: { GID }
+  })
+}
+
 CheckoutService.createBalanceCertificate = function (parameter) {
   return request({
     url: API.createBalanceCertificate,
@@ -99,6 +129,30 @@ CheckoutService.startBPM_BalanceCertificate = function (gid) {
 CheckoutService.createBalanceContract = function (parameter) {
   return request({
     url: API.createBalanceContract,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CheckoutService.create_108 = function (parameter) {
+  return request({
+    url: API.create_108,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CheckoutService.create_109 = function (parameter) {
+  return request({
+    url: API.create_109,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CheckoutService.create_110 = function (parameter) {
+  return request({
+    url: API.create_110,
     method: 'POST',
     data: parameter
   })

@@ -26,12 +26,12 @@
               >
                 <a-button @click="choose(index)">请选择</a-button>
               </a-upload>
-              <a-button :disabled="type === 'view'" :loadding="loading" @click="del(index)" type="danger"
+              <a-button :disabled="type === 'view'" v-if="file.id" :loadding="loading" @click="del(index)" type="danger"
                         icon="delete"></a-button>
             </td>
             <td><a :href="file.url" target="_blank">{{file.name}}</a></td>
             <td>
-              <a-input v-model="file.remark"></a-input>
+              <a-input v-model="file.remark" :disabled="type === 'view'"></a-input>
             </td>
             <td>{{ file.date | moment }}</td>
           </tr>
