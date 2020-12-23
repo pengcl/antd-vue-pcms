@@ -109,7 +109,8 @@
         :scroll="{ x: 'calc(700px + 50%)'}"
       >
         <span slot="completionDate" slot-scope="text,record">
-          <a @click="handleToCompletedItem(record.gid,'update')">{{text | date}}</a>
+          <a @click="handleToCompletedItem(record.gid,'update')" v-if="record.auditStatus === '未审核'">{{text | date}}</a>
+          <span v-if="record.auditStatus !== '未审核'">{{text | date}}</span>
         </span>
 
         <span slot="file_PdfPath" slot-scope="text,record">
@@ -126,7 +127,8 @@
         </span>
 
         <span slot="progressBalanceDate" slot-scope="text,record">
-          <a @click="handleToContractItem(record.bContractGID,'update')">{{text | date}}</a>
+          <a @click="handleToContractItem(record.bContractGID,'update')" v-if="record.bContractAuditStatus === '未审核'">{{text | date}}</a>
+          <span v-if="record.bContractAuditStatus !== '未审核'">{{text | date}}</span>
         </span>
 
         <span slot="bContractAuditStatus" slot-scope="text,record">
@@ -329,7 +331,7 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: {},
+                queryParam: { IsBalance: true },
                 queryParam2: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
@@ -440,12 +442,6 @@
             },
             handleToCompleted () {
                 this.$router.push({ path: `/checkout/completed/list/0?type=create&contractGID=` + this.contractGID })
-            },
-            handleToItem (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
-            },
-            handleToEdit (record) {
-                this.$router.push({ path: `/contract/item/${record.contractGuid}?type=edit` })
             },
             handleToAdd () {
                 this.$router.push({ path: '/checkout/contract/item/0?type=create&balanceCertificateGID=' + this.balanceCertificateGID })

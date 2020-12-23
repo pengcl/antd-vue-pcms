@@ -175,7 +175,7 @@
     import { SwaggerService } from '@/api/swagger.service'
     import { CheckoutService } from '../checkout.service'
     import { ac } from '@/views/user/user.service'
-    import { Base as BaseService } from '@/api/base'
+    import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
     export default {
         name: 'CheckoutCompletedList',
@@ -184,6 +184,7 @@
                 form: SwaggerService.getForm('BalanceCertificateDto'),
                 partyList: [],
                 disabled: false,
+                dialog: DIALOGCONFIG,
                 doc: null,
                 docUrl: null,
                 rules: {
@@ -262,20 +263,40 @@
                 this.$router.push({ path: '/checkout/contract/list' })
             },
             save () {
-                // this.disabled = true
-                CheckoutService[this.type + 'BalanceCertificate'](this.form).then(res => {
-                    if (res.result.data) {
-                        this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
-                        if (this.type === 'create') {
-                            this.$router.push({
-                                path: `/checkout/completed/list/${res.result.data}?type=view&contractGID=` + this.contractGID
-                            })
-                        } else {
-                            this.$router.push({ path: '/checkout/contract/list' })
-                        }
+                this.disabled = true
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        CheckoutService[this.type + 'BalanceCertificate'](this.form).then(res => {
+                            if (res.result.data) {
+                                this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
+                                if (this.type === 'create') {
+                                    this.$router.push({
+                                        path: `/checkout/completed/list/${res.result.data}?type=view&contractGID=` + this.contractGID
+                                    })
+                                } else {
+                                    this.$router.push({ path: '/checkout/contract/list' })
+                                }
 
+                            }
+                        }).catch(() => {
+                            this.disabled = false
+                            this.dialog.show({
+                                content: '创建失败，表单未填写完整',
+                                title: '',
+                                confirmText: '我知道了',
+                                cancelText: '返回上一页'
+                            }, (state) => {
+                                if (state) {
+
+                                } else {
+                                }
+                            })
+                        })
+                    } else {
+                        this.disabled = false
                     }
                 })
+
             },
             approve () {
                 CheckoutService.startBPM_BalanceCertificate(this.id).then(res => {

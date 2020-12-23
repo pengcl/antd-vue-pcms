@@ -92,7 +92,7 @@
                 this.fileList.push(params)
             },
             getFiles () {
-                BaseService.fileList(this.data.attachmentID, this.data.contractGID, '', '').then(_res => {
+                BaseService.fileList(this.data.attachmentID, this.data.balanceCertificateGID, '', '').then(_res => {
                     const data = _res.result.data
                     const fileList = []
                     data.forEach(item => {

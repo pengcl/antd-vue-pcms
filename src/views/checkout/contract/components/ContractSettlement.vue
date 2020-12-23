@@ -1,8 +1,8 @@
 <template>
-  <a-form-model ref="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form-model ref="form" :model="data" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="承建商申报金额">
+        <a-form-model-item label="承建商申报金额" prop="progressRequestAmount">
           <a-input-number v-model="data.progressRequestAmount"
                           :disabled="type === 'view'"
                           :min="0"
@@ -11,14 +11,14 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="承建商申报日期">
+        <a-form-model-item label="承建商申报日期" prop="progressSendDate">
           <a-date-picker style="width: 100%"
                          v-model="data.progressSendDate"
                          :disabled="type === 'view'"></a-date-picker>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="顾问公司/PQS初审金额">
+        <a-form-model-item label="顾问公司/PQS初审金额" prop="approvalRequestAmount">
           <a-input-number v-model="data.approvalRequestAmount"
                           :disabled="type === 'view'"
                           :min="0"
@@ -27,14 +27,14 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="顾问公司/PQS初审日期">
+        <a-form-model-item label="顾问公司/PQS初审日期" prop="approvalRequestDate">
           <a-date-picker style="width: 100%"
                          v-model="data.approvalRequestDate"
                          :disabled="type === 'view'"></a-date-picker>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="申请结算金额">
+        <a-form-model-item label="申请结算金额" prop="progressBalanceAmount">
           <a-input-number v-model="data.progressBalanceAmount"
                           :disabled="true"
                           :min="0"
@@ -43,7 +43,7 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="申请结算日期">
+        <a-form-model-item label="申请结算日期" prop="progressBalanceDate">
           <a-date-picker style="width: 100%"
                          v-model="data.progressBalanceDate"
                          :disabled="type === 'view'"></a-date-picker>
@@ -56,7 +56,7 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="最后竣工日期">
+        <a-form-model-item label="最后竣工日期" prop="finalCompletionDate">
           <a-date-picker style="width: 100%"
                          v-model="data.finalCompletionDate"
                          :disabled="type === 'view'"></a-date-picker>
@@ -88,7 +88,7 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="结算方式">
+        <a-form-model-item label="结算方式" prop="balanceType">
           <a-select v-model="data.balanceType"
                     :disabled="type === 'view'">
             <a-select-option :value="'阶段结算'">阶段结算</a-select-option>
@@ -103,7 +103,7 @@
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-model-item label="经办部门">
+        <a-form-model-item label="经办部门" prop="operatorDept">
           <a-select v-model="data.operatorDept"
                     :disabled="type === 'view'">
             <a-select-option v-for="(item,index) in departmentList"
@@ -169,7 +169,7 @@
       </a-col>
     </a-row>
     <a-col :md="24" :sm="24">
-      <a-form-model-item label="结算调整">
+      <a-form-model-item label="结算调整" prop="balanceAdjustAmount">
         <a-input-number v-model="data.balanceAdjustAmount"
                         :disabled="true"
                         :min="0"
@@ -178,7 +178,7 @@
       </a-form-model-item>
     </a-col>
     <a-col :md="24" :sm="24">
-      <a-form-model-item label="扣款是否已处理">
+      <a-form-model-item label="扣款是否已处理" prop="isDealWithCutPayment">
         <a-select v-model="data.isDealWithCutPayment" :disabled="type === 'view'">
           <a-select-option :value="'是'">是</a-select-option>
           <a-select-option :value="'否'">否</a-select-option>
@@ -231,6 +231,19 @@
                 },
                 visible: false,
                 confirmLoading: false,
+                rules: {
+                    progressRequestAmount: [{ required: true, message: '请输入承建商申报金额', trigger: 'change' }],
+                    progressSendDate: [{ required: true, message: '请选择承建商申报日期', trigger: 'change' }],
+                    approvalRequestAmount: [{ required: true, message: '请输入顾问公司/PQS初审金额', trigger: 'change' }],
+                    approvalRequestDate: [{ required: true, message: '请选择顾问公司/PQS初审日期', trigger: 'change' }],
+                    progressBalanceAmount: [{ required: true, message: '请输入申请结算金额', trigger: 'change' }],
+                    progressBalanceDate: [{ required: true, message: '请选择申请结算日期', trigger: 'change' }],
+                    finalCompletionDate: [{ required: true, message: '请选择最后竣工日期', trigger: 'change' }],
+                    balanceType: [{ required: true, message: '请选择结算方式', trigger: 'change' }],
+                    operatorDept: [{ required: true, message: '请选择经办部门', trigger: 'change' }],
+                    balanceAdjustAmount: [{ required: true, message: '请添加造价估算列表', trigger: 'change' }],
+                    isDealWithCutPayment: [{ required: true, message: '请选择扣款是否已处理', trigger: 'change' }],
+                }
             }
         },
         props: {
@@ -251,6 +264,15 @@
             BaseService.departmentList().then(res => {
                 this.departmentList = res.result.data
             })
+        },
+        watch: {
+            'data.attachmentID' (value) {
+                if (value) {
+                    if (this.id !== '0') {
+                        this.getFiles()
+                    }
+                }
+            }
         },
         methods: {
             remove () {
@@ -306,7 +328,27 @@
             },
             handleCancel () {
                 this.visible = false
-            }
+            },
+            getFiles () {
+                BaseService.fileList(this.data.attachmentID, this.data.balanceCertificateGID, 'balanceContract', '').then(_res => {
+                    const data = _res.result.data
+                    const fileList = []
+                    data.forEach(item => {
+                        if (item) {
+                            fileList.push({
+                                date: item.creationTime,
+                                creator: item.creatorUser,
+                                name: item.fileName,
+                                url: item.fileUrl,
+                                remark: item.remark,
+                                id: item.id,
+                                masterID: item.masterID
+                            })
+                        }
+                    })
+                    this.fileList = fileList
+                })
+            },
         }
     }
 </script>

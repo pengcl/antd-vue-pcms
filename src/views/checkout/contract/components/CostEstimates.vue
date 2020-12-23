@@ -132,10 +132,17 @@
                 this.selection.itemTypes = res.result.data
                 this.$forceUpdate()
             })
-            ChangeService.getCostCenters(this.data.contractGID).then((res) => {
-                this.selection.centers = res.result.data
-                this.$forceUpdate()
-            })
+
+        },
+        watch: {
+            'data.contractGID' (value) {
+                if (value) {
+                    ChangeService.getCostCenters(this.data.contractGID).then((res) => {
+                        this.selection.centers = res.result.data
+                        this.$forceUpdate()
+                    })
+                }
+            }
         },
         filters: {
             getValue (item) {
@@ -196,6 +203,7 @@
                 } else {
                     item.isDeleted = true
                 }
+                this.countAmount()
                 this.$forceUpdate()
             },
             clear () {
@@ -229,7 +237,7 @@
                         if (value === item.allAmount) {
                             this.countAmount()
                         }
-                    }, 1500)
+                    }, 1000)
                 }
 
             },

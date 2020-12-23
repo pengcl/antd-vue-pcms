@@ -177,11 +177,12 @@
     import AttachmentList from '@/views/pay/unsigned/components/AttachmentList'
     import { SwaggerService } from '@/api/swagger.service'
     import { UnSignedService } from './unsigned.service'
-    import { Base as BaseService } from '@/api/base'
+    import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
     import { SignedService } from '@/views/pay/signed/signed.service'
     import { Currency } from '@/api/currency'
     import { CostService } from '@/views/cost/cost.service'
     import { ac } from '@/views/user/user.service'
+    import notification from 'ant-design-vue/es/notification'
 
     export default {
         name: 'Item',
@@ -198,6 +199,7 @@
                 departmentList: [],
                 elementItems: [],
                 disabled: false,
+                dialog: DIALOGCONFIG,
                 rules: {
                     sponsorDeptName: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
                     paymentBusinessType: [{ required: true, message: '请选择付款类型', trigger: 'change' }],
@@ -322,29 +324,57 @@
             },
             save () {
                 this.disabled = true
-                if (this.type === 'create') {
-                    UnSignedService.create(this.form).then(res => {
-                        if (res.result.data) {
-                            this.$message.success('创建成功')
-                            this.$router.push({
-                                path: `/pay/unsigned/item/${res.result.data}?type=view&projectGUID=` + this.projectGUID
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        if (this.form.detailList.length > 0) {
+                            let result = 0
+                            this.form.detailList.forEach(item => {
+                                if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                                    result += item.paymentAmount
+                                } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                                    result -= Math.abs(item.paymentAmount)
+                                }
                             })
-                        } else {
-                            this.disabled = false
+                            if (result > this.form.paymentAmount) {
+                                notification.error({
+                                    message: '提示',
+                                    description: '本期支付金额不能大于申请付款金额！'
+                                })
+                                this.disabled = false
+                                return false
+                            }
                         }
-                    })
-                } else {
-                    UnSignedService.update(this.form).then(res => {
-                        if (res.result.data) {
-                            this.$message.success('修改成功')
-                            this.$router.push({
-                                path: '/pay/unsigned/list'
+                        UnSignedService[this.type](this.form).then(res => {
+                            if (res.result.data) {
+                                this.$message.success(this.type === 'create' ? '创建成功' : '修改成功')
+                                if (this.type === 'create') {
+                                    this.$router.push({
+                                        path: `/pay/unsigned/item/${res.result.data}?type=view&projectGUID=` + this.projectGUID
+                                    })
+                                } else {
+                                    this.$router.push({
+                                        path: '/pay/unsigned/list'
+                                    })
+                                }
+                            }
+                        }).catch(() => {
+                            this.disabled = false
+                            this.dialog.show({
+                                content: '创建失败，表单未填写完整',
+                                title: '',
+                                confirmText: '我知道了',
+                                cancelText: '返回上一页'
+                            }, (state) => {
+                                if (state) {
+
+                                } else {
+                                }
                             })
-                        } else {
-                            this.disabled = false
-                        }
-                    })
-                }
+                        })
+                    } else {
+                        this.disabled = false
+                    }
+                })
             },
             back () {
                 this.$router.push({

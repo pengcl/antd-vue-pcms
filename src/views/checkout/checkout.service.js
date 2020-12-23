@@ -13,6 +13,7 @@ const API = {
   contractInfo: '/api/services/app/Balance/GetBalanceContract',
   createBalanceContract: '/api/services/app/Balance/CreateBalanceContract',
   updateBalanceContract: '/api/services/app/Balance/UpdateBalanceContract',
+  startBPM_BalanceContract: '/api/services/app/Balance/StartBPM_BalanceContract',
   budgetList_108: '/api/services/app/Balance/GetBalanceContractPlanBudgetPreSplit',
   budgetList_109: '/api/services/app/Balance/GetBalanceContractSurplusPreSplit',
   budgetList_110: '/api/services/app/Balance/GetBalanceContractTradePreSplitByVOGuid',
@@ -126,6 +127,15 @@ CheckoutService.startBPM_BalanceCertificate = function (gid) {
   })
 }
 
+
+CheckoutService.startBPM_BalanceContract = function (gid) {
+  return request({
+    url: API.startBPM_BalanceContract,
+    method: 'POST',
+    params: { gid }
+  })
+}
+
 CheckoutService.createBalanceContract = function (parameter) {
   return request({
     url: API.createBalanceContract,
@@ -160,7 +170,7 @@ CheckoutService.create_110 = function (parameter) {
 
 CheckoutService.updateBalanceContract = function (parameter) {
   return request({
-    url: API.updateBalanceCertificate,
+    url: API.updateBalanceContract,
     method: 'PUT',
     data: parameter
   })

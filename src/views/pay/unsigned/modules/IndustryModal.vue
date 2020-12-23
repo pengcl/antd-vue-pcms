@@ -36,9 +36,6 @@
               <span v-else>0</span>
             </span>
           </template>
-          <template v-if="text == undefined || text.length < 1">
-            0
-          </template>
         </template>
       </a-table>
     </div>

@@ -106,8 +106,12 @@
                 this.selection.itemTypes = res.result.data
             })
         },
-        mounted () {
-            this.loadData()
+        watch: {
+            'contract' (value) {
+                if (value) {
+                    this.loadData()
+                }
+            }
         },
         methods: {
             showTable () {

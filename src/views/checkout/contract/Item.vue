@@ -39,18 +39,18 @@
         </a-row>
       </a-form>
 
-      <a-tabs default-active-key="1" :animated="false">
-        <a-tab-pane key="1" tab="合同结算">
-          <contract-settlement :data="form" :id="id" :type="type"
+      <a-tabs v-model="activeKey" :animated="false">
+        <a-tab-pane forceRender :key="1" tab="合同结算">
+          <contract-settlement ref="contractSettlement" :data="form" :id="id" :type="type"
                                @on-change-masterId="changeAttachmentID"></contract-settlement>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="造价估算">
-          <cost-estimates :data="form" :id="id" :type="type"></cost-estimates>
+        <a-tab-pane forceRender :key="2" tab="造价估算">
+          <cost-estimates ref="costEstimates" :data="form" :id="id" :type="type"></cost-estimates>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="预算调整" forceRender v-if="type !== 'create'">
+        <a-tab-pane forceRender :key="3" tab="预算调整" v-if="type !== 'create'">
           <budget-list :data="form" :id="id" :type="type"></budget-list>
         </a-tab-pane>
-        <a-tab-pane key="4" tab="附件">
+        <a-tab-pane forceRender :key="4" forceRender tab="附件">
           <attachment-list :data="form" :id="id" :type="type"></attachment-list>
         </a-tab-pane>
       </a-tabs>
@@ -99,6 +99,8 @@
     import { SwaggerService } from '@/api/swagger.service'
     import { ac } from '@/views/user/user.service'
     import ComputeBudgets from './modules/ComputeBudgets'
+    import { Base as BaseService } from '@/api/base'
+    import notification from 'ant-design-vue/es/notification'
 
     export default {
         name: 'Edit',
@@ -107,7 +109,8 @@
             return {
                 form: SwaggerService.getForm('BalanceContractDto'),
                 disabled: false,
-                partyList: []
+                partyList: [],
+                activeKey: 1,
             }
         },
         computed: {
@@ -156,6 +159,8 @@
                 } else {
                     CheckoutService.contractInfo(this.id).then(res => {
                         this.form = res.result.data
+                        this.form.settlementAmount = this.form.progressBalanceAmount + this.form.contractNSCPreBalanceAmount
+                        this.form.payableAmount = this.form.settlementAmount - this.form.paymentAmount
                         this.getPartyList(this.form.contractGID)
                         if (this.form.ccPartyNames) {
                             this.form.ccParty = this.form.ccPartyNames.split(',')
@@ -167,21 +172,54 @@
                 this.$router.push({ path: '/checkout/contract/list' })
             },
             approve () {
-
-            },
-            save () {
-                CheckoutService[this.type + 'BalanceContract'](this.form).then(res => {
+                CheckoutService.startBPM_BalanceContract(this.id).then(res => {
                     if (res.result.data) {
-                        this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
-                        this.showBudgets(res.result.data)
+                        this.$message.success('已启动审批流程')
+                        const tempwindow = window.open('_blank')
+                        tempwindow.location = res.result.data
+                        this.$router.push({
+                            path: '/checkout/contract/list'
+                        })
                     }
                 })
+            },
+            save () {
+                this.disabled = true
+                this.$refs.contractSettlement.$refs.form.validate(vaild => {
+                    if (vaild) {
+                        if (!this.form.balanceAdjustAmount) {
+                            this.disabled = false
+                            notification.error({
+                                message: '提示',
+                                description: '请添加造价估算列表！'
+                            })
+                            this.activeKey = 2
+                            return false
+                        }
+
+                        CheckoutService[this.type + 'BalanceContract'](this.form).then(res => {
+                            if (res.result.data) {
+                                this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
+                                this.showBudgets(this.type === 'create' ? res.result.data : res.result.data.gid)
+                            }
+                        })
+                    } else {
+                        this.disabled = false
+                    }
+                })
+
             },
             showBudgets (id) {
                 this.$refs.budgets.showModal(id)
                 /*if (this.form.bqList.length > 0 && bAmountIsChangeResult) {
                     this.$refs.budgets.showModal()
                 }*/
+            },
+            view () {
+                BaseService.viewBpm(this.id).then(res => {
+                    const tempwindow = window.open('_blank')
+                    tempwindow.location = res.result.data
+                })
             }
         }
     }
