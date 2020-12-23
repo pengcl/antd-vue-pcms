@@ -17,12 +17,21 @@
                 </a-tree-select>
               </a-form-item>
             </a-col>
+            <a-col :md="8" :sm="24">
+              <span class="project-type-tips">
+                {{ projectType === 'noProject' ? '请选择末级项目' : '' }}
+              </span>
+            </a-col>
           </a-row>
         </a-form>
       </div>
 
       <div class="table-operator">
-        <a-button v-if="ac('ADD')" :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增工程招标包
+        <a-button
+          v-if="ac('ADD')"
+          :disabled="projectType === undefined || projectType === 'noProject'"
+          type="success"
+          @click="handleToAdd">新增工程招标包
         </a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
@@ -176,16 +185,26 @@
                 advanced: false,
                 // 查询参数
                 queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
+                projectType: undefined,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
-                    if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
+                    if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID !== '' && this.projectType !== 'noProject') {
                         return CostService.bidItems(requestParameters)
                             .then(res => {
                                 if (res.result.data.items) {
                                     return fixedList(res, requestParameters)
                                 }
                             })
+                    } else {
+                      const result = {
+                        result: {
+                          data: []
+                        }
+                      }
+                      return new Promise((resolve) => {
+                        resolve(fixedList(result, parameter))
+                      })
                     }
                 },
                 selectedRowKeys: [],
@@ -208,6 +227,11 @@
                 this.cities = cities
                 const value = getPosValue(this.cities)
                 this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
+                if (value.children.length > 0) {
+                  this.projectType = 'noProject'
+                } else {
+                  this.projectType = 'project'
+                }
                 this.$forceUpdate()
                 this.$refs.table.refresh(true)
             })
@@ -256,17 +280,22 @@
                 }
             },
             onSelect (value, option) {
-                storage.set('POS', option.pos)
-                this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
-                if (typeof value === 'number') {
-                    this.city = value
-                    this.queryParam.ProjectGUID = ''
-                } else {
-                    this.queryParam.ProjectGUID = value
-                }
-                this.auditStatus = option.dataRef.auditStatus
-                this.$refs.table.refresh()
-                this.$forceUpdate()
+              storage.set('POS', option.pos)
+              this.projectType = option.$options.propsData.dataRef.type
+              this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+              if (typeof value === 'number') {
+                this.city = value
+                this.queryParam.ProjectGUID = ''
+              } else {
+                this.queryParam.ProjectGUID = value
+              }
+              if (option.$children.length > 0) {
+                this.projectType = 'noProject'
+              } else {
+                this.projectType = 'project'
+              }
+              this.$refs.table.refresh()
+              this.$forceUpdate()
             }
         }
     }

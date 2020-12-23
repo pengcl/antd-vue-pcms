@@ -283,7 +283,6 @@
                 queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
                 // 加载数据方法 必须为 Promise 对象
                 loadData: (parameter) => {
-                    console.log('handle', this.handleSelected)
                     if (!this.handleSelected) {
                         this.selectedPackage = null
                         this.pid = ''

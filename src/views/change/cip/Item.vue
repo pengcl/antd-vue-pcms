@@ -101,7 +101,7 @@
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
             <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO' && ac('EDIT')" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
-            <a-button type="success" :loading="loading.save" v-if="type !== 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()" :disabled="disabled">储存</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type !== 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()" >储存</a-button>
             <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' && ac('DELETE')" @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
@@ -211,7 +211,7 @@
         console.log('approve')
       },
       save (callback) {
-        this.disabled = true
+        this.loading.save = true
         let isValid = true
         const validateForms = [
           {
@@ -241,9 +241,11 @@
         }
         if(!this.checkBqList()){
           this.tabActiveKey = 2
+          this.loading.save = false
           return
         }
         if(!this.$refs.baseInfo.getPartys()){
+          this.loading.save = false
           return
         }
         if (isValid) {
@@ -270,7 +272,6 @@
               }
             }).catch((e) => {
               console.log('e',e)
-              this.disabled = false
               this.loading.save = false
               this.$message.error('创建失败，表单未填写完整')
             })
@@ -289,7 +290,6 @@
               }
             }).catch((e) => {
               console.log('error',e)
-              this.disabled = false
               this.loading.save = false
               this.$message.error('修改失败，表单未填写完整')
               if(callback !== undefined){
@@ -297,6 +297,8 @@
               }
             })
           }
+        }else{
+          this.loading.save = false
         }
       },
       startBPM () {
@@ -437,7 +439,8 @@
       },
       showBudgets(bAmountIsChangeResult){
         const stageLower = this.stage.toLowerCase()
-        if(this.form.vobqNewlst != null && this.form.vobqNewlst.length > 0 && bAmountIsChangeResult){
+        const budgetlst = this.form.vobqNewlst == null ? [] : this.form.vobqNewlst.filter(item => !item.isDeleted )
+        if(budgetlst && budgetlst.length > 0 && bAmountIsChangeResult){
           this.$refs.budgets.showModal()
         }else{
           location.href = `/change/${stageLower}/item/${this.form.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`

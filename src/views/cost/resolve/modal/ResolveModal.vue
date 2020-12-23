@@ -3,6 +3,7 @@
     :visible="visible"
     :width="1100"
     title="新增预算分解"
+    :maskClosable="false"
     @cancel="handleCancel"
     @ok="handleOk"
     :ok-button-props="{ props: { disabled: defaultSave } }"

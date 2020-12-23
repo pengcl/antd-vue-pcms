@@ -18,16 +18,34 @@
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
-              <a-form-item label="状态">
+              <span class="project-type-tips">
+                {{ projectType === 'noProject' ? '请选择末级项目' : '' }}
+              </span>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item v-if="projectType !== 'noProject'" label="状态">
                 {{ auditStatus }}
               </a-form-item>
             </a-col>
+          </a-row>
+          <a-row :gutter="48">
             <a-col :md="10" :sm="24">
-              <a-button :disabled="!queryParam.ProjectGUID" type="success" style="margin-right: 5px"
-                        @click="handleToCollect">预算汇总
+              <a-button
+                v-if="ac('BudgetGather')"
+                :disabled="projectType === undefined || projectType === 'noProject'"
+                type="success"
+                style="margin-right: 5px"
+                @click="handleToCollect">预算汇总
               </a-button>
-              <a-button :disabled="!queryParam.ProjectGUID" type="success" style="margin-right: 5px;">审批记录</a-button>
-              <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="handleToImport">导入导出</a-button>
+              <a-button
+                :disabled="projectType === undefined || projectType === 'noProject'"
+                type="success"
+                style="margin-right: 5px;">审批记录</a-button>
+              <a-button
+                v-if="ac('ImportExport')"
+                :disabled="projectType === undefined || projectType === 'noProject'"
+                type="success"
+                @click="handleToImport">导入导出</a-button>
             </a-col>
           </a-row>
         </a-form>
@@ -141,6 +159,7 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
+                projectType: undefined,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const _columns = JSON.parse(JSON.stringify(defaultColumns))
@@ -150,7 +169,7 @@
                             data: []
                         }
                     }
-                    if (this.queryParam.ProjectGUID) {
+                    if (this.queryParam.ProjectGUID && this.projectType !== 'noProject') {
                         return CostService.items(requestParameters).then(res => {
                             const requestParameters2 = Object.assign({}, parameter, { Id: this.queryParam.ProjectGUID })
                             return CostService.subjectItems(requestParameters2)
@@ -202,6 +221,10 @@
                                     return fixedList(result, parameter)
                                 })
                         })
+                    } else {
+                      return new Promise((resolve) => {
+                        resolve(fixedList(result, parameter))
+                      })
                     }
                 },
                 selectedRowKeys: [],
@@ -226,6 +249,11 @@
                 this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
                 this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.auditStatus = value.auditStatus ? value.auditStatus : getList(this.cities, 0).auditStatus
+                if (value.children.length > 0) {
+                  this.projectType = 'noProject'
+                } else {
+                  this.projectType = 'project'
+                }
                 this.$forceUpdate()
                 this.$refs.table.refresh(true)
             })
@@ -258,17 +286,22 @@
                 this.$router.push({ path: `/cost/enact/item/0?type=add` })
             },
             onSelect (value, option) {
-                storage.set('POS', option.pos)
-                this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
-                if (typeof value === 'number') {
-                    this.city = value
-                    this.queryParam.ProjectGUID = ''
-                } else {
-                    this.queryParam.ProjectGUID = value
-                }
-                this.auditStatus = option.dataRef.auditStatus
-                this.$refs.table.refresh()
-                this.$forceUpdate()
+              storage.set('POS', option.pos)
+              this.projectType = option.$options.propsData.dataRef.type
+              this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
+              if (typeof value === 'number') {
+                this.city = value
+                this.queryParam.ProjectGUID = ''
+              } else {
+                this.queryParam.ProjectGUID = value
+              }
+              if (option.$children.length > 0) {
+                this.projectType = 'noProject'
+              } else {
+                this.projectType = 'project'
+              }
+              this.$refs.table.refresh()
+              this.$forceUpdate()
             }
         }
     }
@@ -277,6 +310,20 @@
   th.title-center,
   td.title-center {
     text-align: center !important;
+  }
+  .search-form {
+    background-color: #1E9FF2;
+    padding: 20px;
+    border-radius: 0.35rem;
+
+    /deep/ .ant-form-item-label label {
+      color: #fff
+    }
+  }
+
+  .project-type-tips {
+    line-height: 32px;
+    color: #ff0000;
   }
 </style>
 
