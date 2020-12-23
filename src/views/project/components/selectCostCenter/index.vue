@@ -2,6 +2,7 @@
   <a-modal
     title="请选择分摊成本中心"
     :width="800"
+    :maskClosable="false"
     :visible="visible"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"

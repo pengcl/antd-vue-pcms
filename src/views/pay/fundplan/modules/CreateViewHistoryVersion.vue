@@ -3,6 +3,7 @@
     title="查看历史版本"
     :width="640"
     :visible="visible"
+    :maskClosable="false"
     :confirmLoading="loading"
     :ok-button-props="{ props: { disabled: selectedRows.length < 1 } }"
     @ok="() => { $emit('ok') }"

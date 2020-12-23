@@ -2,6 +2,7 @@
   <a-modal
     title="请选择项目公司"
     :width="800"
+    :maskClosable="false"
     :visible="visible"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"

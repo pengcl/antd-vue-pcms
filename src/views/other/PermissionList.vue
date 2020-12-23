@@ -62,6 +62,7 @@
     <a-modal
       title="操作"
       :width="800"
+      :maskClosable="false"
       v-model="visible"
       @ok="handleOk"
     >

@@ -2,6 +2,7 @@
   <a-modal
     :visible="visible"
     :width="900"
+    :maskClosable="false"
     title="请选择合同清单"
     @cancel="handleCancel"
     @ok="handleOk"

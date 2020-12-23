@@ -3,6 +3,7 @@
     :visible="visible"
     :width="900"
     title="新增预算"
+    :maskClosable="false"
     @cancel="handleCancel"
     @ok="handleOk"
   >

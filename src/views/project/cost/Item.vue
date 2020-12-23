@@ -698,6 +698,7 @@
     </a-card>
     <a-modal
       v-if="dialog.visible"
+      :maskClosable="false"
       :title="dialog.title"
       :visible="dialog.visible"
       :okText="dialog.confirmText"

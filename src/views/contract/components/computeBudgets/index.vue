@@ -2,6 +2,7 @@
   <a-modal
     title="预算调整"
     :width="900"
+    :maskClosable="false"
     :visible="visible"
     :closable="false"
   >

@@ -440,6 +440,7 @@
       </a-row>
       <a-modal
         v-if="dialog"
+        :maskClosable="false"
         :title="dialog.title"
         :visible="dialog.visible"
         :okText="dialog.confirmText"

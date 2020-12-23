@@ -2,6 +2,7 @@
   <a-modal
     :title="title"
     :visible="visible"
+    :maskClosable="false"
     :confirm-loading="confirmLoading"
     @ok="confirm"
     @cancel="cancel"

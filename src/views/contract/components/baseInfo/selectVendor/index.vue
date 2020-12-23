@@ -3,6 +3,7 @@
     title="请选择供应商"
     :width="800"
     :visible="visible"
+    :maskClosable="false"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >

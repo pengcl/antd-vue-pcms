@@ -110,6 +110,7 @@
       :visible="dialog.visible"
       :okText="dialog.confirmText"
       :cancelText="dialog.cancelText"
+      :maskClosable="false"
       @ok="dialog.confirm"
       @cancel="dialog.cancel"
     >

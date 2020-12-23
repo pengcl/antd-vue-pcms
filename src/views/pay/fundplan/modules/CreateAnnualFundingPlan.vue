@@ -3,6 +3,7 @@
     title="新增年度资金计划"
     :width="640"
     :visible="visible"
+    :maskClosable="false"
     :confirmLoading="loading"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"

@@ -197,6 +197,7 @@
         <a-button icon="delete" type="danger" @click="remove" v-show="file.id" style="margin-left: 10px"></a-button>
         <a-modal
           title="删除付款单"
+          :maskClosable="false"
           :visible="visible"
           :confirm-loading="confirmLoading"
           @ok="handleOk"

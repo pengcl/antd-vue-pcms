@@ -126,6 +126,7 @@
       <a-modal
         title="删除付款单"
         :visible="visible"
+        :maskClosable="false"
         :confirm-loading="confirmLoading"
         @ok="handleOk"
         @cancel="handleCancel"

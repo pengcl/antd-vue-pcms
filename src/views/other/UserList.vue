@@ -81,6 +81,7 @@
       title="操作"
       style="top: 20px;"
       :width="800"
+      :maskClosable="false"
       v-model="visible"
       @ok="handleOk"
     >

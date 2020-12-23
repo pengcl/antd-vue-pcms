@@ -2,6 +2,7 @@
   <a-modal
     title="操作"
     :width="600"
+    :maskClosable="false"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"

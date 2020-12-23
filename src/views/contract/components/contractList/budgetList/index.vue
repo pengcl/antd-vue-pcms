@@ -3,6 +3,7 @@
     title="请选择招投标分判包"
     :width="800"
     :visible="visible"
+    :maskClosable="false"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >

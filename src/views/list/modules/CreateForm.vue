@@ -3,6 +3,7 @@
     title="搜索"
     :width="640"
     :visible="visible"
+    :maskClosable="false"
     :confirmLoading="loading"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"

@@ -3,6 +3,7 @@
     title="引入行业分判包"
     :width="900"
     :visible="visible"
+    :maskClosable="false"
     :ok-button-props="{ props: { disabled: selected.length < 1 } }"
     :confirmLoading="loading"
     @ok="() => { $emit('ok') }"

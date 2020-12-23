@@ -5,6 +5,7 @@
     :visible="visible"
     :ok-button-props="{ props: { disabled: selected.length < 1 } }"
     :confirmLoading="loading"
+    :maskClosable="false"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >

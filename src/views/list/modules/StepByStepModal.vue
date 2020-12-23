@@ -3,6 +3,7 @@
     title="分步对话框"
     :width="640"
     :visible="visible"
+    :maskClosable="false"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
   >
