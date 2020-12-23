@@ -276,6 +276,8 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
+          this.queryParam2.contractGuid = null
+          this.$refs.table2.refresh()
           if(!this.queryParam.ProjectID ){
             return nullFixedList(requestParameters)
           }
