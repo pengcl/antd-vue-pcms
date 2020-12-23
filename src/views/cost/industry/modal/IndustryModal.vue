@@ -27,14 +27,14 @@
         :slot="col"
         slot-scope="text"
       >
-        <template  v-if="text && text.length > 0">
+        <template  v-if="Array.isArray(text)">
           <a-checkbox
             v-for ="budgetItem in text"
             @change="value => checkChange(value,budgetItem)" >{{budgetItem.amount | NumberFormat}}</a-checkbox>
         </template>
-        <template v-if="text == undefined || text.length < 1">
-          0
-        </template>
+        <!-- <template v-if="!Array.isArray(text)">
+          {{text}}
+        </template> -->
       </template>
       </a-table>
     </div>
@@ -108,6 +108,7 @@
                               const rows = [res.result.data]
                               this.forEachRow(rows,res2.result.data)
                               const showRows = this.filterRows(rows)
+                              console.log('showRows',showRows)
                               this.columnDatas = showRows
                               this.tableWidth = (_columns.length) * 180
                             }
