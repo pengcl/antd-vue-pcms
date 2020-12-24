@@ -20,6 +20,10 @@ const API = {
   create_108: '/api/services/app/Balance/CreateBalanceContractPlan',
   create_109: '/api/services/app/Balance/CreateBalanceContractSurplus',
   create_110: '/api/services/app/Balance/CreateBalanceContractTrade',
+  projectInfo: '/api/services/app/Balance/GetBalanceProject',
+  startBPM_BalanceProject: '/api/services/app/Balance/StartBPM_BalanceProject',
+  financeInfo: '/api/services/app/Balance/GetBalanceFinance',
+  startBPM_BalanceFinance: '/api/services/app/Balance/StartBPM_BalanceFinance',
 }
 
 const CheckoutService = {}
@@ -58,6 +62,22 @@ CheckoutService.certificateInfo = function (GID) {
 CheckoutService.contractInfo = function (GID) {
   return request({
     url: API.contractInfo,
+    method: 'get',
+    params: { GID }
+  })
+}
+
+CheckoutService.projectInfo = function (GID) {
+  return request({
+    url: API.projectInfo,
+    method: 'get',
+    params: { GID }
+  })
+}
+
+CheckoutService.financeInfo = function (GID) {
+  return request({
+    url: API.financeInfo,
     method: 'get',
     params: { GID }
   })
@@ -127,6 +147,21 @@ CheckoutService.startBPM_BalanceCertificate = function (gid) {
   })
 }
 
+CheckoutService.startBPM_BalanceProject = function (gid) {
+  return request({
+    url: API.startBPM_BalanceProject,
+    method: 'POST',
+    params: { gid }
+  })
+}
+
+CheckoutService.startBPM_BalanceFinance = function (gid) {
+  return request({
+    url: API.startBPM_BalanceFinance,
+    method: 'POST',
+    params: { gid }
+  })
+}
 
 CheckoutService.startBPM_BalanceContract = function (gid) {
   return request({

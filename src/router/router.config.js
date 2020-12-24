@@ -381,13 +381,6 @@ export const asyncRouterMap = [
             meta: { title: 'menu.checkout.contract.item', keepAlive: true, permission: ['BalanceAndCertificate'] }
           },
           {
-            path: '/checkout/contract/Edit',
-            name: 'CheckoutContractEdit',
-            hidden: true,
-            component: () => import('@/views/checkout/contract/Edit'),
-            meta: { title: 'menu.checkout.contract.edit', keepAlive: true, permission: ['BalanceAndCertificate'] }
-          },
-          {
             path: '/checkout/completed/list/:id',
             name: 'CheckoutCompletedList',
             hidden: true,
@@ -395,40 +388,19 @@ export const asyncRouterMap = [
             meta: { title: 'menu.checkout.completed.list', keepAlive: true, permission: ['BalanceAndCertificate'] }
           },
           {
-            path: '/checkout/completed/item/:id',
-            name: 'CheckoutCompletedItem',
-            hidden: true,
-            component: () => import('@/views/checkout/completed/Item'),
-            meta: { title: 'menu.checkout.completed.item', keepAlive: true, permission: ['BalanceAndCertificate'] }
-          },
-          {
-            path: '/checkout/project/list',
+            path: '/checkout/project/list/:id',
             name: 'CheckoutProjectList',
             hidden: true,
             component: () => import('@/views/checkout/project/List'),
             meta: { title: 'menu.checkout.project.list', keepAlive: true, permission: ['BalanceAndCertificate'] }
           },
           {
-            path: '/checkout/project/item/:id',
-            name: 'CheckoutProjectItem',
-            hidden: true,
-            component: () => import('@/views/checkout/project/Item'),
-            meta: { title: 'menu.checkout.project.item', keepAlive: true, permission: ['BalanceAndCertificate'] }
-          },
-          {
-            path: '/checkout/finance/list',
+            path: '/checkout/finance/list/:id',
             name: 'CheckoutFinanceList',
             hidden: true,
             component: () => import('@/views/checkout/finance/List'),
             meta: { title: 'menu.checkout.finance.list', keepAlive: true, permission: ['BalanceAndCertificate'] }
           },
-          {
-            path: '/checkout/finance/item/:id',
-            name: 'CheckoutFinanceItem',
-            hidden: true,
-            component: () => import('@/views/checkout/finance/Item'),
-            meta: { title: 'menu.checkout.finance.item', keepAlive: true, permission: ['BalanceAndCertificate'] }
-          }
         ]
       },
       // report

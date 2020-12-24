@@ -116,7 +116,6 @@
 <script>
     import { CostService } from '@/views/cost/cost.service'
     import { SwaggerService } from '@/api/swagger.service'
-    import { getRoleList } from '@/api/manage'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '@/mock/util'
     import { compare } from '@/utils/util'

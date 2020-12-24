@@ -162,7 +162,6 @@
 
 <script>
     import { STable } from '@/components'
-    import { getRoleList } from '@/api/manage'
     import { Base as BaseService } from '@/api/base'
     import CreateForm from '@/views/list/modules/CreateForm'
     import { fixedList, getPosValue, getList, nullFixedList } from '@/utils/util'
@@ -298,7 +297,6 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {

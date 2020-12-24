@@ -57,7 +57,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
-            <a-button @click="approve" type="success">
+            <a-button @click="approve" type="success" :disabled="balanceCertificateAuditStatus !== '已审核'">
               启动审批流程
             </a-button>
           </a-button-group>
@@ -122,6 +122,9 @@
             },
             balanceCertificateGID () {
                 return this.$route.query.balanceCertificateGID
+            },
+            balanceCertificateAuditStatus () {
+                return this.$route.query.balanceCertificateAuditStatus
             }
         },
         created () {

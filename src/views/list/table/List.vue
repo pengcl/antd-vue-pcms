@@ -117,7 +117,7 @@
 <script>
 import moment from 'moment'
 import { STable } from '@/components'
-import { getRoleList, getServiceList } from '@/api/manage'
+import { getServiceList } from '@/api/manage'
 
 export default {
   name: 'TableList',
@@ -193,7 +193,6 @@ export default {
   },
   created () {
     this.tableOption()
-    getRoleList({ t: new Date() })
   },
   methods: {
     tableOption () {

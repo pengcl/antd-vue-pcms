@@ -89,7 +89,7 @@
                     :disabled="!balanceCertificateGID || !!balanceContractGID">
             新增合同结算
           </a-button>
-          <a-button type="success" style="margin-left: 10px">打印工程财务结算书</a-button>
+          <a-button type="success" style="margin-left: 10px" :disabled="bProjectAuditStatus !== '已审核' && bFinanceAuditStatus !== '已审核'">打印工程财务结算书</a-button>
         </a-col>
         <a-col :md="24" :sm="24">
           结算列表
@@ -127,12 +127,13 @@
         </span>
 
         <span slot="progressBalanceDate" slot-scope="text,record">
-          <a @click="handleToContractItem(record.bContractGID,'update')" v-if="record.bContractAuditStatus === '未审核'">{{text | date}}</a>
+          <a @click="handleToContractItem(record.bContractGID,'update','')"
+             v-if="record.bContractAuditStatus === '未审核'">{{text | date}}</a>
           <span v-if="record.bContractAuditStatus !== '未审核'">{{text | date}}</span>
         </span>
 
         <span slot="bContractAuditStatus" slot-scope="text,record">
-          <a @click="handleToContractItem(record.bContractGID,'view')">{{text}}</a>
+          <a @click="handleToContractItem(record.bContractGID,'view',record.auditStatus)">{{text}}</a>
         </span>
 
         <span slot="progressBalanceAmount" slot-scope="text">
@@ -151,8 +152,16 @@
          {{text | date}}
         </span>
 
+        <span slot="bProjectAuditStatus" slot-scope="text,record">
+         <a @click="handleToProjectItem(record.bProjectGID,record.bContractAuditStatus)">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
+        </span>
+
         <span slot="bFinanceCreationTime" slot-scope="text">
          {{text | date}}
+        </span>
+
+        <span slot="bFinanceAuditStatus" slot-scope="text,record">
+         <a @click="handleToFinanceItem(record.bFinanceGID,record.bContractAuditStatus)">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
         </span>
 
       </s-table>
@@ -163,7 +172,6 @@
 
 <script>
     import { STable } from '@/components'
-    import { getRoleList } from '@/api/manage'
     import { fixedList, getPosValue, nullFixedList, getList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { ChangeService } from '@/views/change/change.service'
@@ -286,8 +294,9 @@
                 },
                 {
                     title: '审批状态',
-                    width: 78,
-                    dataIndex: 'bProjectAuditStatus'
+                    width: 90,
+                    dataIndex: 'bProjectAuditStatus',
+                    scopedSlots: { customRender: 'bProjectAuditStatus' }
                 }
             ]
         },
@@ -302,8 +311,9 @@
                 },
                 {
                     title: '审批状态',
-                    width: 78,
-                    dataIndex: 'bFinanceAuditTime'
+                    width: 90,
+                    dataIndex: 'bFinanceAuditStatus',
+                    scopedSlots: { customRender: 'bFinanceAuditStatus' }
                 }
             ]
         }
@@ -323,6 +333,8 @@
                 balanceCertificateGID: '',
                 balanceContractGID: '',
                 projectType: '',
+                bProjectAuditStatus: null,
+                bFinanceAuditStatus: null,
                 cities: null,
                 show: false,
                 visible: false,
@@ -367,7 +379,6 @@
             }
         },
         created () {
-            getRoleList({ t: new Date() })
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {
@@ -409,6 +420,8 @@
                     onSelect: function (record, selected, selectRows, nativeEvent) {
                         that.balanceCertificateGID = record.gid
                         that.balanceContractGID = record.bContractGID
+                        that.bProjectAuditStatus = record.bProjectAuditStatus
+                        that.bFinanceAuditStatus = record.bFinanceAuditStatus
                     }
                 }
             }
@@ -420,8 +433,14 @@
             handleToCompletedItem (id, type) {
                 this.$router.push({ path: `/checkout/completed/list/${id}?type=${type}&contractGID=` + this.contractGID })
             },
-            handleToContractItem (id, type) {
-                this.$router.push({ path: `/checkout/contract/item/${id}?type=${type}` })
+            handleToContractItem (id, type, auditStatus) {
+                this.$router.push({ path: `/checkout/contract/item/${id}?type=${type}` + (auditStatus ? ('&balanceCertificateAuditStatus=' + auditStatus) : '') })
+            },
+            handleToProjectItem (id, auditStatus) {
+                this.$router.push({ path: `/checkout/project/list/${id}?type=view&bContractAuditStatus=` + auditStatus })
+            },
+            handleToFinanceItem (id, auditStatus) {
+                this.$router.push({ path: `/checkout/finance/list/${id}?type=view&bContractAuditStatus=` + auditStatus })
             },
             onSelect (value, option) {
                 storage.set('POS', option.pos)

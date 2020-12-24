@@ -120,8 +120,6 @@
 <script>
     import moment from 'moment'
     import { STable, Ellipsis } from '@/components'
-    import { getRoleList, getServiceList } from '@/api/manage'
-
     import StepByStepModal from '@/views/list/modules/StepByStepModal'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '../../../mock/util'

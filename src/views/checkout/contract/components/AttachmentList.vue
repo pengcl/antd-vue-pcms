@@ -69,9 +69,13 @@
                 default: '0'
             }
         },
-        created () {
-            if (this.id !== '0') {
-                    this.getFiles()
+        watch: {
+            'data.attachmentID' (value) {
+                if (value) {
+                    if (this.id !== '0') {
+                        this.getFiles()
+                    }
+                }
             }
         },
         methods: {
@@ -92,7 +96,7 @@
                 this.fileList.push(params)
             },
             getFiles () {
-                BaseService.fileList(this.data.attachmentID, this.data.balanceCertificateGID, '', '').then(_res => {
+                BaseService.fileList(this.data.attachmentID, this.data.balanceCertificateGID, 'balanceContract', '').then(_res => {
                     const data = _res.result.data
                     const fileList = []
                     data.forEach(item => {
