@@ -53,7 +53,7 @@ const locale = {
   'menu.cost.resolve.list': '行业预算分解',
   'menu.cost.resolve.item': '行业预算查看',
   'menu.cost.industry.list': '行业分判包',
-  'menu.cost.industry.edit': '新增行业分判包',
+  'menu.cost.industry.batch': '行业分判包审批',
   'menu.cost.industry.item': '行业分判包详情',
   'menu.cost.bid.list': '招投标分判包',
   'menu.cost.bid.edit': '新增招投标分判包',

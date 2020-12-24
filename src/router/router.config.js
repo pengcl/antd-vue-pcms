@@ -169,11 +169,11 @@ export const asyncRouterMap = [
             meta: { title: 'menu.cost.industry.list', keepAlive: true, permission: ['CostBudgetIndustry'] }
           },
           {
-            path: '/cost/industry/edit',
-            name: 'CostIndustryEdit',
+            path: '/cost/industry/batch/:id',
+            name: 'CostIndustryBatch',
             hidden: true,
-            component: () => import('@/views/cost/industry/Edit'),
-            meta: { title: 'menu.cost.industry.edit', keepAlive: true, permission: ['CostBudgetIndustry'] }
+            component: () => import('@/views/cost/industry/Batch'),
+            meta: { title: 'menu.cost.industry.batch', keepAlive: true, permission: ['CostBudgetIndustry'] }
           },
           {
             path: '/cost/industry/item/:id',

@@ -51,7 +51,7 @@ const locale = {
   'menu.cost.resolve.list': 'Resolve List',
   'menu.cost.resolve.item': 'Resolve Detail',
   'menu.cost.industry.list': 'Industry List',
-  'menu.cost.industry.edit': 'Industry Edit',
+  'menu.cost.industry.batch': 'Industry Batch',
   'menu.cost.industry.item': 'Industry Detail',
   'menu.cost.bid.list': 'Bid List',
   'menu.cost.bid.edit': 'Bid Edit',
