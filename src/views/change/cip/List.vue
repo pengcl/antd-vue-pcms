@@ -277,7 +277,9 @@
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           this.queryParam2.contractGuid = null
-          this.$refs.table2.refresh()
+          if(this.$refs.table2){
+            this.$refs.table2.refresh()
+          }
           if(!this.queryParam.ProjectID ){
             return nullFixedList(requestParameters)
           }

@@ -265,12 +265,12 @@
               .then(res => {
                 if(res.result.statusCode == 900){
                   this.refreshStoreBalance(108,true)
-                  return new Promise((resolve, reject) => {
-                    resolve({ data : [] })
-                  })
+                  // return new Promise((resolve, reject) => {
+                  //   resolve({ data : [] })
+                  // })
+                }else{
+                  this.refreshStoreBalance(108,false)
                 }
-
-                this.refreshStoreBalance(108,false)
                 res.result.data.sort((a,b) =>{
                   return a.costCenterId === b.costCenterId ? 0 : a.costCenterId > b.costCenterId ? 1 : -1
                 })
@@ -303,14 +303,10 @@
             return ChangeService[actions[109][this.stage].get]({VOGuid : this.data.voMasterInfo.voGuid, VOType : this.data.voMasterInfo.voType,useStore : 108})
               .then(res => {
                 if(res.result.statusCode == 900){
-                 
                   this.refreshStoreBalance(109,true)
-                  return new Promise((resolve, reject) => {
-                    resolve({ data : [] })
-                  })
+                }else{
+                  this.refreshStoreBalance(109,false)
                 }
-
-                this.refreshStoreBalance(109,false)
                 return res.result
               }).catch((e) =>{
                 this.$message.error('获取定标盈余列表错误')
@@ -332,12 +328,9 @@
               .then(res => {
                 if(res.result.statusCode == 900){
                   this.refreshStoreBalance(110,true)
-                  return new Promise((resolve, reject) => {
-                    resolve({ data : [] })
-                  })
+                }else{
+                  this.refreshStoreBalance(110,false)
                 }
-
-                this.refreshStoreBalance(110,false)
                 return res.result
               }).catch((e) =>{
                 this.$message.error('获取预算余额列表错误')
