@@ -456,6 +456,7 @@
                 }
                 this.contractGID = ''
                 this.balanceCertificateGID = ''
+                this.balanceContractGID = ''
                 this.bProjectAuditStatus = ''
                 this.bFinanceAuditStatus = ''
                 this.$refs.table.clearSelected()
