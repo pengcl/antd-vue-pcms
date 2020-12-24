@@ -105,6 +105,7 @@
               @click="handleToEdit(record)"></a-button>
             <a-button
               v-if="ac('DELETE')"
+              :disabled="!record.isCanDelete"
               type="danger"
               icon="delete"
               style="margin-left: 4px"
@@ -265,8 +266,22 @@
                     this.$router.push({ path: `/cost/bid/item/0?ProjectGUID=${this.queryParam.ProjectGUID}&type=add` })
                 }
             },
-            handleToRemove () {
-                this.$message.error(`暂无接口，功能无法使用`)
+            handleToRemove (record) {
+              const that = this
+              this.$confirm({
+                title: '删除招投标分判包',
+                content: '是否确定删除选中招投标分判包?',
+                onOk () {
+                  CostService.bidRemove(record.id).then((res) => {
+                      if (res.result.statusCode === 200) {
+                        that.$message.info('招投标分判包删除成功')
+                        that.$refs.table.refresh()
+                      }
+                    })
+                },
+                onCancel () {
+                },
+              })
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
