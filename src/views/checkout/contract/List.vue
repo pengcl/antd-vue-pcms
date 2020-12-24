@@ -89,7 +89,9 @@
                     :disabled="!balanceCertificateGID || !!balanceContractGID">
             新增合同结算
           </a-button>
-          <a-button type="success" style="margin-left: 10px" :disabled="bProjectAuditStatus !== '已审核' && bFinanceAuditStatus !== '已审核'">打印工程财务结算书</a-button>
+          <a-button type="success" style="margin-left: 10px"
+                    :disabled="bProjectAuditStatus !== '已审核' && bFinanceAuditStatus !== '已审核'">打印工程财务结算书
+          </a-button>
         </a-col>
         <a-col :md="24" :sm="24">
           结算列表
@@ -454,9 +456,12 @@
                 }
                 this.contractGID = ''
                 this.balanceCertificateGID = ''
+                this.bProjectAuditStatus = ''
+                this.bFinanceAuditStatus = ''
                 this.$refs.table.clearSelected()
                 this.$refs._table.clearSelected()
                 this.$refs.table.refresh()
+                this.$refs._table.refresh()
                 this.$forceUpdate()
             },
             handleToCompleted () {
