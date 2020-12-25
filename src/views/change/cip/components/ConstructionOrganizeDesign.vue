@@ -228,7 +228,7 @@ export default {
               callback()
             }else{
               this.$message.info('保存成功')
-              this.back()
+              location.href=`/change/cip/constructionOrganizeDesign/${this.contractGuid}?projectCode=${this.projectCode}&type=view`
             }
           }
         }).catch(() =>{

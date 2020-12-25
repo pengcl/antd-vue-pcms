@@ -387,11 +387,11 @@
         addItem(item, this.form.plans)
       },
       handleToSave() {
-        this.disabled = true
         this.form.itemTypeId = 0
         this.form.projectGUID = this.ProjectGUID
         this.$refs.form.validate(valid => {
           if (valid) {
+            this.disabled = true
             this.loading.save = true
             if (this.type === 'add') {
               CostService.bidCreate(this.form).then(res => {
