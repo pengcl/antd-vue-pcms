@@ -157,7 +157,21 @@
       })
       //科目类型
       CostService.items().then(res => {
-        this.elementItems = JSON.parse(JSON.stringify(res.result.data))
+        const result = {
+          result: {
+            data: []
+          }
+        }
+        const tempCodes = ['B', 'C', 'D', 'E', 'F', 'G']
+        res.result.data.forEach(item => {
+          if (tempCodes.includes(item.code)) {
+            const obj = {}
+            obj['id'] = item.id
+            obj['nameCN'] = item.nameCN
+            result.result.data.push(obj)
+          }
+        })
+        this.elementItems = JSON.parse(JSON.stringify(result.result.data))
         this.$forceUpdate()
       })
 
