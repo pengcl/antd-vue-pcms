@@ -74,7 +74,7 @@
                 <td style="width: 200px" v-for="(costCenterItem,aIndex) in form.costCenterItems[index].centers" :key="aIndex">
                   <a-form-model-item
                     class="simple"
-                    style="margin-top: 20px"
+                    :style="getStyle(costCenterItem)"
                     :prop="'costCenterItems.' + index +'.centers.' + aIndex +'.amount'"
                     :rules="[
                     {validator: (rule,value,callback) => {checkTo(rule,value,callback,form.costCenterItems[index],form.costCenterItems[index].centers[aIndex].disabled)},  type : 'number', trigger: 'change',required : true },
@@ -242,6 +242,7 @@
           }
           obj.costCenterId = item.costCenterId
           obj.amount = 0
+          obj.nameCN = item.costCenterName
           centers.push(obj)
         })
         const item = {
@@ -316,6 +317,14 @@
           callback()
         }
       },
+      getStyle ( item ) {
+        let defaultStyle = 'margin-top: 20px;'
+        console.log(item.nameCN,item.nameCN.length)
+        if( item.nameCN.length < 10 ) {
+          defaultStyle = defaultStyle + 'width:130px;'
+        }
+        return defaultStyle
+      }
     }
   }
 </script>
