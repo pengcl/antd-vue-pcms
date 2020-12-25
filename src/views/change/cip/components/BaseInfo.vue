@@ -441,8 +441,6 @@
                 :disabled="type === 'view'"
                 placeholder="请输入汇率"
                 :min="0"
-                :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
                 v-model="data.voMasterInfo.currencyExchangeRate"></a-input-number>
             </a-form-model-item>
