@@ -177,10 +177,13 @@
       obj.elementInfoCode = item.elementInfoCode
       obj.elementInfoNameCN = item.elementInfoNameCN
       obj.code = item.elementInfoCode
+      let itemsAmount = 0
       costCenters.forEach(center => {
         const costName = 'cost' + center.costCenterId
         obj[costName] = getCostAmount(item.elementInfoId, center.elementItem.childs)
+        itemsAmount = itemsAmount + obj[costName]
       })
+      obj.amountCount = itemsAmount
       if (item.childs && item.childs.length > 0) {
         const childrenList = getList(item.childs, costCenters)
         obj.childs = childrenList
@@ -197,12 +200,15 @@
           budgetItem.elementInfoNameCN = ''
           budgetItem.code = budget.code
           budgetItem.groupId = budget.groupId
+          let budgetsAmount = 0
           costCenters.forEach(center => {
             const result = getBudgetList(budget.groupId, center.elementItem.childs)
             if (result !== null) {
               budgetItem[result['name']] = result['value']
+              budgetsAmount = budgetsAmount + budgetItem[result['name']]
             }
           })
+          budgetItem.amountCount = budgetsAmount
           budgetItem.isUsed = budget.isUsed
           budgetItem.isDelete = true
           objItems.push(budgetItem)
@@ -216,6 +222,7 @@
       // 插入General Trade行
       if (item.tradeBudgetInfo && item.childs && item.childs.length === 0) {
         const gt = {}
+        let gtsAmount = 0
         costCenters.forEach((center, index) => {
           gt.key = Number(Math.random().toString() + Date.now()).toString(36)
           gt.elementInfoId = item.elementInfoId
@@ -223,7 +230,9 @@
           gt.elementInfoNameCN = ''
           const costName = 'cost' + center.costCenterId
           gt[costName] = getGTAmount(item.elementInfoId, center.elementItem.childs)
+          gtsAmount = gtsAmount + gt[costName]
         })
+        gt.amountCount = gtsAmount
         list.push(gt)
         obj.gt = gt
         obj.costCenters = costCenters
@@ -325,7 +334,7 @@
         visible: false,
         confirmLoading: false,
         mdl: null,
-        columnsWidth: 600,
+        columnsWidth: 750,
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
@@ -345,7 +354,7 @@
           }
           return CostService.resolveTreeItems(requestParameters).then(res => {
             if (res.result.data) {
-              this.columnsWidth = 600 + res.result.data.length * 200
+              this.columnsWidth = 750 + res.result.data.length * 200
               if (this.columnsWidth < 1560) {
                 this.columnsWidth = 1560
               }
@@ -358,12 +367,19 @@
                 const childrenObj = {}
                 childrenObj.title = 'Budget Value'
                 if (index !== res.result.data.length) {
-                  childrenObj.width = (this.columnsWidth - 600) / res.result.data.length
+                  childrenObj.width = (this.columnsWidth - 750) / res.result.data.length
                 }
                 childrenObj.dataIndex = 'cost' + item.costCenterId
                 childrenObj.scopedSlots = {customRender: 'cost'}
                 obj.children.push(childrenObj)
                 _columns.push(obj)
+              })
+              _columns.push({
+                title: '合计',
+                width: 150,
+                fixed: 'right',
+                dataIndex: 'amountCount',
+                scopedSlots: {customRender: 'cost'}
               })
               // 组装动态列对应的行数据
               const list = getLineData(res.result.data[0].elementItem.childs, res.result.data)
