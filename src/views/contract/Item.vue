@@ -275,7 +275,6 @@
         })
       },
       save () {
-        this.disabled = true
         let isValid = true
         const validateForms = [
           {
@@ -292,7 +291,6 @@
         validateForms.forEach((item, index) => {
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
-              this.disabled = false
               isValid = false
               this.activeKey = item.activeKey
             }
@@ -303,7 +301,6 @@
           const item = validateForms[i]
           this.$refs[item.key].$refs.form.validate(valid => {
             if (!valid) {
-              this.disabled = false
               isValid = false
               this.activeKey = item.activeKey
             }
@@ -318,7 +315,9 @@
           items = items.filter(item => !item.isDeleted)
           if (items.length > 0) {
             this.loading.save = true
+            this.disabled = true
             ContractService[this.type](this.form).then((res, err) => {
+              this.disabled = false
               this.loading.save = false
               if (res.result.statusCode === 200) {
                 this.contractGuid = this.type === 'create' ? res.result.data : res.result.data.contractGuid
@@ -332,7 +331,6 @@
             })
           } else {
             alert('您要在合同量清单中至少选择一条带数项！')
-            this.disabled = false
             this.activeKey = 4
           }
         }
