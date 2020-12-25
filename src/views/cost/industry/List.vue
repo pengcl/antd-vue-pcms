@@ -120,7 +120,11 @@
           >新增预算
           </a-button
           >
-          <!-- <a-button type="danger" style="margin-left: 10px" v-if="budgetId" @click="handleRemoveBudgetItem">删除预算</a-button> -->
+          <a-button
+            type="danger"
+            style="margin-left: 10px"
+            v-if="this.selectedRowKeys.length >0"
+            @click="handleBatchRemoveBudgetItem">删除预算</a-button>
         </a-col>
         <!-- <a-col :md="12" :sm="24">
           <a-form :label-col="{ span: 12 }" :wrapper-col="{ span: 12 }">
@@ -149,6 +153,7 @@
         :data="loadData2"
         :alert="false"
         :showPagination="false"
+        :row-selection="rowSelection"
       >
         <span slot="budgetValue" slot-scope="text">{{ text | NumberFormat }}</span>
         <span slot="itemAction" slot-scope="text, record">
@@ -256,6 +261,19 @@
             scopedSlots: { customRender: 'contractGUID' },
         },
     ]
+
+    // const rowSelection = {
+    //   onChange: (selectedRowKeys, selectedRows) => {
+    //     console.log('onchange' , `selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
+    //   },
+    //   onSelect: (record, selected, selectedRows) => {
+    //     console.log('onSelect' , record, selected, selectedRows)
+    //   },
+    //   onSelectAll: (selected, selectedRows, changeRows) => {
+    //     console.log('onSelectAll' , selected, selectedRows, changeRows)
+    //   }
+    // }
+
     export default {
         name: 'TableList',
         components: {
@@ -274,7 +292,6 @@
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
-                budgetId: '',
                 selectedPackage: null,
                 handleSelected: false,
                 // 高级搜索 展开/关闭
@@ -368,6 +385,11 @@
                 return {
                     selectedRowKeys: this.selectedRowKeys,
                     onChange: this.onSelectChange,
+                    getCheckboxProps: record => ({
+                      props: {
+                        disabled: this.selectedPackage === null || !!this.selectedPackage.projectTenderPackageId || !!this.selectedPackage.contractGUID
+                      },
+                    })
                 }
             },
         },
@@ -479,8 +501,37 @@
                         })
                     },
                     onCancel () {
-                    },
+                    }
                 })
+            },
+            handleBatchRemoveBudgetItem () {
+              const params = {}
+              params.packageId = this.pid
+              if (this.selectedRowKeys && this.selectedRowKeys.length > 0) {
+                  const budgetItemList = []
+                  this.selectedRowKeys.forEach(item => {
+                    budgetItemList.push({
+                      tradeBudgeItemId: item
+                    })
+                  })
+                params.budgetItemList = budgetItemList
+              }
+              const that = this
+              this.$confirm({
+                title: '批量删除预算',
+                content: '是否确定删除选中的预算?',
+                onOk () {
+                  CostService.removeBatchBudgetItem(params).then((res) => {
+                    if (res.result.statusCode === 200) {
+                      that.$message.info('预算删除成功')
+                      that.selectedRowKeys = []
+                      that.$refs.table2.refresh()
+                    }
+                  })
+                },
+                onCancel () {
+                }
+              })
             },
             jumpToContract () {
                 this.$router.push({ path: `/contract/item/${this.selectedPackage.contractGUID}?type=view` })

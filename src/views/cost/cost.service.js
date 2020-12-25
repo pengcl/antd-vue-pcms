@@ -40,6 +40,7 @@ const API = {
   budegetTreeItem: '/api/services/app/TenderPackage/GetTenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
   addBudgetItem : '/api/services/app/TenderPackage/TenderPackageBatchAddBudgetItem',//行业分判包添加行业预算
   removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem',//行业分判包移除行业预算
+  removeBatchBudgetItem : '/api/services/app/TenderPackage/TenderPackageBatchRemoveBudgetItem', // 行业分判包批量移除行业预算
   //行业类型
   typyItems: '/api/services/app/ElementTradeType/GetFullElementTradeTypeTree' ,//获取预算科目下的行业类型集合
   typeCreate: '/api/services/app/ElementTradeType/Create',//添加预算科目的行业类型
@@ -244,6 +245,14 @@ CostService.addBudgetItem = function (parameter) {
 CostService.removeBudgetItem = function (parameter) {
   return request({
     url: API.removeBudgetItem,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.removeBatchBudgetItem = function (parameter) {
+  return request({
+    url: API.removeBatchBudgetItem,
     method: 'POST',
     data: parameter
   })
