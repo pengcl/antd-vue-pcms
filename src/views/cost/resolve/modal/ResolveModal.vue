@@ -216,7 +216,6 @@
             resultForm.costCenterItems = result
             this.loading = true
             CostService.bidBudgetCreate(resultForm).then(res => {
-              this.loading = false
               if (res.result.statusCode === 200) {
                 const that = this
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
@@ -319,7 +318,6 @@
       },
       getStyle ( item ) {
         let defaultStyle = 'margin-top: 20px;'
-        console.log(item.nameCN,item.nameCN.length)
         if( item.nameCN.length < 10 ) {
           defaultStyle = defaultStyle + 'width:130px;'
         }
