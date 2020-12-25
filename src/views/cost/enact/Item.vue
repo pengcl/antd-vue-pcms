@@ -270,6 +270,7 @@
           if (res.result.statusCode === 200) {
             this.loading.save = false
             this.$message.info('修改成功')
+            this.disabled = false
             this.back()
           }
         }).catch(() => {
