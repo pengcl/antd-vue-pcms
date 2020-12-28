@@ -8,22 +8,26 @@
           </a-button>
           <a-button type="success"
                     style="margin-left: 10px"
-                    @click="handleViewHistoryVersion">查看历史版本（V1.0）
+                    @click="handleViewHistoryVersion">查看历史版本
           </a-button>
         </a-col>
       </a-row>
 
-      <s-table
+      <a-table
+        v-if="fundingPlanInfo.length > 0"
         style="margin-top: 5px"
         ref="table"
         size="default"
         rowKey="id"
         bordered
         :columns="columns"
-        :data="loadData"
+        :defaultExpandAllRows="true"
+        :data-source="fundingPlanInfo"
         :alert="false"
+        :pagination="false"
         showPagination="auto"
         :expandIconColumnIndex="0"
+        :scroll="{ x: 3500}"
       >
         <span slot="businessAmt" slot-scope="text">
           {{text | NumberFormat}}
@@ -170,7 +174,7 @@
                           :precision="2"></a-input-number>
         </span>
 
-      </s-table>
+      </a-table>
 
       <create-industry-subcontracting
         ref="createModal"
@@ -194,6 +198,11 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin: 10px 0">
+          <a-button-group v-if="type === 'view' && originData.result.data.auditStatus !== '未审核'">
+            <a-button @click="view" type="success">
+              查看审批
+            </a-button>
+          </a-button-group>
           <a-button-group v-if="type !== 'view'">
             <a-button @click="save" type="success" :disabled="disabled">
               储存
@@ -216,12 +225,10 @@
     import { FundPlanService } from '@/views/pay/fundplan/fundplan.service'
     import { STable } from '@/components'
     import notification from 'ant-design-vue/es/notification'
+    import { Base as BaseService } from '@/api/base'
 
-    function fixedList (res, params) {
-        const that = this
+    function fixedList (res) {
         const result = {}
-        result.pageSize = params.pageSize
-        result.pageNo = params.pageNo
         let total = {
             businessAmt: 0,
             businessPayAmt: 0,
@@ -240,7 +247,6 @@
             month_6: 0
         }
         if (res.result.data) {
-            result.totalPage = Math.ceil(res.result.data.elementList.length / params.pageSize)
             result.totalCount = res.result.data.elementList.length
             result.data = _formatList(res.result.data.elementList, true)
             res.result.data.elementList.forEach((item, index) => {
@@ -320,77 +326,81 @@
         {
             title: '金额',
             dataIndex: 'businessAmt',
+            align: 'center',
             scopedSlots: { customRender: 'businessAmt' }
         },
         {
             title: '已支付',
             dataIndex: 'businessPayAmt',
+            align: 'center',
             scopedSlots: { customRender: 'businessPayAmt' }
         },
         {
             title: '计划支付',
             dataIndex: 'planTotalAmount',
+            align: 'center',
             scopedSlots: { customRender: 'planTotalAmount' }
         },
         {
             title: 'Jul-20',
             dataIndex: 'month_7',
-            scopedSlots: { customRender: 'month_7' }
+            scopedSlots: { customRender: 'month_7' },
         },
         {
             title: 'Aug-20',
             dataIndex: 'month_8',
-            scopedSlots: { customRender: 'month_8' }
+            scopedSlots: { customRender: 'month_8' },
         },
         {
             title: 'Sep-20',
             dataIndex: 'month_9',
-            scopedSlots: { customRender: 'month_9' }
+            scopedSlots: { customRender: 'month_9' },
         },
         {
             title: 'Oct-20',
             dataIndex: 'month_10',
-            scopedSlots: { customRender: 'month_10' }
+            width: '180px',
+            scopedSlots: { customRender: 'month_10' },
         },
         {
             title: 'Nov-20',
             dataIndex: 'month_11',
-            scopedSlots: { customRender: 'month_11' }
+            scopedSlots: { customRender: 'month_11' },
         },
         {
             title: 'Dec-20',
             dataIndex: 'month_12',
-            scopedSlots: { customRender: 'month_12' }
+            scopedSlots: { customRender: 'month_12' },
         },
         {
             title: 'Jan-21',
             dataIndex: 'month_1',
-            scopedSlots: { customRender: 'month_1' }
+            scopedSlots: { customRender: 'month_1' },
         },
         {
             title: 'Feb-21',
             dataIndex: 'month_2',
-            scopedSlots: { customRender: 'month_2' }
+            scopedSlots: { customRender: 'month_2' },
         },
         {
             title: 'Mar-21',
             dataIndex: 'month_3',
-            scopedSlots: { customRender: 'month_3' }
+            scopedSlots: { customRender: 'month_3' },
         },
         {
             title: 'Apr-21',
             dataIndex: 'month_4',
-            scopedSlots: { customRender: 'month_4' }
+            scopedSlots: { customRender: 'month_4' },
         },
         {
             title: 'May-21',
             dataIndex: 'month_5',
-            scopedSlots: { customRender: 'month_5' }
+            scopedSlots: { customRender: 'month_5' },
         },
         {
             title: 'Jun-21',
             dataIndex: 'month_6',
-            scopedSlots: { customRender: 'month_6' }
+            scopedSlots: { customRender: 'month_6' },
         },
 
     ]
@@ -412,7 +422,8 @@
                 queryParam: {},
                 originData: null,
                 fiscalMonth: [],
-                loadData: parameter => {
+                fundingPlanInfo: [],
+                /*loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if (!this.originData) {
                         return FundPlanService.fundingPlanInfo(this.projectCode, this.year, this.month ? this.month : 0, this.id === '0' ? '' : this.id).then(res => {
@@ -427,7 +438,7 @@
                             return resolve(fixedList(this.originData, requestParameters))
                         })
                     }
-                },
+                },*/
             }
         },
         computed: {
@@ -453,7 +464,7 @@
         watch: {
             '$route' (path) {
                 this.originData = null
-                this.$refs.table.refresh()
+                this.loadData()
             }
         },
         created () {
@@ -464,8 +475,22 @@
                     })
                 })
             }
+            this.loadData()
         },
         methods: {
+            loadData () {
+                if (!this.originData) {
+                    return FundPlanService.fundingPlanInfo(this.projectCode, this.year, this.month ? this.month : 0, this.id === '0' ? '' : this.id).then(res => {
+                        this.originData = res
+                        if (res.result.data.elementList.length > 0) {
+                            this.elementID = res.result.data.elementList[0].elementID
+                        }
+                        this.fundingPlanInfo = fixedList(this.originData).data
+                    })
+                } else {
+                    this.fundingPlanInfo = fixedList(this.originData).data
+                }
+            },
             handleAddIndustry () {
                 this.mdl = null
                 this.visible = true
@@ -502,7 +527,7 @@
                 })
                 this.visible = false
                 this.$refs.createModal.$refs.tenderPacakge.clearSelected()
-                this.$refs.table.refresh()
+                this.loadData()
             },
             handleCancel () {
                 this.visible = false
@@ -572,8 +597,14 @@
                     })
                     item[key] = total[key]
                 })
-                this.$refs.table.refresh()
-            }
+                this.loadData()
+            },
+            view () {
+                BaseService.viewBpm(this.originData.result.data.gid).then(res => {
+                    const tempwindow = window.open('_blank')
+                    tempwindow.location = res.result.data
+                })
+            },
         }
     }
 </script>
@@ -591,5 +622,9 @@
         }
       }
     }
+  }
+
+  table tbody tr td .ant-input-number {
+    min-width: 160px;
   }
 </style>

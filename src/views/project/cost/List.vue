@@ -184,6 +184,7 @@
             return {
                 show: false,
                 cities: null,
+                projectType: null,
                 queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
@@ -210,6 +211,7 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
+                this.projectType = value.type ? value.type : getList(this.cities, 0).type
                 if (value.type !== 'project') {
                     this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 }

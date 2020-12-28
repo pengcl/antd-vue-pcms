@@ -19,16 +19,17 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="申请部门" prop="sponsorDeptName">
-              <a-select v-model="form.sponsorDeptName"
-                        @change="onChange"
-                        :disabled="type === 'view'"
-                        placeholder="请选择">
-                <a-select-option v-for="(item,index) in departmentList"
-                                 :value="item.departmentName"
-                                 :key="index">{{item.departmentName}}
-                </a-select-option>
-              </a-select>
+            <a-form-model-item label="申请部门" prop="sponsorDeptGID">
+              <a-tree-select
+                :disabled="type === 'view'"
+                style="width: 100%"
+                :tree-data="dps"
+                @select="onSelect"
+                :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                search-placeholder="请选择"
+                v-model="form.sponsorDeptGID"
+                :suffixIcon="dps ? '' : '加载中...'">
+              </a-tree-select>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -146,11 +147,16 @@
               启动审批流程
             </a-button>
           </a-button-group>
-        </a-col>
-        <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+            <a-button @click="edit" type="success">
+              编辑
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
@@ -183,6 +189,23 @@
     import { CostService } from '@/views/cost/cost.service'
     import { ac } from '@/views/user/user.service'
     import notification from 'ant-design-vue/es/notification'
+    import { ProjectRolesService } from '@/views/role/project/projectRoles.service'
+    import { formatTree } from '@/utils/util'
+
+    let deptName = ''
+
+    function getDptName (gid, items) {
+        items.forEach(item => {
+            if (item.value === gid) {
+                deptName = item.title
+            } else {
+                if (item.children.length > 0) {
+                    getDptName(gid, item.children)
+                }
+            }
+        })
+        return deptName
+    }
 
     export default {
         name: 'Item',
@@ -200,8 +223,9 @@
                 elementItems: [],
                 disabled: false,
                 dialog: DIALOGCONFIG,
+                dps: null,
                 rules: {
-                    sponsorDeptName: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
+                    sponsorDeptGID: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
                     paymentBusinessType: [{ required: true, message: '请选择付款类型', trigger: 'change' }],
                     requestDate: [{ required: true, message: '请选择申请日期', trigger: 'change' }],
                     expenseAccountType: [{ required: true, message: '请选择付款凭证', trigger: 'change' }],
@@ -232,6 +256,10 @@
                 this.elementItems = JSON.parse(JSON.stringify(res.result.data))
             })
             this.getData()
+            ProjectRolesService.dps('').then(res => {
+                const dps = formatTree([res.result.data], ['title:orgName', 'value:orgGID'])
+                this.dps = dps
+            })
             UnSignedService.payTypeList().then(res => {
                 this.payTypeList = res.result.data
             })
@@ -263,9 +291,8 @@
             ac (action) {
                 return ac(action, this.$route)
             },
-            onChange (value, option) {
-                const index = option.data.key
-                this.form.sponsorDeptGID = this.departmentList[index].organizationalStructureId
+            onSelect (value) {
+                this.form.sponsorDeptName = getDptName(value, this.dps)
             },
             elementTypeChange (value, option) {
                 const index = option.data.key
@@ -380,6 +407,9 @@
                 this.$router.push({
                     path: '/pay/unsigned/list'
                 })
+            },
+            edit(){
+                this.$router.push({ path: `/pay/unsigned/item/${this.id}?type=update&projectGUID=` + this.projectGUID })
             },
             view () {
                 BaseService.viewBpm(this.id).then(res => {

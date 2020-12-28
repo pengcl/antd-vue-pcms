@@ -58,12 +58,20 @@
       :alert="false"
       :showPagination="false"
     >
+      <template slot="generalTradeAmount" slot-scope="text">
+        {{text | NumberFormat}}
+      </template>
+
+      <template slot="budgetPlanDetailAmount" slot-scope="text">
+        {{text | NumberFormat}}
+      </template>
+
       <template slot="contractSplitAmount" slot-scope="text, record">
         <a-input-number
           v-model="record.contractSplitAmount"
           @change="change(record)"
           :min="0"
-          :max="record.budgetPlanDetailAmount"
+          :max="record.contractSplitAmount"
           :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
           :precision="2"/>
       </template>
@@ -163,11 +171,13 @@
     },
     {
       title: '预算余额(a)',
-      dataIndex: 'generalTradeAmount'
+      dataIndex: 'generalTradeAmount',
+      scopedSlots: { customRender: 'generalTradeAmount' }
     },
     {
       title: '行业预算(b)',
-      dataIndex: 'budgetPlanDetailAmount'
+      dataIndex: 'budgetPlanDetailAmount',
+      scopedSlots: { customRender: 'budgetPlanDetailAmount' }
     },
     {
       title: '合同金额(c)',

@@ -200,7 +200,8 @@
             <td>申请批准金额</td>
             <td>
               <span v-if="data.contractMasterInfo.paymentRequestAmount" style="margin-right: 10px">{{data.contractMasterInfo.paymentRequestAmount | NumberFormat}}</span>
-              <a-button @click="handleShowPaymentRequestAmount('0',data.contractMasterInfo.contractGID)">
+              <a-button
+                @click="handleShowPaymentRequestAmount('0',type === 'create' ?  data.contractMasterInfo.contractGID : data.contractMasterInfo.secondaryContractGID)">
                 {{data.contractMasterInfo.paymentRequestAmount ? '修改金额' : '填写明细'}}
               </a-button>
               <payment-request-amount-form ref="paymentRequestAmountModal0"
@@ -208,6 +209,7 @@
                                            :loading="confirmLoadings['0'] ? confirmLoadings['0'] : false"
                                            :model="mdls['0'] ? mdls['0'] : null"
                                            :contractGID="contractGIDs['0']"
+                                           :paymentGID="type === 'create' ? null : id"
                                            :type="'contractMasterInfo'"
                                            @cancel="handleCancel2('0')"
                                            @ok="handleOk2('0')"></payment-request-amount-form>
@@ -242,6 +244,18 @@
                             :type="type"
                             :id="id"
                             @on-change-masterId="changeMasterId"></base-info-attachment>
+      <a-col :md="24" :sm="24">
+        <a-button type="success" @click="handToShowcontractNSC"
+                  v-if="type === 'create' && NSCInfoList.length > 0">引入专业分包合同
+        </a-button>
+        <view-contract-nsc ref="createModal"
+                           :visible="visible"
+                           :loading="confirmLoading"
+                           :model="mdl"
+                           :contractGID="data.contractGID"
+                           @cancel="handleCancel"
+                           @ok="handleOk"></view-contract-nsc>
+      </a-col>
       <div v-for="(item,index) in data.contractNSCInfoList" :key="index">
         <a-col :md="24" :sm="24">
           <table>
@@ -311,7 +325,8 @@
               <td>申请批准金额</td>
               <td>
                 <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
-                <a-button @click="handleShowPaymentRequestAmount(''+(index+1),item.contractGID)">
+                <a-button
+                  @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID)">
                   {{item.paymentRequestAmount ? '修改金额' : '填写明细'}}
                 </a-button>
                 <payment-request-amount-form :ref="'paymentRequestAmountModal'+(index+1)"
@@ -319,6 +334,7 @@
                                              :loading="confirmLoadings[''+(index+1)] ? confirmLoadings[''+(index+1)] : false"
                                              :model="mdls[''+(index+1)] ? mdls[''+(index+1)] : null"
                                              :contractGID="contractGIDs[''+(index+1)]"
+                                             :paymentGID="type === 'create' ? null : id"
                                              :type="'contractNSCInfo'"
                                              @cancel="handleCancel2(''+(index+1))"
                                              @ok="handleOk2(''+(index+1))"></payment-request-amount-form>
@@ -351,18 +367,6 @@
                               :id="id"
                               @on-change-masterId="changeMasterId"></base-info-attachment>
       </div>
-      <a-col :md="24" :sm="24">
-        <a-button type="success" @click="handToShowcontractNSC"
-                  v-if="type === 'create' && NSCInfoList.length > 0">引入专业分包合同
-        </a-button>
-        <view-contract-nsc ref="createModal"
-                           :visible="visible"
-                           :loading="confirmLoading"
-                           :model="mdl"
-                           :contractGID="data.contractGID"
-                           @cancel="handleCancel"
-                           @ok="handleOk"></view-contract-nsc>
-      </a-col>
       <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票信息</a-col>
       <a-col :md="24" :sm="24">
         <div class="table-wrapper">
@@ -766,19 +770,21 @@
                 this.confirmLoading = true
                 const selected = this.$refs.createModal.selected
                 let NSCInfoList = []
-                selected.forEach(item => {
-                    if (item.contractGuid) {
-                        SignedService.NSCContract(this.data.contractGID, item.contractGuid).then(res => {
-                            if (res.result.data) {
-                                this.$message.success('引入专业分包合同成功！')
-                                NSCInfoList.push(res.result.data)
-                                this.$refs.createModal.form.resetFields()
-                                this.confirmLoading = false
-                                this.visible = false
-                            }
-                        })
-                    }
-                })
+                if (selected.length > 0) {
+                    selected.forEach(item => {
+                        if (item.contractGuid) {
+                            SignedService.NSCContract(this.data.contractGID, item.contractGuid).then(res => {
+                                if (res.result.data) {
+                                    this.$message.success('引入专业分包合同成功！')
+                                    NSCInfoList.push(res.result.data)
+                                }
+                            })
+                        }
+                    })
+                }
+                this.$refs.createModal.form.resetFields()
+                this.confirmLoading = false
+                this.visible = false
                 this.data.contractNSCInfoList = NSCInfoList
                 if (this.data.contractMasterInfo.paymentRequestAmount) {
                     this.paymentRequestAmount = { '0': this.data.contractMasterInfo.paymentRequestAmount }

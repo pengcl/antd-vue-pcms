@@ -190,7 +190,6 @@ export default {
       }
     },
     loadData2 (pagination, filters, sorter) {
-      console.log('loadData2')
       this.localLoading = true
       const pageSize = (pagination && pagination.pageSize) ||
         this.showPagination && this.localPagination.pageSize || this.pageSize

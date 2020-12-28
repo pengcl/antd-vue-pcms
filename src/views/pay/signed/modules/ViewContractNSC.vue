@@ -3,7 +3,6 @@
     title="引入专业分包合同"
     :width="900"
     :visible="visible"
-    :ok-button-props="{ props: { disabled: selected.length < 1 } }"
     :confirmLoading="loading"
     :maskClosable="false"
     @ok="() => { $emit('ok') }"

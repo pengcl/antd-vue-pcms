@@ -126,7 +126,6 @@
             },
             loadData () {
                 return ChangeService.bqList(this.contract.contractGuid ? this.contract.contractGuid : this.contract.contractGID).then(res => {
-                    console.log('myData', res)
                     this.tableData = res.result.data
                 })
             },

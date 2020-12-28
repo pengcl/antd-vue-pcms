@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="填写申请批准金额"
-    :width="900"
+    :width="1000"
     :visible="visible"
     :maskClosable="false"
     :confirmLoading="loading"
@@ -19,6 +19,7 @@
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :scroll="{ x: 'calc(700px + 50%)' }"
       >
         <span slot="businessAmount" slot-scope="text">
           {{text | NumberFormat}}
@@ -67,32 +68,41 @@
         },
         {
             title: '名称',
-            dataIndex: 'businessName'
+            dataIndex: 'businessName',
+            width: '250px'
         },
         {
             title: '状态',
             dataIndex: 'businessType',
+            align: 'center',
             width: '78px'
         },
         {
             title: '金额（A）',
             dataIndex: 'businessAmount',
-            scopedSlots: { customRender: 'businessAmount' }
+            align: 'center',
+            scopedSlots: { customRender: 'businessAmount' },
+            width: '180px',
         },
         {
             title: '已申请批准金额（B）',
             dataIndex: 'requestAmountTotal',
-            scopedSlots: { customRender: 'requestAmountTotal' }
+            align: 'center',
+            scopedSlots: { customRender: 'requestAmountTotal' },
+            width: '180px',
         },
         {
             title: '当前可支付金额（C）',
             dataIndex: 'amountPayable',
-            scopedSlots: { customRender: 'amountPayable' }
+            align: 'center',
+            scopedSlots: { customRender: 'amountPayable' },
+            width: '180px',
         },
         {
             title: '申请批准金额（D）',
             dataIndex: 'requestAmount',
-            scopedSlots: { customRender: 'requestAmount' }
+            scopedSlots: { customRender: 'requestAmount' },
+            width: '180px',
         },
     ]
     const fields = []
@@ -117,8 +127,12 @@
                 type: String,
                 default: null
             },
-            contractGID:{
-                type:String,
+            contractGID: {
+                type: String,
+                default: null
+            },
+            paymentGID: {
+                type: String,
                 default: null
             }
         },
@@ -133,7 +147,7 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if (this.contractGID) {
-                        return SignedService.requestList(this.contractGID).then(res => {
+                        return SignedService.requestList(this.contractGID, this.paymentGID).then(res => {
                             res.result.data.forEach(item => {
                                 if (item.amountPayable < 0) {
                                     item.requestAmount = item.amountPayable
@@ -147,9 +161,7 @@
                 },
             }
         },
-        watch: {
-
-        },
+        watch: {},
         created () {
             // 防止表单未注册
             fields.forEach(v => this.form.getFieldDecorator(v))
@@ -160,9 +172,7 @@
                 this.model && this.form.setFieldsValue(pick(this.model, fields))
             })
         },
-        computed: {
-
-        },
+        computed: {},
         methods: {
             onChange (value, record, key) {
                 record[key] = value

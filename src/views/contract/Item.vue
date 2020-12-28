@@ -75,20 +75,24 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col
-          v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('EDIT')"
           :md="24"
           :sm="24"
           style="margin-bottom: 10px">
-          <a-button-group>
+          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('EDIT')">
             <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
             </a-button>
           </a-button-group>
-        </a-col>
-        <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && form.contract.auditStatus !== '未审核' && ac('VIEW')">
             <a-button :loading="loading.view" @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('VIEW')">
+            <a-button @click="edit" type="success">
+              编辑
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
@@ -188,7 +192,11 @@
         return this.$route.query.ProjectGUID
       }
     },
-    watch: {},
+    watch: {
+        '$route' (path) {
+            this.getData()
+        }
+    },
     methods: {
       ac (action) {
         return ac(action, this.$route)
@@ -337,6 +345,9 @@
       },
       handleChange (selectedItems) {
         this.selectedItems = selectedItems
+      },
+      edit(){
+          this.$router.push({ path: `/contract/item/${this.id}?type=update` })
       },
       back () {
         this.$router.push({ path: `/contract/list` })

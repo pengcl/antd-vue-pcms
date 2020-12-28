@@ -17,11 +17,16 @@
               启动审批流程
             </a-button>
           </a-button-group>
-        </a-col>
-        <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+            <a-button @click="edit" type="success">
+              编辑
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
@@ -172,6 +177,9 @@
                     const tempwindow = window.open('_blank')
                     tempwindow.location = res.result.data
                 })
+            },
+            edit(){
+                this.$router.push({ path: `/pay/signed/item/${this.id}?type=update` })
             },
         }
 

@@ -31,7 +31,7 @@
                 </a-button>
                 <a-button type="success"
                           v-if="queryParam.ProjectID"
-                          @click="visible2 = true">查看历史版本（V1.0）
+                          @click="visible2 = true">查看历史版本
                 </a-button>
               </a-button-group>
             </a-col>
@@ -39,15 +39,18 @@
         </a-form>
       </div>
 
-      <s-table
+      <a-table
+        v-if="fundingPlanYearList.length > 0"
         style="margin-top: 5px"
         ref="table"
         size="default"
         rowKey="gid"
         bordered
+        :defaultExpandAllRows="true"
         :columns="columns"
-        :data="loadData"
+        :data-source="fundingPlanYearList"
         :alert="false"
+        :pagination="false"
         showPagination="auto"
         :expandIconColumnIndex="1"
       >
@@ -107,7 +110,20 @@
               </a-button-group>
           </template>
         </span>
-      </s-table>
+      </a-table>
+      <s-table
+        v-if="fundingPlanYearList.length < 1"
+        style="margin-top: 5px"
+        ref="table"
+        size="default"
+        rowKey="gid"
+        bordered
+        :columns="columns"
+        :data="loadData1"
+        :alert="false"
+        :pagination="false"
+        showPagination="auto"
+      ></s-table>
 
       <create-annual-funding-plan
         ref="createModal"
@@ -133,21 +149,18 @@
 
 <script>
     import { STable } from '@/components'
-    import { getPosValue, getList } from '@/utils/util'
+    import { getPosValue, getList, nullFixedList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
-    import { formatList } from '../../../mock/util'
+    import { formatList } from '@/mock/util'
     import CreateAnnualFundingPlan from '@/views/pay/fundplan/modules/CreateAnnualFundingPlan'
     import CreateViewHistoryVersion from '@/views/pay/fundplan/modules/CreateViewHistoryVersion'
     import { FundPlanService } from './fundplan.service'
     import storage from 'store'
     import { ac } from '@/views/user/user.service'
 
-    function fixedList (res, params) {
+    function fixedList (res) {
         const result = {}
-        result.pageSize = params.pageSize
-        result.pageNo = params.pageNo
         if (res.result.data) {
-            result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
             result.totalCount = res.result.data.length
             result.data = _formatList(res.result.data, true)
         } else {
@@ -237,15 +250,9 @@
                 queryParam: {},
                 projectValue: {},
                 // 加载数据方法 必须为 Promise 对象
-                loadData: parameter => {
+                loadData1: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
-                        return FundPlanService.fundingPlanYearList(this.queryParam.ProjectID).then(res => {
-                            this.fundingPlanYearList = res.result.data
-                            return fixedList(res, requestParameters)
-                        })
-                    }
-
+                    return nullFixedList(requestParameters)
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -268,7 +275,7 @@
                 this.projectType = value.type ? value.type : getList(this.cities, 0).type
                 this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.projectValue = { projectName: value.projectName, projectCode: value.projectCode }
-                this.$refs.table.refresh()
+                this.loadData()
                 this.$forceUpdate()
             })
         },
@@ -281,6 +288,14 @@
             }
         },
         methods: {
+            loadData () {
+                if (this.queryParam.ProjectGUID && this.queryParam.ProjectID) {
+                    return FundPlanService.fundingPlanYearList(this.queryParam.ProjectID).then(res => {
+                        const source = fixedList(res)
+                        this.fundingPlanYearList = source.data
+                    })
+                }
+            },
             ac (action) {
                 return ac(action, this.$route)
             },
@@ -311,7 +326,7 @@
                     projectName: option.$options.propsData.dataRef.projectName,
                     projectCode: this.queryParam.ProjectID
                 }
-                this.$refs.table.refresh()
+                this.loadData()
                 this.$forceUpdate()
             },
             handleOk () {
