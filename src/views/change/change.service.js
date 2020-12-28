@@ -55,7 +55,15 @@ const API = {
   getVOCUseGeneralTradePreSplitByVOGuid : '/api/services/app/VO/GetVOCUseGeneralTradePreSplitByVOGuid',//VO-变更预分解（针对预算余额）
   createVOCUseGeneralTrade : '/api/services/app/VO/CreateVOCUseGeneralTrade',//VO-预算确认（针对预算余额）
   updateVOCGeneralTrade : '/api/services/app/VO/UpdateVOCGeneralTrade',//VO-更新变更预算调整（针对预算余额）
-  getVOTypeTree : '/api/services/app/VO/GetVOTypeTree'//根据ciptype获取voType树信息
+  getVOTypeTree : '/api/services/app/VO/GetVOTypeTree',//根据ciptype获取voType树信息
+
+  //现场签证相关
+  getSpotVisaListByVoGuid: '/api/services/app/VO/GetSpotVisaListByVoGuid',//根据变更Guid获取现场签证列表数据
+  createSpotVisa: '/api/services/app/VO/CreateSpotVisa',//新增现场签证
+  updateSpotVisa: '/api/services/app/VO/UpdateSpotVisa',//更新现场签证
+  deleteSpotVisa: '/api/services/app/VO/DeleteSpotVisa',//废弃现场签证
+  getVOInfoForSpotVisa: '/api/services/app/VO/GetVOInfoForSpotVisa',//针对现场签证获取VO相关信息
+  getSpotVisaByGuid: '/api/services/app/VO/GetSpotVisaByGuid',//根据GUID获取现场签证信息
 }
 
 const ChangeService = {}
@@ -559,7 +567,6 @@ ChangeService.createVOCUseSurplus = function(parameter){
 	  })
 }
 
-
 /**
  * VO-更新变更预算调整（针对定标盈余）
  */
@@ -638,7 +645,6 @@ ChangeService.createVOCUseGeneralTrade = function(parameter){
 	  })
 }
 
-
 /**
  * VO-更新变更预算调整（针对预算余额）
  */
@@ -661,5 +667,71 @@ ChangeService.getVOTypeTree = function(cipType){
 	  })
 }
 
+ /**
+ * 根据变更Guid获取现场签证列表数据
+ */
+ChangeService.getSpotVisaListByVoGuid = function(voGuid){
+	return request({
+	    url: API.getSpotVisaListByVoGuid,
+	    method: 'get',
+	    params: {voGuid}
+	  })
+}
+
+/**
+ * 根据GUID获取现场签证信息
+ */
+ChangeService.getSpotVisaByGuid = function(SVGuid){
+	return request({
+	    url: API.getSpotVisaByGuid,
+	    method: 'get',
+	    params: {SVGuid}
+	  })
+}
+
+/**
+ * 新增现场签证
+ */
+ChangeService.createSpotVisa = function(parameter){
+	return request({
+	    url: API.createSpotVisa,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+
+/**
+ * 更新现场签证
+ */
+ChangeService.updateSpotVisa = function(parameter){
+	return request({
+	    url: API.updateSpotVisa,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
+/**
+ * 废弃现场签证
+ */
+ChangeService.deleteSpotVisa = function(SVGuid){
+	return request({
+	    url: API.deleteSpotVisa,
+	    method: 'delete',
+	    data: {SVGuid}
+	  })
+}
+
+/**
+ * 针对现场签证获取VO相关信息
+ */
+ChangeService.getVOInfoForSpotVisa = function(voGuid){
+	return request({
+	    url: API.getVOInfoForSpotVisa,
+	    method: 'get',
+	    params: {voGuid}
+	  })
+}
 
 export { ChangeService }

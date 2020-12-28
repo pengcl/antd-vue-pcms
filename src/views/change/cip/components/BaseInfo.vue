@@ -260,7 +260,7 @@
           </a-col>
         </a-row>
       </a-col>
-      <a-col :md="24" :sm="24" v-if="stage==='VO' && type ==='add'">
+      <a-col :md="24" :sm="24" v-if="stage==='VO' ">
         <a-row>
           <a-col :span="10">
             <a-form-model-item label="原CIP金额">
@@ -275,7 +275,7 @@
           </a-col>
         </a-row>
       </a-col>
-      <a-col :md="24" :sm="24" v-if="stage==='VO' && type ==='add'">
+      <a-col :md="24" :sm="24" v-if="stage==='VO' ">
         <a-row>
           <a-col :span="10">
             <a-form-model-item label="差额">

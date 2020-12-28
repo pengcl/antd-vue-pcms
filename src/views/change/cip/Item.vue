@@ -100,7 +100,7 @@
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO' && ac('EDIT')" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO'  &&form.voMasterInfo.auditStatus === '未审核' && ac('EDIT')" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
             <a-button type="success" :loading="loading.save" v-if="type !== 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()" >储存</a-button>
             <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' && ac('DELETE')" @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
