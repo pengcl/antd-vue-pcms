@@ -1,7 +1,7 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+      <a-form-model ref="form" :model="form" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
           <a-col :md="12" :sm="12">
             <a-form-item label="房产项目名称（中）">
@@ -20,8 +20,13 @@
           </a-col>
           <a-col :md="12" :sm="12">
             <a-form-item label="审核状态">
-              未审核
+              <a-input :disabled="true" :value="form.auditStatus || '未审批'"> </a-input>
             </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="标题" prop="batchTitle">
+              <a-input v-model="form.batchTitle" :disabled="type === 'view'"></a-input>
+            </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="备注">
@@ -63,22 +68,36 @@
             </a-table>
           </a-col>
         </a-row>
-      </a-form>
+      </a-form-model>
       <a-row>
         <a-col :md="12" :sm="24">
-          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
+          <a-button
+            type="success"
+            :loading="loading.startBPM"
+            style="margin-right: 20px"
+            v-if="type === 'view' && form.auditStatus === '未审核'"
+            @click="startBPM"
+          >启动审批流程</a-button
+          >
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button type="success" @click="handleToSave">储存</a-button>
+            <a-button
+              type="success"
+              @click="$router.push({ path: `/cost/industry/batch/${form.tenderPackageBatchGUID}?ProjectGUID=${ProjectGUID}&type=edit` })"
+              v-if="type === 'view' && form.auditStatus === '未审核'"
+            >编辑</a-button
+            >
+            <a-button type="success" :loading="loading.save" @click="handleToSave" v-if="type !== 'view'">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
       </a-row>
       <industry-package-batch-modal
+        v-if="this.form.tenderPackages"
         ref="industryPackageBatchModal"
         :visible="show.tenderShow"
-        :selecteds="this.form.tenderPackages"
+        :selecteds="getSelecteds()"
         :ProjectGUID="ProjectGUID"
         @cancel="handleCancel()"
         @ok="handleOk()"
@@ -126,9 +145,12 @@ export default {
   components: { IndustryPackageBatchModal },
   data () {
     return {
-      loading: { save: false },
+      loading: { save: false,startBPM : false,showBPM : false },
       show: { tenderShow: false },
       columns: columns,
+      rules: {
+        batchTitle: [{ required: true, trigger: 'blur', message: '请输入批次标题' }]
+      },
       form: SwaggerService.getForm('TenderPackageBatchRegOutputDto')
     }
   },
@@ -141,6 +163,9 @@ export default {
     },
     ProjectGUID () {
       return this.$route.query.ProjectGUID
+    },
+    packageId(){
+      return this.$route.query.packageId
     }
   },
   created () {
@@ -149,6 +174,15 @@ export default {
         this.form.projectGUID = res.result.data.projectGUID
         this.form.projectCode = res.result.data.projectCode
         this.form.projectName = res.result.data.projectName
+        this.form.tenderPackages = []
+        this.appendPackage()
+      })
+    } else {
+      CostService.getTenderPackageBatchRegByGUID(this.id).then(res => {
+        if (res.result.statusCode === 200) {
+          this.form = res.result.data
+          this.appendPackage()
+        }
       })
     }
   },
@@ -162,20 +196,56 @@ export default {
       } else {
         item.isDeleted = true
       }
+      this.$forceUpdate()
+    },
+    getSelecteds(){
+      return this.form.tenderPackages.filter(item => !item.isDeleted)
     },
     handleToSave () {
       this.loading.save = true
-      const tempRows = this.frm.tenderPackages.filter(item => !item.isDeleted)
+
+      let isValid = true
+      this.$refs.form.validate(valid => {
+        if (!valid) {
+          isValid = false
+        }
+      })
+      if (!isValid) {
+        this.loading.save = false
+        return
+      }
+      const tempRows = this.form.tenderPackages.filter(item => !item.isDeleted)
       if (tempRows.length < 1) {
         this.$message.warn('请添加需要审核的行业分判包')
         this.loading.save = false
+        return
       }
-      // this.form.projectGUID = this.ProjectGUID
-      // CostService.createIndustry(this.form).then(res => {
-      //   if (res.result.statusCode === 200) {
-      //     this.$message.info('修改成功')
-      //   }
-      // })
+      let actionName = 'createTenderPackageBatchReg'
+      const submitForm = {
+        projectGUID: this.form.projectGUID,
+        batchTitle: this.form.batchTitle,
+        description: this.form.description,
+        id: this.form.id
+      }
+      if (this.type === 'edit') {
+        ;(actionName = 'updateTenderPackageBatchReg'), (submitForm.removeTenderPackageList = this.filterPackage(2))
+        submitForm.addTenderPackageList = this.filterPackage(1)
+      } else {
+        submitForm.tenderPackageList = this.filterPackage(0)
+      }
+      CostService[actionName](submitForm)
+        .then(res => {
+          this.loading.save = false
+          if (res.result.statusCode === 200) {
+            this.$message.info('保存成功')
+            // location.href = `/cost/industry/batch/${res.result.data.tenderPackageBatchGUID}?ProjectGUID=${this.ProjectGUID}&type=view`
+          }
+        })
+        .catch(e => {
+          this.loading.save = false
+          console.log('保存行业分判包批次失败', e)
+          this.$message.error('保存行业分判包批次失败')
+        })
     },
     back () {
       this.$router.push({ path: `/cost/industry/list` })
@@ -192,7 +262,7 @@ export default {
     handleOk () {
       this.show.tenderShow = false
       const selectedRows = this.$refs.industryPackageBatchModal.selectedRows
-      console.log('selectedRows',selectedRows)
+      console.log('selectedRows', selectedRows)
       if (!this.form.tenderPackages) {
         this.form.tenderPackages = []
       }
@@ -214,8 +284,58 @@ export default {
           this.form.tenderPackages.push(item)
         }
       })
-      console.log('this.form.tenderPackages',this.form.tenderPackages)
       this.$forceUpdate()
+    },
+    // 过滤分判包信息供提交使用
+    // flag : 0: 全部，1:只要新增的，2:只要被删除的
+    filterPackage (flag) {
+      const packages = []
+      this.form.tenderPackages.forEach(item => {
+        const temp = {}
+        if (flag === 0 || (flag === 1 && item.isTemp) || (flag === 2 && item.isDeleted)) {
+          temp.tenderPackageId = item.id // tenderPackageGUID
+          packages.push(temp)
+        }
+      })
+      return packages
+    },
+    startBPM(){
+      this.loading.startBPM = true
+      CostService.tenderPackageBatchStartBPM(this.form.tenderPackageBatchGUID).then(res =>{
+        this.loading.startBPM = false
+        if(res.result.statusCode === 200){
+          setTimeout(function(){
+            window.open(res.result.data)
+          },200)
+        }
+      }).catch((e) =>{
+        this.loading.startBPM = false
+      })
+    },
+    showBPM(){
+      this.loading.showBPM= true
+      BaseService.viewBpm(this.form.tenderPackageBatchGUID).then(res => {
+        this.loading.showBPM= false
+        if(res.result.statusCode === 200){
+          setTimeout(function(){
+            window.open(res.result.data)
+          },200)
+        }
+      })
+    },
+    appendPackage(){
+      CostService.industryItem({ Id: this.packageId }).then(res => {
+        if(res.result.statusCode === 200){
+          if(this.type === 'add'){
+            this.form.tenderPackages.push(res.result.data)
+          }else{
+            const repeatPackages = this.form.tenderPackages.filter(item => item.id === res.result.data.id)
+            if(repeatPackages.length < 1){
+              this.form.tenderPackages.push(res.result.data)
+            }
+          }
+        }
+      })
     }
   }
 }

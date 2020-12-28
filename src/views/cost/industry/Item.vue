@@ -84,12 +84,13 @@
         </a-row>
       <a-row>
         <a-col :md="12" :sm="24">
-          <a-button type="success" style="margin-right: 20px" :loading="loading.startBPM" @click="startBPM">启动审批流程</a-button>
+          <a-button type="success" style="margin-right: 20px" v-if="type==='view' && this.form.auditStatus === '未审核'" :loading="loading.startBPM" @click="startBPM" 
+            :disabled="form.budgetAmount <= 0">启动审批流程</a-button>
 
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button :disabled="type === 'view' || disabled" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
+            <a-button v-if="type != 'view'" :loading="loading.save" type="success" @click="handleToSave">储存</a-button>
             <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
           </a-button-group>
         </a-col>
@@ -203,16 +204,15 @@
         })
       },
       handleToSave () {
-        this.disabled = true
         let action = 'industryCreate'
         if(this.type === 'edit'){
           action = 'industryUpdate'
         }
         this.$refs.form.validate(valid => {
           if(valid){
+            this.loading.save = true
             this.form.projectGUID = this.ProjectGUID
             this.form.itemTypeId = 0 //2020-12-04 新需求，取消行业分判包类型选项
-            this.loading.save = true
             CostService[action](this.form).then(res => {
               if (res.result.statusCode === 200) {
                 const that = this
@@ -222,7 +222,6 @@
               }
             }).catch(() => {
               this.loading.save = false
-              this.disabled = false
             })
           }
         })
@@ -233,8 +232,22 @@
       },
       startBPM(){
         this.loading.startBPM = true
-        this.$message.warn('暂无接口，无法实现该功能')
-        this.loading.startBPM = false
+        CostService.projectIsNoStartAuditTenderPackageBatchReg(this.ProjectGUID).then(res =>{
+          this.loading.startBPM = false
+          if(res.result.statusCode === 200){
+            if(res.result.data){
+              this.$router.push({ path: `/cost/industry/batch/${res.result.data}?ProjectGUID=${this.ProjectGUID}&type=edit&packageId=${this.form.id}` })
+            }else{
+              this.$router.push({ path: `/cost/industry/batch/0?ProjectGUID=${this.ProjectGUID}&type=add&packageId=${this.form.id}` })
+            }
+          }
+        }).catch((e) =>{
+          this.loading.startBPM = false
+          console.log('行业分判包-点击新增审批失败',e)
+        })
+      },
+      viewBPM(){
+
       },
       itemTypeChange(value,option){
         console.log('option',option.$options,option)

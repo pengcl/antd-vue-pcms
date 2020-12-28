@@ -70,9 +70,10 @@
         selectedRows : [],
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-          this.queryParam.ProjectGUID = this.projectGUID
+          this.queryParam.ProjectGUID = this.ProjectGUID
+          this.queryParam.isAudit = false
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return CostService.industryItems(requestParameters).then(res => {
+          return CostService.bidIndustryItems(requestParameters).then(res => {
             return fixedList(res, requestParameters)
           })
         }
@@ -100,9 +101,9 @@
     },
     watch :{
       'selecteds'(values){
-        this.selectedRows = values.filter(item => !item.isDeleted)
+        this.selectedRows = values
         this.selectedRowKeys = []
-        values.forEach(item =>{
+        this.selectedRows.forEach(item =>{
           this.selectedRowKeys.push(item.id)
         })
       }
