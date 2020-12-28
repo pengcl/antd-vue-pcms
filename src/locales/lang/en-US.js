@@ -41,7 +41,8 @@ const locale = {
   'menu.change.cip.item': 'CIP detail',
   'menu.change.account.list': 'VO',
   'menu.change.account.item': 'VO detail',
-  'menu.change.certificate': 'Certificate',
+  'menu.change.certificate.list': 'Certificate',
+  'menu.change.certificate.item': 'Certificate Detail',
 
   'menu.cost': 'Costs',
   'menu.cost.enact.list': 'Enact List',

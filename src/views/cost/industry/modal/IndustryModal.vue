@@ -25,7 +25,7 @@
       >
         <template slot="elementInfoNameCN" slot-scope="text,record">
           <span v-if="!record.children">
-            {{text}}<a-button style="margin-left:8px;" @click="checkAllAmount(record)">全选</a-button>
+            <a-checkbox style="margin-right:8px;" @click="checkAllAmount(record)"></a-checkbox>{{text}}
           </span>
           <span v-if="record.children">
             {{text}}
