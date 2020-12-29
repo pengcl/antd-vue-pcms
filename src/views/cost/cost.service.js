@@ -24,7 +24,7 @@ const API = {
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
   bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage',//新增招投标分判包
   bidRemove: '/api/services/app/ProjectTenderPackage/RemoveProjectTenderPackage',//删除招投标分判包
-  bidBudgetCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算
+  bidBudgetCreate: '/api/services/app/TradeBudget/CreateProjectCostCenterTradeBudgetItems',//创建行业预算
   matterItems: 'api/services/app/ProjectTenderPackage/GetPlanMatterModelList',//工作项列表
   bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//行业分判包下拉列表
   bidUpdate: '/api/services/app/ProjectTenderPackage/UpdateProjectTenderPackage', //修改招投标分判包
