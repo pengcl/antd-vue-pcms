@@ -207,7 +207,6 @@
             }
         },
         created () {
-            // getRoleList({ t: new Date() })
             ProjectService.tree().then(res => {
                 const cities = []
                 res.result.data.citys.forEach(item => {

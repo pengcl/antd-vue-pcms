@@ -18,7 +18,7 @@
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24"><span
-              class="project-type-tips">{{ projectType === 'project' ? '请选择末级新建合同' : '' }}</span></a-col>
+              class="project-type-tips">{{ projectType === 'project' ? '请选择末级新建业态成本中心' : '' }}</span></a-col>
           </a-row>
         </a-form>
       </div>
@@ -110,6 +110,7 @@
     import { ProjectService } from '@/views/project/project.service'
     import { ac } from '@/views/user/user.service'
     import storage from 'store'
+    import { formatList } from '@/mock/util'
 
     const columns = [
         {
@@ -154,26 +155,6 @@
         }
     ]
 
-    const formatList = (items, option) => {
-        const list = []
-        items.forEach(item => {
-            if (item.childs) {
-                item.selectable = item.childs.items.length < 1
-                item.children = formatList(item.childs.items)
-            } else {
-                item.selectable = true
-                item.children = null
-            }
-            if (option) {
-                item.selectable = false
-                item[option.key] = option.value
-            }
-            item.label = item.projectName
-            item.value = item.projectGUID
-            list.push(item)
-        })
-        return list
-    }
 
     export default {
         name: 'ProjectCostList',
@@ -214,9 +195,7 @@
                 this.cities = cities
                 const value = getPosValue(this.cities)
                 this.projectType = value.type ? value.type : getList(this.cities, 0).type
-                if (value.type !== 'project') {
-                    this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
-                }
+                this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.$refs.table.refresh()
                 this.$forceUpdate()
             })
