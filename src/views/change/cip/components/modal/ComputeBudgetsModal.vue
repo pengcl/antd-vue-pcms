@@ -13,6 +13,41 @@
     <div>
 	    <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
         <a-row :gutter="48">
+          <a-col :md="24" :sm="24"  v-if="stage==='VO' ">
+            <a-col :md="12" :sm="12">
+              <a-form-model-item label="变更造价估算" >
+                <a-input-number
+                  :disabled="true"
+                  :value="data.voMasterInfo.voAmount"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"
+                ></a-input-number>
+              </a-form-model-item>
+            </a-col>
+            <a-col :md="12" :sm="12">
+              <a-form-model-item label="原CIP金额">
+                <a-input-number
+                  :disabled="true"
+                  :value="data.cipAmount"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"
+                ></a-input-number>
+              </a-form-model-item>
+            </a-col>
+            <a-col :md="12" :sm="12" >
+              <a-form-model-item label="差额">
+                <a-input-number
+                  :disabled="true"
+                  :value="data.voMasterInfo.voAmount - data.cipAmount"
+                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
+                  :precision="2"
+                ></a-input-number>
+              </a-form-model-item>
+            </a-col>
+          </a-col>
           <a-col :md="24" :sm="24">
             <a-radio-group v-model="useStore" button-style="solid" :disabled="useStore > 0 && stage==='VO'" @change="changeStore">
               <a-radio v-for="item in selection.storeTypes" :key="item.id" :value="item.id" >

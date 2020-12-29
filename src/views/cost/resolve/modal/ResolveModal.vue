@@ -6,7 +6,6 @@
     :maskClosable="false"
     @cancel="handleCancel"
     @ok="handleOk"
-    :ok-button-props="{ props: { disabled: defaultSave } }"
     :confirm-loading="loading"
   >
     <a-card :bordered="false">
@@ -219,11 +218,38 @@
               if (res.result.statusCode === 200) {
                 const that = this
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功').then(() => {
-                  that.refreshParent()
+                  const respResult = {
+                    elementInfoId: this.record.elementInfoId,
+                    data: []
+                  }
+                  res.result.data.forEach(item => {
+                    const obj = {}
+                    obj.BudgetTitle = item.budgetTitle
+                    let amountCount = 0 // 合计
+                    item.itemDetails.forEach(detail => {
+                      const costName = 'cost' + detail.costCenterId
+                      obj[costName] = detail.budgetValue
+                      amountCount += detail.budgetValue
+                    })
+                    obj.itemDetails = item.itemDetails
+                    obj.code = ''
+                    obj.amountCount = amountCount
+                    obj.elementInfoId = item.elementId
+                    obj.groupId = item.id
+                    obj.isDelete = true
+                    obj.isUsed = false
+                    obj.key = Number(Math.random().toString() + Date.now()).toString(36)
+                    obj.isLast = true
+                    respResult.data.push(obj)
+                  })
+                  that.refreshParent(respResult)
                   this.visible = false
+                  this.loading = false
                 })
               }
-            }).catch(() => {
+            }).catch((e) => {
+              this.$message.error('' + '添加预算失败，请联系管理员')
+              this.visible = false
               this.loading = false
             })
           }

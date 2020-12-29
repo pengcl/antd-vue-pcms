@@ -243,13 +243,13 @@
               <a-row>
                 <a-col :span="10">
                   <a-input
-                    :value="data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease > 0 ? '增加' : '减少'"
+                    :value="data.voMasterInfo.voAmount > 0 ? '增加' : '减少'"
                     :disabled="true"></a-input>
                 </a-col>
                 <a-col :span="14">
                   <a-input-number
                     :disabled="true"
-                    :value="Math.abs(data.voMasterInfo.voTotalAmountIncrease+data.voMasterInfo.voTotalAmountDecrease)"
+                    :value="Math.abs(data.voMasterInfo.voAmount)"
                     :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                     :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                     :precision="2"
@@ -266,7 +266,7 @@
             <a-form-model-item label="原CIP金额">
               <a-input-number
                 :disabled="true"
-                :value="master.oldVoTotalAmountIncrease"
+                :value="data.cipAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -281,7 +281,7 @@
             <a-form-model-item label="差额">
               <a-input-number
                 :disabled="true"
-                :value="data.voMasterInfo.voTotalAmountIncrease - master.oldVoTotalAmountIncrease"
+                :value="data.voMasterInfo.voAmount - data.cipAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -558,10 +558,6 @@
       contract: {
         type: Object,
         default: {}
-      },
-      master: {
-        type : Object,
-        default : {}
       },
       stage : {
         type : String,

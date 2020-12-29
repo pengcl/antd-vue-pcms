@@ -267,15 +267,12 @@
         result['items'] = items
         this.loading.save = true
         CostService.update(result).then(res => {
-          if (res.result.statusCode === 200) {
-            this.loading.save = false
-            this.$message.info('修改成功')
-            this.disabled = false
-            this.back()
-          }
-        }).catch(() => {
           this.loading.save = false
           this.disabled = false
+          if (res.result.statusCode === 200) {
+            this.$message.info('修改成功')
+            this.back()
+          }
         })
       },
       checkChange(e, record, costCenterId) {

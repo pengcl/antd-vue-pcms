@@ -24,7 +24,7 @@ const API = {
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
   bidCreate: '/api/services/app/ProjectTenderPackage/CreateProjectTenderPackage',//新增招投标分判包
   bidRemove: '/api/services/app/ProjectTenderPackage/RemoveProjectTenderPackage',//删除招投标分判包
-  bidBudgetCreate: '/api/services/app/TradeBudget/ProjectCostCenterTradeBudgetItems',//创建行业预算
+  bidBudgetCreate: '/api/services/app/TradeBudget/CreateProjectCostCenterTradeBudgetItems',//创建行业预算
   matterItems: 'api/services/app/ProjectTenderPackage/GetPlanMatterModelList',//工作项列表
   bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//行业分判包下拉列表
   bidUpdate: '/api/services/app/ProjectTenderPackage/UpdateProjectTenderPackage', //修改招投标分判包
@@ -45,7 +45,17 @@ const API = {
   typyItems: '/api/services/app/ElementTradeType/GetFullElementTradeTypeTree' ,//获取预算科目下的行业类型集合
   typeCreate: '/api/services/app/ElementTradeType/Create',//添加预算科目的行业类型
   typeItem: '/api/services/app/ElementTradeType/GetById',//返回预算科目行业类型实体对象
-  typeUpdate: '/api/services/app/ElementTradeType/Update' //对预算行业类型进行编辑更新
+  typeUpdate: '/api/services/app/ElementTradeType/Update', //对预算行业类型进行编辑更新
+
+  //审批相关
+  createTenderPackageBatchReg:'/api/services/app/TenderPackage/CreateTenderPackageBatchReg',//行业分判包批量添加审批信息
+  updateTenderPackageBatchReg:'/api/services/app/TenderPackage/UpdateTenderPackageBatchReg',//对行业分判包批量审批表进行修改
+  getTenderPackageBatchRegByGUID:'/api/services/app/TenderPackage/GetTenderPackageBatchRegByGUID',//通过审批单编号获取对应的审批信息
+  getTenderPackageBatchRegByTender:'/api/services/app/TenderPackage/GetTenderPackageBatchRegByTender',//通过行业分判包编号获取对应的批量审批信息
+  removeTenderPackageBatchReg:'/api/services/app/TenderPackage/RemoveTenderPackageBatchReg',//移除指定的分判包批量审批单
+  tenderPackageBatchStartBPM:'/api/services/app/TenderPackage/TenderPackageBatchStartBPM',//发起流程的地址
+  getProjectTenderPackageBatchRegs:'/api/services/app/TenderPackage/GetProjectTenderPackageBatchRegs',//获取项目的行业分判包批量审批记录
+  projectIsNoStartAuditTenderPackageBatchReg:'/api/services/app/TenderPackage/ProjectIsNoStartAuditTenderPackageBatchReg',//判断项目是否有未发起审批的分判包批量审批单(true:有未发起审批的审批单)
 }
 
 const CostService = {}
@@ -375,6 +385,73 @@ CostService.bidRemove = function (Id) {
     url: API.bidRemove,
     method: 'delete',
     params: { Id }
+  })
+}
+
+//审批相关
+
+CostService.createTenderPackageBatchReg = function (parameter) {
+  return request({
+    url: API.createTenderPackageBatchReg,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.updateTenderPackageBatchReg = function (parameter) {
+  return request({
+    url: API.updateTenderPackageBatchReg,
+    method: 'PUT',
+    data: parameter
+  })
+}
+
+CostService.getTenderPackageBatchRegByGUID = function (Id) {
+  return request({
+    url: API.getTenderPackageBatchRegByGUID,
+    method: 'get',
+    params: {Id}
+  })
+}
+
+CostService.getTenderPackageBatchRegByTender = function (Id) {
+  return request({
+    url: API.getTenderPackageBatchRegByTender,
+    method: 'get',
+    params: {Id}
+  })
+}
+
+CostService.removeTenderPackageBatchReg = function (Id) {
+  return request({
+    url: API.removeTenderPackageBatchReg,
+    method: 'delete',
+    params: { Id }
+  })
+}
+
+CostService.tenderPackageBatchStartBPM = function (TenderPackageBatchGUID) {
+  return request({
+    url: API.tenderPackageBatchStartBPM,
+    method: 'POST',
+    params: {TenderPackageBatchGUID}
+  })
+}
+
+CostService.getProjectTenderPackageBatchRegs = function (parameter) {
+  return request({
+    url: API.getProjectTenderPackageBatchRegs,
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+CostService.projectIsNoStartAuditTenderPackageBatchReg = function (id) {
+  return request({
+    url: API.projectIsNoStartAuditTenderPackageBatchReg,
+    method: 'POST',
+    data: {id}
   })
 }
 

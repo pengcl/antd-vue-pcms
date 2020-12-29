@@ -47,7 +47,6 @@
                 :contract="contract"
                 :type="type"
                 :id="id"
-                :master="master"
                 :stage="stage"
                 ref="baseInfo"
               ></base-info>
@@ -100,7 +99,7 @@
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type === 'view' && stage === 'VO'  &&form.voMasterInfo.auditStatus === '未审核' && ac('EDIT')" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type === 'view' &&form.voMasterInfo.auditStatus === '未审核' && ac('EDIT')" @click="$router.push({ path: `/change/${stage.toLowerCase()}/item/${id}?type=edit&contractGuid=${contractGuid}&stage=${stage}` })">编辑</a-button>
             <a-button type="success" :loading="loading.save" v-if="type !== 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()" >储存</a-button>
             <a-button type="danger" :loading="loading.cancel" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核' && ac('DELETE')" @click="cancel">废弃</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
@@ -151,7 +150,6 @@
         disabled:false,
         contract: SwaggerService.getForm('ContractOutputDto'),
         form: SwaggerService.getForm('VOAllInfoDto'),
-        master:{oldVoTotalAmountIncrease : 0},
         project: null,
       }
     },
@@ -180,7 +178,6 @@
         if (this.stage === 'VO') {
           ChangeService.voItem(this.id).then((res) => {
             this.form = res.result.data
-            this.master.oldVoTotalAmountIncrease = this.form.voMasterInfo.voTotalAmountIncrease
             console.log('change.item.data', this.form)
           })
         } else {

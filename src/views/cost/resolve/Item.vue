@@ -74,49 +74,22 @@
   import ResolveModal from '@/views/cost/resolve/modal/ResolveModal'
   import {ac} from "@/views/user/user.service";
 
-  function fixedList(res, params) {
-    const result = {}
-    result.pageSize = params.pageSize
-    result.pageNo = params.pageNo
-    if (res.result.data) {
-      result.totalPage = Math.ceil(res.result.data.length / params.pageSize)
-      result.totalCount = res.result.data.length
-      result.data = formatList(res.result.data)
-    } else {
-      result.totalPage = 0
-      result.totalCount = 0
-      result.data = []
-    }
-    return result
-  }
-
-  function formatList(items) {
-    const list = []
-    items.forEach(item => {
-      if (item.childs) {
-        item.children = formatList(item.childs)
-      }
-      list.push(item)
-    })
-    return list
-  }
-
-  function getBudgetList(groupId, items) {
+  function getBudgetList(costCenterId,groupId, items) {
     let obj = null
     items.forEach(item => {
       if (item.childs && item.childs.length > 0) {
-        const temp = getBudgetList(groupId, item.childs)
+        const temp = getBudgetList(costCenterId,groupId, item.childs)
         if (temp) {
           obj = temp
         }
       } else if (item.elementItem && item.elementItem.childs) {
-        const temp = getBudgetList(groupId, item.elementItem.childs)
+        const temp = getBudgetList(costCenterId,groupId, item.elementItem.childs)
         if (temp) {
           obj = temp
         }
       } else if (item.tradeBudgetItems && item.tradeBudgetItems.length > 0) {
         item.tradeBudgetItems.forEach((budget, index) => {
-          if (budget.groupId === groupId) {
+          if (costCenterId === budget.costCenterId && budget.groupId === groupId) {
             obj = {}
             obj['name'] = 'cost' + budget.costCenterId
             obj['value'] = budget.budgetValue
@@ -192,6 +165,7 @@
       // 插入行业预算
       if (item.tradeBudgetItems && item.tradeBudgetItems.length > 0) {
         const objItems = []
+
         item.tradeBudgetItems.forEach((budget, index) => {
           const budgetItem = {}
           budgetItem.key = Number(Math.random().toString() + Date.now()).toString(36)
@@ -202,15 +176,16 @@
           budgetItem.groupId = budget.groupId
           let budgetsAmount = 0
           costCenters.forEach(center => {
-            const result = getBudgetList(budget.groupId, center.elementItem.childs)
+            const result = getBudgetList(center.costCenterId,budget.groupId, center.elementItem.childs)
             if (result !== null) {
               budgetItem[result['name']] = result['value']
-              budgetsAmount = budgetsAmount + budgetItem[result['name']]
+              budgetsAmount += budgetItem[result['name']]
             }
           })
           budgetItem.amountCount = budgetsAmount
           budgetItem.isUsed = budget.isUsed
           budgetItem.isDelete = true
+          budgetItem.isLast = true
           objItems.push(budgetItem)
         })
         if (objItems.length > 0) {
@@ -233,6 +208,7 @@
           gtsAmount = gtsAmount + gt[costName]
         })
         gt.amountCount = gtsAmount
+        gt.isLast = true
         list.push(gt)
         obj.gt = gt
         obj.costCenters = costCenters
@@ -329,6 +305,7 @@
     data() {
       this.columns = columns
       return {
+        data: [],
         auditStatus: '',
         cities: [],
         visible: false,
@@ -435,7 +412,6 @@
             })
           }
         }).catch((e) => {
-          console.log(e)
           this.$message.error('' + e)
         })
       },
@@ -453,8 +429,40 @@
           }
         })
       },
-      refreshTable() {
-        this.$refs.table.refresh()
+      refreshTable (result) {
+        if (this.$refs.table.localDataSource.length > 0) {
+          getResults(this.$refs.table.localDataSource, result)
+
+          // eslint-disable-next-line no-inner-declarations
+          function getResults(datas, result) {
+            datas.forEach(item => {
+              if (item.elementInfoId === result.elementInfoId && !item.isLast) {
+                // item.push(result.data)
+                if (!item.children) {
+                  item.children = []
+                }
+                result.data.forEach(budget => {
+                  item.children.push(budget)
+                })
+              }
+              if (item.BudgetTitle === 'General Trade' && item.elementInfoId === result.elementInfoId) {
+                let amountCount = 0
+                result.data.forEach(budget => {
+                  budget.itemDetails.forEach(detail => {
+                    const costName = 'cost' + detail.costCenterId
+                    item[costName] = item[costName] - detail.budgetValue
+                    amountCount += detail.budgetValue
+                  })
+                })
+                item.amountCount = item.amountCount - amountCount
+              }
+              if (item.children && item.children.length > 0) {
+                getResults(item.children, result)
+              }
+            })
+          }
+        }
+        this.$forceUpdate()
       }
     }
   }
