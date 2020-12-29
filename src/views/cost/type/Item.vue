@@ -93,14 +93,16 @@
     },
     methods: {
       handleToSave () {
-        this.disabled = true
         this.$refs.form.validate(valid => {
           if (valid) {
+            this.disabled = true
             this.loading.save = true
             const buttonType = this.type==='add' ? 'typeCreate' : 'typeUpdate'
             this.form.elementId = this.elementId
             this.form.nameEN = ''
             CostService[buttonType](this.form).then(res => {
+              this.loading.save = false
+              this.disabled = false
               if (res.result.statusCode === 200) {
                 this.$message.info(this.type === 'edit' ? '修改成功' : '新增成功')
                 this.loading.save = false
