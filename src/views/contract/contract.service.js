@@ -26,7 +26,8 @@ const API = {
   updateBudgets_109: '/api/services/app/Contract/UpdateContractUseSurplus',
   createBudgets_110: '/api/services/app/Contract/CreateContrcatUseGeneralTrade',
   updateBudgets_110: '/api/services/app/Contract/UpdateContractUseGeneralTrade',
-  bpm: '/api/services/app/Contract/StartBPM'
+  bpm: '/api/services/app/Contract/StartBPM',
+  review: '/api/services/app/Contract/ContractORGNSCResetBudget',
 }
 
 const ContractService = {}
@@ -243,6 +244,15 @@ ContractService.bpm = function (ContractGuid, sProjectCode) {
     url: API.bpm,
     method: 'POST',
     params: { ContractGuid, sProjectCode }
+  })
+}
+
+
+ContractService.review = function (contractGuid) {
+  return request({
+    url: API.review,
+    method: 'POST',
+    params: { contractGuid }
   })
 }
 

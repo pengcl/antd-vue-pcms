@@ -5,7 +5,7 @@
     :visible="visible"
     :maskClosable="false"
     :confirmLoading="loading"
-    :ok-button-props="{ props: { disabled: !requestAmountTotal || requestAmountTotal < 0 } }"
+    :ok-button-props="{ props: { disabled: requestAmountTotal < 0 } }"
     @ok="() => { $emit('ok') }"
     @cancel="() => { $emit('cancel') }"
   >
@@ -50,7 +50,7 @@
         <span slot="footer">
           <a-row :gutter="48">
             <a-col :md="20" :sm="24" style="text-align: right"><b>申请批准金额：</b></a-col>
-            <a-col :md="4" :sm="24" :style="{color : requestAmountTotal <= 0 ? 'red' : '' }">{{requestAmountTotal | NumberFormat}}</a-col>
+            <a-col :md="4" :sm="24" :style="{color : requestAmountTotal < 0 ? 'red' : '' }">{{requestAmountTotal | NumberFormat}}</a-col>
           </a-row>
         </span>
 
