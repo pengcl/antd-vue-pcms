@@ -8,7 +8,7 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-model-item label="模板文件" prop="nameCN">
-              <a :href="tempUrl" target="_blank">下载模板文件</a>
+              <a v-if="isDownload" :href="tempUrl" target="_blank">下载模板文件</a>
             </a-form-model-item>
           </a-col>
 
@@ -49,6 +49,7 @@
   export default {
     data() {
       return {
+        isDownload: false,
         tempUrl: '',
         fileList: [],
         formData: new FormData(),
@@ -63,8 +64,14 @@
     filters: {},
     created() {
       CostService.budgetTemplateFile({Id: this.id}).then(res => {
-        this.tempUrl = process.env.VUE_APP_API_BASE_URL + res.result.data
-        this.$forceUpdate()
+        if (res.result.statusCode === 200) {
+          if (res.result.data === '') {
+            this.$message.error('无模板数据,请联系管理员')
+          } else {
+            this.tempUrl = process.env.VUE_APP_API_BASE_URL + res.result.data
+            this.$forceUpdate()
+          }
+        }
       })
     },
     methods: {
