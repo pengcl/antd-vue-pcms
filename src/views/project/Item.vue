@@ -461,209 +461,211 @@
   </page-header-wrapper>
 </template>
 <script>
-  import { SwaggerService } from '@/api/swagger.service'
-  import { ProjectService } from '@/views/project/project.service'
-  import { Currency as CurrencyService } from '@/api/currency'
-  import { Company as CompanyService } from '@/api/company'
-  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
-  import SelectCompany from '@/views/project/components/selectComany/index'
-  import notification from 'ant-design-vue/es/notification'
-  import { acs, ac } from '@/views/user/user.service'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { ProjectService } from '@/views/project/project.service'
+    import { Currency as CurrencyService } from '@/api/currency'
+    import { Company as CompanyService } from '@/api/company'
+    import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+    import SelectCompany from '@/views/project/components/selectComany/index'
+    import notification from 'ant-design-vue/es/notification'
+    import { acs, ac } from '@/views/user/user.service'
 
-  const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
-  export default {
-    name: 'ProjectItem',
-    components: { SelectCompany },
-    data () {
-      return {
-        dialog: DIALOGCONFIG,
-        selection: {},
-        show: false,
-        selectedItems: [],
-        form: {},
-        info: {},
-        loading: {
-          bpm: false,
-          save: false,
-          view: false
+    const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+    export default {
+        name: 'ProjectItem',
+        components: { SelectCompany },
+        data () {
+            return {
+                dialog: DIALOGCONFIG,
+                selection: {},
+                show: false,
+                selectedItems: [],
+                form: {},
+                info: {},
+                loading: {
+                    bpm: false,
+                    save: false,
+                    view: false
+                },
+                disabled: false,
+                rules: {
+                    cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
+                    projectShortCode: [{ required: true, message: '请填写编码', trigger: 'blur' }],
+                    projStatus: [{ required: true, message: '请选择项目状态', trigger: 'change' }],
+                    projectShortName: [{ required: true, message: '请填写(中文)', trigger: 'blur' }],
+                    projectEnName: [{ required: false, message: '请填写(英文)', trigger: 'blur' }],
+                    currencyCode: [{ required: true, message: '请选择币种', trigger: 'change' }],
+                    companyCode: [{ required: true, message: '请选择项目公司', trigger: 'change' }],
+                    builtUpArea: [{ required: true, message: '请填写工地面积', trigger: 'blur' }]
+                }
+            }
         },
-        disabled:false,
-        rules: {
-          cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
-          projectShortCode: [{ required: true, message: '请填写编码', trigger: 'blur' }],
-          projStatus: [{ required: true, message: '请选择项目状态', trigger: 'change' }],
-          projectShortName: [{ required: true, message: '请填写(中文)', trigger: 'blur' }],
-          projectEnName: [{ required: false, message: '请填写(英文)', trigger: 'blur' }],
-          currencyCode: [{ required: true, message: '请选择币种', trigger: 'change' }],
-          companyCode: [{ required: true, message: '请选择项目公司', trigger: 'change' }],
-          builtUpArea: [{ required: true, message: '请填写工地面积', trigger: 'blur' }]
-        }
-      }
-    },
-    created () {
-      console.log(acs(this.$route))
-      this.getData()
-      ProjectService.types().then(res => {
-        this.selection.types = res.result.data
-        this.$forceUpdate()
-      })
-      ProjectService.tree().then(res => {
-        this.selection.cities = res.result.data.citys
-        this.$forceUpdate()
-      })
-      CurrencyService.list().then(res => {
-        this.selection.currencies = res.result.data.items
-        this.$forceUpdate()
-      })
-    },
-    watch: {
-      'form.cityID' (value) {
-        if (value) {
-          CompanyService.list(value).then(res => {
-            this.selection.companies = res.result.data
-            this.$forceUpdate()
-          })
-        }
-      }
-    },
-    computed: {
-      id () {
-        return this.$route.params.id
-      },
-      type () {
-        return this.$route.query.type
-      },
-      name () {
-        const stage = this.$route.query.stage
-        const name = stage === 'Project' ? '项目' : (stage === 'Stages' ? '分期' : '阶段')
-        return name
-      },
-      stage () {
-        return this.$route.query.stage
-      },
-      filteredOptions () {
-        return OPTIONS.filter(o => !this.selectedItems.includes(o))
-      }
-    },
-    methods: {
-      ac (action) {
-        return ac(action, this.$route)
-      },
-      getData () {
-        this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
-        this.form.currencyCode = 'CNY'
-        if (this.id !== '0') {
-          ProjectService.item(this.id).then(res => {
-            const data = res.result.data
-            this.info = JSON.parse(JSON.stringify(data))
-            if (this.type === 'create') {
-              const valueDto = SwaggerService.getForm('ProjectStageCreateInputDto')
-              const value = SwaggerService.getValue(valueDto, data)
-              value.projectShortCode = ''
-              value.projectShortName = ''
-              value.projectEnName = ''
-              value.projStatus = ''
-              value.companyCode = ''
-              value.builtUpArea = ''
-              value.projAddress = ''
-              value.description = ''
-              value.parentCode = data.projectCode
-              value.parentId = this.id
-              value.currencyCode = data.currencyCode ? data.currencyCode : 'CNY'
-              this.form = value
-            } else {
-              this.form = data
-              this.form.currencyCode = 'CNY'
-            }
-          })
-        }
-        this.form.cityID = this.$route.query.cityID ? parseInt(this.$route.query.cityID, 10) : ''
-      },
-      getName (code) {
-        let name = ''
-        if (code && this.selection.companies) {
-          this.selection.companies.forEach(item => {
-            if (item.code === code) {
-              name = item.nameCN
-            }
-          })
-        }
-        return name
-      },
-      view () {
-        this.loading.view = true
-        BaseService.viewBpm(this.form.projectGUID).then(res => {
-          this.loading.view = false
-          const _window = window.open('_blank')
-          _window.location = res.result.data
-        })
-      },
-      bpm () {
-        this.loading.bpm = true
-        ProjectService.bpm(this.form.projectGUID).then(res => {
-          this.loading.bpm = false
-          const _window = window.open('_blank')
-          this.getData()
-          _window.location = res.result.data
-          this.$router.push({ path: `/project/list` })
-        })
-      },
-      save () {
-        this.disabled = true
-        if (!this.form.projectShortName) {
-          this.form.projectShortName = this.form.projectName
-        }
-        if (!this.form.projectShortCode) {
-          this.form.projectShortCode = this.form.projectCode
-        }
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            ProjectService[this.type + this.stage](this.form).then(res => {
-              if (res.result.statusCode === 200) {
-                notification.success({
-                  message: `${this.type === 'update' ? '修改' : '添加'}成功`,
-                  description: `您已成功${this.type === 'update' ? '修改' : '添加'}${this.name} "${this.form.projectShortName}"`
-                })
-                this.$router.push('/project/list')
-              }else {
-                this.disabled = false
-              }
+        created () {
+            console.log(acs(this.$route))
+            this.getData()
+            ProjectService.types().then(res => {
+                this.selection.types = res.result.data
+                this.$forceUpdate()
             })
-          }
-        })
-      },
-      handleChange (selectedItems) {
-        this.selectedItems = selectedItems
-      },
-      onChange (value, items) {
-        if (items) {
-          const city = items[1]
-          if (city) {
-            this.form.cityID = city.value
-          }
-        } else {
-          this.form.cityID = ''
+            ProjectService.tree().then(res => {
+                this.selection.cities = res.result.data.citys
+                this.$forceUpdate()
+            })
+            CurrencyService.list().then(res => {
+                this.selection.currencies = res.result.data.items
+                this.$forceUpdate()
+            })
+        },
+        watch: {
+            'form.cityID' (value) {
+                if (value) {
+                    CompanyService.list(value).then(res => {
+                        this.selection.companies = res.result.data
+                        this.$forceUpdate()
+                    })
+                }
+            }
+        },
+        computed: {
+            id () {
+                return this.$route.params.id
+            },
+            type () {
+                return this.$route.query.type
+            },
+            name () {
+                const stage = this.$route.query.stage
+                const name = stage === 'Project' ? '项目' : (stage === 'Stages' ? '分期' : '阶段')
+                return name
+            },
+            stage () {
+                return this.$route.query.stage
+            },
+            filteredOptions () {
+                return OPTIONS.filter(o => !this.selectedItems.includes(o))
+            }
+        },
+        methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
+            getData () {
+                this.form = SwaggerService.getForm('Project' + (this.type === 'create' ? 'Create' : 'Edit') + 'InputDto')
+                this.form.currencyCode = 'CNY'
+                if (this.id !== '0') {
+                    ProjectService.item(this.id).then(res => {
+                        const data = res.result.data
+                        this.info = JSON.parse(JSON.stringify(data))
+                        if (this.type === 'create') {
+                            const valueDto = SwaggerService.getForm('ProjectStageCreateInputDto')
+                            const value = SwaggerService.getValue(valueDto, data)
+                            value.projectShortCode = ''
+                            value.projectShortName = ''
+                            value.projectEnName = ''
+                            value.projStatus = ''
+                            value.companyCode = ''
+                            value.builtUpArea = ''
+                            value.projAddress = ''
+                            value.description = ''
+                            value.parentCode = data.projectCode
+                            value.parentId = this.id
+                            value.currencyCode = data.currencyCode ? data.currencyCode : 'CNY'
+                            this.form = value
+                        } else {
+                            this.form = data
+                            this.form.currencyCode = 'CNY'
+                        }
+                    })
+                }
+                this.form.cityID = this.$route.query.cityID ? parseInt(this.$route.query.cityID, 10) : ''
+            },
+            getName (code) {
+                let name = ''
+                if (code && this.selection.companies) {
+                    this.selection.companies.forEach(item => {
+                        if (item.code === code) {
+                            name = item.nameCN
+                        }
+                    })
+                }
+                return name
+            },
+            view () {
+                this.loading.view = true
+                BaseService.viewBpm(this.form.projectGUID).then(res => {
+                    this.loading.view = false
+                    const _window = window.open('_blank')
+                    _window.location = res.result.data
+                })
+            },
+            bpm () {
+                this.loading.bpm = true
+                ProjectService.bpm(this.form.projectGUID).then(res => {
+                    this.loading.bpm = false
+                    const _window = window.open('_blank')
+                    this.getData()
+                    _window.location = res.result.data
+                    this.$router.push({ path: `/project/list` })
+                })
+            },
+            save () {
+                this.disabled = true
+                if (!this.form.projectShortName) {
+                    this.form.projectShortName = this.form.projectName
+                }
+                if (!this.form.projectShortCode) {
+                    this.form.projectShortCode = this.form.projectCode
+                }
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        ProjectService[this.type + this.stage](this.form).then(res => {
+                            if (res.result.statusCode === 200) {
+                                notification.success({
+                                    message: `${this.type === 'update' ? '修改' : '添加'}成功`,
+                                    description: `您已成功${this.type === 'update' ? '修改' : '添加'}${this.name} "${this.form.projectShortName}"`
+                                })
+                                this.$router.push('/project/list')
+                            } else {
+                                this.disabled = false
+                            }
+                        })
+                    } else {
+                        this.disabled = false
+                    }
+                })
+            },
+            handleChange (selectedItems) {
+                this.selectedItems = selectedItems
+            },
+            onChange (value, items) {
+                if (items) {
+                    const city = items[1]
+                    if (city) {
+                        this.form.cityID = city.value
+                    }
+                } else {
+                    this.form.cityID = ''
+                }
+            },
+            back () {
+                this.$router.push({ path: `/project/list` })
+            },
+            handleToEdit () {
+                this.$router.push({ path: `/project/item/${this.id}?type=edit` })
+            },
+            showSelect () {
+                this.show = true
+            },
+            handleOk () {
+                this.show = false
+                this.form.companyCode = this.$refs.company.selected.code
+                this.$forceUpdate()
+            },
+            handleCancel () {
+                this.show = false
+            }
         }
-      },
-      back () {
-        this.$router.push({ path: `/project/list` })
-      },
-      handleToEdit () {
-        this.$router.push({ path: `/project/item/${this.id}?type=edit` })
-      },
-      showSelect () {
-        this.show = true
-      },
-      handleOk () {
-        this.show = false
-        this.form.companyCode = this.$refs.company.selected.code
-        this.$forceUpdate()
-      },
-      handleCancel () {
-        this.show = false
-      }
     }
-  }
 </script>
 <style>
   .ant-btn-group {

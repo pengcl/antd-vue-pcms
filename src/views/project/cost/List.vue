@@ -17,6 +17,8 @@
                 />
               </a-form-item>
             </a-col>
+            <a-col :md="12" :sm="24"><span
+              class="project-type-tips">{{ projectType === 'project' ? '请选择末级新建合同' : '' }}</span></a-col>
           </a-row>
         </a-form>
       </div>
@@ -234,6 +236,7 @@
             },
             onSelect (value, option) {
                 storage.set('POS', option.pos)
+                this.projectType = option.$options.propsData.dataRef.type
                 this.queryParam.ProjectGUID = value
                 this.$refs.table.refresh()
                 this.$forceUpdate()
@@ -254,6 +257,11 @@
     /deep/ .ant-form-item-label label {
       color: #fff;
     }
+  }
+
+  .project-type-tips {
+    line-height: 32px;
+    color: #ff0000;
   }
 
 </style>

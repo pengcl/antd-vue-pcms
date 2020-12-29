@@ -346,7 +346,7 @@
                                     // 重置表单数据
                                     form.resetFields()
                                     // 刷新表格
-                                    this.$refs.table.refresh()
+                                    this.loadData()
 
                                     this.$message.info('新增年度资金计划成功！')
                                 })

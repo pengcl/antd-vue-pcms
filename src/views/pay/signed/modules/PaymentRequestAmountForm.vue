@@ -43,6 +43,10 @@
                           :precision="2"></a-input-number>
         </span>
 
+        <span slot="remark" slot-scope="text">
+          <a-input v-model="text"></a-input>
+        </span>
+
         <span slot="footer">
           <a-row :gutter="48">
             <a-col :md="20" :sm="24" style="text-align: right"><b>申请批准金额：</b></a-col>
@@ -65,6 +69,7 @@
         {
             title: '编号',
             dataIndex: 'businessCode',
+            width: '100px'
         },
         {
             title: '名称',
@@ -104,6 +109,12 @@
             scopedSlots: { customRender: 'requestAmount' },
             width: '180px',
         },
+        {
+            title: '备注',
+            dataIndex: 'remark',
+            scopedSlots: { customRender: 'remark' },
+            width: '200px'
+        }
     ]
     const fields = []
 

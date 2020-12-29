@@ -3,7 +3,7 @@
     <a-card :bordered="false">
       <a-tabs default-active-key="1" :animated="false">
         <a-tab-pane key="1" tab="基本资料">
-          <base-info :data="form" :type="type" :id="id"></base-info>
+          <base-info ref="baseInfo" :data="form" :type="type" :id="id"></base-info>
         </a-tab-pane>
         <a-tab-pane key="2" tab="进度款支付明细表">
           <pay-detail :data="form" :type="type" :id="id"></pay-detail>
@@ -110,50 +110,57 @@
             },
             save () {
                 this.disabled = true
-                if (this.type === 'create') {
-                    this.form.contractMasterInfo.id = 0
-                    this.form.contractMasterInfo.gid = '00000000-0000-0000-0000-000000000000'
-                    this.form.contractMasterInfo.contractType = '主合同'
-                    this.form.contractMasterInfo.mainContractGID = this.id
-                    this.form.contractMasterInfo.secondaryContractGID = this.id
+                this.$refs.baseInfo.$refs.form.validate(vaild => {
+                    if (vaild) {
+                        if (this.type === 'create') {
+                            this.form.contractMasterInfo.id = 0
+                            this.form.contractMasterInfo.gid = '00000000-0000-0000-0000-000000000000'
+                            this.form.contractMasterInfo.contractType = '主合同'
+                            this.form.contractMasterInfo.mainContractGID = this.id
+                            this.form.contractMasterInfo.secondaryContractGID = this.id
 
-                    if (this.form.contractNSCInfoList.length > 0) {
-                        this.form.contractNSCInfoList.forEach(item => {
-                            item.id = 0
-                            item.gid = '00000000-0000-0000-0000-000000000000'
-                            item.contractType = '分合同'
-                            item.mainContractGID = this.id
-                            item.secondaryContractGID = item.contractGID
-                        })
-                    }
+                            if (this.form.contractNSCInfoList.length > 0) {
+                                this.form.contractNSCInfoList.forEach(item => {
+                                    item.id = 0
+                                    item.gid = '00000000-0000-0000-0000-000000000000'
+                                    item.contractType = '分合同'
+                                    item.mainContractGID = this.id
+                                    item.secondaryContractGID = item.contractGID
+                                })
+                            }
 
-                    SignedService.create(this.form).then(res => {
-                        if (res.result.data) {
-                            this.$message.success('创建成功')
-                            this.$router.push({
-                                path: `/pay/signed/item/${res.result.data}?type=view`
+                            SignedService.create(this.form).then(res => {
+                                if (res.result.data) {
+                                    this.$message.success('创建成功')
+                                    this.$router.push({
+                                        path: `/pay/signed/item/${res.result.data}?type=view`
+                                    })
+                                } else {
+                                    this.disabled = false
+                                }
                             })
                         } else {
-                            this.disabled = false
-                        }
-                    })
-                } else {
-                    if (this.form.billList.length > 0) {
-                        this.form.billList.forEach(item => {
-                            item.paymentGID = this.id
-                        })
-                    }
-                    SignedService.update(this.form).then(res => {
-                        if (res.result.data) {
-                            this.$message.success('修改成功')
-                            this.$router.push({
-                                path: '/pay/signed/list'
+                            if (this.form.billList.length > 0) {
+                                this.form.billList.forEach(item => {
+                                    item.paymentGID = this.id
+                                })
+                            }
+                            SignedService.update(this.form).then(res => {
+                                if (res.result.data) {
+                                    this.$message.success('修改成功')
+                                    this.$router.push({
+                                        path: '/pay/signed/list'
+                                    })
+                                } else {
+                                    this.disabled = false
+                                }
                             })
-                        } else {
-                            this.disabled = false
                         }
-                    })
-                }
+                    } else {
+                        this.disabled = false
+                    }
+                })
+
             },
             back () {
                 this.$router.push({
@@ -178,7 +185,7 @@
                     tempwindow.location = res.result.data
                 })
             },
-            edit(){
+            edit () {
                 this.$router.push({ path: `/pay/signed/item/${this.id}?type=update` })
             },
         }
