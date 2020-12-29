@@ -64,7 +64,7 @@
     filters: {},
     created() {
       CostService.budgetTemplateFile({Id: this.id}).then(res => {
-        if (res.result.statusCode === 200) {
+        if (res.result.statusCode === 'Success') {
           if (res.result.data === '') {
             this.$message.error('无模板数据,请联系管理员')
           } else {
