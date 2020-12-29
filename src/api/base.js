@@ -17,6 +17,8 @@ const API = {
   professionTypes: '/api/services/app/GeneralType/GetProfessionTypes',
   departmentList: '/api/services/app/BasicData/GetDepartmentList',
   shareRuleTypes: '/api/services/app/GeneralType/GetShareRuleTypes',
+  getARCTypes: '/api/services/app/GeneralType/GetARCTypes',
+  uploadOffline: '/api/services/app/UploadAppservice/CommonUploadOffline',
 }
 
 const Base = {}
@@ -138,6 +140,22 @@ Base.departmentList = function () {
     url: API.departmentList,
     method: 'GET',
     params: {}
+  })
+}
+
+Base.getARCTypes = function () {
+  return request({
+    url: API.getARCTypes,
+    method: 'GET',
+    params: {}
+  })
+}
+
+Base.uploadOffline = function (params) {
+  return request({
+    url: API.uploadOffline,
+    method: 'post',
+    data: params
   })
 }
 
