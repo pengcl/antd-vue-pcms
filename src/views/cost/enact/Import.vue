@@ -14,7 +14,7 @@
 
           <a-col :md="24" :sm="24">
             <a-form-model-item label="导入预算文件" extra="请按照模板文件格式导入" prop="file">
-              <a-upload :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" accept=".xls">
+              <a-upload :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload" accept=".xlsx">
                 <a-button>
                   <a-icon type="upload"/>
                   选择文件
