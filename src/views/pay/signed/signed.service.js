@@ -29,6 +29,7 @@ const API = {
   requestList: '/api/services/app/Payment/GetPaymentRequestList',
   NSCContract: '/api/services/app/Payment/GetPaymentNSCContract',
   NSCInfoList: '/api/services/app/Payment/GetContractNSCInfoList',
+  requestListForView: '/api/services/app/Payment/GetPaymentRequestListForView',
 }
 
 const SignedService = {}
@@ -192,9 +193,17 @@ SignedService.fileList = function (masterID, businessID, sSubInfo1, sSubInfo2) {
   })
 }
 
-SignedService.requestList = function (contractGID, paymentGID) {
+SignedService.requestList = function (contractGID, paymentGID, amountPayableIsZero) {
   return request({
     url: API.requestList,
+    method: 'get',
+    params: { contractGID, paymentGID, amountPayableIsZero }
+  })
+}
+
+SignedService.requestListForView = function (contractGID, paymentGID) {
+  return request({
+    url: API.requestListForView,
     method: 'get',
     params: { contractGID, paymentGID }
   })

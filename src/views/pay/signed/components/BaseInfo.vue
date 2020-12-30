@@ -202,7 +202,7 @@
               <span v-if="data.contractMasterInfo.paymentRequestAmount" style="margin-right: 10px">{{data.contractMasterInfo.paymentRequestAmount | NumberFormat}}</span>
               <a-button
                 @click="handleShowPaymentRequestAmount('0',type === 'create' ?  data.contractMasterInfo.contractGID : data.contractMasterInfo.secondaryContractGID)">
-                {{data.contractMasterInfo.paymentRequestAmount ? '修改金额' : '填写明细'}}
+                {{type === 'view' ? '查看金额' : data.contractMasterInfo.paymentRequestAmount ? '修改金额' : '填写明细'}}
               </a-button>
               <payment-request-amount-form ref="paymentRequestAmountModal0"
                                            :visible="visibles['0'] ? visibles['0'] : false"
@@ -211,6 +211,8 @@
                                            :contractGID="contractGIDs['0']"
                                            :paymentGID="type === 'create' ? null : id"
                                            :type="'contractMasterInfo'"
+                                           :permission="type"
+                                           :paymentRequestAmount="data.contractMasterInfo.paymentRequestAmount ? data.contractMasterInfo.paymentRequestAmount : 0"
                                            @cancel="handleCancel2('0')"
                                            @ok="handleOk2('0')"></payment-request-amount-form>
             </td>
@@ -327,7 +329,7 @@
                 <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
                 <a-button
                   @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID)">
-                  {{item.paymentRequestAmount ? '修改金额' : '填写明细'}}
+                  {{type === 'view' ? '查看金额' : item.paymentRequestAmount ? '修改金额' : '填写明细'}}
                 </a-button>
                 <payment-request-amount-form :ref="'paymentRequestAmountModal'+(index+1)"
                                              :visible="visibles[''+(index+1)] ? visibles[''+(index+1)] : false"
@@ -336,6 +338,8 @@
                                              :contractGID="contractGIDs[''+(index+1)]"
                                              :paymentGID="type === 'create' ? null : id"
                                              :type="'contractNSCInfo'"
+                                             :permission="type"
+                                             :paymentRequestAmount="item.paymentRequestAmount ? item.paymentRequestAmount : 0"
                                              @cancel="handleCancel2(''+(index+1))"
                                              @ok="handleOk2(''+(index+1))"></payment-request-amount-form>
               </td>

@@ -189,244 +189,393 @@
             </template>
           </a-table>
         </a-col>
+        <a-col :md="24" :sm="24" style="margin-top:10px;font-size: 18px;font-weight: bold;text-decoration: underline">量清单附件</a-col>
+        <a-col :md="24" :sm="24">
+          <table>
+            <thead>
+            <tr>
+              <th colspan="4">
+                <a-button :disabled="type === 'view'" icon="plus" @click="addFile">新增</a-button>
+              </th>
+            </tr>
+            <tr>
+              <th style="width: 25%">操作</th>
+              <th style="width: 25%">附件</th>
+              <th style="width: 25%">备注</th>
+              <th style="width: 25%">最后修改日期</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="!file.isDeleted" v-for="(file,index) in fileList" :key="index">
+              <td>
+                <a-upload
+                  :multiple="false"
+                  :disabled="type === 'view'"
+                  :before-upload="beforeUpload"
+                >
+                  <a-button @click="choose(index)">请选择</a-button>
+                </a-upload>
+                <a-button :disabled="type === 'view'" v-if="file.id" :loadding="loading" @click="delFile(index)"
+                          type="danger"
+                          icon="delete"></a-button>
+              </td>
+              <td><a :href="file.url" target="_blank">{{file.name}}</a></td>
+              <td>
+                <a-input v-model="file.remark" :disabled="type === 'view'"></a-input>
+              </td>
+              <td>{{ file.date | moment }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </a-col>
       </a-row>
     </a-form-model>
   </div>
 </template>
 
 <script>
-  import { Base as BaseService, removeItem } from '@/api/base'
-  import { SwaggerService } from '@/api/swagger.service'
-  import { ContractService } from '@/views/contract/contract.service'
+    import { Base as BaseService, removeItem } from '@/api/base'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { ContractService } from '@/views/contract/contract.service'
 
-  const columns = [
-    {
-      title: '操作',
-      dataIndex: 'action',
-      scopedSlots: { customRender: 'action' },
-      width: 200
-    },
-    {
-      title: '业态成本中心',
-      dataIndex: 'costCenter',
-      scopedSlots: { customRender: 'costCenter' },
-      width: 200
-    },
-    {
-      title: '清单项类别',
-      dataIndex: 'itemType',
-      scopedSlots: { customRender: 'itemType' },
-      width: 200
-    },
-    {
-      title: '金额',
-      dataIndex: 'allAmount',
-      scopedSlots: { customRender: 'allAmount' },
-      width: 200
-    }
-  ]
-  const contractTypes = {
-    '15': 'contract',
-    '16': 'sa',
-    '17': 'nsc'
-  }
-
-  export default {
-    name: 'ContractList',
-    data () {
-      return {
-        selection: {},
-        form: this.$form.createForm(this),
-        loading: false,
-        columns: columns,
-        rules: {
-          contractAmount: [{ required: true, message: '请选择带数项生成合同金额', trigger: 'change' }],
-          contractEffectAmount: [{ required: true, message: '请选择带数项生成合同有效金额', trigger: 'change' }],
-          contractDSAmount: [{ required: true, message: '请选择带数项生成甲供材金额', trigger: 'change' }],
-          contractOPTAmount: [{ required: true, message: '请选择带数项生成合同内可选择项目金额', trigger: 'change' }],
-          contractPCPreAmount: [{ required: true, message: '请选择带数项生成专业分包合同金额', trigger: 'change' }],
-          contractPSAmount: [{ required: true, message: '请选择带数项请生成合同内暂定款金额', trigger: 'change' }]
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            width: 200
         },
-        tableRules: {
-          contractBQNewlst: []
+        {
+            title: '业态成本中心',
+            dataIndex: 'costCenter',
+            scopedSlots: { customRender: 'costCenter' },
+            width: 200
+        },
+        {
+            title: '清单项类别',
+            dataIndex: 'itemType',
+            scopedSlots: { customRender: 'itemType' },
+            width: 200
+        },
+        {
+            title: '金额',
+            dataIndex: 'allAmount',
+            scopedSlots: { customRender: 'allAmount' },
+            width: 200
         }
-      }
-    },
-    created () {
-      this.data.contractBQNewlst.forEach((item, index) => {
-        item._id = index
-      })
-      if (this.data.contract.contractCategory) {
-        const contractTypeKey = contractTypes[this.data.contract.contractCategory + '']
-        if (contractTypeKey) {
-          BaseService.itemTypes(contractTypeKey).then(res => {
-            this.selection.itemTypes = res.result.data
-            this.$forceUpdate()
-          })
-        }
-      }
-      this.data.contract.contractYear = new Date().getFullYear()
-      ContractService.centers(this.data.contract.tenderPackageItemID).then(res => {
-        this.selection.centers = res.result.data
-        this.$forceUpdate()
-      })
-      BaseService.unitTypes().then(res => {
-        this.selection.unitTypes = res.result.data
-        this.$forceUpdate()
-      })
-    },
-    watch: {
-      'data.contract.contractCategory' (value) {
-        // 获取主合同需要通过合同类别参数
-        const contractTypeKey = contractTypes[value + '']
-        if (contractTypeKey) {
-          BaseService.itemTypes(contractTypeKey).then(res => {
-            this.selection.itemTypes = res.result.data
-            this.$forceUpdate()
-          })
-        }
-      },
-      'data.contract.tenderPackageItemID' (value) {
-        ContractService.centers(value).then(res => {
-          this.selection.centers = res.result.data
-          this.$forceUpdate()
-        })
-      }
-    },
-    filters: {
-      filterDeleted (items) {
-        return items.filter(item => !item.isDeleted)
-      },
-      getValue (item, index) {
-        const values = []
-        const ids = item.costCenter ? item.costCenter.split(';') : []
-        const names = item.costCenterName ? item.costCenterName.split(';') : []
-        ids.forEach((id, idsIndex) => {
-          const value = index + ';' + id + ';' + names[idsIndex]
-          values.push(value)
-        })
-        return values
-      }
-    },
-    props: {
-      data: {
-        type: Object,
-        default: null
-      },
-      type: {
-        type: String,
-        default: 'view'
-      },
-      id: {
-        type: String,
-        default: '0'
-      },
-      project: {
-        type: Object,
-        default: null
-      },
-      activeKey: {
-        type: null,
-        default: 4
-      }
-    },
-    methods: {
-      add (stringNo) {
-        const data = SwaggerService.getForm('ContractBQDto')
-        data._id = new Date().getTime()
-        data.id = 0
-        data.isDeleted = false
-        data.isTemp = true
-        data.contractID = this.id === '0' ? '' : this.id
-        data.allAmount = 0
-        this.data.contractBQNewlst.push(data)
-      },
-      del (index) {
-        const items = this.data.contractBQNewlst
-        removeItem(index, items)
-        this.getContractAmount()
-        this.$forceUpdate()
-      },
-      getContractAmount () {
-        if (this.data.contract.contractCategory && this.data.contract.tenderPackageItemID) {
-          let isValid = true
-          this.data.contractBQNewlst.forEach((item, index) => {
-            this.$refs.tableForm.validateField([
-              'contractBQNewlst.' + index + '.costCenter',
-              'contractBQNewlst.' + index + '.itemType'], valid => {
-              if (valid) {
-                isValid = false
-              }
-            })
-          })
-          if (isValid) {
-            this.loading = true
-            ContractService.amount(this.data.contract.contractCategory, this.data.contractBQNewlst).then(res => {
-              this.loading = false
-              const data = res.result.data
-              this.data.contract.contractAmount = data.contractAmount
-              this.data.contract.contractEffectAmount = data.contractEffectAmount
-              this.data.contract.contractAmountText = data.contractAmountText
-              this.data.contract.contractDSAmount = data.contractDSAmount
-              this.data.contract.contractOPTAmount = data.contractOPTAmount
-              this.data.contract.contractPCPreAmount = data.contractPCPreAmount
-              this.data.contract.contractPSAmount = data.contractPSAmount
-              this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
-              this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
-            })
-          }
-        }
-      },
-      typeChange () {
-        this.getContractAmount()
-      },
-      centerChange (value) {
-        const arr = value.split(';')
-        const item = this.data.contractBQNewlst[arr[0]]
-        item.costCenter = arr[1]
-        item.costCenterName = arr[2]
-        this.getContractAmount()
-      },
-      valueChange (item, index) {
-        if (!this.data.contract.contractCategory) {
-          item.allAmount = 0
-          this.$emit('validate-field', {
-            activeKey: 1,
-            component: 'baseInfo',
-            filed: 'contractCategory'
-          })
-        } else if (!this.data.contract.tenderPackageItemID) {
-          item.allAmount = 0
-          this.$emit('validate-field', {
-            activeKey: 1,
-            component: 'baseInfo',
-            filed: 'tenderPackageItemID'
-          })
-        } else {
-          let isValid = true
-          this.$refs.tableForm.validateField([
-            'contractBQNewlst.' + index + '.costCenter',
-            'contractBQNewlst.' + index + '.itemType'], valid => {
-            if (valid) {
-              if (item.allAmount !== 0) {
-                alert(valid)
-              }
-              item.allAmount = 0
-              isValid = false
-            }
-          })
-          if (isValid) {
-            const value = item.allAmount
-            setTimeout(() => {
-              if (value === item.allAmount) {
-                this.getContractAmount()
-              }
-            }, 1500)
-          }
-        }
-      }
+    ]
+    const contractTypes = {
+        '15': 'contract',
+        '16': 'sa',
+        '17': 'nsc'
     }
-  }
+
+    export default {
+        name: 'ContractList',
+        data () {
+            return {
+                selection: {},
+                form: this.$form.createForm(this),
+                loading: false,
+                columns: columns,
+                fileList: [],
+                index: 0,
+                rules: {
+                    contractAmount: [{ required: true, message: '请选择带数项生成合同金额', trigger: 'change' }],
+                    contractEffectAmount: [{ required: true, message: '请选择带数项生成合同有效金额', trigger: 'change' }],
+                    contractDSAmount: [{ required: true, message: '请选择带数项生成甲供材金额', trigger: 'change' }],
+                    contractOPTAmount: [{ required: true, message: '请选择带数项生成合同内可选择项目金额', trigger: 'change' }],
+                    contractPCPreAmount: [{ required: true, message: '请选择带数项生成专业分包合同金额', trigger: 'change' }],
+                    contractPSAmount: [{ required: true, message: '请选择带数项请生成合同内暂定款金额', trigger: 'change' }]
+                },
+                tableRules: {
+                    contractBQNewlst: []
+                }
+            }
+        },
+        created () {
+            if (this.id !== '0') {
+                BaseService.masterID(this.data.contract.contractGuid).then(res => {
+                    this.data.fileMasterId = res.result.data
+                    this.getFiles()
+                })
+            }
+            this.data.contractBQNewlst.forEach((item, index) => {
+                item._id = index
+            })
+            if (this.data.contract.contractCategory) {
+                const contractTypeKey = contractTypes[this.data.contract.contractCategory + '']
+                if (contractTypeKey) {
+                    BaseService.itemTypes(contractTypeKey).then(res => {
+                        this.selection.itemTypes = res.result.data
+                        this.$forceUpdate()
+                    })
+                }
+            }
+            this.data.contract.contractYear = new Date().getFullYear()
+            ContractService.centers(this.data.contract.tenderPackageItemID).then(res => {
+                this.selection.centers = res.result.data
+                this.$forceUpdate()
+            })
+            BaseService.unitTypes().then(res => {
+                this.selection.unitTypes = res.result.data
+                this.$forceUpdate()
+            })
+        },
+        watch: {
+            'data.contract.contractCategory' (value) {
+                // 获取主合同需要通过合同类别参数
+                const contractTypeKey = contractTypes[value + '']
+                if (contractTypeKey) {
+                    BaseService.itemTypes(contractTypeKey).then(res => {
+                        this.selection.itemTypes = res.result.data
+                        this.$forceUpdate()
+                    })
+                }
+            },
+            'data.contract.tenderPackageItemID' (value) {
+                ContractService.centers(value).then(res => {
+                    this.selection.centers = res.result.data
+                    this.$forceUpdate()
+                })
+            }
+        },
+        filters: {
+            filterDeleted (items) {
+                return items.filter(item => !item.isDeleted)
+            },
+            getValue (item, index) {
+                const values = []
+                const ids = item.costCenter ? item.costCenter.split(';') : []
+                const names = item.costCenterName ? item.costCenterName.split(';') : []
+                ids.forEach((id, idsIndex) => {
+                    const value = index + ';' + id + ';' + names[idsIndex]
+                    values.push(value)
+                })
+                return values
+            }
+        },
+        props: {
+            data: {
+                type: Object,
+                default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
+            },
+            id: {
+                type: String,
+                default: '0'
+            },
+            project: {
+                type: Object,
+                default: null
+            },
+            activeKey: {
+                type: null,
+                default: 4
+            }
+        },
+        methods: {
+            add (stringNo) {
+                const data = SwaggerService.getForm('ContractBQDto')
+                data._id = new Date().getTime()
+                data.id = 0
+                data.isDeleted = false
+                data.isTemp = true
+                data.contractID = this.id === '0' ? '' : this.id
+                data.allAmount = 0
+                this.data.contractBQNewlst.push(data)
+            },
+            del (index) {
+                const items = this.data.contractBQNewlst
+                removeItem(index, items)
+                this.getContractAmount()
+                this.$forceUpdate()
+            },
+            getContractAmount () {
+                if (this.data.contract.contractCategory && this.data.contract.tenderPackageItemID) {
+                    let isValid = true
+                    this.data.contractBQNewlst.forEach((item, index) => {
+                        this.$refs.tableForm.validateField([
+                            'contractBQNewlst.' + index + '.costCenter',
+                            'contractBQNewlst.' + index + '.itemType'], valid => {
+                            if (valid) {
+                                isValid = false
+                            }
+                        })
+                    })
+                    if (isValid) {
+                        this.loading = true
+                        ContractService.amount(this.data.contract.contractCategory, this.data.contractBQNewlst).then(res => {
+                            this.loading = false
+                            const data = res.result.data
+                            this.data.contract.contractAmount = data.contractAmount
+                            this.data.contract.contractEffectAmount = data.contractEffectAmount
+                            this.data.contract.contractAmountText = data.contractAmountText
+                            this.data.contract.contractDSAmount = data.contractDSAmount
+                            this.data.contract.contractOPTAmount = data.contractOPTAmount
+                            this.data.contract.contractPCPreAmount = data.contractPCPreAmount
+                            this.data.contract.contractPSAmount = data.contractPSAmount
+                            this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
+                            this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+                        })
+                    }
+                }
+            },
+            typeChange () {
+                this.getContractAmount()
+            },
+            centerChange (value) {
+                const arr = value.split(';')
+                const item = this.data.contractBQNewlst[arr[0]]
+                item.costCenter = arr[1]
+                item.costCenterName = arr[2]
+                this.getContractAmount()
+            },
+            valueChange (item, index) {
+                if (!this.data.contract.contractCategory) {
+                    item.allAmount = 0
+                    this.$emit('validate-field', {
+                        activeKey: 1,
+                        component: 'baseInfo',
+                        filed: 'contractCategory'
+                    })
+                } else if (!this.data.contract.tenderPackageItemID) {
+                    item.allAmount = 0
+                    this.$emit('validate-field', {
+                        activeKey: 1,
+                        component: 'baseInfo',
+                        filed: 'tenderPackageItemID'
+                    })
+                } else {
+                    let isValid = true
+                    this.$refs.tableForm.validateField([
+                        'contractBQNewlst.' + index + '.costCenter',
+                        'contractBQNewlst.' + index + '.itemType'], valid => {
+                        if (valid) {
+                            if (item.allAmount !== 0) {
+                                alert(valid)
+                            }
+                            item.allAmount = 0
+                            isValid = false
+                        }
+                    })
+                    if (isValid) {
+                        const value = item.allAmount
+                        setTimeout(() => {
+                            if (value === item.allAmount) {
+                                this.getContractAmount()
+                            }
+                        }, 1500)
+                    }
+                }
+            },
+            choose (index) {
+                this.index = index
+            },
+            addFile () {
+                const params = {
+                    isTemp: true,
+                    date: '',
+                    creator: '',
+                    name: '',
+                    url: '',
+                    remark: '',
+                    id: 0,
+                    masterID: this.data.fileMasterId
+                }
+                this.fileList.push(params)
+            },
+            getFiles () {
+                BaseService.fileList(this.data.fileMasterId, this.data.contract.contractGuid, '', '').then(_res => {
+                    const data = _res.result.data
+                    const fileList = []
+                    data.forEach(item => {
+                        if (item) {
+                            fileList.push({
+                                date: item.creationTime,
+                                creator: item.creatorUser,
+                                name: item.fileName,
+                                url: item.fileUrl,
+                                remark: item.remark,
+                                id: item.id,
+                                masterID: item.masterID
+                            })
+                        }
+                    })
+                    this.fileList = fileList
+                })
+            },
+            delFile (index) {
+                if (this.fileList[index].isTemp) {
+                    if (this.fileList[index].id) {
+                        this.removeFile(this.fileList[index].id)
+                    }
+                    this.fileList.splice(index, 1)
+                } else {
+                    this.removeFile(this.fileList[index].id)
+                }
+                this.$forceUpdate()
+            },
+            removeFile (id) {
+                const hide = this.$message.loading('删除中..', 0)
+                BaseService.removeFile(id).then(res => {
+                    hide()
+                    if (res.result.statusCode === 200) {
+                        this.$message.success('删除成功')
+                        if (this.type !== 'create') {
+                            this.getFiles()
+                        }
+
+                    } else {
+                        this.$message.error('删除失败')
+                    }
+                })
+            },
+            beforeUpload (file) {
+                this.handleUpload(file)
+                return false
+            },
+            handleUpload (file) {
+                const formData = new FormData()
+                formData.append('file', file)
+                formData.append('masterId', this.data.fileMasterId)
+                formData.append('businessID', this.id === '0' ? '' : this.id)
+                formData.append('businessType', 'Contract')
+                formData.append('remark', this.fileList[this.index].remark) // 文件类型
+                formData.append('subInfo1', file.name) // 文件名
+                formData.append('subInfo2', this.data.contract.contractGuid) // 合同id
+                this.uploading = true
+
+                // You can use any AJAX library you like
+                const _this = this
+                const hide = _this.$message.loading('上传中', 0)
+                this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
+                    contentType: false,
+                    processData: false,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                })
+                    .then((res) => {
+                        hide()
+                        if (res.result.statusCode === 200) {
+                            const data = res.result.data
+                            _this.fileList[this.index].date = data.creationTime
+                            _this.fileList[this.index].creator = data.creatorUser
+                            _this.fileList[this.index].name = data.fileName
+                            _this.fileList[this.index].url = data.fileUrl
+                            _this.fileList[this.index].id = data.id
+                            _this.fileList[this.index].masterID = data.masterID
+                            _this.data.fileMasterId = data.masterID
+                            _this.$message.success('上传成功')
+                            _this.$emit('ok', res.url)
+                            _this.visible = false
+                        }
+                    })
+            }
+        }
+    }
 </script>
 
 <style lang="less" scoped>

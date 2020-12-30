@@ -66,23 +66,15 @@
                               v-decorator="['item.paymentAmount', { rules: [{required: true, message: '请输入本期支付金额'}] }]"></a-input-number>
             </td>
             <td>
-              <a-select
-                @change="onChange"
-                @search="handleSearch"
-                :disabled="type === 'view' || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
-                placeholder="请输入收款单位查询"
-                show-search
-                :default-active-first-option="false"
-                :show-arrow="false"
-                :filter-option="false"
-                :not-found-content="null"
-                v-model="item.vendorGID">
-                <a-select-option v-for="type in filterVendorTypes"
-                                 :value="type.vendorGID"
-                                 :title="type.vendorName"
-                                 :key="index">{{type.vendorName}}
-                </a-select-option>
-              </a-select>
+              <a-input
+                :disabled="type === 'view' || !item.paymentType || item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
+                :value="item.vendorName"
+                @click="showSelect(''+index)"
+                :read-only="true"></a-input>
+              <select-vendor-name-modal :ref="'vendor'+index"
+                                        :visible="visibles[''+index] ? visibles[''+index] : false"
+                                        @cancel="handleCancel(''+index)"
+                                        @ok="handleOk(index)"></select-vendor-name-modal>
             </td>
             <td>
               <a-select
@@ -114,14 +106,17 @@
 
 <script>
     import { UnSignedService } from '../unsigned.service'
+    import SelectVendorNameModal from '../modules/SelectVendorNameModal'
 
     export default {
         name: 'PaymentInfo',
+        components: { SelectVendorNameModal },
         data () {
             return {
                 moneyTypes: [],
                 vendorTypes: [],
-                filterVendorTypes: []
+                filterVendorTypes: [],
+                visibles: {},
             }
         },
         props: {
@@ -139,19 +134,7 @@
             }
         },
         watch: {
-            'data.detailList' (value) {
-                if (this.type !== 'create') {
-                    if (this.data.detailList.length > 0) {
-                        this.data.detailList.forEach(item => {
-                            const params = {
-                                vendorGID: item.vendorGID,
-                                vendorName: item.vendorName,
-                            }
-                            this.filterVendorTypes.push(params)
-                        })
-                    }
-                }
-            }
+
         },
         created () {
             UnSignedService.moneyTypes().then(res => {
@@ -162,7 +145,6 @@
                 this.vendorTypes = res.result.data
                 this.$forceUpdate()
             })
-
         },
         methods: {
             getBankList (vendorGID, vendorTypes) {
@@ -207,15 +189,6 @@
             moneyTypeChange (value) {
                 this.$forceUpdate()
             },
-            onChange (value, option) {
-                this.fetch(value, data => (this.filterVendorTypes = data))
-                const index = option.data.key
-                this.data.detailList[index].vendorBankGID = ''
-                this.data.detailList[index].vendorBankAccounts = ''
-                const i = this.vendorTypes.findIndex(item => item.vendorGID === value)
-                this.data.detailList[index].vendorName = this.vendorTypes[i].vendorName
-                this.$forceUpdate()
-            },
             bankChange (value, option) {
                 const index = option.data.key
                 this.vendorTypes.forEach(item => {
@@ -231,7 +204,26 @@
                 })
                 this.$forceUpdate()
             },
-            handleSearch (value) {
+            showSelect (key) {
+                this.$set(this.visibles, key, true)
+            },
+            handleOk (index) {
+                const data = this.$refs['vendor' + index]
+                data.forEach((item, i) => {
+                    if (i === 0) {
+                        this.data.detailList[index].vendorName = item.selected.vendorName
+                        this.data.detailList[index].vendorGID = item.selected.vendorGID
+                        this.data.detailList[index].vendorBankGID = ''
+                        this.data.detailList[index].vendorBankAccounts = ''
+                        this.$forceUpdate()
+                    }
+                })
+                this.visibles['' + index] = false
+            },
+            handleCancel (key) {
+                this.visibles[key] = false
+            },
+            /*handleSearch (value) {
                 this.fetch(value, data => (this.filterVendorTypes = data))
             },
             fetch (value, callback) {
@@ -265,7 +257,7 @@
                 }
 
                 timeout = setTimeout(fake, 1000)
-            }
+            }*/
         }
     }
 </script>

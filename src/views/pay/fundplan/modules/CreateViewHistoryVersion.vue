@@ -25,6 +25,7 @@
         <span slot="lastModificationTime" slot-scope="text">
           {{text | date}}
         </span>
+
       </s-table>
     </a-spin>
   </a-modal>
@@ -39,7 +40,7 @@
     const columns = [
         {
             title: '财年',
-            dataIndex: 'title'
+            dataIndex: 'title',
         },
         {
             title: '版本号',
@@ -94,6 +95,11 @@
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     return FundPlanService.versionList(this.projectCode, this.year ? this.year : 0).then(res => {
+                        res.result.data.forEach(item => {
+                            if (item.fundingType) {
+                                item.title = item.title + '-' + item.fundingType
+                            }
+                        })
                         return fixedList(res, requestParameters)
                     })
                 },
