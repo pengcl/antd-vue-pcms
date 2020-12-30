@@ -407,7 +407,7 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/checkout/finance/List'),
             meta: { title: 'menu.checkout.finance.list', keepAlive: true, permission: ['BalanceAndCertificate'] }
-          },
+          }
         ]
       },
       // report
@@ -423,6 +423,30 @@ export const asyncRouterMap = [
             name: 'ReportContract',
             component: () => import('@/views/report/Item'),
             meta: { title: 'menu.report.contract', keepAlive: true, permission: ['ProjectContractBookReport'] }
+          },
+          {
+            path: '/report/audit',
+            name: 'ReportAudit',
+            component: () => import('@/views/report/Audit'),
+            meta: { title: 'menu.report.audit', keepAlive: true, permission: ['PaymentApprovalTrackingReport'] }
+          },
+          {
+            path: '/report/tracking',
+            name: 'ReportTracking',
+            component: () => import('@/views/report/Tracking'),
+            meta: { title: 'menu.report.tracking', keepAlive: true, permission: ['ProjectPaymentTrackingReport'] }
+          },
+          {
+            path: '/report/first',
+            name: 'ReportFirst',
+            component: () => import('@/views/report/First'),
+            meta: { title: 'menu.report.first', keepAlive: true, permission: ['CostExpenseFirstLevelReport'] }
+          },
+          {
+            path: '/report/end',
+            name: 'ReportEnd',
+            component: () => import('@/views/report/End'),
+            meta: { title: 'menu.report.end', keepAlive: true, permission: ['CostExpenseEndLevelReport'] }
           }
         ]
       },

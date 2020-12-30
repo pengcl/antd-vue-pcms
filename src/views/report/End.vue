@@ -10,7 +10,7 @@
   import { ReportService } from '@/views/report/report.service'
 
   export default {
-    name: 'ReportContract',
+    name: 'ReportEnd',
     data () {
       return {
         url: '',
@@ -18,7 +18,7 @@
       }
     },
     created () {
-      ReportService.item('ProjectContractBookReport').then(res => {
+      ReportService.item('CostExpenseEndLevelReport').then(res => {
         this.url = res.result.data
         const $main = { w: document.querySelector('.ant-pro-basicLayout-content').offsetWidth, h: document.querySelector('.ant-pro-basicLayout-content').offsetHeight }
         this.height = $main.h + 'px'

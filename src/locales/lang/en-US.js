@@ -83,6 +83,10 @@ const locale = {
 
   'menu.report': 'Report',
   'menu.report.contract': 'Contract Report',
+  'menu.report.audit': 'Contract Audit',
+  'menu.report.tracking': 'Contract Tracking',
+  'menu.report.first': 'Contract First',
+  'menu.report.end': 'Contract End',
 
   'menu.data.list': 'Data List',
   'menu.data.item': 'Data Item',

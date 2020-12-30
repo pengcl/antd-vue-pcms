@@ -86,6 +86,10 @@ const locale = {
 
   'menu.report': '报表管理',
   'menu.report.contract': '项目合同台账表',
+  'menu.report.audit': '付款审批情况追踪表',
+  'menu.report.tracking': '项目付款跟踪情况汇总分析表',
+  'menu.report.first': '成本开支报表(末级科目)',
+  'menu.report.end': '成本开支报表(一级科目)',
 
   'menu.data.list': '基础数据设置',
   'menu.data.item': '基础数据设置',
