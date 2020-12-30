@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="请选择招行业分判包"
-    :width="800"
+    width="90%"
     :visible="visible"
     :maskClosable="false"
     @ok="() => { $emit('ok') }"

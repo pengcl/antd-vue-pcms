@@ -69,6 +69,10 @@
             </div>
           </a-table>
         </a-col>
+        <a-col style="font-size: 18px;font-weight: bold;text-decoration: underline;margin-top:8px;margin-bottom : -5px;">量清单附件</a-col>
+        <a-col :sm="24" :md="24" >
+          <attachment-list :data="data" :type="type" :id="id" :stage="stage" bqInfo="BQ"></attachment-list>
+        </a-col>
       </a-row>
     </a-form-model>
     <contract-bq-modal ref="bqModal" :contract="contract" :data="data"></contract-bq-modal>
@@ -82,6 +86,7 @@ import { Base as BaseService } from '@/api/base'
 import { SwaggerService } from '@/api/swagger.service'
 import { ChangeService } from '@/views/change/change.service'
 import { ContractService } from '@/views/contract/contract.service'
+import AttachmentList from '@/views/change/cip/components/AttachmentList'
 
 const columns = [
   {
@@ -113,7 +118,7 @@ const columns = [
 
 export default {
   name: 'CostEstimates',
-  components: { ContractBqModal },
+  components: { ContractBqModal,AttachmentList },
   data() {
     return {
       columns: columns,

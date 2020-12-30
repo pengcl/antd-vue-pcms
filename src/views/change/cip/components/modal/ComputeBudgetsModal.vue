@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :visible="visible"
-    :width="900"
+    width="90%"
     title="预算调整确认"
     @cancel="handleCancel"
     @ok="handleOk"
