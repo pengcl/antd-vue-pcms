@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="请选择对应批次"
-    :width="900"
+    width="90%"
     :visible="visible"
     :maskClosable="false"
     @ok="onOk"

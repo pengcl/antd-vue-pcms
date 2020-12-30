@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :visible="visible"
-    :width="1024"
+    width="90%"
     title="新增预算"
     :maskClosable="false"
     @cancel="handleCancel"

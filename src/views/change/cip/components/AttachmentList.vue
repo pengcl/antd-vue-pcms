@@ -128,6 +128,10 @@ export default {
     stage: {
       type: String,
       default: 'CIP'
+    },
+    bqInfo : {
+      type : String,
+      default : ''
     }
   },
   watch: {},
@@ -144,7 +148,7 @@ export default {
     })
     BaseService.masterID(this.data.voMasterInfo.voGuid).then(res => {
       this.data.fileMasterId = res.result.data
-      BaseService.fileList(this.data.fileMasterId, this.data.voMasterInfo.voGuid, '', '').then(_res => {
+      BaseService.fileList(this.data.fileMasterId, this.data.voMasterInfo.voGuid, this.bqInfo, '').then(_res => {
         this.fileList = _res.result.data
       })
     })
@@ -170,6 +174,7 @@ export default {
         creationTime: '',
         creatorUser: '',
         fileInfo: '',
+        subInfo1 : this.bqInfo,
         masterId : this.data.fileMasterId
       }
       if (this.fileList) {
@@ -216,7 +221,7 @@ export default {
       formData.append('masterId', this.data.fileMasterId)
       formData.append('businessID', '')
       formData.append('businessType', businessType)
-      formData.append('subInfo1', '') //
+      formData.append('subInfo1', this.bqInfo ) //
       formData.append('subInfo2', '') //
       formData.append('subInfo3', '') //
       formData.append('fileInfo', this.fileInfo) // 附件类型

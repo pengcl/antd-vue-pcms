@@ -238,7 +238,7 @@ export default {
           this.loading.save = false
           if (res.result.statusCode === 200) {
             this.$message.info('保存成功')
-            // location.href = `/cost/industry/batch/${res.result.data.tenderPackageBatchGUID}?ProjectGUID=${this.ProjectGUID}&type=view`
+            location.href = `/cost/industry/batch/${res.result.data.tenderPackageBatchGUID}?ProjectGUID=${this.ProjectGUID}&type=view`
           }
         })
         .catch(e => {
@@ -324,18 +324,20 @@ export default {
       })
     },
     appendPackage(){
-      CostService.industryItem({ Id: this.packageId }).then(res => {
-        if(res.result.statusCode === 200){
-          if(this.type === 'add'){
-            this.form.tenderPackages.push(res.result.data)
-          }else{
-            const repeatPackages = this.form.tenderPackages.filter(item => item.id === res.result.data.id)
-            if(repeatPackages.length < 1){
+      if(this.packageId){
+        CostService.industryItem({ Id: this.packageId }).then(res => {
+          if(res.result.statusCode === 200){
+            if(this.type === 'add'){
               this.form.tenderPackages.push(res.result.data)
+            }else{
+              const repeatPackages = this.form.tenderPackages.filter(item => item.id === res.result.data.id)
+              if(repeatPackages.length < 1){
+                this.form.tenderPackages.push(res.result.data)
+              }
             }
           }
-        }
-      })
+        })
+      }
     }
   }
 }

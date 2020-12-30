@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :visible="visible"
-    :width="900"
+    width="90%"
     :maskClosable="false"
     title="请选择合同清单"
     @cancel="handleCancel"
