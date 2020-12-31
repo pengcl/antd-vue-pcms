@@ -142,7 +142,7 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
             <a-button @click="approve" type="success">
               启动审批流程
             </a-button>
@@ -268,7 +268,7 @@
                     if (valid) {
                         CheckoutService[this.type + 'BalanceCertificate'](this.form).then(res => {
                             if (res.result.data) {
-                                this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
+                                this.$message.success(this.type === 'create' ? '创建成功' : '修改成功')
                                 if (this.type === 'create') {
                                     this.$router.push({
                                         path: `/checkout/completed/list/${res.result.data}?type=view&contractGID=` + this.contractGID
@@ -276,7 +276,8 @@
                                 } else {
                                     this.$router.push({ path: '/checkout/contract/list' })
                                 }
-
+                            } else {
+                                this.disabled = false
                             }
                         }).catch(() => {
                             this.disabled = false

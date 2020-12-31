@@ -198,12 +198,12 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin: 10px 0">
-          <a-button-group v-if="type === 'view' && originData.result.data.auditStatus !== '未审核'">
+          <a-button-group v-if="type === 'view' && originData.result.data.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="view" type="success">
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type !== 'view'">
+          <a-button-group v-if="type !== 'view' && ac('EDIT')">
             <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
@@ -226,6 +226,7 @@
     import { STable } from '@/components'
     import notification from 'ant-design-vue/es/notification'
     import { Base as BaseService } from '@/api/base'
+    import { ac } from '@/views/user/user.service'
 
     function fixedList (res) {
         const result = {}
@@ -478,6 +479,9 @@
             this.loadData()
         },
         methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
             loadData () {
                 if (!this.originData) {
                     return FundPlanService.fundingPlanInfo(this.projectCode, this.year, this.month ? this.month : 0, this.id === '0' ? '' : this.id).then(res => {
