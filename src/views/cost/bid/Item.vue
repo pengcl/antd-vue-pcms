@@ -71,13 +71,13 @@
               <tr>
                 <th colspan="5">
                   <a-button @click="addIndustry()" :disabled="type === 'view'" icon="plus" type="success">
-                    新增行业分判包
+                    新增专业分判包
                   </a-button>
                 </th>
               </tr>
               <tr>
                 <th style="width: 10%">操作</th>
-                <th style="width: 20%">行业分判包编号</th>
+                <th style="width: 20%">专业分判包编号</th>
                 <th style="width: 25%">描述</th>
                 <th style="width: 25%">范围</th>
                 <th style="width: 20%">金额</th>
@@ -97,7 +97,7 @@
                     class="simple"
                     style="margin-top: 20px"
                     :prop="'tenderPackages.' + index"
-                    :rules="[{required: true, message: '请选择行业分判包', trigger: 'change' }]"
+                    :rules="[{required: true, message: '请选择专业分判包', trigger: 'change' }]"
                   >
                     <a-select
                       :disabled="getDisabled(index)"

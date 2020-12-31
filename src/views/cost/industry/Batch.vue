@@ -121,7 +121,7 @@ const columns = [
     scopedSlots: { customRender: 'action' }
   },
   {
-    title: '行业分判包编号',
+    title: '专业分判包编号',
     dataIndex: 'tradePackageCode',
     scopedSlots: { customRender: 'tradePackageCode' }
   },
@@ -216,7 +216,7 @@ export default {
       }
       const tempRows = this.form.tenderPackages.filter(item => !item.isDeleted)
       if (tempRows.length < 1) {
-        this.$message.warn('请添加需要审核的行业分判包')
+        this.$message.warn('请添加需要审核的专业分判包')
         this.loading.save = false
         return
       }
@@ -243,8 +243,8 @@ export default {
         })
         .catch(e => {
           this.loading.save = false
-          console.log('保存行业分判包批次失败', e)
-          this.$message.error('保存行业分判包批次失败')
+          console.log('保存专业分判包批次失败', e)
+          this.$message.error('保存专业分判包批次失败')
         })
     },
     back () {

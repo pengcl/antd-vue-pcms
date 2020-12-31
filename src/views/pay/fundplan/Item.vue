@@ -4,7 +4,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
           <a-button :disabled="type === 'view'" type="success" @click="handleAddIndustry">
-            引入行业分判包
+            引入专业分判包
           </a-button>
           <a-button type="success"
                     style="margin-left: 10px"
@@ -504,7 +504,7 @@
                     const params = {
                         id: item.id,
                         businessGID: item.tenderPackageGUID,
-                        businessType: '行业分判包',
+                        businessType: '专业分判包',
                         businessName: item.packageTitle,
                         businessAmt: item.budgetAmount,
                         businessPayAmt: 0,

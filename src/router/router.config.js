@@ -567,7 +567,7 @@ export const asyncRouterMap = [
                 path: '/budget/decompose/budget/item/:id',
                 name: 'BudgetCustomDetailedItem',
                 component: () => import('@/views/list/BasicList'),
-                meta: { title: '行业分判包', keepAlive: true, permission: ['budget'] }
+                meta: { title: '专业分判包', keepAlive: true, permission: ['budget'] }
               },
               {
                 path: '/budget/decompose/budget/item/:id',

@@ -11,14 +11,14 @@ const API = {
   budgetPlanAuditSave: '/api/services/app/BudgetPlan/ProjectSaveBudgetPlanPackage', //保存项目的预算审核包信息
   budgetTemplateFile: '/api/services/app/BudgetPlan/GetProjectBudgetImportTemplate', //获取预算模板文件
   uploadBudgetFile: '/api/services/app/BudgetSubPlan/ProjectBudgetUpload', //项目预算导入
-  //行业分判包
-  industryItems: '/api/services/app/TenderPackage/GetPaged' ,//行业分判包列表
-  industryCreate: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加行业分判包
-  industryItem: '/api/services/app/TenderPackage/GetTenderPackageById',//通过主键获取行业分判包数据
-  budgetItems: '/api/services/app/TenderPackage/GetTenderPackageBudgetItemsById',//行业分判包预算列表
+  //专业分判包
+  industryItems: '/api/services/app/TenderPackage/GetPaged' ,//专业分判包列表
+  industryCreate: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加专业分判包
+  industryItem: '/api/services/app/TenderPackage/GetTenderPackageById',//通过主键获取专业分判包数据
+  budgetItems: '/api/services/app/TenderPackage/GetTenderPackageBudgetItemsById',//专业分判包预算列表
   budgetTypeItems: '/api/services/app/GeneralType/GetBudgetItemTypeTypes',//获取科目类型集合
-  industryUpdate : '/api/services/app/TenderPackage/UpdateTenderPackage',//修改行业分判包
-  industryRemove : '/api/services/app/TenderPackage/DeleteTenderPackage',//删除行业分判包
+  industryUpdate : '/api/services/app/TenderPackage/UpdateTenderPackage',//修改专业分判包
+  industryRemove : '/api/services/app/TenderPackage/DeleteTenderPackage',//删除专业分判包
   //招投标分判包
   bidItems: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagesByProject',//根据项目ID获取招投标列表
   bidItem: '/api/services/app/ProjectTenderPackage/GetProjectTenderPackagById',//根据主键获取招标分判包详情
@@ -26,9 +26,9 @@ const API = {
   bidRemove: '/api/services/app/ProjectTenderPackage/RemoveProjectTenderPackage',//删除招投标分判包
   bidBudgetCreate: '/api/services/app/TradeBudget/CreateProjectCostCenterTradeBudgetItems',//创建行业预算
   matterItems: 'api/services/app/ProjectTenderPackage/GetPlanMatterModelList',//工作项列表
-  bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//行业分判包下拉列表
+  bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//专业分判包下拉列表
   bidUpdate: '/api/services/app/ProjectTenderPackage/UpdateProjectTenderPackage', //修改招投标分判包
-  //行业预算分解
+  //预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
   elementTradeTypes: '/api/services/app/ElementTradeType/GetElementTradeTypes',//获取预算科目下的行业类型集合
@@ -36,11 +36,11 @@ const API = {
   createGT: '/api/services/app/TradeBudget/BudgetAuotCreateGeneralTrade',//审批完成后对项目的所有预算科目进行产生GeneralTrade的操作
   removeTradeBudget: '/api/services/app/TradeBudget/ProjectCostCenterDeleteTradeBudgetItems',//删除预算分解
   //新增预算界面
-  budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过行业分判包获取添加行业预算时的预算科目树
-  budegetTreeItem: '/api/services/app/TenderPackage/GetTenderPackageAddCostCenterBudgetItems',//通过行业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
-  addBudgetItem : '/api/services/app/TenderPackage/TenderPackageBatchAddBudgetItem',//行业分判包添加行业预算
-  removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem',//行业分判包移除行业预算
-  removeBatchBudgetItem : '/api/services/app/TenderPackage/TenderPackageBatchRemoveBudgetItem', // 行业分判包批量移除行业预算
+  budegetTree: '/api/services/app/TenderPackage/GetTenderPackageAddBudgetItemElementTree',//通过专业分判包获取添加行业预算时的预算科目树
+  budegetTreeItem: '/api/services/app/TenderPackage/GetTenderPackageAddCostCenterBudgetItems',//通过专业分判包获取添加行业预算时的成本中心下预算科目-行业预算数据集合
+  addBudgetItem : '/api/services/app/TenderPackage/TenderPackageBatchAddBudgetItem',//专业分判包添加行业预算
+  removeBudgetItem : '/api/services/app/TenderPackage/TenderPackageRemoveBudgetItem',//专业分判包移除行业预算
+  removeBatchBudgetItem : '/api/services/app/TenderPackage/TenderPackageBatchRemoveBudgetItem', // 专业分判包批量移除行业预算
   //行业类型
   typyItems: '/api/services/app/ElementTradeType/GetFullElementTradeTypeTree' ,//获取预算科目下的行业类型集合
   typeCreate: '/api/services/app/ElementTradeType/Create',//添加预算科目的行业类型
@@ -48,13 +48,13 @@ const API = {
   typeUpdate: '/api/services/app/ElementTradeType/Update', //对预算行业类型进行编辑更新
 
   //审批相关
-  createTenderPackageBatchReg:'/api/services/app/TenderPackage/CreateTenderPackageBatchReg',//行业分判包批量添加审批信息
-  updateTenderPackageBatchReg:'/api/services/app/TenderPackage/UpdateTenderPackageBatchReg',//对行业分判包批量审批表进行修改
+  createTenderPackageBatchReg:'/api/services/app/TenderPackage/CreateTenderPackageBatchReg',//专业分判包批量添加审批信息
+  updateTenderPackageBatchReg:'/api/services/app/TenderPackage/UpdateTenderPackageBatchReg',//对专业分判包批量审批表进行修改
   getTenderPackageBatchRegByGUID:'/api/services/app/TenderPackage/GetTenderPackageBatchRegByGUID',//通过审批单编号获取对应的审批信息
-  getTenderPackageBatchRegByTender:'/api/services/app/TenderPackage/GetTenderPackageBatchRegByTender',//通过行业分判包编号获取对应的批量审批信息
+  getTenderPackageBatchRegByTender:'/api/services/app/TenderPackage/GetTenderPackageBatchRegByTender',//通过专业分判包编号获取对应的批量审批信息
   removeTenderPackageBatchReg:'/api/services/app/TenderPackage/RemoveTenderPackageBatchReg',//移除指定的分判包批量审批单
   tenderPackageBatchStartBPM:'/api/services/app/TenderPackage/TenderPackageBatchStartBPM',//发起流程的地址
-  getProjectTenderPackageBatchRegs:'/api/services/app/TenderPackage/GetProjectTenderPackageBatchRegs',//获取项目的行业分判包批量审批记录
+  getProjectTenderPackageBatchRegs:'/api/services/app/TenderPackage/GetProjectTenderPackageBatchRegs',//获取项目的专业分判包批量审批记录
   projectIsNoStartAuditTenderPackageBatchReg:'/api/services/app/TenderPackage/ProjectIsNoStartAuditTenderPackageBatchReg',//判断项目是否有未发起审批的分判包批量审批单(true:有未发起审批的审批单)
 }
 
