@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="引入行业分判包"
+    title="引入专业分判包"
     :width="900"
     :visible="visible"
     :maskClosable="false"

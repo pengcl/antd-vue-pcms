@@ -43,8 +43,6 @@
 
 <script>
   import {CostService} from '@/views/cost/cost.service'
-  import {SwaggerService} from '@/api/swagger.service'
-  import {SupplierService} from "@/views/supplier/supplier.service";
 
   export default {
     data() {

@@ -212,7 +212,7 @@
           if(valid){
             this.loading.save = true
             this.form.projectGUID = this.ProjectGUID
-            this.form.itemTypeId = 0 //2020-12-04 新需求，取消行业分判包类型选项
+            this.form.itemTypeId = 0 //2020-12-04 新需求，取消专业分判包类型选项
             CostService[action](this.form).then(res => {
               if (res.result.statusCode === 200) {
                 const that = this
@@ -243,7 +243,7 @@
           }
         }).catch((e) =>{
           this.loading.startBPM = false
-          console.log('行业分判包-点击新增审批失败',e)
+          console.log('专业分判包-点击新增审批失败',e)
         })
       },
       viewBPM(){

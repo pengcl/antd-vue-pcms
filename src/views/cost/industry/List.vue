@@ -422,13 +422,13 @@ export default {
     handleToRemove (record) {
       const that = this
       this.$confirm({
-        title: '删除行业分判包',
+        title: '删除专业分判包',
         content: '是否确定删除选中分判包?',
         onOk () {
           CostService.industryRemove(record.id)
             .then(res => {
               if (res.result.statusCode === 200) {
-                that.$message.info('行业分判包删除成功')
+                that.$message.info('专业分判包删除成功')
                 that.$refs.table.refresh()
               }
             })
@@ -542,7 +542,7 @@ export default {
           }
         }
       }).catch((e) =>{
-        console.log('行业分判包-点击新增审批失败',e)
+        console.log('专业分判包-点击新增审批失败',e)
       })
     },
     viewBatch(){

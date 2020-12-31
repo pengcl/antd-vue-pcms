@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="请选择招行业分判包"
+    title="请选择招专业分判包"
     width="90%"
     :visible="visible"
     :maskClosable="false"
@@ -37,7 +37,7 @@
   import { fixedList } from '@/utils/util'
   const columns = [
     {
-      title: '行业分判包编号',
+      title: '专业分判包编号',
       dataIndex: 'tradePackageCode'
     },
     {
