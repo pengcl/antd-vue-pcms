@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="填写申请批准金额"
-    :width="90%"
+    width="90%"
     :visible="visible"
     :maskClosable="false"
     :confirmLoading="loading"
