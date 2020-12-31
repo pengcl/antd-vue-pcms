@@ -216,7 +216,7 @@ export const asyncRouterMap = [
         name: 'contract',
         redirect: '/contract/list',
         component: RouteView,
-        meta: { title: 'menu.contract', icon: 'audit', permission: ['ContractInfo', 'ProjectContractBookReport'] },
+        meta: { title: 'menu.contract', icon: 'audit', permission: ['ContractInfo', 'ContractBook'] },
         children: [
           {
             path: '/contract/list',
@@ -235,14 +235,14 @@ export const asyncRouterMap = [
             path: '/contract/account/list',
             name: 'ContractAccountList',
             component: () => import('@/views/contract/account/List'),
-            meta: { title: 'menu.contract.account.list', keepAlive: false, permission: ['ProjectContractBookReport'] }
+            meta: { title: 'menu.contract.account.list', keepAlive: false, permission: ['ContractBook'] }
           },
           {
             path: '/contract/account/item/:id',
             name: 'ContractAccountItem',
             component: () => import('@/views/contract/account/Item'),
             hidden: true,
-            meta: { title: 'menu.contract.account.item', keepAlive: false, permission: ['ProjectContractBookReport'] }
+            meta: { title: 'menu.contract.account.item', keepAlive: false, permission: ['ContractBook'] }
           } // Account
         ]
       },

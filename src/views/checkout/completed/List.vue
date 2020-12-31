@@ -134,7 +134,7 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-model-item label="竣工证书">
-              <a :href="docUrl" target="_blank">{{doc}}</a>
+              <a :href="form.file_PdfPathUrl" target="_blank">{{form.file_PdfPath}}</a>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -185,8 +185,6 @@
                 partyList: [],
                 disabled: false,
                 dialog: DIALOGCONFIG,
-                doc: null,
-                docUrl: null,
                 rules: {
                     payeePartyGID: [{ required: true, message: '请选择合作单位(结算方)', trigger: 'change' }],
                     isLastBalance: [{ required: true, message: '请选择是否最终结算', trigger: 'change' }],
@@ -216,10 +214,6 @@
             this.getData()
             CheckoutService.partyList(this.contractGID).then(res => {
                 this.partyList = res.result.data
-            })
-            CheckoutService.doc().then(res => {
-                this.docUrl = (process.env.VUE_APP_API_BASE_URL + res.result).replace(/#/gi, '/')
-                this.doc = res.result
             })
         },
         methods: {
@@ -253,6 +247,7 @@
                 } else {
                     CheckoutService.certificateInfo(this.id).then(res => {
                         this.form = res.result.data
+                        this.form.file_PdfPathUrl = process.env.VUE_APP_API_BASE_URL + '/' + this.form.file_PdfPath
                         if (this.form.ccPartyGIDs) {
                             this.form.ccParty = this.form.ccPartyGIDs.split(',')
                         }
