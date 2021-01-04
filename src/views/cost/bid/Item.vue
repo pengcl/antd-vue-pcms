@@ -211,8 +211,8 @@
 
       <a-row>
         <a-col :md="12" :sm="24">
-          <a-button type="success" style="margin-right: 20px">启动审批流程</a-button>
-
+          <a-button type="success" style="margin-right: 20px" @click="startBPM" :loading="loading.startBPM" v-if="type === 'view' && form.auditStatus === '未审核'">启动审批流程</a-button>
+          <a-button type="success" style="margin-right: 20px" @click="showBPM" :loading="loading.showBPM" v-if="type === 'view' && (form.auditStatus === '审核中' || form.auditStatus === '已审核')">查看审批流程</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
@@ -231,6 +231,7 @@
   import {SwaggerService} from '@/api/swagger.service'
   import {addItem, removeItem} from '@/api/base'
   import moment from 'moment'
+  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
   export default {
     name: 'Edit',
@@ -248,7 +249,9 @@
         addPlans: [],//编辑时新增的计划列表
         removePlans: [],//编辑时移除的计划列表
         loading: {
-          save: false
+          save: false,
+          startBPM : false,
+          showBPM : false
         },
         disabled:false,
         form: SwaggerService.getForm('ProjectTenderPackageCreateInputDto'),
@@ -508,6 +511,28 @@
           }
         })
         return i
+      },
+      startBPM(){
+        this.loading.startBPM = true
+        CostService.projectTenderPackageStartBPM(this.form.projectTenderPackageGUID).then(res =>{
+          this.loading.startBPM = false
+          if(res.result.statusCode === 200){
+            setTimeout(function(){
+              window.open(res.result.data)
+            },200)
+          }
+        }).catch((e) =>{
+          this.loading.startBPM = false
+        })
+      },
+      showBPM(){
+        this.loading.showBPM = true
+        BaseService.viewBpm(this.form.projectTenderPackageGUID).then(res => {
+          this.loading.showBPM= false
+          setTimeout(function(){
+            window.open(res.result.data)
+          },200)
+        })
       }
     }
   }

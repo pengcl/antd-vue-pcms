@@ -54,7 +54,7 @@
             <a-col :md="24" :sm="24"  style="font-size: 16px;font-weight: bold;text-decoration: underline">
              附件
             </a-col>
-              <attachment-list :data="form" :type="type" :id="id" stage="latent"></attachment-list>
+              <attachment-list :data="form" :type="type" :id="id" stage="JZ"></attachment-list>
           </a-row>
         </a-form>
       </div>

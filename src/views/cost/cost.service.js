@@ -28,6 +28,7 @@ const API = {
   matterItems: 'api/services/app/ProjectTenderPackage/GetPlanMatterModelList',//工作项列表
   bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//专业分判包下拉列表
   bidUpdate: '/api/services/app/ProjectTenderPackage/UpdateProjectTenderPackage', //修改招投标分判包
+  projectTenderPackageStartBPM: '/api/services/app/ProjectTenderPackage/ProjectTenderPackageStartBPM',//发起流程的地址
   //预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
@@ -452,6 +453,15 @@ CostService.projectIsNoStartAuditTenderPackageBatchReg = function (id) {
     url: API.projectIsNoStartAuditTenderPackageBatchReg,
     method: 'POST',
     data: {id}
+  })
+}
+
+
+CostService.projectTenderPackageStartBPM = function (ProjectTenderPackageGUID) {
+  return request({
+    url: API.projectTenderPackageStartBPM,
+    method: 'POST',
+    data: {ProjectTenderPackageGUID}
   })
 }
 
