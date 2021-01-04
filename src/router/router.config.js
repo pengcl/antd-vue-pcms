@@ -299,6 +299,20 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/change/cip/components/ConstructionOrganizeDesign'),
             meta: { title: 'menu.change.constructionOrganizeDesign', keepAlive: true, permission: ['VOInfo'] }
+          },
+          {
+            path: '/change/cip/latent/list/:id',
+            name: 'ChangeCipLatentList',
+            hidden: true,
+            component: () => import('@/views/change/cip/latent/List'),
+            meta: { title: 'menu.change.latent.list', keepAlive: true, permission: ['VOInfo'] }
+          },
+          {
+            path: '/change/cip/latent/item/:id',
+            name: 'ChangeCipLatentItem',
+            hidden: true,
+            component: () => import('@/views/change/cip/latent/Item'),
+            meta: { title: 'menu.change.latent.item', keepAlive: true, permission: ['VOInfo'] }
           }
         ]
       },

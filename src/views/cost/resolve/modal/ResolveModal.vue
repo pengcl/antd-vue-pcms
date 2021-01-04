@@ -29,7 +29,7 @@
               <tr>
                 <th style="width: 100px">操作</th>
                 <th style="width: 200px">科目</th>
-                <th style="width: 200px">行业名称</th>
+                <th style="width: 200px">专业名称</th>
                 <th style="width: 200px" v-for="(costCenterItem,index) in costCenters" :key="index">
                   {{costCenterItem.costCenterName}}
                 </th>
