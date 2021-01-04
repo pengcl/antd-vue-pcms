@@ -119,6 +119,17 @@
             @click="handleDesign"
           >施工组织设计</a-button
           >
+          <a-button
+            type="success"
+            v-if="ac('ADD')"
+            @click="handleToAddLatent"
+            style="margin-left: 20px"
+            :disabled="
+              !queryParam2.contractGuid ||
+                (professionType.indexOf(contractSelected.contractProfession) > -1 && !contractSelected.bdIsComplete)
+            "
+          >潜在变更申报</a-button
+          >
         </a-col>
         <a-col :md="24" :sm="24"> 变更列表</a-col>
       </a-row>
@@ -483,6 +494,15 @@ export default {
       this.$router.push({
         path: `/change/cip/constructionOrganizeDesign/${this.contractSelected.contractGuid}?projectCode=${this.contractSelected.projectID}&type=${type}`
       })
+    },
+    handleToAddLatent () {
+      if (this.queryParam2.contractGuid != undefined) {
+        this.$router.push({
+          path: `/change/cip/latent/list/${this.queryParam2.contractGuid}`
+        })
+      } else {
+        this.$message.warn('请先选择合同')
+      }
     }
   }
 }
