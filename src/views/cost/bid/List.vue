@@ -187,7 +187,7 @@
                 projectType: undefined,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
+                    const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID, Sorting: 'packageDate', SortOrder: 'DESC' })
                     if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID !== '' && this.projectType !== 'noProject') {
                         return CostService.bidItems(requestParameters)
                             .then(res => {
