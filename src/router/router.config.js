@@ -216,7 +216,7 @@ export const asyncRouterMap = [
         name: 'contract',
         redirect: '/contract/list',
         component: RouteView,
-        meta: { title: 'menu.contract', icon: 'audit', permission: ['ContractInfo', 'ProjectContractBookReport'] },
+        meta: { title: 'menu.contract', icon: 'audit', permission: ['ContractInfo', 'ContractBook'] },
         children: [
           {
             path: '/contract/list',
@@ -235,14 +235,14 @@ export const asyncRouterMap = [
             path: '/contract/account/list',
             name: 'ContractAccountList',
             component: () => import('@/views/contract/account/List'),
-            meta: { title: 'menu.contract.account.list', keepAlive: false, permission: ['ProjectContractBookReport'] }
+            meta: { title: 'menu.contract.account.list', keepAlive: false, permission: ['ContractBook'] }
           },
           {
             path: '/contract/account/item/:id',
             name: 'ContractAccountItem',
             component: () => import('@/views/contract/account/Item'),
             hidden: true,
-            meta: { title: 'menu.contract.account.item', keepAlive: false, permission: ['ProjectContractBookReport'] }
+            meta: { title: 'menu.contract.account.item', keepAlive: false, permission: ['ContractBook'] }
           } // Account
         ]
       },
@@ -299,6 +299,20 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/change/cip/components/ConstructionOrganizeDesign'),
             meta: { title: 'menu.change.constructionOrganizeDesign', keepAlive: true, permission: ['VOInfo'] }
+          },
+          {
+            path: '/change/cip/latent/list/:id',
+            name: 'ChangeCipLatentList',
+            hidden: true,
+            component: () => import('@/views/change/cip/latent/List'),
+            meta: { title: 'menu.change.latent.list', keepAlive: true, permission: ['VOInfo'] }
+          },
+          {
+            path: '/change/cip/latent/item/:id',
+            name: 'ChangeCipLatentItem',
+            hidden: true,
+            component: () => import('@/views/change/cip/latent/Item'),
+            meta: { title: 'menu.change.latent.item', keepAlive: true, permission: ['VOInfo'] }
           }
         ]
       },

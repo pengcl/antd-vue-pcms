@@ -142,7 +142,7 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
             <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
@@ -383,6 +383,8 @@
                                         path: '/pay/unsigned/list'
                                     })
                                 }
+                            } else {
+                                this.disabled = false
                             }
                         }).catch(() => {
                             this.disabled = false
@@ -408,7 +410,7 @@
                     path: '/pay/unsigned/list'
                 })
             },
-            edit(){
+            edit () {
                 this.$router.push({ path: `/pay/unsigned/item/${this.id}?type=update&projectGUID=` + this.projectGUID })
             },
             view () {

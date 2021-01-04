@@ -56,7 +56,7 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
             <a-button @click="approve" type="success" :disabled="balanceCertificateAuditStatus !== '已审核'">
               启动审批流程
             </a-button>
@@ -202,8 +202,10 @@
 
                         CheckoutService[this.type + 'BalanceContract'](this.form).then(res => {
                             if (res.result.data) {
-                                this.$message.success(this.type === 'create' ? '保存成功' : '修改成功')
+                                this.$message.success(this.type === 'create' ? '创建成功' : '修改成功')
                                 this.showBudgets(this.type === 'create' ? res.result.data : res.result.data.gid)
+                            } else {
+                                this.disabled = false
                             }
                         })
                     } else {
