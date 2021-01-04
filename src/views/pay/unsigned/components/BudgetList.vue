@@ -14,7 +14,7 @@
           <th>操作</th>
           <th>业态成本中心</th>
           <th>科目</th>
-          <th>行业名称</th>
+          <th>专业名称</th>
           <th>预算金额</th>
           <th>本次使用金额</th>
         </tr>
@@ -100,7 +100,7 @@
                         elementNameCN: item.elementNameCN,
                         costCenterCode: item.costCenterCode,
                         costCenterName: item.costCenterName,
-                        tradeBudgetName: item.tradeBudgetName ? item.tradeBudgetName : 'General Trade',
+                        tradeBudgetName: item.tradeBudgetName ? item.tradeBudgetName : '科目余额',
                         amount: item.budgetValue,
                         useAmount: 0
                     }

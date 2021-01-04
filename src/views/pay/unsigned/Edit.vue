@@ -125,7 +125,7 @@
               <tr>
                 <th style="width: 20%">科目</th>
                 <th style="width: 20%">业态成本中心</th>
-                <th style="width: 20%">行业名称</th>
+                <th style="width: 20%">专业名称</th>
                 <th style="width: 20%">预算金额</th>
                 <th style="width: 20%">本次使用金额</th>
               </tr>

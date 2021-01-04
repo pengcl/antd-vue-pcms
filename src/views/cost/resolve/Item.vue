@@ -14,18 +14,20 @@
       </div>
       <a-row>
         <a-col :md="24" :sm="24">
-          <s-table
+          <a-table
+            v-if="sourceData && sourceData.length"
             style="margin-top: 5px"
             ref="table"
             size="default"
             rowKey="key"
             bordered
             :columns="columns"
-            :data="loadData"
+            :data-source="sourceData"
             :alert="false"
             :showPagination="false"
             :scroll="{ x: columnsWidth,y: 500 }"
             :pageSize="1000"
+            :defaultExpandAllRows="true"
           >
             <span slot="cost" slot-scope="text">
               <p style="text-align: center">
@@ -55,7 +57,7 @@
                 {{ record.code }}
               </template>
             </span>
-          </s-table>
+          </a-table>
         </a-col>
       </a-row>
       <a-row>
@@ -194,14 +196,14 @@
       }
       list.push(obj)
 
-      // 插入General Trade行
+      // 插入科目余额行
       if (item.tradeBudgetInfo && item.childs && item.childs.length === 0) {
         const gt = {}
         let gtsAmount = 0
         costCenters.forEach((center, index) => {
           gt.key = Number(Math.random().toString() + Date.now()).toString(36)
           gt.elementInfoId = item.elementInfoId
-          gt.BudgetTitle = 'General Trade'
+          gt.BudgetTitle = '科目余额'
           gt.elementInfoNameCN = ''
           const costName = 'cost' + center.costCenterId
           gt[costName] = getGTAmount(item.elementInfoId, center.elementItem.childs)
@@ -280,13 +282,13 @@
       scopedSlots: {customRender: 'action'}
     },
     {
-      title: '行业名称',
+      title: '专业名称',
       width: 200,
       fixed: 'left',
       dataIndex: 'elementInfoNameCN'
     },
     {
-      title: '行业名称',
+      title: '专业名称',
       width: 200,
       fixed: 'left',
       dataIndex: 'BudgetTitle'
@@ -306,6 +308,7 @@
       this.columns = columns
       return {
         data: [],
+        sourceData: [],
         auditStatus: '',
         cities: [],
         visible: false,
@@ -361,17 +364,19 @@
               // 组装动态列对应的行数据
               const list = getLineData(res.result.data[0].elementItem.childs, res.result.data)
               result.result.data = getList(list, res.result.data)
+              if ( result.result.data.length > 0){
+                this.sourceData = result.result.data
+              }
               this.columns = _columns
               this.$forceUpdate()
             }
-            return {data: result.result.data}
           })
         }
       }
     },
     filters: {},
     created() {
-
+      this.loadData()
     },
     computed: {
       rowSelection() {
@@ -445,7 +450,7 @@
                   item.children.push(budget)
                 })
               }
-              if (item.BudgetTitle === 'General Trade' && item.elementInfoId === result.elementInfoId) {
+              if (item.BudgetTitle === '科目余额' && item.elementInfoId === result.elementInfoId) {
                 let amountCount = 0
                 result.data.forEach(budget => {
                   budget.itemDetails.forEach(detail => {
