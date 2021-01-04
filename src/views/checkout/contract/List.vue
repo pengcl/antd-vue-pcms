@@ -84,8 +84,11 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button type="success" @click="handleToCompleted" :disabled="!contractGID">新增竣工证书</a-button>
-          <a-button type="success" style="margin-left: 10px" @click="handleToAdd"
+          <a-button type="success" @click="handleToCompleted" :disabled="!contractGID" v-if="ac('ADD')">新增竣工证书</a-button>
+          <a-button type="success"
+                    style="margin-left: 10px"
+                    @click="handleToAdd"
+                    v-if="ac('C_ADD')"
                     :disabled="!balanceCertificateGID || !!balanceContractGID">
             新增合同结算
           </a-button>
@@ -111,7 +114,7 @@
         :scroll="{ x: 'calc(700px + 50%)'}"
       >
         <span slot="completionDate" slot-scope="text,record">
-          <a @click="handleToCompletedItem(record.gid,'update')" v-if="record.auditStatus === '未审核'">{{text | date}}</a>
+          <a @click="handleToCompletedItem(record.gid,'update')" v-if="record.auditStatus === '未审核' && ac('EDIT')">{{text | date}}</a>
           <span v-if="record.auditStatus !== '未审核'">{{text | date}}</span>
         </span>
 
@@ -121,7 +124,7 @@
 
 
         <span slot="auditStatus" slot-scope="text,record">
-            <a @click="handleToCompletedItem(record.gid,'view')">{{text}}</a>
+            <a @click="handleToCompletedItem(record.gid,'view')" v-if="ac('VIEW')">{{text}}</a>
         </span>
 
         <span slot="isLastBalance" slot-scope="text">
@@ -130,7 +133,7 @@
 
         <span slot="progressBalanceDate" slot-scope="text,record">
           <a @click="handleToContractItem(record.bContractGID,'update','')"
-             v-if="record.bContractAuditStatus === '未审核'">{{text | date}}</a>
+             v-if="record.bContractAuditStatus === '未审核' && ac('C_EDIT')">{{text | date}}</a>
           <span v-if="record.bContractAuditStatus !== '未审核'">{{text | date}}</span>
         </span>
 
@@ -155,7 +158,7 @@
         </span>
 
         <span slot="bProjectAuditStatus" slot-scope="text,record">
-         <a @click="handleToProjectItem(record.bProjectGID,record.bContractAuditStatus)">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
+         <a @click="handleToProjectItem(record.bProjectGID,record.bContractAuditStatus)" v-if="ac('P_APPROVE')">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
         </span>
 
         <span slot="bFinanceCreationTime" slot-scope="text">
@@ -163,7 +166,7 @@
         </span>
 
         <span slot="bFinanceAuditStatus" slot-scope="text,record">
-         <a @click="handleToFinanceItem(record.bFinanceGID,record.bContractAuditStatus)">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
+         <a @click="handleToFinanceItem(record.bFinanceGID,record.bContractAuditStatus)" v-if="ac('F_APPROVE')">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
         </span>
 
       </s-table>
@@ -180,6 +183,7 @@
     import { formatList } from '@/mock/util'
     import storage from 'store'
     import { CheckoutService } from '../checkout.service'
+    import { ac } from '@/views/user/user.service'
 
     const columns = [
         {
@@ -429,6 +433,9 @@
             }
         },
         methods: {
+            ac (action) {
+                return ac(action, this.$route)
+            },
             handleToContractInfo (record) {
                 this.$router.push({ path: `/contract/item/${record.contractGuid}?type=view` })
             },
