@@ -193,11 +193,11 @@ SignedService.fileList = function (masterID, businessID, sSubInfo1, sSubInfo2) {
   })
 }
 
-SignedService.requestList = function (contractGID, paymentGID, amountPayableIsZero) {
+SignedService.requestList = function (contractGID, paymentGID, amountPayableIsZero, businessCodeOrName) {
   return request({
     url: API.requestList,
     method: 'get',
-    params: { contractGID, paymentGID, amountPayableIsZero }
+    params: { contractGID, paymentGID, amountPayableIsZero, businessCodeOrName }
   })
 }
 
