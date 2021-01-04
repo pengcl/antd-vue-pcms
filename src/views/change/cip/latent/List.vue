@@ -33,8 +33,12 @@
               <a-input :disabled="true" :value="cipInfo.contractName"></a-input>
             </a-form-item>
           </a-col>
-          <a-row :gutter="48" style="margin-top: 10px;margin-bottom : 10px">
-            <a-col :md="12" :sm="12" >
+          <a-col :md="24" :sm="24">
+            <a-form-item label="累计潜在变更预估金额">
+              1,000,000.00 元
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24" style="margin-bottom : 10px;" >
               <a-button
                 type="success"
                 style="margin-left: 20px"
@@ -42,13 +46,7 @@
                 @click="add"
               >新增</a-button
               >
-            </a-col>
-            <a-col :md="12" :sm="12" >
-              <a-form-item label="累计潜在变更预估金额">
-                1,000,000.00 元
-              </a-form-item>
-            </a-col>
-          </a-row>
+          </a-col>
           <a-row :gutter="48" style="margin-top: 10px">
             <a-col :md="24" :sm="24" style="margin-bottom: 10px">
               <s-table
