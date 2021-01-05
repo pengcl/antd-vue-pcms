@@ -93,8 +93,8 @@
             <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核'  && ac('EDIT')" @click="startBPM">启动审批流程</a-button>
             <a-button type="success" :loading="loading.showBPM" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
 
-            <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !this.pmiUrl && ac('ADD')" @click="createPMI">生成项目指令</a-button>
-            <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl " @click="showPMI && ac('VIEW')">查看项目指令</a-button>
+            <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !pmiUrl && ac('ADD')" @click="createPMI">生成项目指令</a-button>
+            <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl  && ac('VIEW')" @click="showPMI">查看项目指令</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
