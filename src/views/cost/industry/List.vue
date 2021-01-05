@@ -46,10 +46,12 @@
           <a-col :md="12" :sm="24">
             <a-form-model-item prop="elementTypeId" label="科目类型">
               <a-select
-                :disabled="type !== 'add'"
                 placeholder="请选择"
                 v-model="queryParam.ElementTypeId"
               >
+                <a-select-option value="">
+                  所有
+                </a-select-option>
                 <a-select-option v-for="option in elementItems" :key="JSON.stringify(option)" :value="option.id">
                   {{ option.nameCN }}
                 </a-select-option>
@@ -57,14 +59,15 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="提交状态">
+            <a-form-item label="状态">
               <a-select
                 placeholder="请选择"
                 v-model="queryParam.AuditStatus"
-                v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
+                >
                 <a-select-option value="">所有</a-select-option>
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
+                <a-select-option value="未审核">未审核</a-select-option>
+                <a-select-option value="审核中">审核中</a-select-option>
+                <a-select-option value="已审批">已审批</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -304,7 +307,7 @@ export default {
         } else {
           this.handleSelected = false
         }
-        const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID })
+        const requestParameters = Object.assign({}, parameter, this.queryParam)
         if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
           return CostService.industryItems(requestParameters).then(res => {
             if (res.result.data != null) {
@@ -315,7 +318,6 @@ export default {
         }
       },
       loadData2: parameter => {
-        const requestParameters = Object.assign({}, parameter, this.queryParam)
         if (this.pid) {
           return CostService.budgetItems({ Id: this.pid }).then(res => {
             if (res.result.data != null) {
@@ -411,6 +413,9 @@ export default {
         })
       }
     }
+  },
+  activated(){
+    this.$refs.table.refresh()
   },
   methods: {
     getBudgetAmt (record) {
