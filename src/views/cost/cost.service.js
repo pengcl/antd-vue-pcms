@@ -461,7 +461,7 @@ CostService.projectTenderPackageStartBPM = function (ProjectTenderPackageGUID) {
   return request({
     url: API.projectTenderPackageStartBPM,
     method: 'POST',
-    data: {ProjectTenderPackageGUID}
+    params: {ProjectTenderPackageGUID}
   })
 }
 
