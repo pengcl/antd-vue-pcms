@@ -42,7 +42,7 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="编号">
-              <a-input v-model="queryParam.ContractNo"></a-input>
+              <a-input v-model="queryParam.TradePackageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -51,13 +51,19 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
+            <a-form-item label="经办人">
+              <a-input v-model="queryParam.CreatorUser"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
             <a-form-item label="提交状态">
               <a-select
                 placeholder="请选择"
                 v-model="queryParam.AuditStatus"
                 v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
+                <a-select-option value="未审核">未审核</a-select-option>
+                <a-select-option value="审核中">审核中</a-select-option>
+                <a-select-option value="已审批">已审批</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -183,11 +189,18 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
-                queryParam: { ProjectGUID: this.$route.query.ProjectGUID },
+                queryParam: {
+                  ProjectGUID: this.$route.query.ProjectGUID,
+                  TradePackageCode: this.$route.query.TradePackageCode,
+                  PackageTitle: this.$route.query.PackageTitle,
+                  AuditStatus: this.$route.query.AuditStatus
+                },
                 projectType: undefined,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                    const requestParameters = Object.assign({}, parameter, { ProjectGUID: this.queryParam.ProjectGUID, Sorting: 'packageDate', SortOrder: 'DESC' })
+                  this.queryParam['Sorting'] = 'packageDate'
+                  this.queryParam['SortOrder'] = 'DESC'
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID !== '' && this.projectType !== 'noProject') {
                         return CostService.bidItems(requestParameters)
                             .then(res => {
@@ -309,7 +322,14 @@
               }
               this.$refs.table.refresh()
               this.$forceUpdate()
+            },
+            search () {
+              this.$refs.table.refresh()
             }
+        },
+        activated () {
+          console.log('keep alive activeted')
+          this.$refs.table.refresh()
         }
     }
 </script>
