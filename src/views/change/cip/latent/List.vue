@@ -41,60 +41,56 @@
           <a-col :md="24" :sm="24" style="margin-bottom : 10px;" >
               <a-button
                 type="success"
-                style="margin-left: 20px"
                 v-if="ac('ADD')"
                 @click="add"
-              >新增</a-button
-              >
+              >新增</a-button>
           </a-col>
-          <a-row :gutter="48" style="margin-top: 10px">
-            <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-              <s-table
-                rowKey="svGuid"
-                ref="table"
-                :showPagination="false"
-                :columns="columns"
-                :alert="false"
-                :data="loadData"
-                bordered
-                :scroll="{ y: 300 }"
-              >
-                <span slot="action" slot-scope="text, item">
-                  <template>
-                    <a-button
-                      class="btn-success"
-                      type="primary"
-                      icon="file-text"
-                      v-if="ac('VIEW')"
-                      title="查看"
-                      @click="view(item)"
-                    >
-                    </a-button>
-                    <a-button
-                      class="btn-info"
-                      type="primary"
-                      icon="form"
-                      style="margin-left: 4px"
-                      title="编辑"
-                      v-if="ac('EDIT')"
-                      :disabled="item.auditStatus.indexOf('未审核') < 0 "
-                      @click="edit(item)"
-                    ></a-button>
-                    <a-button
-                      type="danger"
-                      icon="delete"
-                      style="margin-left: 4px"
-                      title="废弃"
-                      :loading="loading.delCer"
-                      v-if="ac('DELETE')"
-                      :disabled="item.auditStatus.indexOf('未审核') < 0 "
-                      @click="del(item)"
-                    ></a-button>
-                  </template>
-                </span>
-              </s-table>
-            </a-col>
-          </a-row>
+          <a-col :md="24" :sm="24" style="margin-bottom: 10px;margin-top: 10px">
+            <s-table
+              rowKey="svGuid"
+              ref="table"
+              :showPagination="false"
+              :columns="columns"
+              :alert="false"
+              :data="loadData"
+              bordered
+              :scroll="{ y: 300 }"
+            >
+              <span slot="action" slot-scope="text, item">
+                <template>
+                  <a-button
+                    class="btn-success"
+                    type="primary"
+                    icon="file-text"
+                    v-if="ac('VIEW')"
+                    title="查看"
+                    @click="view(item)"
+                  >
+                  </a-button>
+                  <a-button
+                    class="btn-info"
+                    type="primary"
+                    icon="form"
+                    style="margin-left: 4px"
+                    title="编辑"
+                    v-if="ac('EDIT')"
+                    :disabled="item.auditStatus.indexOf('未审核') < 0 "
+                    @click="edit(item)"
+                  ></a-button>
+                  <a-button
+                    type="danger"
+                    icon="delete"
+                    style="margin-left: 4px"
+                    title="废弃"
+                    :loading="loading.delCer"
+                    v-if="ac('DELETE')"
+                    :disabled="item.auditStatus.indexOf('未审核') < 0 "
+                    @click="del(item)"
+                  ></a-button>
+                </template>
+              </span>
+            </s-table>
+          </a-col>
         </a-row>
       </a-form>
     </a-card>
