@@ -154,6 +154,7 @@
     import ContractComputeReplenishBudgets from '@/views/contract/components/computeBudgets/replenish'
     import { ac } from '@/views/user/user.service'
 
+
     export default {
         name: 'ContractItem',
         components: {
@@ -259,6 +260,12 @@
                     this.form.contract.isDeleted = false
                     this.form.contract.currencyID = 3
                     this.form.contract.baseCurrencyID = 3
+                    this.form.contract.contractAmount = 0
+                    this.form.contract.contractEffectAmount = 0
+                    this.form.contract.contractPSAmount = 0
+                    this.form.contract.contractOPTAmount = 0
+                    this.form.contract.contractPCPreAmount = 0
+                    this.form.contract.contractDSAmount = 0
                     this.form.contract.subNo = 0
                     this.form.contract.serialNo = 0
                     this.form.master = {}

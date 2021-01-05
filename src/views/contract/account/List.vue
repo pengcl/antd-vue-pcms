@@ -91,11 +91,6 @@
         </a-row>
       </a-form>
 
-      <a-row :gutter="48" style="margin-top: 10px">
-        <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd" v-if="queryParam.ProjectGUID && ac('ADD')">新增付款</a-button>
-        </a-col>
-      </a-row>
       <s-table
         style="margin-top: 5px"
         ref="table"
@@ -107,55 +102,28 @@
         :alert="false"
         showPagination="auto"
       >
-        <span slot="paymentAmount" slot-scope="text">
-            {{text | NumberFormat}}
+        <span slot="contractNo" slot-scope="text">
+            {{text}}
         </span>
 
+        <span slot="contractCategory" slot-scope="text">
+            {{text === 15 ? '原合同' : text === 16 ? '补充合同' : '专业分包合同'}}
+        </span>
 
-        <span slot="requestDate" slot-scope="text">
+        <span slot="signDate" slot-scope="text">
             {{text | date}}
         </span>
 
-        <span slot="action" slot-scope="text, record">
-          <template>
-            <a-button
-              v-if="ac('VIEW')"
-              class="btn-success"
-              type="primary"
-              icon="file-text"
-              title="查看"
-              @click="handleToItem(record)"></a-button>
-            <a-button
-              v-if="ac('EDIT')"
-              :disabled="record.auditStatus !== '未审核'"
-              class="btn-info"
-              type="primary"
-              icon="form"
-              style="margin-left: 4px"
-              title="编辑"
-              @click="handleToEdit(record)"></a-button>
-            <a-button
-              v-if="ac('DELETE')"
-              :disabled="record.auditStatus !== '未审核'"
-              type="danger"
-              icon="delete"
-              style="margin-left: 4px"
-              title="删除"
-              @click="remove(record)"></a-button>
-          </template>
+        <span slot="contractAmount" slot-scope="text">
+            {{text | NumberFormat}}
         </span>
+
+        <span slot="voAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
       </s-table>
 
-      <a-modal
-        title="删除付款单"
-        :visible="visible"
-        :maskClosable="false"
-        :confirm-loading="confirmLoading"
-        @ok="handleOk"
-        @cancel="handleCancel"
-      >
-        <p>您确定要删除？</p>
-      </a-modal>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -164,22 +132,22 @@
     import { STable } from '@/components'
     import { Base as BaseService } from '@/api/base'
     import CreateForm from '@/views/list/modules/CreateForm'
-    import { fixedList, getPosValue, getList, nullFixedList } from '@/utils/util'
+    import { fixedList, getPosValue, getList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '@/mock/util'
     import storage from 'store'
     import { ac } from '@/views/user/user.service'
+    import { AccountService } from './account.service'
 
     const columns = [
         {
             title: '审批状态',
-            dataIndex: 'action',
+            dataIndex: 'auditStatus',
             width: '139px',
-            scopedSlots: { customRender: 'action' }
         },
         {
             title: '结算状态',
-            dataIndex: 'paymentOtherCode'
+            dataIndex: 'balanceStatus'
         },
         {
             title: '合同编号',
@@ -189,22 +157,20 @@
         {
             title: '合同名称',
             dataIndex: 'contractName',
-            scopedSlots: { customRender: 'contractName' }
         },
         {
             title: '合同类型',
-            dataIndex: 'contractType',
-            scopedSlots: { customRender: 'contractType' }
+            dataIndex: 'contractCategory',
+            scopedSlots: { customRender: 'contractCategory' }
         },
         {
             title: '签约日期',
-            dataIndex: 'auditStatus',
-            scopedSlots: { customRender: 'auditStatus' }
+            dataIndex: 'signDate',
+            scopedSlots: { customRender: 'signDate' }
         },
         {
             title: '币种',
-            dataIndex: 'requestDate',
-            scopedSlots: { customRender: 'requestDate' }
+            dataIndex: 'currency',
         },
         {
             title: '合同金额',
@@ -213,8 +179,8 @@
         },
         {
             title: '累计变更金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'voAmount',
+            scopedSlots: { customRender: 'voAmount' }
         },
         {
             title: '预估结算金额',
@@ -238,28 +204,23 @@
         },
         {
             title: '甲方单位',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'partyName',
         },
         {
             title: '乙方单位',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'parcon',
         },
         {
             title: '所属项目',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'projectName',
         },
         {
             title: '申请部门',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'departmentName',
         },
         {
             title: '经办人',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'creatorUser',
         },
     ]
 
@@ -290,7 +251,9 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return nullFixedList(requestParameters)
+                    return AccountService.items(requestParameters).then(res => {
+                        return fixedList(res, requestParameters)
+                    })
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -309,7 +272,7 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                this.queryParam.ProjectCode = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
+                this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
                 this.projectType = value.type ? value.type : getList(this.cities, 0).type
                 this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.$refs.table.refresh()
@@ -346,7 +309,7 @@
             },
             onSelect (value, option) {
                 storage.set('POS', option.pos)
-                this.queryParam.ProjectCode = option.$options.propsData.dataRef.projectCode
+                this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
                 this.projectType = option.$options.propsData.dataRef.type
                 if (typeof value === 'number') {
                     this.city = value

@@ -381,21 +381,36 @@
     import SelectTenderPackage from '@/views/contract/components/baseInfo/selectTenderPackage/index'
     import SelectVendor from '@/views/contract/components/baseInfo/selectVendor/index'
     import { ProjectRolesService } from '@/views/role/project/projectRoles.service'
-    import { formatTree } from '@/utils/util'
 
     let deptName = ''
 
     function getDptName (gid, items) {
         items.forEach(item => {
             if (item.value === gid) {
-                deptName = item.title
+                deptName = item.label
             } else {
-                if (item.children.length > 0) {
+                if (item.children && item.children.length > 0) {
                     getDptName(gid, item.children)
                 }
             }
         })
         return deptName
+    }
+
+    const formatList = (items) => {
+        const list = []
+        items.forEach(item => {
+            if (item.children && item.children.length > 0) {
+                item.selectable = false
+                item.children = formatList(item.children)
+            } else {
+                item.children = null
+            }
+            item.label = item.orgName
+            item.value = item.orgGID
+            list.push(item)
+        })
+        return list
     }
 
     export default {
@@ -454,8 +469,9 @@
         },
         created () {
             ProjectRolesService.dps('').then(res => {
-                const dps = formatTree([res.result.data], ['title:orgName', 'value:orgGID'])
+                const dps = formatList([res.result.data])
                 this.dps = dps
+                console.log(this.dps)
             })
             ContractService.types().then(res => {
                 this.selection.types = res.result.data
