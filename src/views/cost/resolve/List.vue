@@ -145,7 +145,6 @@
                                             obj.className = 'title-center'
                                             obj.dataIndex = 'cost' + subjectItem1.costCenterId
                                             obj.scopedSlots = { customRender: 'cost' }
-                                            console.log(index, res2.result.data.costCenterBudgetSubPlans.length)
                                             if (index !== res2.result.data.costCenterBudgetSubPlans.length) {
                                                 obj.width = (this.columnsWidth - 500) / res2.result.data.costCenterBudgetSubPlans.length
                                             }
@@ -153,7 +152,6 @@
                                             _columns.push(obj)
                                             this.titleIds.push('cost' + subjectItem1.costCenterId)
                                         })
-                                        console.log(_columns)
                                         this.columns = _columns
                                         this.$forceUpdate()
                                         const tempCodes = ['B', 'C', 'D', 'E', 'F', 'G']

@@ -14,20 +14,18 @@
       </div>
       <a-row>
         <a-col :md="24" :sm="24">
-          <a-table
-            v-if="sourceData && sourceData.length"
+          <s-table
             style="margin-top: 5px"
             ref="table"
             size="default"
             rowKey="key"
             bordered
             :columns="columns"
-            :data-source="sourceData"
+            :data="loadData"
             :alert="false"
             :showPagination="false"
             :scroll="{ x: columnsWidth,y: 500 }"
             :pageSize="1000"
-            :defaultExpandAllRows="true"
           >
             <span slot="cost" slot-scope="text">
               <p style="text-align: center">
@@ -57,7 +55,7 @@
                 {{ record.code }}
               </template>
             </span>
-          </a-table>
+          </s-table>
         </a-col>
       </a-row>
       <a-row>
@@ -147,7 +145,7 @@
     items.forEach(item => {
       // 插入科目
       const obj = {}
-      obj.key = Number(Math.random().toString() + Date.now()).toString(36)
+      obj.key = item.elementInfoId
       obj.elementInfoId = item.elementInfoId
       obj.elementInfoCode = item.elementInfoCode
       obj.elementInfoNameCN = item.elementInfoNameCN
@@ -308,7 +306,6 @@
       this.columns = columns
       return {
         data: [],
-        sourceData: [],
         auditStatus: '',
         cities: [],
         visible: false,
@@ -364,19 +361,17 @@
               // 组装动态列对应的行数据
               const list = getLineData(res.result.data[0].elementItem.childs, res.result.data)
               result.result.data = getList(list, res.result.data)
-              if ( result.result.data.length > 0){
-                this.sourceData = result.result.data
-              }
               this.columns = _columns
               this.$forceUpdate()
             }
+            return {data: result.result.data}
           })
         }
       }
     },
     filters: {},
     created() {
-      this.loadData()
+
     },
     computed: {
       rowSelection() {
