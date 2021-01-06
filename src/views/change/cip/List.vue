@@ -23,21 +23,47 @@
         </a-form>
       </div>
 
-      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
         <a-row :gutter="48">
-          <a-col :md="12" :sm="24">
-            <a-form-item label="合同名称">
-              <a-input v-model="queryParam.ContractName"></a-input>
-            </a-form-item>
-          </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
               <a-input v-model="queryParam.ContractNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="乙方单位">
+            <a-form-item label="合同名称">
+              <a-input v-model="queryParam.ContractName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="本地合同编号">
+              <a-input v-model="queryParam.LocalContractNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合作方">
               <a-input v-model="queryParam.VendorName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合同类型">
+              <a-select v-model="queryParam.ContractCategory">
+                <a-select-option value="">所有</a-select-option>
+                <a-select-option v-for="item in categoryTypes" :key="item.id" :value="item.id">
+                  {{item.nameCN}}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="结算状态" >
+              <a-select v-model="queryParam.balanceStatus">
+                <a-select-option value="">所有</a-select-option>
+                <a-select-option value="未结算">未结算</a-select-option>
+                <a-select-option value="阶段结算">阶段结算</a-select-option>
+                <a-select-option value="结算中">结算中</a-select-option>
+                <a-select-option value="最终结算">最终结算</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -204,6 +230,7 @@ import CreateForm from '@/views/list/modules/CreateForm'
 import { ChangeService } from '@/views/change/change.service'
 import { ProjectService } from '@/views/project/project.service'
 import { fixedList, getPosValue, nullFixedList } from '@/utils/util'
+import { ContractService } from '@/views/contract/contract.service'
 import { formatList } from '../../../mock/util'
 import { ac } from '@/views/user/user.service'
 
@@ -326,6 +353,7 @@ export default {
       loading: { delCer: false },
       // 高级搜索 展开/关闭
       advanced: false,
+      categoryTypes : [],
       // 合同列表查询参数
       queryParam: {},
       // 变更列表查询参数
@@ -334,7 +362,9 @@ export default {
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         this.queryParam2.contractGuid = null
+        this.contractSelected = {}
         if (this.$refs.table2) {
+          this.$refs.table2.clearSelected()
           this.$refs.table2.refresh()
         }
         if (!this.queryParam.ProjectID) {
@@ -346,6 +376,7 @@ export default {
       },
       // 变更列表加载数据方法 必须为 Promise 对象
       loadData2: parameter => {
+        this.tableSelected = {}
         const requestParameters = Object.assign({}, parameter, this.queryParam2)
         if (!this.queryParam2.contractGuid) {
           return nullFixedList(requestParameters)
@@ -361,7 +392,9 @@ export default {
       // 记录变更列表选中行信息
       tableSelected: {},
       // 记录合同选择行信息
-      contractSelected: {}
+      contractSelected: {},
+      selectedRowKeys2: [],
+      selectedRows2: []
     }
   },
   created () {
@@ -386,6 +419,17 @@ export default {
       this.$forceUpdate()
       this.$refs.table.refresh()
     })
+
+    ContractService.types().then(res =>{
+      if(res.result.statusCode === 200){
+        this.categoryTypes = res.result.data
+        this.$forceUpdate()
+      }
+    })
+
+  },
+  activated(){
+    this.search()
   },
   computed: {
     // 合同列表行选中事件监听
@@ -414,6 +458,12 @@ export default {
       const that = this
       return {
         type: 'radio',
+        selectedRowKeys: this.selectedRowKeys2,
+        onChange : function(selectedRowKeys, selectedRows) {
+          console.log('sss',selectedRowKeys,selectedRows)
+          that.selectedRowKeys2 = selectedRowKeys
+          that.selectedRows2 = selectedRows
+        },
         onSelect: function (record, selected, selectRows, nativeEvent) {
           that.tableSelected = record
         }
@@ -462,8 +512,9 @@ export default {
     },
     search () {
       if (!this.queryParam.ProjectID) {
-        this.$message.warn('请选择项目')
+        // this.$message.warn('请选择项目')
       } else {
+        this.$refs.table.clearSelected()
         this.show = !this.show
         this.$refs.table.refresh(true)
       }
