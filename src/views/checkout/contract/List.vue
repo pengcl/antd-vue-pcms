@@ -84,7 +84,11 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button type="success" @click="handleToCompleted" :disabled="!contractGID" v-if="ac('ADD')">新增竣工证书</a-button>
+          <a-button type="success"
+                    @click="handleToCompleted"
+                    :disabled="!contractGID || isLastBalance"
+                    v-if="ac('ADD')">新增竣工证书
+          </a-button>
           <a-button type="success"
                     style="margin-left: 10px"
                     @click="handleToAdd"
@@ -217,8 +221,7 @@
         },
         {
             title: '乙方单位',
-            dataIndex: 'creatorUser',
-            scopedSlots: { customRender: 'creatorUser' }
+            dataIndex: 'contractPartyCON',
         }
     ]
 
@@ -351,6 +354,7 @@
                 // 查询参数
                 queryParam: { IsBalance: true },
                 queryParam2: {},
+                isLastBalance: false,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -369,6 +373,9 @@
                                 res.result.data.items.forEach(item => {
                                     if (item.file_PdfPath) {
                                         item.file_PdfPathUrl = (process.env.VUE_APP_API_BASE_URL + '/' + item.file_PdfPath)
+                                    }
+                                    if (item.isLastBalance) {
+                                        this.isLastBalance = true
                                     }
                                 })
                             }
@@ -413,6 +420,7 @@
                     type: 'radio',
                     onSelect: function (record, selected, selectRows, nativeEvent) {
                         that.contractGID = record.contractGuid
+                        that.isLastBalance = false
                         that.$refs._table.refresh()
                     }
                 }

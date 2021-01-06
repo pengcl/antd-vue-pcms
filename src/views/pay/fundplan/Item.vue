@@ -604,7 +604,7 @@
                 this.loadData()
             },
             view () {
-                BaseService.viewBpm(this.originData.result.data.gid).then(res => {
+                BaseService.viewBpm(this.originData.result.data.monthNum ? this.originData.result.data.gid : this.originData.result.data.fundingPlanGID).then(res => {
                     const tempwindow = window.open('_blank')
                     tempwindow.location = res.result.data
                 })

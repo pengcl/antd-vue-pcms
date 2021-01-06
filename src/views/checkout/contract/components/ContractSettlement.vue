@@ -104,13 +104,16 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item label="经办部门" prop="operatorDept">
-          <a-select v-model="data.operatorDept"
-                    :disabled="type === 'view'">
-            <a-select-option v-for="(item,index) in departmentList"
-                             :value="item.departmentName"
-                             :key="index">{{item.departmentName}}
-            </a-select-option>
-          </a-select>
+          <a-tree-select
+            :disabled="type === 'view'"
+            style="width: 100%"
+            :tree-data="dps"
+            @select="onSelect"
+            :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+            search-placeholder="请选择"
+            v-model="data.operatorDept"
+            :suffixIcon="dps ? '' : '加载中...'">
+          </a-tree-select>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -218,6 +221,38 @@
 
 <script>
     import { Base as BaseService } from '@/api/base'
+    import { ProjectRolesService } from '@/views/role/project/projectRoles.service'
+
+    let deptName = ''
+
+    function getDptName (gid, items) {
+        items.forEach(item => {
+            if (item.value === gid) {
+                deptName = item.label
+            } else {
+                if (item.children && item.children.length > 0) {
+                    getDptName(gid, item.children)
+                }
+            }
+        })
+        return deptName
+    }
+
+    const formatList = (items) => {
+        const list = []
+        items.forEach(item => {
+            if (item.children && item.children.length > 0) {
+                item.selectable = false
+                item.children = formatList(item.children)
+            } else {
+                item.children = null
+            }
+            item.label = item.orgName
+            item.value = item.orgGID
+            list.push(item)
+        })
+        return list
+    }
 
     export default {
         name: 'ContractSettlement',
@@ -231,6 +266,7 @@
                 },
                 visible: false,
                 confirmLoading: false,
+                dps: null,
                 rules: {
                     progressRequestAmount: [{ required: true, message: '请输入承建商申报金额', trigger: 'change' }],
                     progressSendDate: [{ required: true, message: '请选择承建商申报日期', trigger: 'change' }],
@@ -261,8 +297,9 @@
             },
         },
         created () {
-            BaseService.departmentList().then(res => {
-                this.departmentList = res.result.data
+            ProjectRolesService.dps('').then(res => {
+                const dps = formatList([res.result.data])
+                this.dps = dps
             })
         },
         watch: {
@@ -275,6 +312,9 @@
             }
         },
         methods: {
+            onSelect (value) {
+                this.data.operatorDept = getDptName(value, this.dps)
+            },
             remove () {
                 this.visible = true
             },

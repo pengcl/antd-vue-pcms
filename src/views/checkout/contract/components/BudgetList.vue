@@ -150,7 +150,6 @@
             Ellipsis
         },
         data () {
-            columns[0].customRender = this.renderCost
             this.rowSpans = {}
             this.columns = columns
             this.surplusColumns = surplusColumns

@@ -57,15 +57,21 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
-            <a-button @click="approve" type="success" :disabled="balanceCertificateAuditStatus !== '已审核'">
+            <a-button @click="approve" type="success"
+                      :disabled="balanceCertificateAuditStatus !== '已审核' && !form.useStore">
               启动审批流程
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
+            <a-button @click="view" type="success">
+              查看审批
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
-            <a-button @click="view" type="success">
-              查看审批
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+            <a-button @click="edit" type="success">
+              编辑
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
@@ -84,6 +90,7 @@
 
     <compute-budgets ref="budgets"
                      :data="form"
+                     :type="type"
                      :contractGuid="form.contractGID"
                      :destroyOnClose="true">
     </compute-budgets>
@@ -100,7 +107,6 @@
     import { ac } from '@/views/user/user.service'
     import ComputeBudgets from './modules/ComputeBudgets'
     import { Base as BaseService } from '@/api/base'
-    import notification from 'ant-design-vue/es/notification'
 
     export default {
         name: 'Edit',
@@ -168,11 +174,20 @@
                         if (this.form.ccPartyNames) {
                             this.form.ccParty = this.form.ccPartyNames.split(',')
                         }
+                        if (this.form.bqList.length > 0) {
+                            this.form.bqList.forEach(item => {
+                                item.costCenter = item.costCenter + ''
+                            })
+                        }
+
                     })
                 }
             },
             back () {
                 this.$router.push({ path: '/checkout/contract/list' })
+            },
+            edit () {
+                this.$router.push({ path: `/checkout/contract/item/${this.id}?type=update` })
             },
             approve () {
                 CheckoutService.startBPM_BalanceContract(this.id).then(res => {
@@ -190,20 +205,14 @@
                 this.disabled = true
                 this.$refs.contractSettlement.$refs.form.validate(vaild => {
                     if (vaild) {
-                        if (!this.form.balanceAdjustAmount) {
-                            this.disabled = false
-                            notification.error({
-                                message: '提示',
-                                description: '请添加造价估算列表！'
-                            })
-                            this.activeKey = 2
-                            return false
-                        }
-
                         CheckoutService[this.type + 'BalanceContract'](this.form).then(res => {
                             if (res.result.data) {
                                 this.$message.success(this.type === 'create' ? '创建成功' : '修改成功')
-                                this.showBudgets(this.type === 'create' ? res.result.data : res.result.data.gid)
+                                if (this.form.balanceAdjustAmount !== 0) {
+                                    this.showBudgets(this.type === 'create' ? res.result.data : res.result.data.gid)
+                                } else {
+                                    this.$router.push({ path: '/checkout/contract/list' })
+                                }
                             } else {
                                 this.disabled = false
                             }

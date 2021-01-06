@@ -147,11 +147,16 @@
               启动审批流程
             </a-button>
           </a-button-group>
-        </a-col>
-        <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+            <a-button @click="edit" type="success">
+              编辑
             </a-button>
           </a-button-group>
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
@@ -256,6 +261,9 @@
             },
             back () {
                 this.$router.push({ path: '/checkout/contract/list' })
+            },
+            edit () {
+                this.$router.push({ path: `/checkout/completed/list/${this.id}?type=update&contractGID=` + this.contractGID })
             },
             save () {
                 this.disabled = true

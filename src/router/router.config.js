@@ -340,7 +340,7 @@ export const asyncRouterMap = [
             path: '/pay/signed/list',
             name: 'PaySignedList',
             component: () => import('@/views/pay/signed/List'),
-            meta: { title: 'menu.pay.signed.list', keepAlive: false, permission: ['PaymentContract'] }
+            meta: { title: 'menu.pay.signed.list', keepAlive: true, permission: ['PaymentContract'] }
           },
           {
             path: '/pay/signed/item/:id',
@@ -360,7 +360,7 @@ export const asyncRouterMap = [
             path: '/pay/unsigned/list',
             name: 'PayUnsignedList',
             component: () => import('@/views/pay/unsigned/List'),
-            meta: { title: 'menu.pay.unsigned.list', keepAlive: false, permission: ['PaymentOther'] }
+            meta: { title: 'menu.pay.unsigned.list', keepAlive: true, permission: ['PaymentOther'] }
           },
           {
             path: '/pay/unsigned/item/:id',

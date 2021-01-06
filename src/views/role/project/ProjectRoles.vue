@@ -88,6 +88,22 @@
     return list
   }
 
+  const _formatList = (items) => {
+      const list = []
+      items.forEach(item => {
+          if (item.children && item.children.length > 0) {
+              item.selectable = false
+              item.children = _formatList(item.children)
+          } else {
+              item.children = null
+          }
+          item.label = item.orgName
+          item.value = item.orgGID
+          list.push(item)
+      })
+      return list
+  }
+
   export default {
     name: 'ProjectRoles',
     mixins: [baseMixin],
@@ -125,7 +141,7 @@
     created () {
       console.log(acs(this.$route))
       ProjectRolesService.dps('').then(res => {
-        const dps = formatTree([res.result.data], ['title:orgName', 'value:orgGID'])
+        const dps = _formatList([res.result.data])
         this.dps = dps
       })
       ProjectService.all().then(res => {
