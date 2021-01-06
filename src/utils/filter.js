@@ -35,3 +35,13 @@ Vue.filter('date', function (dataStr, pattern = 'YYYY-MM-DD') {
     return ''
   }
 })
+
+
+Vue.filter('dateZH', function (dataStr, pattern = 'YYYY年MM月DD日') {
+  if (dataStr) {
+    return moment(dataStr).format(pattern)
+  } else {
+    return ''
+  }
+})
+
