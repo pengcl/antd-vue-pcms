@@ -374,7 +374,7 @@
                             if (res.result.data) {
                                 res.result.data.items.forEach(item => {
                                     if (item.file_PdfPath) {
-                                        item.file_PdfPathUrl = (process.env.VUE_APP_API_BASE_URL + '/' + item.file_PdfPath)
+                                        item.file_PdfPathUrl = process.env.VUE_APP_API_BASE_URL + '/' + item.file_PdfPath
                                     }
                                     if (item.isLastBalance) {
                                         this.isLastBalance = true

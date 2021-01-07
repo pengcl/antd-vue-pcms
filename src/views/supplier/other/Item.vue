@@ -44,7 +44,6 @@
                 :disabled="type === 'view'"
                 v-model="form.vendor.packageCodeList"
                 style="width: 100%"
-                tree-checkable
                 :tree-data="selection.types"
                 search-placeholder="请选择供应商类别"
               />

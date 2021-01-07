@@ -153,7 +153,7 @@
     import ContractComputeBudgets from '@/views/contract/components/computeBudgets/index'
     import ContractComputeReplenishBudgets from '@/views/contract/components/computeBudgets/replenish'
     import { ac } from '@/views/user/user.service'
-
+    import storage from 'store'
 
     export default {
         name: 'ContractItem',
@@ -197,7 +197,7 @@
             },
             ProjectGUID () {
                 return this.$route.query.ProjectGUID
-            }
+            },
         },
         watch: {
             '$route' (path) {
@@ -255,6 +255,13 @@
                         })
                     })
                 } else {
+                    const dep = storage.get('Department')
+                    dep.forEach((item, index) => {
+                        if (index === 0) {
+                            this.form.contract.deptGuid = item.id
+                            this.form.contract.deptName = item.name
+                        }
+                    })
                     this.form.fileMasterId = 0
                     this.form.contract.id = 0
                     this.form.contract.isDeleted = false

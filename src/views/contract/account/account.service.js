@@ -2,7 +2,8 @@ import request from '@/utils/request'
 
 const API = {
   items: '/api/services/app/Contract/GetContractBookListBySearch',
-  exportExcel: '/api/services/app/Contract/ContractBQExportExcel',
+  exportExcel: '/api/services/app/Contract/ExportContractBook',
+  contractBookInfo: '/api/services/app/Contract/GetContractBookDetail',
 }
 
 const AccountService = {}
@@ -22,11 +23,19 @@ AccountService.items = function (parameter) {
   })
 }
 
-AccountService.exportExcel = function (contractGuid) {
+AccountService.contractBookInfo = function (contractGuid) {
+  return request({
+    url: API.contractBookInfo,
+    method: 'get',
+    params: { contractGuid }
+  })
+}
+
+AccountService.exportExcel = function (parameter) {
   return request({
     url: API.exportExcel,
-    method: 'POST',
-    params: {contractGuid}
+    method: 'get',
+    params: parameter
   })
 }
 

@@ -41,30 +41,54 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
+            <a-form-item label="本地合同编号">
+              <a-input v-model="queryParam.LocalContractNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
               <a-input v-model="queryParam.ContractName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="供应商名称">
+            <a-form-item label="合作方">
               <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="提交状态">
+            <a-form-item label="合作类型">
               <a-select
-                placeholder="请选择"
-                v-model="queryParam.AuditStatus"
-                v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="">所有</a-select-option>
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
+                placeholder="请选择合作类型"
+                v-model="queryParam.ContractCategory">
+                <a-select-option :value="15">原合同</a-select-option>
+                <a-select-option :value="16">补充合同</a-select-option>
+                <a-select-option :value="17">专业分包合同</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
+            <a-form-item label="审批状态">
+              <a-select
+                placeholder="请选择"
+                v-model="queryParam.AuditStatus">
+                <a-select-option :value="'未审核'">未审核</a-select-option>
+                <a-select-option :value="'审核中'">审核中</a-select-option>
+                <a-select-option :value="'已审核'">已审核</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="预算确认">
+              <a-radio-group v-model="queryParam.BudgetIsConfirm" style="color: #fff">
+                <a-radio :value="true">是</a-radio>
+                <a-radio :value="false">否</a-radio>
+              </a-radio-group>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
             <a-button type="success" @click="search()">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="clear">清空</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -228,6 +252,13 @@
             })
         },
         methods: {
+            clear () {
+                this.queryParam = {
+                    ProjectID: this.queryParam.ProjectID,
+                    ProjectGUID: this.queryParam.ProjectGUID
+                }
+
+            },
             ac (action) {
                 return ac(action, this.$route)
             },
@@ -294,6 +325,10 @@
   .project-type-tips {
     line-height: 32px;
     color: #ff0000;
+  }
+
+  .ant-radio-group .ant-radio-wrapper {
+    color: #fff;
   }
 
 </style>

@@ -21,7 +21,7 @@
               <a-button type="primary" style="margin-left: 5px" @click="show = !show">
                 <a-icon type="search"></a-icon>
               </a-button>
-              <a-button type="success" style="margin-left: 10px">导入Excel</a-button>
+              <a-button type="success" style="margin-left: 10px" @click="exportExcel">导出Excel</a-button>
             </a-col>
           </a-row>
         </a-form>
@@ -106,8 +106,8 @@
         showPagination="auto"
         :scroll="{ x: 'calc(700px + 50%)'}"
       >
-        <span slot="contractNo" slot-scope="text">
-            {{text}}
+        <span slot="contractNo" slot-scope="text,record">
+          <a @click="handleToItem(record.contractGuid)">{{text}}</a>
         </span>
 
         <span slot="contractCategory" slot-scope="text">
@@ -359,11 +359,24 @@
             }
         },
         methods: {
+            exportExcel () {
+                const parameter = Object.assign({
+                    SkipCount: 0,
+                    MaxResultCount: 9999
+                })
+                const requestParameters = Object.assign({}, parameter, this.queryParam)
+                AccountService.exportExcel(requestParameters).then(res => {
+                    if (res.result.data) {
+                        const _window = window.open('_blank')
+                        _window.location = res.result.data
+                    }
+                })
+            },
+            handleToItem (id) {
+                this.$router.push({ path: `/contract/account/item/${id}?type=view` })
+            },
             ac (action) {
                 return ac(action, this.$route)
-            },
-            handleToItem (record) {
-                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=view&projectGUID=` + this.queryParam.ProjectGUID })
             },
             handleToEdit (record) {
                 this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=update&projectGUID=` + this.queryParam.ProjectGUID })

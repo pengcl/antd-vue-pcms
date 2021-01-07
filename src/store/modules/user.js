@@ -1,6 +1,6 @@
 import storage from 'store'
 import { login, getInfo, logout } from '@/views/user/user.service'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN, DEPARTMENT } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 /* import { info } from '@/mock/services/user' */
 
@@ -8,7 +8,15 @@ const DASHBOARD = {
   'roleId': 'admin',
   'permissionId': 'dashboard',
   'permissionName': '任务管理',
-  'actions': [{ 'action': 'add', 'defaultCheck': false, 'describe': '新增' }, { 'action': 'query', 'defaultCheck': false, 'describe': '查询' }, { 'action': 'get', 'defaultCheck': false, 'describe': '详情' }, { 'action': 'update', 'defaultCheck': false, 'describe': '修改' }, { 'action': 'delete', 'defaultCheck': false, 'describe': '删除' }],
+  'actions': [{ 'action': 'add', 'defaultCheck': false, 'describe': '新增' }, {
+    'action': 'query',
+    'defaultCheck': false,
+    'describe': '查询'
+  }, { 'action': 'get', 'defaultCheck': false, 'describe': '详情' }, {
+    'action': 'update',
+    'defaultCheck': false,
+    'describe': '修改'
+  }, { 'action': 'delete', 'defaultCheck': false, 'describe': '删除' }],
   'actionEntitySet': [
     {
       'action': 'add',
@@ -76,6 +84,7 @@ const user = {
         login(userInfo).then(response => {
           const result = response.result
           storage.set(ACCESS_TOKEN, result.data.accessToken, 7 * 24 * 60 * 60 * 1000)
+          storage.set(DEPARTMENT, result.data.tenantOrgs)
           commit('SET_TOKEN', result.data.accessToken)
           resolve(result)
         }).catch(error => {

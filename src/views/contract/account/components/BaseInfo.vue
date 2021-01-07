@@ -12,7 +12,7 @@
         prop="deptGuid"
       >
         <a-tree-select
-          :disabled="true"
+          :disabled="type === 'view'"
           style="width: 100%"
           :tree-data="dps"
           @select="onSelect"

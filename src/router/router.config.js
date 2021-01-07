@@ -321,7 +321,7 @@ export const asyncRouterMap = [
         name: 'pay',
         redirect: '/pay/list',
         component: RouteView,
-        meta: { title: 'menu.pay', icon: 'transaction', permission: ['FundingPlan', 'PaymentContract', 'PaymentOther'] },
+        meta: { title: 'menu.pay', icon: 'transaction', permission: ['FundingPlan', 'PaymentContract','PaymentBook','PaymentOther'] },
         children: [
           {
             path: '/pay/fundplan/list',
@@ -355,6 +355,12 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/pay/signed/invoice/List'),
             meta: { title: 'menu.pay.signed.invoice', keepAlive: false, permission: ['PaymentContract'] }
+          },
+          {
+            path: '/pay/paymentbook/list',
+            name: 'PayPaymentBookList',
+            component: () => import('@/views/pay/paymentbook/List'),
+            meta: { title: 'menu.pay.paymentbook.list', keepAlive: false, permission: ['PaymentBook'] }
           },
           {
             path: '/pay/unsigned/list',
