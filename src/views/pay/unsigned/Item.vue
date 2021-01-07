@@ -1,5 +1,5 @@
 <template>
-  <page-header-wrapper :title="type === 'view' ? '查看非同付款' : type === 'update' ? '编辑非合同付款' : '新增非合同付款'">
+  <page-header-wrapper :title="type === 'view' ? '查看非合同付款' : type === 'update' ? '编辑非合同付款' : '新增非合同付款'">
     <a-card :bordered="false" v-if="form">
       <a-form-model
         ref="form"
@@ -377,10 +377,10 @@
                                     result -= Math.abs(item.paymentAmount)
                                 }
                             })
-                            if (result > this.form.paymentAmount) {
+                            if (result !== this.form.paymentAmount) {
                                 notification.error({
                                     message: '提示',
-                                    description: '本期支付金额不能大于申请付款金额！'
+                                    description: '本期支付金额应该等于申请付款金额！'
                                 })
                                 this.disabled = false
                                 return false

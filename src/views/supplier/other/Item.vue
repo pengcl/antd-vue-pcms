@@ -39,11 +39,12 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="供应商类别" prop="packageCodeList">
+            <a-form-model-item label="供应商类别" prop="packageCode">
               <a-tree-select
                 :disabled="type === 'view'"
-                v-model="form.vendor.packageCodeList"
+                v-model="form.vendor.packageCode"
                 style="width: 100%"
+                @select="onSelect"
                 :tree-data="selection.types"
                 search-placeholder="请选择供应商类别"
               />
@@ -80,11 +81,13 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="经办部门">
-              <a-select v-model="form.vendor.organizationalStructureId" :disabled="type === 'view'" placeholder="请选择" default-value="0">
+              <a-select v-model="form.vendor.organizationalStructureId" :disabled="type === 'view'" placeholder="请选择"
+                        default-value="0">
                 <a-select-option
                   v-for="item in selection.departments"
                   :key="item.organizationalStructureId"
-                  :value="item.organizationalStructureId">{{ item.departmentName }}</a-select-option>
+                  :value="item.organizationalStructureId">{{ item.departmentName }}
+                </a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -180,199 +183,202 @@
 </template>
 
 <script>
-import CompanyStaff from '../components/CompanyStaff'
-import ChangeInfo from '../components/ChangeInfo'
-import ContractInfo from '../components/ContractInfo'
-import BankInfo from '../components/BankInfo'
-import AttachmentInfo from '../components/AttachmentInfo'
-import { SupplierService } from '@/views/supplier/supplier.service'
-import { TreeSelect } from 'ant-design-vue'
-import { City as CitySvc, formatCities } from '@/api/city'
-import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
-import { ac } from '@/views/user/user.service'
+    import CompanyStaff from '../components/CompanyStaff'
+    import ChangeInfo from '../components/ChangeInfo'
+    import ContractInfo from '../components/ContractInfo'
+    import BankInfo from '../components/BankInfo'
+    import AttachmentInfo from '../components/AttachmentInfo'
+    import { SupplierService } from '@/views/supplier/supplier.service'
+    import { TreeSelect } from 'ant-design-vue'
+    import { City as CitySvc, formatCities } from '@/api/city'
+    import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+    import { ac } from '@/views/user/user.service'
 
-const formatList = (items) => {
-    const list = []
-    items.forEach(item => {
-        if (item.children && item.children.length > 0) {
-            item.selectable = false
-            item.children = formatList(item.children)
-        } else {
-            item.children = null
-        }
-        item.label = item.packageName
-        item.value = item.packageCode
-        list.push(item)
-    })
-    return list
-}
-
-export default {
-  name: 'SupplierOtherItem',
-  components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
-  data () {
-    return {
-      dialog: DIALOGCONFIG,
-      selection: {},
-      checkText: '',
-      duplicated: false,
-      form: {
-        vendor: {},
-        vendorEmployeeList: [],
-        vendorBankList: []
-      },
-      disabled:false,
-      rules: {
-        vendorCode: [{ required: false, message: '请填写供应商编号', trigger: 'blur' }],
-        vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
-        vendorAbbreviation: [{ required: true, message: '请填写供应商别名', trigger: 'change' }],
-        packageCodeList: [{ required: true, message: '请选择供应商类别', trigger: 'change' }],
-        cityID: [{ required: true, message: '请选择公司所在地', trigger: 'blur' }],
-        legalRep: [{ required: true, message: '请填写法人代表', trigger: 'blur' }],
-        taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'blur' }],
-        logRemark: [{ required: this.type === 'update', message: '请填写变更备注', trigger: 'blur' }]
-      }
-    }
-  },
-  created () {
-    if (this.id !== '0') {
-      SupplierService[this.type + 'Entity'](this.id).then(res => {
-        this.data = res.result.data
-        this.form = res.result.data
-        this.form.vendor.registerType = 1
-        this.form.vendor.packageCodeList = ['9']
-        this.$forceUpdate()
-      })
-    } else {
-      this.form.vendor.registerType = 1
-    }
-    SupplierService.types('','其它类').then(res => {
-      this.selection.types = formatList([res.result.data])
-      this.$forceUpdate()
-    })
-    CitySvc.cities().then(res => {
-      this.selection.cities = formatCities(res.result.data.provinces)
-      this.$forceUpdate()
-    })
-    BaseService.departmentList().then(res => {
-      res.result.data.sort((a, b) => {
-        return a.sort - b.sort
-      })
-      this.selection.departments = res.result.data
-    })
-  },
-  computed: {
-    id () {
-      return this.$route.params.id
-    },
-    type () {
-      return this.$route.query.type
-    }
-  },
-  methods: {
-    ac (action) {
-      return ac(action, this.$route)
-    },
-    checkName (name) {
-      if (this.id === '0') {
-        SupplierService.check(name).then(res => {
-          this.duplicated = res.result.data
-        })
-      }
-    },
-    back () {
-      this.$router.push({ path: `/supplier/other/list` })
-    },
-    cityChange (value) {
-      this.form.vendor.province = value[0]
-      this.form.vendor.city = value[1]
-    },
-    handleEdit (record) {
-      this.visible = true
-      this.mdl = { ...record }
-    },
-    askUpdate () {
-      SupplierService.generate(this.id).then(res => {
-        this.$router.push({ path: `/supplier/other/item/${res.result.data}?type=update` })
-      })
-    },
-    save () {
-      this.disabled = true
-      this.form.vendorEmployeeList.forEach(item => {
-        item.logGID = this.form.vendor.logGID
-        item.vendorGID = this.form.vendor.vendorGID
-      })
-      this.form.vendorBankList.forEach(item => {
-        item.logGID = this.form.vendor.logGID
-        item.vendorGID = this.form.vendor.vendorGID
-      })
-
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          SupplierService[this.type](this.form).then(res => {
-            if (res.result.statusCode === 200) {
-              this.$message.success('保存成功')
-              this.$router.push({ path: `/supplier/other/list` })
-            }else {
-              this.disabled = false
+    const formatList = (items) => {
+        const list = []
+        items.forEach(item => {
+            if (item.children && item.children.length > 0) {
+                item.selectable = false
+                item.children = formatList(item.children)
+            } else {
+                item.children = null
             }
-          })
-        }
-      })
+            item.label = item.packageName
+            item.value = item.packageCode
+            list.push(item)
+        })
+        return list
     }
-  }
-}
+
+    export default {
+        name: 'SupplierOtherItem',
+        components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
+        data () {
+            return {
+                dialog: DIALOGCONFIG,
+                selection: {},
+                checkText: '',
+                duplicated: false,
+                form: {
+                    vendor: {},
+                    vendorEmployeeList: [],
+                    vendorBankList: []
+                },
+                disabled: false,
+                rules: {
+                    vendorCode: [{ required: false, message: '请填写供应商编号', trigger: 'blur' }],
+                    vendorName: [{ required: true, message: '请填写供应商名称', trigger: 'change' }],
+                    vendorAbbreviation: [{ required: true, message: '请填写供应商别名', trigger: 'change' }],
+                    packageCode: [{ required: true, message: '请选择供应商类别', trigger: 'change' }],
+                    cityID: [{ required: true, message: '请选择公司所在地', trigger: 'blur' }],
+                    legalRep: [{ required: true, message: '请填写法人代表', trigger: 'blur' }],
+                    taxpayerName: [{ required: true, message: '请选择纳税人身份', trigger: 'blur' }],
+                    logRemark: [{ required: this.type === 'update', message: '请填写变更备注', trigger: 'blur' }]
+                }
+            }
+        },
+        created () {
+            if (this.id !== '0') {
+                SupplierService[this.type + 'Entity'](this.id).then(res => {
+                    this.data = res.result.data
+                    this.form = res.result.data
+                    this.form.vendor.packageCode = this.form.vendor.packageCodeList.join('')
+                    this.form.vendor.registerType = 1
+                    this.$forceUpdate()
+                })
+            } else {
+                this.form.vendor.registerType = 1
+            }
+            SupplierService.types('', '其它类').then(res => {
+                this.selection.types = formatList([res.result.data])
+                this.$forceUpdate()
+            })
+            CitySvc.cities().then(res => {
+                this.selection.cities = formatCities(res.result.data.provinces)
+                this.$forceUpdate()
+            })
+            BaseService.departmentList().then(res => {
+                res.result.data.sort((a, b) => {
+                    return a.sort - b.sort
+                })
+                this.selection.departments = res.result.data
+            })
+        },
+        computed: {
+            id () {
+                return this.$route.params.id
+            },
+            type () {
+                return this.$route.query.type
+            }
+        },
+        methods: {
+            onSelect (value) {
+                this.form.vendor.packageCodeList = value.split()
+            },
+            ac (action) {
+                return ac(action, this.$route)
+            },
+            checkName (name) {
+                if (this.id === '0') {
+                    SupplierService.check(name).then(res => {
+                        this.duplicated = res.result.data
+                    })
+                }
+            },
+            back () {
+                this.$router.push({ path: `/supplier/other/list` })
+            },
+            cityChange (value) {
+                this.form.vendor.province = value[0]
+                this.form.vendor.city = value[1]
+            },
+            handleEdit (record) {
+                this.visible = true
+                this.mdl = { ...record }
+            },
+            askUpdate () {
+                SupplierService.generate(this.id).then(res => {
+                    this.$router.push({ path: `/supplier/other/item/${res.result.data}?type=update` })
+                })
+            },
+            save () {
+                this.disabled = true
+                this.form.vendorEmployeeList.forEach(item => {
+                    item.logGID = this.form.vendor.logGID
+                    item.vendorGID = this.form.vendor.vendorGID
+                })
+                this.form.vendorBankList.forEach(item => {
+                    item.logGID = this.form.vendor.logGID
+                    item.vendorGID = this.form.vendor.vendorGID
+                })
+
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        SupplierService[this.type](this.form).then(res => {
+                            if (res.result.statusCode === 200) {
+                                this.$message.success('保存成功')
+                                this.$router.push({ path: `/supplier/other/list` })
+                            } else {
+                                this.disabled = false
+                            }
+                        })
+                    }
+                })
+            }
+        }
+    }
 </script>
 
 <style lang="less" scoped>
-.ant-btn-group {
-  margin-right: 8px;
-}
+  .ant-btn-group {
+    margin-right: 8px;
+  }
 
-table {
-  margin: 15px 0;
-  width: 100%;
-  border-width: 1px 1px 0 0;
-  border-radius: 3px 3px 0 0;
-  border-style: solid;
-  border-color: #ccc;
+  table {
+    margin: 15px 0;
+    width: 100%;
+    border-width: 1px 1px 0 0;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-color: #ccc;
 
-  thead {
-    tr {
-      &:first-child {
+    thead {
+      tr {
+        &:first-child {
+          th {
+            background-color: #f5f5f5;
+          }
+        }
+
         th {
-          background-color: #f5f5f5;
+          background-color: #06c;
+          color: #fff;
+          font-weight: normal;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
+
+          button {
+            margin-right: 10px;
+          }
         }
       }
+    }
 
-      th {
-        background-color: #06c;
-        color: #fff;
-        font-weight: normal;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
+    tbody {
+      tr {
+        td {
+          padding: 0.5em 0.6em 0.4em 0.6em !important;
+          border-width: 0 0 1px 1px;
+          border-style: solid;
+          border-color: #ccc;
 
-        button {
-          margin-right: 10px;
+          button {
+            margin-right: 10px;
+          }
         }
       }
     }
   }
-
-  tbody {
-    tr {
-      td {
-        padding: 0.5em 0.6em 0.4em 0.6em !important;
-        border-width: 0 0 1px 1px;
-        border-style: solid;
-        border-color: #ccc;
-
-        button {
-          margin-right: 10px;
-        }
-      }
-    }
-  }
-}
 </style>
