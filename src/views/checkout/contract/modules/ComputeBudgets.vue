@@ -433,12 +433,7 @@
                     if (res.result.statusCode === 200) {
                         this.$message.success('预算确认成功')
                         this.handleCancel()
-                        if (this.type === 'create') {
-                            this.$router.push({ path: `/checkout/contract/item/${this.gid}?type=view` })
-                        } else {
-                            this.$router.push({ path: '/checkout/contract/list' })
-                        }
-
+                        this.$router.push({ path: `/checkout/contract/item/${this.gid}?type=view` })
                     }
                 }).catch(() => {
                     this.loading = false

@@ -106,12 +106,23 @@
                 SignedService.progressByContract(this.data['contractGID'], this.data['paymentPhase']).then(res => {
                     this.payDetail = res.result.data
                 })
-            } else {
+            }else {
                 SignedService.progressById(this.data['id']).then(res => {
                     this.payDetail = res.result.data
                 })
             }
 
+        },
+        watch: {
+            'data.id' (value) {
+                if (value) {
+                    if (this.type !== 'create') {
+                        SignedService.progressById(this.data['id']).then(res => {
+                            this.payDetail = res.result.data
+                        })
+                    }
+                }
+            }
         },
         methods: {}
     }

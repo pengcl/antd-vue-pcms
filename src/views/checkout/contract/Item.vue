@@ -58,7 +58,7 @@
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
             <a-button @click="approve" type="success"
-                      :disabled="balanceCertificateAuditStatus !== '已审核' && !form.useStore">
+                      :disabled="form.balanceCertificateAuditStatus !== '已审核' && !form.useStore">
               启动审批流程
             </a-button>
           </a-button-group>
@@ -129,9 +129,6 @@
             balanceCertificateGID () {
                 return this.$route.query.balanceCertificateGID
             },
-            balanceCertificateAuditStatus () {
-                return this.$route.query.balanceCertificateAuditStatus
-            }
         },
         created () {
             this.getData()
@@ -211,7 +208,7 @@
                                 if (this.form.balanceAdjustAmount !== 0) {
                                     this.showBudgets(this.type === 'create' ? res.result.data : res.result.data.gid)
                                 } else {
-                                    this.$router.push({ path: '/checkout/contract/list' })
+                                    this.$router.push({ path: `/checkout/contract/item/${this.type === 'create' ? res.result.data : res.result.data.gid}?type=view` })
                                 }
                             } else {
                                 this.disabled = false
@@ -225,9 +222,6 @@
             },
             showBudgets (id) {
                 this.$refs.budgets.showModal(id)
-                /*if (this.form.bqList.length > 0 && bAmountIsChangeResult) {
-                    this.$refs.budgets.showModal()
-                }*/
             },
             view () {
                 BaseService.viewBpm(this.id).then(res => {

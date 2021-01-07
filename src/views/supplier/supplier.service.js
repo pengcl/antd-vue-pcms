@@ -88,12 +88,11 @@ SupplierService.bank = function (GID) {
   })
 }
 
-
-SupplierService.types = function list () {
+SupplierService.types = function (defaultRootName, vendorType) {
   return request({
     url: API.types,
     method: 'GET',
-    params: {}
+    params: { defaultRootName, vendorType }
   })
 }
 

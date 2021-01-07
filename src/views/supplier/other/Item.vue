@@ -41,12 +41,11 @@
           <a-col :md="12" :sm="24">
             <a-form-model-item label="供应商类别" prop="packageCodeList">
               <a-tree-select
-                :disabled="true"
+                :disabled="type === 'view'"
                 v-model="form.vendor.packageCodeList"
                 style="width: 100%"
-                :tree-data="selection.types"
                 tree-checkable
-                :show-checked-strategy="SHOW_PARENT"
+                :tree-data="selection.types"
                 search-placeholder="请选择供应商类别"
               />
             </a-form-model-item>
@@ -193,31 +192,27 @@ import { City as CitySvc, formatCities } from '@/api/city'
 import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 import { ac } from '@/views/user/user.service'
 
-function formatTree (data, keys) {
-  const items = []
-  data.forEach(item => {
-    if (item.packageCode !== '9') {
-      item.disabled = true
-    }
-    keys.forEach(key => {
-      const keyArr = key.split(':')
-      item[keyArr[0]] = item[keyArr[1]]
+const formatList = (items) => {
+    const list = []
+    items.forEach(item => {
+        if (item.children && item.children.length > 0) {
+            item.selectable = false
+            item.children = formatList(item.children)
+        } else {
+            item.children = null
+        }
+        item.label = item.packageName
+        item.value = item.packageCode
+        list.push(item)
     })
-    items.push(item)
-    if (item.children) {
-      item.children = formatTree(item.children, keys)
-    }
-  })
-  return items
+    return list
 }
 
-const SHOW_PARENT = TreeSelect.SHOW_PARENT
 export default {
   name: 'SupplierOtherItem',
   components: { AttachmentInfo, BankInfo, ContractInfo, ChangeInfo, CompanyStaff },
   data () {
     return {
-      SHOW_PARENT,
       dialog: DIALOGCONFIG,
       selection: {},
       checkText: '',
@@ -251,10 +246,9 @@ export default {
       })
     } else {
       this.form.vendor.registerType = 1
-      this.form.vendor.packageCodeList = ['9']
     }
-    SupplierService.types().then(res => {
-      this.selection.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
+    SupplierService.types('','其它类').then(res => {
+      this.selection.types = formatList([res.result.data])
       this.$forceUpdate()
     })
     CitySvc.cities().then(res => {
@@ -262,7 +256,6 @@ export default {
       this.$forceUpdate()
     })
     BaseService.departmentList().then(res => {
-      console.log(res)
       res.result.data.sort((a, b) => {
         return a.sort - b.sort
       })

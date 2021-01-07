@@ -31,57 +31,60 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
-              <a-input v-model="queryParam.contractNo"></a-input>
+              <a-input v-model="queryParam.ContractNo"
+                       placeholder="请输入合同编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
-              <a-input v-model="queryParam.contractName"></a-input>
+              <a-input v-model="queryParam.ContractName"
+                       placeholder="请输入合同名称"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商名称">
-              <a-input v-model="queryParam.vendorName"></a-input>
+              <a-input v-model="queryParam.VendorName"
+                       placeholder="请输入供应商名称"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="经办人">
-              <a-input v-model="queryParam.agent"></a-input>
+              <a-input v-model="queryParam.CreatorUser"
+                       placeholder="请输入经办人"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="审批状态">
               <a-select
-                placeholder="请选择"
-                v-model="queryParam.auditStatus"
+                placeholder="请选择审批状态"
+                v-model="queryParam.AuditStatus"
                 v-decorator="[queryParam.auditStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
+                <a-select-option :value="'未审核'">未审核</a-select-option>
+                <a-select-option :value="'审核中'">审核中</a-select-option>
+                <a-select-option :value="'已审核'">已审核</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="结算状态">
               <a-select
-                placeholder="请选择"
-                v-model="queryParam.settlementStatus"
-                v-decorator="[queryParam.settlementStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">已结算</a-select-option>
-                <a-select-option value="2">未结算</a-select-option>
+                placeholder="请选择结算状态"
+                v-model="queryParam.BalanceStatus">
+                <a-select-option :value="'未结算'">未结算</a-select-option>
+                <a-select-option :value="'已结算'">已结算</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="申请部门">
-              <a-select
-                placeholder="请选择"
-                v-model="queryParam.departmentName"
-                v-decorator="[queryParam.departmentName, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option v-for="(item,index) in departmentList"
-                                 :value="item.departmentName"
-                                 :key="index">{{item.departmentName}}
-                </a-select-option>
-              </a-select>
+              <a-tree-select
+                style="width: 100%"
+                :tree-data="dps"
+                :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                placeholder="请选择申请部门"
+                v-model="queryParam.DeptGuid"
+                :suffixIcon="dps ? '' : '加载中...'">
+              </a-tree-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -94,13 +97,14 @@
       <s-table
         style="margin-top: 5px"
         ref="table"
+        rowKey="contractGuid"
         size="default"
-        rowKey="gid"
         bordered
         :columns="columns"
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :scroll="{ x: 'calc(700px + 50%)'}"
       >
         <span slot="contractNo" slot-scope="text">
             {{text}}
@@ -122,6 +126,22 @@
             {{text | NumberFormat}}
         </span>
 
+        <span slot="preSettleAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
+        <span slot="requestAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
+        <span slot="paymentAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
+        <span slot="billAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
+
       </s-table>
 
     </a-card>
@@ -138,88 +158,128 @@
     import storage from 'store'
     import { ac } from '@/views/user/user.service'
     import { AccountService } from './account.service'
+    import { ProjectRolesService } from '@/views/role/project/projectRoles.service'
+
+    const _formatList = (items) => {
+        const list = []
+        items.forEach(item => {
+            if (item.children && item.children.length > 0) {
+                item.selectable = false
+                item.children = _formatList(item.children)
+            } else {
+                item.children = null
+            }
+            item.label = item.orgName
+            item.value = item.orgGID
+            list.push(item)
+        })
+        return list
+    }
 
     const columns = [
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
-            width: '139px',
+            width: 78,
         },
         {
             title: '结算状态',
-            dataIndex: 'balanceStatus'
+            dataIndex: 'balanceStatus',
+            width: 78
         },
         {
             title: '合同编号',
             dataIndex: 'contractNo',
+            width: 110,
             scopedSlots: { customRender: 'contractNo' }
         },
         {
             title: '合同名称',
+            width: 130,
             dataIndex: 'contractName',
         },
         {
             title: '合同类型',
             dataIndex: 'contractCategory',
+            width: 130,
             scopedSlots: { customRender: 'contractCategory' }
         },
         {
             title: '签约日期',
             dataIndex: 'signDate',
+            width: 110,
             scopedSlots: { customRender: 'signDate' }
         },
         {
             title: '币种',
+            width: 78,
             dataIndex: 'currency',
         },
         {
             title: '合同金额',
             dataIndex: 'contractAmount',
+            align: 'center',
+            width: 180,
             scopedSlots: { customRender: 'contractAmount' }
         },
         {
             title: '累计变更金额',
             dataIndex: 'voAmount',
+            align: 'center',
+            width: 180,
             scopedSlots: { customRender: 'voAmount' }
         },
         {
             title: '预估结算金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'preSettleAmount',
+            align: 'center',
+            width: 180,
+            scopedSlots: { customRender: 'preSettleAmount' }
         },
         {
             title: '累计申请批准金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'requestAmount',
+            align: 'center',
+            width: 180,
+            scopedSlots: { customRender: 'requestAmount' }
         },
         {
             title: '累计支付金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'paymentAmount',
+            align: 'center',
+            width: 180,
+            scopedSlots: { customRender: 'paymentAmount' }
         },
         {
             title: '累计发票金额',
-            dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            dataIndex: 'billAmount',
+            align: 'center',
+            width: 180,
+            scopedSlots: { customRender: 'billAmount' }
         },
         {
             title: '甲方单位',
+            width: 180,
             dataIndex: 'partyName',
         },
         {
             title: '乙方单位',
+            width: 180,
             dataIndex: 'parcon',
         },
         {
             title: '所属项目',
+            width: 180,
             dataIndex: 'projectName',
         },
         {
             title: '申请部门',
+            width: 130,
             dataIndex: 'departmentName',
         },
         {
             title: '经办人',
+            width: 100,
             dataIndex: 'creatorUser',
         },
     ]
@@ -248,12 +308,16 @@
                 advanced: false,
                 // 查询参数
                 queryParam: {},
+                dps: null,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    return AccountService.items(requestParameters).then(res => {
-                        return fixedList(res, requestParameters)
-                    })
+                    if (this.queryParam.ProjectID) {
+                        return AccountService.items(requestParameters).then(res => {
+                            return fixedList(res, requestParameters)
+                        })
+                    }
+
                 },
                 selectedRowKeys: [],
                 selectedRows: []
@@ -280,6 +344,10 @@
             })
             BaseService.departmentList().then(res => {
                 this.departmentList = res.result.data
+            })
+            ProjectRolesService.dps('').then(res => {
+                const dps = _formatList([res.result.data])
+                this.dps = dps
             })
         },
         computed: {
