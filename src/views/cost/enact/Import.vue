@@ -62,12 +62,13 @@
     filters: {},
     created() {
       CostService.budgetTemplateFile({Id: this.id}).then(res => {
-        if (res.result.statusCode === 'Success') {
-          if (res.result.data === '') {
-            this.$message.error('无模板数据,请联系管理员')
-          } else {
+        if (res.result.statusCode === 200) {
+          if (res.result.data !== '') {
+            this.isDownload = true
             this.tempUrl = process.env.VUE_APP_API_BASE_URL + res.result.data
             this.$forceUpdate()
+          } else {
+            this.$message.error('无模板数据,请联系管理员')
           }
         }
       })

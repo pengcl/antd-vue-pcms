@@ -173,6 +173,10 @@ export default {
       type: Object,
       default: null,
     },
+    stage : {
+      type : String,
+      default : 'CIP'
+    }
   },
   methods: {
     add( item, addData) {

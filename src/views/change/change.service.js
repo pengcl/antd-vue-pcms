@@ -64,6 +64,9 @@ const API = {
   deleteSpotVisa: '/api/services/app/VO/DeleteSpotVisa',//废弃现场签证
   getVOInfoForSpotVisa: '/api/services/app/VO/GetVOInfoForSpotVisa',//针对现场签证获取VO相关信息
   getSpotVisaByGuid: '/api/services/app/VO/GetSpotVisaByGuid',//根据GUID获取现场签证信息
+
+  //变更台账
+  getVoBookInfoBySearch: '/api/services/app/VO/GetVoBookInfoBySearch',//变更台账列表
 }
 
 const ChangeService = {}
@@ -734,4 +737,14 @@ ChangeService.getVOInfoForSpotVisa = function(voGuid){
 	  })
 }
 
+/**
+ * 针对现场签证获取VO相关信息
+ */
+ChangeService.getVoBookInfoBySearch = function(params){
+	return request({
+	    url: API.getVoBookInfoBySearch,
+	    method: 'get',
+	    params: params
+	  })
+}
 export { ChangeService }
