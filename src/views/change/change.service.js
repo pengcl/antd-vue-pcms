@@ -67,6 +67,7 @@ const API = {
 
   //变更台账
   getVoBookInfoBySearch: '/api/services/app/VO/GetVoBookInfoBySearch',//变更台账列表
+  exportVOBook: '/api/services/app/VO/ExportVOBook',//导出变更台账
 }
 
 const ChangeService = {}
@@ -738,7 +739,7 @@ ChangeService.getVOInfoForSpotVisa = function(voGuid){
 }
 
 /**
- * 针对现场签证获取VO相关信息
+ * 变更台账列表
  */
 ChangeService.getVoBookInfoBySearch = function(params){
 	return request({
@@ -747,4 +748,16 @@ ChangeService.getVoBookInfoBySearch = function(params){
 	    params: params
 	  })
 }
+
+/**
+ * 导出变更台账
+ */
+ChangeService.exportVOBook = function(params){
+	return request({
+	    url: API.exportVOBook,
+	    method: 'get',
+	    params: params
+	  })
+}
+
 export { ChangeService }

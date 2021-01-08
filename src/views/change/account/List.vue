@@ -40,7 +40,7 @@
           <a-col :md="24" :sm="24">
             <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
-            <a-button type="success" style="margin-left: 20px">导出</a-button>
+            <a-button type="success" style="margin-left: 20px" v-if="$refs.table" :disabled="$refs.table._data.localDataSource.length < 1" @click="exportExcel">导出</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -259,8 +259,17 @@ export default {
       this.$forceUpdate()
     },
     search(){
+      console.log('table-info',this.$refs.table)
       this.$refs.table.clearSelected()
       this.$refs.table.refresh()
+    },
+    exportExcel(){
+      ChangeService.exportVOBook(this.queryParam).then(res =>{
+        if(res.result.statusCode === 200){
+          window.location = res.result.data
+          this.$message.success('文件导出中，请注意查收')
+        }
+      })
     }
   }
 }
