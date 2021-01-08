@@ -2,6 +2,7 @@ import request from '@/utils/request'
 
 const API = {
   items: '/api/services/app/Payment/GetPaymentBookPage',
+  exportPaymentBook: '/api/services/app/Payment/ExportPaymentBook',
 }
 
 const PaymentBookService = {}
@@ -21,6 +22,13 @@ PaymentBookService.items = function (parameter) {
   })
 }
 
+PaymentBookService.exportPaymentBook = function (parameter) {
+  return request({
+    url: API.exportPaymentBook,
+    method: 'get',
+    params: parameter
+  })
+}
 
 /**
  * login func

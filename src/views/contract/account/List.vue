@@ -71,7 +71,9 @@
                 placeholder="请选择结算状态"
                 v-model="queryParam.BalanceStatus">
                 <a-select-option :value="'未结算'">未结算</a-select-option>
-                <a-select-option :value="'已结算'">已结算</a-select-option>
+                <a-select-option :value="'阶段结算'">阶段结算</a-select-option>
+                <a-select-option :value="'结算中'">结算中</a-select-option>
+                <a-select-option :value="'最终结算'">最终结算</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -90,6 +92,7 @@
           <a-col :md="24" :sm="24">
             <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="clear">清空</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -359,6 +362,13 @@
             }
         },
         methods: {
+            clear () {
+                this.queryParam = {
+                    ProjectID: this.queryParam.ProjectID,
+                    ProjectGUID: this.queryParam.ProjectGUID
+                }
+                this.$refs.table.refresh()
+            },
             exportExcel () {
                 const parameter = Object.assign({
                     SkipCount: 0,

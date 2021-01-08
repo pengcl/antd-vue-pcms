@@ -20,20 +20,18 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="编号">
+            <a-form-item label="供应商编号">
               <a-input v-model="queryParam.VendorCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="供应商分类">
-              <a-tree-select
-                v-model="queryParam.packageCodeList"
-                style="width: 100%"
-                :tree-data="types"
-                tree-checkable
-                :show-checked-strategy="SHOW_PARENT"
-                search-placeholder="请选择供应商类别"
-              />
+            <a-form-item label="供应商类别">
+              <a-select
+                placeholder="请选择"
+                v-model="queryParam.RegisterType">
+                <a-select-option :value="0">采购类</a-select-option>
+                <a-select-option :value="1">其它类</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
@@ -143,7 +141,6 @@
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           const requestParameters = Object.assign({}, parameter, this.queryParam)
-          console.log('loadData request parameters:', requestParameters)
           return SupplierService.items(requestParameters).then(res => {
             console.log(res)
             return fixedList(res, requestParameters)

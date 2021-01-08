@@ -21,6 +21,7 @@
               <a-button type="primary" style="margin-left: 5px" @click="show = !show">
                 <a-icon type="search"></a-icon>
               </a-button>
+              <a-button type="success" style="margin-left: 10px" @click="exportExcel">导出Excel</a-button>
             </a-col>
           </a-row>
         </a-form>
@@ -29,50 +30,39 @@
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-form-item label="收款单号">
-              <a-input v-model="queryParam.paymentOtherCode"></a-input>
+            <a-form-item label="合同编号">
+              <a-input v-model="queryParam.ContractNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="收款单位">
-              <a-input v-model="queryParam.payeePartyNameList"></a-input>
+            <a-form-item label="付款单号">
+              <a-input v-model="queryParam.PaymentCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="款项类型">
-              <a-select
-                placeholder="请选择"
-                v-model="queryParam.paymentType">
-                <a-select-option v-for="type in moneyTypes"
-                                 :value="type"
-                                 :key="type">{{type}}
-                </a-select-option>
-              </a-select>
+            <a-form-item label="供应商名称">
+              <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-item label="审批状态">
-              <a-select
-                placeholder="请选择"
-                v-model="queryParam.auditStatus"
-                v-decorator="[queryParam.auditStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
-              </a-select>
+          <a-col :md="24" :sm="24">
+            <a-form-item label="申请时间">
+              <a-date-picker :value="queryParam.CreationTime_From"
+                             @change="CreationTime_FromChange"
+                             placeholder="请选择开始时间"></a-date-picker>
+              <span style="margin: 0 10px;color: #fff">至</span>
+              <a-date-picker :value="queryParam.CreationTime_To"
+                             @change="CreationTime_ToChange"
+                             placeholder="请选择结束时间"></a-date-picker>
             </a-form-item>
           </a-col>
-          <a-col :md="12" :sm="24">
+          <a-col :md="24" :sm="24">
             <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="clear">清空</a-button>
           </a-col>
         </a-row>
       </a-form>
 
-      <a-row :gutter="48" style="margin-top: 10px">
-        <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd" v-if="queryParam.ProjectGUID && ac('ADD')">新增付款</a-button>
-        </a-col>
-      </a-row>
       <s-table
         style="margin-top: 5px"
         ref="table"
@@ -83,14 +73,26 @@
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :scroll="{ x: 'calc(700px + 50%)'}"
       >
         <span slot="paymentAmount" slot-scope="text">
             {{text | NumberFormat}}
         </span>
 
+        <span slot="requestAmount" slot-scope="text">
+            {{text | NumberFormat}}
+        </span>
 
-        <span slot="requestDate" slot-scope="text">
+        <span slot="creationTime" slot-scope="text">
             {{text | date}}
+        </span>
+
+        <span slot="contractNo" slot-scope="text,record">
+            <a @click="handleToContractItem(record.contractGuid)">{{text}}</a>
+        </span>
+
+        <span slot="paymentCode" slot-scope="text,record">
+            <a @click="handleToSignedItem(record.gid)">{{text}}</a>
         </span>
 
       </s-table>
@@ -101,55 +103,82 @@
 
 <script>
     import { STable } from '@/components'
-    import CreateForm from '@/views/list/modules/CreateForm'
     import { fixedList, getPosValue, getList } from '@/utils/util'
     import { ProjectService } from '@/views/project/project.service'
     import { formatList } from '@/mock/util'
-    import { UnSignedService } from '@/views/pay/unsigned/unsigned.service'
     import storage from 'store'
     import { ac } from '@/views/user/user.service'
     import { PaymentBookService } from './paymentbook.service'
 
     const columns = [
         {
-            title: '操作',
-            dataIndex: 'action',
-            width: '139px',
-            scopedSlots: { customRender: 'action' }
+            title: '合同编号',
+            dataIndex: 'contractNo',
+            width: '110px',
+            scopedSlots: { customRender: 'contractNo' }
         },
         {
             title: '付款单号',
-            dataIndex: 'paymentOtherCode'
-        },
-        {
-            title: '收款单位',
-            dataIndex: 'payeePartyNameList',
-            scopedSlots: { customRender: 'payeePartyNameList' }
-        },
-        {
-            title: '款项类型',
-            dataIndex: 'paymentBusinessType',
-            scopedSlots: { customRender: 'paymentBusinessType' }
-        },
-        {
-            title: '金额',
-            dataIndex: 'paymentAmount',
-            scopedSlots: { customRender: 'paymentAmount' }
+            dataIndex: 'paymentCode',
+            width: '110px',
+            scopedSlots: { customRender: 'paymentCode' }
         },
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
-            scopedSlots: { customRender: 'auditStatus' }
+            width: '78px',
         },
         {
-            title: '建立日期',
-            dataIndex: 'requestDate',
-            scopedSlots: { customRender: 'requestDate' }
+            title: '收款单位',
+            dataIndex: 'vendorName',
+            width: '180px',
         },
         {
-            title: '建立人',
-            dataIndex: 'requestUserName',
-            scopedSlots: { customRender: 'requestUserName' }
+            title: '申请时间',
+            dataIndex: 'creationTime',
+            width: '110px',
+            scopedSlots: { customRender: 'creationTime' }
+        },
+        {
+            title: '付款期数',
+            dataIndex: 'paymentPhase',
+            width: '78px',
+            align: 'center'
+        },
+        {
+            title: '申请批准金额',
+            dataIndex: 'requestAmount',
+            align: 'center',
+            width: '180px',
+            scopedSlots: { customRender: 'requestAmount' }
+        },
+        {
+            title: '本期支付金额',
+            dataIndex: 'paymentAmount',
+            align: 'center',
+            width: '180px',
+            scopedSlots: { customRender: 'paymentAmount' }
+        },
+        {
+            title: '申请人',
+            dataIndex: 'creatorUser',
+            width: '100px',
+        },
+        {
+            title: '付款单位',
+            dataIndex: 'nameCN',
+            width: '180px',
+        },
+        {
+            title: '支付方式',
+            dataIndex: 'paymentMethod',
+            align: 'center',
+            width: '90px',
+        },
+        {
+            title: '付款类型',
+            dataIndex: 'paymentType',
+            width: '90px',
         },
     ]
 
@@ -157,22 +186,17 @@
         name: 'PaymentBook',
         components: {
             STable,
-            CreateForm,
         },
         data () {
             this.columns = columns
             return {
                 // create model
                 cities: null,
-                moneyTypes: [],
                 city: '',
                 value: '',
                 deleteId: '',
                 projectType: '',
                 show: false,
-                visible: false,
-                confirmLoading: false,
-                mdl: null,
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
@@ -186,8 +210,6 @@
                         })
                     }
                 },
-                selectedRowKeys: [],
-                selectedRows: []
             }
         },
         created () {
@@ -209,26 +231,46 @@
                 this.$refs.table.refresh()
                 this.$forceUpdate()
             })
-            UnSignedService.moneyTypes().then(res => {
-                this.moneyTypes = res.result.data
-            })
 
         },
-        computed: {
-
-        },
+        computed: {},
         methods: {
+            CreationTime_FromChange (date, dateString) {
+                this.queryParam.CreationTime_From = dateString
+                this.$forceUpdate()
+            },
+            CreationTime_ToChange (date, dateString) {
+                this.queryParam.CreationTime_To = dateString
+                this.$forceUpdate()
+            },
+            clear () {
+                this.queryParam = {
+                    ProjectCode: this.queryParam.ProjectCode,
+                    ProjectGUID: this.queryParam.ProjectGUID
+                }
+                this.$refs.table.refresh()
+            },
+            exportExcel () {
+                const parameter = Object.assign({
+                    SkipCount: 0,
+                    MaxResultCount: 9999
+                })
+                const requestParameters = Object.assign({}, parameter, this.queryParam)
+                PaymentBookService.exportPaymentBook(requestParameters).then(res => {
+                    if (res.result.data) {
+                        const _window = window.open('_blank')
+                        _window.location = res.result.data
+                    }
+                })
+            },
             ac (action) {
                 return ac(action, this.$route)
             },
-            handleToItem (record) {
-                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=view&projectGUID=` + this.queryParam.ProjectGUID })
+            handleToContractItem (id) {
+                this.$router.push({ path: `/contract/item/${id}?type=view` })
             },
-            handleToEdit (record) {
-                this.$router.push({ path: `/pay/unsigned/item/${record.gid}?type=update&projectGUID=` + this.queryParam.ProjectGUID })
-            },
-            handleToAdd () {
-                this.$router.push({ path: '/pay/unsigned/item/0?type=create&projectGUID=' + this.queryParam.ProjectGUID })
+            handleToSignedItem (id) {
+                this.$router.push({ path: `/pay/signed/item/${id}?type=view` })
             },
             search () {
                 this.show = !this.show
@@ -247,29 +289,6 @@
                 this.$refs.table.refresh()
                 this.$forceUpdate()
             },
-            remove (record) {
-                this.visible = true
-                this.deleteId = record.gid
-            },
-            handleOk () {
-                this.confirmLoading = true
-                UnSignedService.delete(this.deleteId).then(res => {
-                    if (res.result.data) {
-                        this.visible = false
-                        this.confirmLoading = false
-                        this.$message.success('删除成功')
-                        this.$refs.table.refresh(true)
-                    }
-                })
-            },
-            handleCancel () {
-                this.visible = false
-            },
-            onSelectChange (selectedRowKeys, selectedRows) {
-                this.selectedRowKeys = selectedRowKeys
-                this.selectedRows = selectedRows
-            },
-
         }
     }
 </script>

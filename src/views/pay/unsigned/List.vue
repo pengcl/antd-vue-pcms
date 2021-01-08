@@ -29,7 +29,7 @@
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
-            <a-form-item label="收款单号">
+            <a-form-item label="付款单号">
               <a-input v-model="queryParam.paymentOtherCode"></a-input>
             </a-form-item>
           </a-col>
@@ -53,17 +53,32 @@
           <a-col :md="12" :sm="24">
             <a-form-item label="审批状态">
               <a-select
-                placeholder="请选择"
-                v-model="queryParam.auditStatus"
-                v-decorator="[queryParam.auditStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
+                placeholder="请选择审批状态"
+                v-model="queryParam.AuditStatus">
+                <a-select-option :value="'未审核'">未审核</a-select-option>
+                <a-select-option :value="'审核中'">审核中</a-select-option>
+                <a-select-option :value="'已审核'">已审核</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
+            <a-form-item label="建立人">
+              <a-input v-model="queryParam.requestUserName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-item label="建立日期">
+              <a-date-picker :value="queryParam.CreationTime_From"
+                             placeholder="请选择开始时间"></a-date-picker>
+              <span style="margin: 0 10px;color: #fff">至</span>
+              <a-date-picker :value="queryParam.CreationTime_To"
+                             placeholder="请选择结束时间"></a-date-picker>
+            </a-form-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
             <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="clear">清空</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -260,6 +275,13 @@
             }
         },
         methods: {
+            clear () {
+                this.queryParam = {
+                    ProjectCode: this.queryParam.ProjectCode,
+                    ProjectGUID: this.queryParam.ProjectGUID
+                }
+                this.$refs.table.refresh()
+            },
             ac (action) {
                 return ac(action, this.$route)
             },

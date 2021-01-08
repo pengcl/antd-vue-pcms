@@ -56,9 +56,9 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="合作类型">
+            <a-form-item label="合同类型">
               <a-select
-                placeholder="请选择合作类型"
+                placeholder="请选择合同类型"
                 v-model="queryParam.ContractCategory">
                 <a-select-option :value="15">原合同</a-select-option>
                 <a-select-option :value="16">补充合同</a-select-option>
@@ -257,7 +257,7 @@
                     ProjectID: this.queryParam.ProjectID,
                     ProjectGUID: this.queryParam.ProjectGUID
                 }
-
+                this.$refs.table.refresh()
             },
             ac (action) {
                 return ac(action, this.$route)

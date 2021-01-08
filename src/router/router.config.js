@@ -49,7 +49,7 @@ export const asyncRouterMap = [
             path: '/project/list',
             name: 'ProjectList',
             component: () => import('@/views/project/List'),
-            meta: { title: 'menu.project.list', keepAlive: true, permission: ['ProjectInfo'] }
+            meta: { title: 'menu.project.list', keepAlive: false, permission: ['ProjectInfo'] }
           },
           {
             path: '/project/item/:id',
@@ -62,7 +62,7 @@ export const asyncRouterMap = [
             path: '/project/cost/list',
             name: 'ProjectCostList',
             component: () => import('@/views/project/cost/List'),
-            meta: { title: 'menu.project.cost.list', keepAlive: true, permission: ['CostCenter'] }
+            meta: { title: 'menu.project.cost.list', keepAlive: false, permission: ['CostCenter'] }
           },
           {
             path: '/project/cost/item/:id',
@@ -85,7 +85,7 @@ export const asyncRouterMap = [
             path: '/supplier/purchase/list',
             name: 'SupplierPurchaseList',
             component: () => import('@/views/supplier/purchase/List'),
-            meta: { title: 'menu.supplier.purchase.list', keepAlive: true, permission: ['VendorCG'] }
+            meta: { title: 'menu.supplier.purchase.list', keepAlive: false, permission: ['VendorCG'] }
           },
           {
             path: '/supplier/purchase/item/:id',
@@ -98,7 +98,7 @@ export const asyncRouterMap = [
             path: '/supplier/other/list',
             name: 'SupplierOtherList',
             component: () => import('@/views/supplier/other/List'),
-            meta: { title: 'menu.supplier.other.list', keepAlive: true, permission: ['VendorOT'] }
+            meta: { title: 'menu.supplier.other.list', keepAlive: false, permission: ['VendorOT'] }
           },
           {
             path: '/supplier/other/item/:id',
@@ -221,7 +221,7 @@ export const asyncRouterMap = [
             path: '/contract/list',
             name: 'ContractList',
             component: () => import('@/views/contract/List'),
-            meta: { title: 'menu.contract.list', keepAlive: true, permission: ['ContractInfo'] }
+            meta: { title: 'menu.contract.list', keepAlive: false, permission: ['ContractInfo'] }
           },
           {
             path: '/contract/item/:id',
@@ -234,7 +234,7 @@ export const asyncRouterMap = [
             path: '/contract/account/list',
             name: 'ContractAccountList',
             component: () => import('@/views/contract/account/List'),
-            meta: { title: 'menu.contract.account.list', keepAlive: true, permission: ['ContractBook'] }
+            meta: { title: 'menu.contract.account.list', keepAlive: false, permission: ['ContractBook'] }
           },
           {
             path: '/contract/account/item/:id',
@@ -327,7 +327,7 @@ export const asyncRouterMap = [
             path: '/pay/fundplan/list',
             name: 'PayFundPlanList',
             component: () => import('@/views/pay/fundplan/List'),
-            meta: { title: 'menu.pay.fundplan.list', keepAlive: true, permission: ['FundingPlan'] }
+            meta: { title: 'menu.pay.fundplan.list', keepAlive: false, permission: ['FundingPlan'] }
           },
           {
             path: '/pay/fundplan/item/:id',
@@ -366,7 +366,7 @@ export const asyncRouterMap = [
             path: '/pay/unsigned/list',
             name: 'PayUnsignedList',
             component: () => import('@/views/pay/unsigned/List'),
-            meta: { title: 'menu.pay.unsigned.list', keepAlive: true, permission: ['PaymentOther'] }
+            meta: { title: 'menu.pay.unsigned.list', keepAlive: false, permission: ['PaymentOther'] }
           },
           {
             path: '/pay/unsigned/item/:id',

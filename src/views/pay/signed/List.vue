@@ -30,33 +30,51 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
-              <a-input v-model="queryParam.contractNo"></a-input>
+              <a-input v-model="queryParam2.ContractNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="本地合同编号">
+              <a-input v-model="queryParam2.LocalContractNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="合同名称">
-              <a-input v-model="queryParam.contractName"></a-input>
+              <a-input v-model="queryParam2.ContractName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="供应商名称">
-              <a-input v-model="queryParam.vendorName"></a-input>
+            <a-form-item label="合作方">
+              <a-input v-model="queryParam2.VendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="提交状态">
+            <a-form-item label="合同类型">
               <a-select
-                placeholder="请选择"
-                v-model="queryParam.auditStatus"
-                v-decorator="[queryParam.auditStatus, { rules: [{required: true, message: '请选择'}] }]">
-                <a-select-option value="1">草拟中</a-select-option>
-                <a-select-option value="2">已审批</a-select-option>
+                placeholder="请选择合同类型"
+                v-model="queryParam2.ContractCategory">
+                <a-select-option :value="15">原合同</a-select-option>
+                <a-select-option :value="16">补充合同</a-select-option>
+                <a-select-option :value="17">专业分包合同</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="结算状态">
+              <a-select
+                placeholder="请选择结算状态"
+                v-model="queryParam2.BalanceStatus">
+                <a-select-option :value="'未结算'">未结算</a-select-option>
+                <a-select-option :value="'阶段结算'">阶段结算</a-select-option>
+                <a-select-option :value="'结算中'">结算中</a-select-option>
+                <a-select-option :value="'最终结算'">最终结算</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-button type="success" @click="search()">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="clear">清空</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -365,6 +383,17 @@
             },
         },
         methods: {
+            clear () {
+                this.queryParam2 = {
+                    ProjectCode: this.queryParam2.ProjectCode,
+                    ProjectGUID: this.queryParam2.ProjectGUID
+                }
+                this.contractAmt = {}
+                this.id = ''
+                this.$refs.contractTable.clearSelected()
+                this.$refs.table.refresh()
+                this.$refs.contractTable.refresh()
+            },
             ac (action) {
                 return ac(action, this.$route)
             },
