@@ -1,4 +1,5 @@
 export const ACCESS_TOKEN = 'AccessToken'
+export const DEPARTMENT = 'Department'
 
 export const SIDEBAR_TYPE = 'sidebar_type'
 export const TOGGLE_MOBILE_TYPE = 'is_mobile'

@@ -34,7 +34,7 @@ const locale = {
   'menu.contract.edit': '合同编辑',
   'menu.contract.account': '合同台账',
   'menu.contract.account.list': '合同台账',
-  'menu.contract.account.item': '合同详情',
+  'menu.contract.account.item': '合同台账',
 
   'menu.change': '变更及成本管控',
   'menu.change.cip.list': '合同变更',
@@ -68,6 +68,7 @@ const locale = {
   'menu.pay.signed.list': '合同付款申请',
   'menu.pay.signed.item': '新增合同付款',
   'menu.pay.signed.invoice': '合同付款发票管理',
+  'menu.pay.paymentbook.list': '付款一览表',
   'menu.pay.unsigned.list': '非合同付款申请',
   'menu.pay.unsigned.edit': '非合同付款申请新增',
   'menu.pay.unsigned.item': '非合同付款申请新增',

@@ -136,13 +136,13 @@
         </span>
 
         <span slot="progressBalanceDate" slot-scope="text,record">
-          <a @click="handleToContractItem(record.bContractGID,'update','')"
+          <a @click="handleToContractItem(record.bContractGID,'update')"
              v-if="record.bContractAuditStatus === '未审核' && ac('C_EDIT')">{{text | date}}</a>
           <span v-if="record.bContractAuditStatus !== '未审核'">{{text | date}}</span>
         </span>
 
         <span slot="bContractAuditStatus" slot-scope="text,record">
-          <a @click="handleToContractItem(record.bContractGID,'view',record.auditStatus)">{{text}}</a>
+          <a @click="handleToContractItem(record.bContractGID,'view')">{{text}}</a>
         </span>
 
         <span slot="progressBalanceAmount" slot-scope="text">
@@ -162,7 +162,8 @@
         </span>
 
         <span slot="bProjectAuditStatus" slot-scope="text,record">
-         <a @click="handleToProjectItem(record.bProjectGID,record.bContractAuditStatus)" v-if="ac('P_APPROVE')">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
+         <a @click="handleToProjectItem(record.bProjectGID,record.bContractAuditStatus,record.balanceType)"
+            v-if="ac('P_APPROVE')">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
         </span>
 
         <span slot="bFinanceCreationTime" slot-scope="text">
@@ -170,7 +171,8 @@
         </span>
 
         <span slot="bFinanceAuditStatus" slot-scope="text,record">
-         <a @click="handleToFinanceItem(record.bFinanceGID,record.bContractAuditStatus)" v-if="ac('F_APPROVE')">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
+         <a @click="handleToFinanceItem(record.bFinanceGID,record.bContractAuditStatus,record.balanceType)"
+            v-if="ac('F_APPROVE')">{{text ? (text === '未审核' ? '发起审批' : '查看审批') : ''}}</a>
         </span>
 
       </s-table>
@@ -372,7 +374,7 @@
                             if (res.result.data) {
                                 res.result.data.items.forEach(item => {
                                     if (item.file_PdfPath) {
-                                        item.file_PdfPathUrl = (process.env.VUE_APP_API_BASE_URL + '/' + item.file_PdfPath)
+                                        item.file_PdfPathUrl = process.env.VUE_APP_API_BASE_URL + '/' + item.file_PdfPath
                                     }
                                     if (item.isLastBalance) {
                                         this.isLastBalance = true
@@ -450,14 +452,14 @@
             handleToCompletedItem (id, type) {
                 this.$router.push({ path: `/checkout/completed/list/${id}?type=${type}&contractGID=` + this.contractGID })
             },
-            handleToContractItem (id, type, auditStatus) {
-                this.$router.push({ path: `/checkout/contract/item/${id}?type=${type}` + (auditStatus ? ('&balanceCertificateAuditStatus=' + auditStatus) : '') })
+            handleToContractItem (id, type) {
+                this.$router.push({ path: `/checkout/contract/item/${id}?type=${type}` })
             },
-            handleToProjectItem (id, auditStatus) {
-                this.$router.push({ path: `/checkout/project/list/${id}?type=view&bContractAuditStatus=` + auditStatus })
+            handleToProjectItem (id, auditStatus, balanceType) {
+                this.$router.push({ path: `/checkout/project/list/${id}?type=view&bContractAuditStatus=` + auditStatus + '&balanceType=' + balanceType })
             },
-            handleToFinanceItem (id, auditStatus) {
-                this.$router.push({ path: `/checkout/finance/list/${id}?type=view&bContractAuditStatus=` + auditStatus })
+            handleToFinanceItem (id, auditStatus, balanceType) {
+                this.$router.push({ path: `/checkout/finance/list/${id}?type=view&bContractAuditStatus=` + auditStatus + '&balanceType=' + balanceType })
             },
             onSelect (value, option) {
                 storage.set('POS', option.pos)

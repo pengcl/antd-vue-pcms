@@ -272,13 +272,9 @@
                         CheckoutService[this.type + 'BalanceCertificate'](this.form).then(res => {
                             if (res.result.data) {
                                 this.$message.success(this.type === 'create' ? '创建成功' : '修改成功')
-                                if (this.type === 'create') {
-                                    this.$router.push({
-                                        path: `/checkout/completed/list/${res.result.data}?type=view&contractGID=` + this.contractGID
-                                    })
-                                } else {
-                                    this.$router.push({ path: '/checkout/contract/list' })
-                                }
+                                this.$router.push({
+                                    path: `/checkout/completed/list/${res.result.data}?type=view&contractGID=` + this.contractGID
+                                })
                             } else {
                                 this.disabled = false
                             }

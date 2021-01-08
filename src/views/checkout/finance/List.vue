@@ -202,7 +202,7 @@
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
-            <a-button @click="approve" type="success" :disabled="bContractAuditStatus !== '已审核'">
+            <a-button @click="approve" type="success" :disabled="bContractAuditStatus === '未审核' || balanceType !== '最终结算'">
               启动审批流程
             </a-button>
           </a-button-group>
@@ -252,6 +252,9 @@
             },
             bContractAuditStatus () {
                 return this.$route.query.bContractAuditStatus
+            },
+            balanceType(){
+                return this.$route.query.balanceType
             }
         },
         created () {

@@ -1,11 +1,11 @@
 <template>
   <page-header-wrapper :title="type === 'view' ? '查看合同付款' : type === 'update' ? '编辑合同付款' : '新增合同付款'">
     <a-card :bordered="false">
-      <a-tabs default-active-key="1" :animated="false">
-        <a-tab-pane key="1" tab="基本资料">
+      <a-tabs v-model="activeKey" :animated="false">
+        <a-tab-pane :key="1" tab="基本资料">
           <base-info ref="baseInfo" :data="form" :type="type" :id="id"></base-info>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="进度款支付明细表">
+        <a-tab-pane :key="2" tab="进度款支付明细表">
           <pay-detail :data="form" :type="type" :id="id"></pay-detail>
         </a-tab-pane>
       </a-tabs>
@@ -60,6 +60,7 @@
             return {
                 baseInfo: null,
                 disabled: false,
+                activeKey: 1,
                 form: SwaggerService.getForm('PaymentViewDto')
             }
         },
@@ -69,15 +70,21 @@
             },
             type () {
                 return this.$route.query.type
+            },
+            tab () {
+                return this.$route.query.tab
             }
         },
         created () {
             this.getData()
+            if (this.tab) {
+                this.activeKey = Number(this.tab)
+            }
         },
         watch: {
             '$route' (path) {
                 this.getData()
-            }
+            },
         },
         methods: {
             getData () {
