@@ -11,6 +11,7 @@ const API = {
   budgetPlanAuditSave: '/api/services/app/BudgetPlan/ProjectSaveBudgetPlanPackage', //保存项目的预算审核包信息
   budgetTemplateFile: '/api/services/app/BudgetPlan/GetProjectBudgetImportTemplate', //获取预算模板文件
   uploadBudgetFile: '/api/services/app/BudgetSubPlan/ProjectBudgetUpload', //项目预算导入
+  budgetPlanAuditInfo: '/api/services/app/BudgetSubPlan/ProjectBudgetSubPlanStartBPM', // 科目启动审核信息
   //专业分判包
   industryItems: '/api/services/app/TenderPackage/GetPaged' ,//专业分判包列表
   industryCreate: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加专业分判包
@@ -352,6 +353,14 @@ CostService.budgetPlanAuditItem = function (parameter) {
 CostService.budgetPlanAuditSave = function (parameter) {
   return request({
     url: API.budgetPlanAuditSave,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+CostService.budgetPlanAuditInfo = function (parameter) {
+  return request({
+    url: API.budgetPlanAuditInfo,
     method: 'POST',
     data: parameter
   })

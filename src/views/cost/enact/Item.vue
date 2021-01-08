@@ -48,7 +48,10 @@
       </a-row>
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button style="margin-right: 20px" type="success">启动审批流程</a-button>
+          <a-button v-if="form.auditStatus === '未审核' || form.auditStatus === '已审核'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
+          </a-button>
+          <a-button v-if="form.auditStatus !== '未审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
+          </a-button>
           <a-button :disabled="type === 'view' || disabled" :loading="loading.save" @click="handleToSave" type="success">储存
           </a-button>
           <a-button @click="back" style="margin-left: 5px" type="danger">关闭</a-button>
@@ -110,6 +113,8 @@
           save: false
         },
         disabled:false,
+        startBPMUrl: '',
+        viewBPMUrl: '',
         active: '',
         // 高级搜索 展开/关闭
         advanced: false,
@@ -219,6 +224,12 @@
     filters: {},
     created() {
       this.loadData()
+
+      CostService.budgetPlanAuditInfo(this.form).then(res => {
+        if (res.result.statusCode === 200) {
+          this.startBPMUrl = res.result.data.startBPMUrl
+        }
+      })
     },
     computed: {
       id() {
@@ -401,6 +412,24 @@
           this.treeLevel.push(obj)
         }
       },
+      runAudit() {
+        const _this = this
+        if (this.startBPMUrl !== '') {
+          const tempwindow = window.open('_blank')
+          tempwindow.location = this.startBPMUrl
+        } else {
+          _this.$message.error('启动审批链接不存在')
+        }
+      },
+      viewAudit() {
+        const _this = this
+        if (this.viewBPMUrl !== '') {
+          const tempwindow = window.open('_blank')
+          tempwindow.location = this.viewBPMUrl
+        } else {
+          _this.$message.error('查看审批链接不存在')
+        }
+      }
     }
   }
 </script>

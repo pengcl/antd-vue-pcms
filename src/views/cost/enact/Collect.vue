@@ -57,7 +57,7 @@
         </a-row>
         <a-row style="margin-top: 10px">
           <a-col :md="12" :sm="24">
-            <a-button v-if="form.auditStatus === '未审核'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
+            <a-button v-if="form.auditStatus === '未审核' || form.auditStatus === '已审核'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
             </a-button>
             <a-button v-if="form.auditStatus !== '未审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
             </a-button>
@@ -223,7 +223,7 @@
                 this.form = res.result.data
                 this.loading.save = false
                 const tempwindow = window.open('_blank')
-                tempwindow.location = this.form.startBPMUrl
+                tempwindow.location = res.result.data.startBPMUrl
               }
             }).catch(() => {
               this.loading.save = false
