@@ -114,6 +114,7 @@
             v-model="data.operatorDept"
             :suffixIcon="dps ? '' : '加载中...'">
           </a-tree-select>
+          <p v-if="isNotEndNode" style="color: red;margin-bottom: 0">请选择末级</p>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -242,7 +243,6 @@
         const list = []
         items.forEach(item => {
             if (item.children && item.children.length > 0) {
-                item.selectable = false
                 item.children = formatList(item.children)
             } else {
                 item.children = null
@@ -265,6 +265,7 @@
                     url: '',
                 },
                 visible: false,
+                isNotEndNode: false,
                 confirmLoading: false,
                 dps: null,
                 rules: {
@@ -312,8 +313,17 @@
             }
         },
         methods: {
-            onSelect (value) {
+            onSelect (value, node, extra) {
                 this.data.operatorDept = getDptName(value, this.dps)
+                extra.selectedNodes.forEach((item, index) => {
+                    if (index === 0) {
+                        if (item.data.props.dataRef.children) {
+                            this.isNotEndNode = true
+                        } else {
+                            this.isNotEndNode = false
+                        }
+                    }
+                })
             },
             remove () {
                 this.visible = true

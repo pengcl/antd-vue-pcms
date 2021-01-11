@@ -102,7 +102,7 @@
         watch: {
             'data.mainContractGID' (value) {
                 if (this.type !== 'create') {
-                    this.getFileList(this.masterId, this.data['mainContractGID'])
+                    this.getFileList(this.masterId, this.data['secondaryContractGID'])
                 }
             }
         },
@@ -111,14 +111,14 @@
                 this.attachmentTypeList = res.result.data
             })
             if (this.type !== 'create') {
-                if (this.data['mainContractGID']) {
-                    this.getFileList(this.masterId, this.data['mainContractGID'])
+                if (this.data['secondaryContractGID']) {
+                    this.getFileList(this.masterId, this.data['secondaryContractGID'])
                 }
             }
         },
         methods: {
             getFileList (id, value) {
-                BaseService.fileList(id, this.id, 'payment', value).then(res => {
+                BaseService.fileList(id, value, '', '').then(res => {
                     const fileList = []
                     if (res.result.data.length > 0) {
                         res.result.data.forEach(item => {
@@ -190,11 +190,11 @@
                 const formData = new FormData()
                 formData.append('file', file)
                 formData.append('masterId', this.masterId)
-                formData.append('businessID', this.id)
+                formData.append('businessID', this.type === 'update' ? this.data['secondaryContractGID'] : this.data['contractGID'])
                 formData.append('businessType', 'payment')
-                formData.append('subInfo1', this.attachmentType) //文件类型
-                formData.append('subInfo2', file.name) // 文件名
-                formData.append('subInfo3', this.type === 'update' ? this.data['mainContractGID'] : this.data['contractGID']) // 合同id
+                formData.append('subInfo1', '') //文件类型
+                formData.append('subInfo2', '') // 文件名
+                formData.append('subInfo3', '') // 合同id
                 this.uploading = true
                 const _this = this
                 this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {

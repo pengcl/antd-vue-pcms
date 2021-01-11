@@ -170,6 +170,7 @@
         data () {
             return {
                 disabled: false,
+                disabled2: false,
                 activeKey: 1,
                 loading: {
                     bpm: false,
@@ -380,6 +381,7 @@
                 this.$router.push('/contract/list')
             },
             handleOk () {
+                this.disabled2 = true
                 this.$refs.budgets.$refs.form.validate(valid => {
                     if (valid) {
                         const type = this.form.contract.budgetIsConfirm ? 'update' : 'create'
@@ -403,6 +405,8 @@
                                     this.show = false
                                     this.$message.success('确认成功')
                                     location.href = `/contract/item/${res.result.data}?type=view`
+                                } else {
+                                    this.disabled2 = false
                                 }
                             })
                         } else {
@@ -412,9 +416,13 @@
                                     this.show = false
                                     this.$message.success('确认成功')
                                     location.href = `/contract/item/${res.result.data}?type=view`
+                                } else {
+                                    this.disabled2 = false
                                 }
                             })
                         }
+                    } else {
+                        this.disabled2 = false
                     }
                 })
             },

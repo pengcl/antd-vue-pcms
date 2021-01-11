@@ -7,22 +7,22 @@
     :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
-      <a-form-model-item
-        label="申请部门"
-        prop="deptGuid"
-      >
-        <a-tree-select
-          :disabled="true"
-          style="width: 100%"
-          :tree-data="dps"
-          @select="onSelect"
-          :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
-          search-placeholder="请选择"
-          v-model="data.contract.deptGuid"
-          :suffixIcon="dps ? '' : '加载中...'">
-        </a-tree-select>
-      </a-form-model-item>
-    </a-col>
+        <a-form-model-item
+          label="申请部门"
+          prop="deptGuid"
+        >
+          <a-tree-select
+            :disabled="true"
+            style="width: 100%"
+            :tree-data="dps"
+            @select="onSelect"
+            :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+            search-placeholder="请选择"
+            v-model="data.contract.deptGuid"
+            :suffixIcon="dps ? '' : '加载中...'">
+          </a-tree-select>
+        </a-form-model-item>
+      </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item
           label="执行部门"
@@ -38,6 +38,7 @@
             v-model="data.contract.exeDeptGuid"
             :suffixIcon="dps ? '' : '加载中...'">
           </a-tree-select>
+          <p v-if="isNotEndNode" style="color: red;margin-bottom: 0">请选择末级</p>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -401,7 +402,6 @@
         const list = []
         items.forEach(item => {
             if (item.children && item.children.length > 0) {
-                item.selectable = false
                 item.children = formatList(item.children)
             } else {
                 item.children = null
@@ -426,9 +426,10 @@
                 vendor: null,
                 partyB: null,
                 dps: null,
+                isNotEndNode: false,
                 rules: {
-                    deptGuid:[{ required: true, message: '请选择申请部门', trigger: 'change' }],
-                    exeDeptGuid:[{ required: true, message: '请选择执行部门', trigger: 'change' }],
+                    deptGuid: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
+                    exeDeptGuid: [{ required: true, message: '请选择执行部门', trigger: 'change' }],
                     projectName: [
                         { required: true, message: '请输入项目名称(中文)', trigger: 'blur' }
                     ],
@@ -575,8 +576,17 @@
             onSelect (value) {
                 this.data.contract.deptName = getDptName(value, this.dps)
             },
-            onSelect2 (value) {
+            onSelect2 (value, node, extra) {
                 this.data.contract.exeDeptName = getDptName(value, this.dps)
+                extra.selectedNodes.forEach((item, index) => {
+                    if (index === 0) {
+                        if (item.data.props.dataRef.children) {
+                            this.isNotEndNode = true
+                        }else {
+                            this.isNotEndNode = false
+                        }
+                    }
+                })
             },
             getVendorName (id) {
                 let name = ''
