@@ -48,9 +48,9 @@
       </a-row>
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button v-if="form.auditStatus === '未审核' || form.auditStatus === '已审核'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
+          <a-button v-if="auditStatus === '未审核' || auditStatus === '已审核'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
           </a-button>
-          <a-button v-if="form.auditStatus !== '未审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
+          <a-button v-if="auditStatus !== '未审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
           </a-button>
           <a-button :disabled="type === 'view' || disabled" :loading="loading.save" @click="handleToSave" type="success">储存
           </a-button>
@@ -115,6 +115,7 @@
         disabled:false,
         startBPMUrl: '',
         viewBPMUrl: '',
+        auditStatus: '',
         active: '',
         // 高级搜索 展开/关闭
         advanced: false,
@@ -224,10 +225,11 @@
     filters: {},
     created() {
       this.loadData()
-
-      CostService.budgetPlanAuditInfo(this.form).then(res => {
+      const parameter = { ProjectGUID: this.ProjectGUID , ElementTypeId: this.id }
+      CostService.budgetPlanAuditInfo(parameter).then(res => {
         if (res.result.statusCode === 200) {
-          this.startBPMUrl = res.result.data.startBPMUrl
+          this.startBPMUrl = res.result.data.startOrViewBPMUrl
+          this.auditStatus = res.result.data.auditStatus
         }
       })
     },

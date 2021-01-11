@@ -5,7 +5,7 @@
         <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
           <a-row>
             <a-col :md="12" :sm="24">
-              工程行业预算
+              工程专业预算
               <a-button type="success" style="margin-left: 20px">审批记录</a-button>
               <a-button type="success" @click="createGT" style="margin-left: 20px">生成GT</a-button>
             </a-col>

@@ -40,6 +40,7 @@
           <a-col :md="24" :sm="24">
             <a-button type="success" @click="search">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="reset">清空</a-button>
             <a-button type="success" style="margin-left: 20px" v-if="$refs.table" :disabled="$refs.table._data.localDataSource.length < 1" @click="exportExcel">导出</a-button>
           </a-col>
         </a-row>
@@ -270,6 +271,13 @@ export default {
           this.$message.success('文件导出中，请注意查收')
         }
       })
+    },
+    reset(){
+      const tempQueryParam = { ProjectID : this.queryParam.ProjectID,ProjectGUID : this.queryParam.ProjectGUID}
+      this.queryParam = tempQueryParam
+      this.$refs.table.clearSelected()
+      this.$refs.table.refresh()
+      this.$forceUpdate()
     }
   }
 }
