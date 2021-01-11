@@ -73,6 +73,7 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-button type="success" @click="search()">搜索</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="reset">清空</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
           </a-col>
         </a-row>
@@ -584,6 +585,13 @@ export default {
     },
     viewBatch(){
       this.$refs.industryPackageBatchListModal.visible = true
+    },
+    reset(){
+      const tempQueryParam = { ProjectID : this.queryParam.ProjectID,ProjectGUID : this.queryParam.ProjectGUID}
+      this.queryParam = tempQueryParam
+      this.$refs.table.clearSelected()
+      this.$refs.table.refresh()
+      this.$forceUpdate()
     }
   }
 }
