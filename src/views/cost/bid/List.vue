@@ -70,6 +70,7 @@
           <a-col :md="24" :sm="24">
             <a-button type="success" @click="search()">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="reSetSearch()">清空</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -324,6 +325,13 @@
               this.$forceUpdate()
             },
             search () {
+              this.$refs.table.refresh()
+            },
+            reSetSearch () {
+              this.queryParam.TradePackageCode = ''
+              this.queryParam.PackageTitle = ''
+              this.queryParam.CreatorUser = ''
+              this.queryParam.AuditStatus = ''
               this.$refs.table.refresh()
             }
         },
