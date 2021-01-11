@@ -254,7 +254,7 @@ const _columns = [
     dataIndex: 'elementInfoNameCN'
   },
   {
-    title: '行业',
+    title: '专业',
     dataIndex: 'budgetTitle'
   },
   {
