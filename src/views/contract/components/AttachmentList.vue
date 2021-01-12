@@ -151,8 +151,9 @@
                 formData.append('businessID', this.id === '0' ? '' : this.id)
                 formData.append('businessType', 'Contract')
                 formData.append('remark', this.fileList[this.index].remark) // 文件类型
-                formData.append('subInfo1', file.name) // 文件名
-                formData.append('subInfo2', this.data.contract.contractGuid) // 合同id
+                formData.append('subInfo1', '')
+                formData.append('subInfo2', '') // 文件名
+                formData.append('subInfo3', '') // 合同id
                 this.uploading = true
 
                 // You can use any AJAX library you like

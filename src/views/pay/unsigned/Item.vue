@@ -21,7 +21,7 @@
           <a-col :md="12" :sm="24">
             <a-form-model-item label="申请部门" prop="sponsorDeptGID">
               <a-tree-select
-                :disabled="type === 'view'"
+                :disabled="true"
                 style="width: 100%"
                 :tree-data="dps"
                 @select="onSelect"
@@ -190,6 +190,7 @@
     import { ac } from '@/views/user/user.service'
     import notification from 'ant-design-vue/es/notification'
     import { ProjectRolesService } from '@/views/role/project/projectRoles.service'
+    import storage from 'store'
 
     let deptName = ''
 
@@ -337,6 +338,13 @@
                         this.form.projectName = initData.projectName
                         this.form.payerPartyName = initData.companyName
                         this.form.requestUserName = initData.requestUserName
+                    })
+                    const dep = storage.get('Department')
+                    dep.forEach((item, index) => {
+                        if (index === 0) {
+                            this.form.sponsorDeptGID = item.id
+                            this.form.sponsorDeptName = item.name
+                        }
                     })
                     this.form.id = 0
                     this.form.gid = '00000000-0000-0000-0000-000000000000'

@@ -34,9 +34,30 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="纳税人身份">
+              <a-select
+                placeholder="请选择"
+                v-model="queryParam.TaxpayerName">
+                <a-select-option :value="0">一般纳税人</a-select-option>
+                <a-select-option :value="1">小规模纳税人</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="状态">
+              <a-select
+                placeholder="请选择"
+                v-model="queryParam.VendorStatus">
+                <a-select-option :value="0">已准入</a-select-option>
+                <a-select-option :value="1">未准入</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :md="24" :sm="24">
             <a-button @click="search()" type="success">搜索</a-button>
             <a-button type="danger" style="margin-left: 20px" @click="show = false">取消</a-button>
+            <a-button type="success" style="margin-left: 20px" @click="clear">清空</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -50,7 +71,7 @@
         :data="loadData"
         :alert="false"
         showPagination="auto">
-        <template slot="vendorName", slot-scope="text, record">
+        <template slot="vendorName" , slot-scope="text, record">
           <p>{{ text }}</p>
           <p>
             <a-button-group v-if="record.vendorStatus">
@@ -85,98 +106,100 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
-  import { fixedList, formatTree } from '@/utils/util'
-  import { TreeSelect } from 'ant-design-vue'
-  import { SupplierService } from '@/views/supplier/supplier.service'
-  import { acs, ac } from '@/views/user/user.service'
+    import { STable, Ellipsis } from '@/components'
+    import { fixedList, formatTree } from '@/utils/util'
+    import { TreeSelect } from 'ant-design-vue'
+    import { SupplierService } from '@/views/supplier/supplier.service'
+    import { acs, ac } from '@/views/user/user.service'
 
-  const SHOW_PARENT = TreeSelect.SHOW_PARENT
-  export default {
-    name: 'SupplierPurchaseList',
-    components: {
-      STable,
-      Ellipsis
-    },
-    data () {
-      const columns = [
-        {
-          title: '操作',
-          dataIndex: 'action',
-          scopedSlots: { customRender: 'action' }
+    const SHOW_PARENT = TreeSelect.SHOW_PARENT
+    export default {
+        name: 'SupplierPurchaseList',
+        components: {
+            STable,
+            Ellipsis
         },
-        {
-          title: '供应商信息',
-          dataIndex: 'vendorName',
-          scopedSlots: { customRender: 'vendorName' }
+        data () {
+            const columns = [
+                {
+                    title: '操作',
+                    dataIndex: 'action',
+                    scopedSlots: { customRender: 'action' }
+                },
+                {
+                    title: '供应商信息',
+                    dataIndex: 'vendorName',
+                    scopedSlots: { customRender: 'vendorName' }
+                },
+                {
+                    title: '供应商类别',
+                    dataIndex: 'packageName',
+                    scopedSlots: { customRender: 'packageName' }
+                },
+                {
+                    title: '供应商地址',
+                    dataIndex: 'registerAddress',
+                    scopedSlots: { customRender: 'registerAddress' }
+                },
+                {
+                    title: '法人',
+                    dataIndex: 'legalRep',
+                    scopedSlots: { customRender: 'legalRep' }
+                },
+                {
+                    title: '准入时间',
+                    dataIndex: 'zrDate',
+                    scopedSlots: { customRender: 'zrDate' }
+                }
+            ]
+
+            this.columns = columns
+            return {
+                SHOW_PARENT,
+                show: false,
+                queryParam: { RegisterType: 0 },
+                types: [],
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    return SupplierService.items(requestParameters).then(res => {
+                        return fixedList(res, requestParameters)
+                    })
+                },
+                selectedRowKeys: [],
+                selectedRows: []
+            }
         },
-        {
-          title: '供应商类别',
-          dataIndex: 'packageName',
-          scopedSlots: { customRender: 'packageName' }
+        created () {
+            SupplierService.types().then(res => {
+                this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
+                this.$forceUpdate()
+            })
         },
-        {
-          title: '供应商地址',
-          dataIndex: 'registerAddress',
-          scopedSlots: { customRender: 'registerAddress' }
-        },
-        {
-          title: '法人',
-          dataIndex: 'legalRep',
-          scopedSlots: { customRender: 'legalRep' }
-        },
-        {
-          title: '准入时间',
-          dataIndex: 'zrDate',
-          scopedSlots: { customRender: 'zrDate' }
+        methods: {
+            clear () {
+                this.queryParam = { RegisterType: 0 }
+                this.$refs.table.refresh()
+            },
+            ac (action) {
+                return ac(action, this.$route)
+            },
+            search () {
+                this.$refs.table.refresh()
+            },
+            handleToItem (record) {
+                console.log(record)
+                this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })
+            },
+            handleToEdit (record) {
+                console.log(record)
+                this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
+            },
+            handleToAdd () {
+                this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
+            }
         }
-      ]
-
-      this.columns = columns
-      return {
-        SHOW_PARENT,
-        show: false,
-        queryParam: { RegisterType: 0 },
-        types: [],
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return SupplierService.items(requestParameters).then(res => {
-            console.log(res)
-            return fixedList(res, requestParameters)
-          })
-        },
-        selectedRowKeys: [],
-        selectedRows: []
-      }
-    },
-    created () {
-      console.log(acs(this.$route))
-      SupplierService.types().then(res => {
-        this.types = formatTree([res.result.data], ['title:packageName', 'value:packageCode', 'key:gid'])
-        this.$forceUpdate()
-      })
-    },
-    methods: {
-      ac (action) {
-        return ac(action, this.$route)
-      },
-      search () {
-        this.$refs.table.refresh()
-      },
-      handleToItem (record) {
-        console.log(record)
-        this.$router.push({ path: `/supplier/purchase/item/${record.gid}?type=view` })
-      },
-      handleToEdit (record) {
-        console.log(record)
-        this.$router.push({ path: `/supplier/purchase/item/${record.logGID}?type=update` })
-      },
-      handleToAdd () {
-        this.$router.push({ path: `/supplier/purchase/item/0?type=create` })
-      }
     }
-  }
 </script>
 
 <style lang="less" scoped>
