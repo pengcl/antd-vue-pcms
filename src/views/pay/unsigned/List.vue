@@ -30,19 +30,19 @@
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="付款单号">
-              <a-input v-model="queryParam.paymentOtherCode"></a-input>
+              <a-input v-model="queryParam.PaymentOtherCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="收款单位">
-              <a-input v-model="queryParam.payeePartyNameList"></a-input>
+              <a-input v-model="queryParam.VendorName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="款项类型">
               <a-select
                 placeholder="请选择"
-                v-model="queryParam.paymentType">
+                v-model="queryParam.PaymentBusinessType">
                 <a-select-option v-for="type in moneyTypes"
                                  :value="type"
                                  :key="type">{{type}}
@@ -63,15 +63,17 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-item label="建立人">
-              <a-input v-model="queryParam.requestUserName"></a-input>
+              <a-input v-model="queryParam.CreatorUser"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="建立日期">
               <a-date-picker :value="queryParam.CreationTime_From"
+                             @change="CreationTime_FromChange"
                              placeholder="请选择开始时间"></a-date-picker>
               <span style="margin: 0 10px;color: #fff">至</span>
               <a-date-picker :value="queryParam.CreationTime_To"
+                             @change="CreationTime_ToChange"
                              placeholder="请选择结束时间"></a-date-picker>
             </a-form-item>
           </a-col>
@@ -275,6 +277,14 @@
             }
         },
         methods: {
+            CreationTime_FromChange (date, dateString) {
+                this.queryParam.CreationTime_From = dateString
+                this.$forceUpdate()
+            },
+            CreationTime_ToChange (date, dateString) {
+                this.queryParam.CreationTime_To = dateString
+                this.$forceUpdate()
+            },
             clear () {
                 this.queryParam = {
                     ProjectCode: this.queryParam.ProjectCode,

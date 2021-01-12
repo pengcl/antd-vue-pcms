@@ -121,9 +121,9 @@
                     v-model="form.secCostAllocateTypeID">
                     <a-select-option :value="1">不适用(NA)</a-select-option>
                     <a-select-option :value="2">地下室之功能空间(E1)</a-select-option>
-                    <a-select-option :value="3">地下室之后勤区(E2)</a-select-option>
+                    <a-select-option :value="3">地下室之后勤区/设备房(E2)</a-select-option>
                     <a-select-option :value="4">地下室停车场(E3)</a-select-option>
-                    <a-select-option :value="5">其它(EO)</a-select-option>
+                    <a-select-option :value="5">公建配套(EO)</a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-col>
