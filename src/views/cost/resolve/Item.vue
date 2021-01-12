@@ -280,7 +280,7 @@
       scopedSlots: {customRender: 'action'}
     },
     {
-      title: '专业名称',
+      title: '科目名称',
       width: 200,
       fixed: 'left',
       dataIndex: 'elementInfoNameCN'
