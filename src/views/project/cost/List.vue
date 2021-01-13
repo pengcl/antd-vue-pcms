@@ -110,7 +110,8 @@
         },
         {
             title: '成本中心编号',
-            dataIndex: 'costCenterCode'
+            dataIndex: 'costCenterCode',
+            sorter : true
         },
         {
             title: '成本中心名称',
@@ -130,7 +131,8 @@
         {
             title: '创建日期',
             dataIndex: 'creationTime',
-            scopedSlots: { customRender: 'creationTime' }
+            scopedSlots: { customRender: 'creationTime' },
+            sorter : true
         },
         {
             title: '最后更新者',
@@ -140,7 +142,8 @@
         {
             title: '最后更新日期',
             dataIndex: 'lastModificationTime',
-            scopedSlots: { customRender: 'lastModificationTime' }
+            scopedSlots: { customRender: 'lastModificationTime' },
+            sorter : true
         }
     ]
 

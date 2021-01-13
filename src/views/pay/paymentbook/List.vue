@@ -27,7 +27,7 @@
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form" @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -115,13 +115,15 @@
             title: '合同编号',
             dataIndex: 'contractNo',
             width: '110px',
-            scopedSlots: { customRender: 'contractNo' }
+            scopedSlots: { customRender: 'contractNo' },
+            sorter : true
         },
         {
             title: '付款单号',
             dataIndex: 'paymentCode',
             width: '110px',
-            scopedSlots: { customRender: 'paymentCode' }
+            scopedSlots: { customRender: 'paymentCode' },
+            sorter : true
         },
         {
             title: '审批状态',
@@ -137,27 +139,31 @@
             title: '申请时间',
             dataIndex: 'creationTime',
             width: '110px',
-            scopedSlots: { customRender: 'creationTime' }
+            scopedSlots: { customRender: 'creationTime' },
+            sorter : true
         },
         {
             title: '付款期数',
             dataIndex: 'paymentPhase',
             width: '78px',
-            align: 'center'
+            align: 'center',
+            sorter : true
         },
         {
             title: '申请批准金额',
             dataIndex: 'requestAmount',
             align: 'center',
             width: '180px',
-            scopedSlots: { customRender: 'requestAmount' }
+            scopedSlots: { customRender: 'requestAmount' },
+            sorter : true
         },
         {
             title: '本期支付金额',
             dataIndex: 'paymentAmount',
             align: 'center',
             width: '180px',
-            scopedSlots: { customRender: 'paymentAmount' }
+            scopedSlots: { customRender: 'paymentAmount' },
+            sorter : true
         },
         {
             title: '申请人',
@@ -235,6 +241,9 @@
         },
         computed: {},
         methods: {
+            formSearch(){
+                this.$refs.table.refresh()
+            },
             CreationTime_FromChange (date, dateString) {
                 this.queryParam.CreationTime_From = dateString
                 this.$forceUpdate()

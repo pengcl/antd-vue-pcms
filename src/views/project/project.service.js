@@ -17,7 +17,8 @@ const API = {
   createStage: '/api/services/app/Project/CreateProjectStage', // 添加项目阶段
   updateStages: '/api/services/app/Project/UpdateProjectStages', // 添加项目分期
   updateStage: '/api/services/app/Project/UpdateProjectStage', // 添加项目阶段
-  bpm: '/api/services/app/Project/StartBPM'
+  bpm: '/api/services/app/Project/StartBPM',
+  edit: '/api/services/app/Project/GetProjectEditById',
 }
 
 const ProjectService = {}
@@ -65,6 +66,14 @@ ProjectService.newTree = function list () {
 ProjectService.item = function list (Id) {
   return request({
     url: API.item,
+    method: 'GET',
+    params: { Id }
+  })
+}
+
+ProjectService.edit = function list (Id) {
+  return request({
+    url: API.edit,
     method: 'GET',
     params: { Id }
   })

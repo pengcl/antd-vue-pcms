@@ -165,6 +165,7 @@
         {
             title: '合同编号',
             dataIndex: 'contractNo',
+            sorter : true
         },
         {
             title: '合同名称',
@@ -175,13 +176,13 @@
             title: '合同金额',
             dataIndex: 'contractAmount',
             scopedSlots: { customRender: 'contractAmount' },
-            defaultSortOrder: 'descend',
-            sorter: (a, b) => a.contractAmount - b.contractAmount,
+            sorter : true
         },
         {
             title: '签约日期',
             dataIndex: 'signDate',
-            scopedSlots: { customRender: 'signDate' }
+            scopedSlots: { customRender: 'signDate' },
+            sorter : true
         },
         {
             title: '审批状态',
@@ -195,7 +196,8 @@
         },
         {
             title: '建立日期',
-            dataIndex: 'creationTime'
+            dataIndex: 'creationTime',
+            sorter : true
         },
         {
             title: '建立者',
