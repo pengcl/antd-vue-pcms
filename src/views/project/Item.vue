@@ -53,9 +53,9 @@
                     :disabled="true"
                     v-model="form.cityID">
                     <a-select-option
-                      v-for="city in selection.cities"
-                      :key="city.city.id"
-                      :value="city.city.id">{{ city.city.nameCN }}
+                      v-for="(city,index) in selection.cities"
+                      :key="index"
+                      :value="city.id">{{ city.nameCN }}
                     </a-select-option>
                   </a-select>
                 </a-form-model-item>
@@ -501,14 +501,13 @@
             }
         },
         created () {
-            console.log(acs(this.$route))
             this.getData()
             ProjectService.types().then(res => {
                 this.selection.types = res.result.data
                 this.$forceUpdate()
             })
-            ProjectService.tree().then(res => {
-                this.selection.cities = res.result.data.citys
+            ProjectService.newTree().then(res => {
+                this.selection.cities = res.result.data.items
                 this.$forceUpdate()
             })
             CurrencyService.list().then(res => {
