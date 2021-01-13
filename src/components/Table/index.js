@@ -148,10 +148,10 @@ export default {
         pageSize
       },
       (sorter && sorter.field && {
-        sortField: sorter.field
+        sorting: sorter.field
       }) || {},
       (sorter && sorter.order && {
-        sortOrder: sorter.order
+        sortOrder: sorter.order === 'ascend' ? 'asc' : 'desc'
       }) || {}, {
         ...filters
       }
@@ -202,10 +202,10 @@ export default {
           pageSize
         },
         (sorter && sorter.field && {
-          sortField: sorter.field
+          sorting: sorter.field
         }) || {},
         (sorter && sorter.order && {
-          sortOrder: sorter.order
+          sortOrder: sorter.order === 'ascend' ? 'asc' : 'desc'
         }) || {}, {
           ...filters
         }

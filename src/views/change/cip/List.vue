@@ -23,7 +23,7 @@
         </a-form>
       </div>
 
-      <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form  :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form" @keyup.enter.native="search">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -251,7 +251,8 @@ const columns = [
     title: '合同编号',
     dataIndex: 'contractNo',
     scopedSlots: { customRender: 'contractNo' },
-    width: 250
+    width: 250,
+    sorter : true
   },
   {
     title: '合同名称',
@@ -267,18 +268,21 @@ const columns = [
     title: '合同金额',
     dataIndex: 'contractAmount',
     scopedSlots: { customRender: 'contractAmount' },
-    width: 150
+    width: 150,
+    sorter : true
   },
   {
     title: '预计结算金额',
     dataIndex: 'preSettleAmount',
     scopedSlots: { customRender: 'preSettleAmount' },
-    wdith: 150
+    wdith: 150,
+    sorter : true
   },
   {
     title: '签约日期',
     dataIndex: 'signDate',
-    width: 120
+    width: 120,
+    sorter : true
   }
 ]
 
@@ -516,7 +520,7 @@ export default {
         // this.$message.warn('请选择项目')
       } else {
         this.$refs.table.clearSelected()
-        this.show = !this.show
+        // this.show = !this.show
         this.$refs.table.refresh(true)
       }
     },
