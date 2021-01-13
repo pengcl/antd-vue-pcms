@@ -420,7 +420,7 @@
                 if (this.useStore !== 108 && this.useStore !== 109 && this.useStore !== 110) {
                     this.$message.warn('请选择预算确认类别')
                     this.loading = false
-                    return
+                    return false
                 }
                 const params = {
                     balanceContractGID: this.gid,
@@ -432,7 +432,7 @@
                     this.loading = false
                     if (res.result.statusCode === 200) {
                         this.$message.success('预算确认成功')
-                        this.handleCancel()
+                        this.visible = false
                         this.$router.push({ path: `/checkout/contract/item/${this.gid}?type=view` })
                     }
                 }).catch(() => {

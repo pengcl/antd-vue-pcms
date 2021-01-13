@@ -33,7 +33,7 @@
         </a-button>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form" @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -164,7 +164,7 @@
         },
         {
             title: '合同编号',
-            dataIndex: 'contractNo'
+            dataIndex: 'contractNo',
         },
         {
             title: '合同名称',
@@ -174,7 +174,9 @@
         {
             title: '合同金额',
             dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            scopedSlots: { customRender: 'contractAmount' },
+            defaultSortOrder: 'descend',
+            sorter: (a, b) => a.contractAmount - b.contractAmount,
         },
         {
             title: '签约日期',
@@ -252,6 +254,10 @@
             })
         },
         methods: {
+            contractNoChange(e){
+                console.log(e)
+                this.$refs.table.refresh()
+            },
             clear () {
                 this.queryParam = {
                     ProjectID: this.queryParam.ProjectID,
@@ -289,6 +295,9 @@
 
                     }
                 })
+            },
+            formSearch(){
+                this.$refs.table.refresh()
             },
             search () {
                 this.show = !this.show

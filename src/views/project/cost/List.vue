@@ -24,11 +24,8 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
+        <a-button :disabled="!queryParam.ProjectGUID || auditStatus !== '已审核'" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
         </a-button>
-        <!--<a-button type="primary" @click="show = !show">
-          <a-icon type="search"></a-icon>
-        </a-button>-->
         <a-button type="primary" style="float: right">汇出</a-button>
       </div>
 
@@ -69,14 +66,6 @@
         <span slot="lastModificationTime" slot-scope="text">{{ text | moment('yyyy-MM-DD') }}</span>
 
         <span slot="action" slot-scope="text, record">
-          <!--<template>
-            <a-button class="btn-success" type="primary" icon="file-text" title="检视">
-            </a-button>
-            <a-button type="primary" class="btn-info" icon="form" style="margin-left: 4px" title="编辑">
-            </a-button>
-            <a-button type="primary" class="btn-info" icon="plus-square" style="margin-left: 4px" title="新增业态成本中心">
-            </a-button>
-          </template>-->
           <template>
             <a-button
               v-if="ac('VIEW')"
@@ -155,7 +144,6 @@
         }
     ]
 
-
     export default {
         name: 'ProjectCostList',
         components: {
@@ -168,6 +156,7 @@
                 show: false,
                 cities: null,
                 projectType: null,
+                auditStatus: null,
                 queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
@@ -194,6 +183,7 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
+                this.auditStatus = value.auditStatus ? value.auditStatus : getList(this.cities, 0).auditStatus
                 this.projectType = value.type ? value.type : getList(this.cities, 0).type
                 this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 this.$refs.table.refresh()
@@ -216,6 +206,7 @@
             onSelect (value, option) {
                 storage.set('POS', option.pos)
                 this.projectType = option.$options.propsData.dataRef.type
+                this.auditStatus = option.$options.propsData.dataRef.auditStatus
                 this.queryParam.ProjectGUID = value
                 this.$refs.table.refresh()
                 this.$forceUpdate()
