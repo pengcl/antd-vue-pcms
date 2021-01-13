@@ -13,9 +13,9 @@
                   v-model="queryParam.Id">
                   <a-select-option
                     v-for="(city,index) in cities"
-                    :key="city.city.id"
+                    :key="city.id"
                     :index="index"
-                    :value="city.city.id">{{ city.city.nameCN }}
+                    :value="city.id">{{ city.nameCN }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
@@ -100,8 +100,20 @@
     import { ProjectService } from '@/views/project/project.service'
     import { City as CityService } from '@/api/city'
     import storage from 'store'
-    import { getPosValue, getList } from '@/utils/util'
     import { ac } from '@/views/user/user.service'
+
+    function getPosValue (cities) {
+      const POS = storage.get('POS') ? storage.get('POS').split('-').splice(1) : []
+      let value = JSON.parse(JSON.stringify(cities))
+      POS.forEach((index, i) => {
+        if (i === 0) {
+          if (value[index]) {
+            value = value[index]
+          }
+        }
+      })
+      return value
+    }
 
     function fixedList (res, params) {
         const result = {}
@@ -138,7 +150,7 @@
     function getCityId (items) {
         let id = 0
         if (items.length > 0) {
-            id = items[0].city.id
+            id = items[0].id
         }
         return id
     }
@@ -226,10 +238,11 @@
             }
         },
         created () {
-            ProjectService.tree().then(res => {
-                this.cities = res.result.data.citys
+            ProjectService.newTree().then(res => {
+                this.cities = res.result.data.items
                 const value = getPosValue(this.cities)
-                this.queryParam.Id = value.city ? value.city.id : getCityId(value)
+              console.log(value)
+                this.queryParam.Id = value.id ? value.id : getCityId(value)
                 this.$refs.table.refresh()
             })
 
@@ -244,8 +257,8 @@
             getCity (id) {
                 let city = {}
                 this.cities.forEach(item => {
-                    if (item.city.id === id) {
-                        city = item.city
+                    if (item.id === id) {
+                        city = item
                     }
                 })
                 return city.nameCN

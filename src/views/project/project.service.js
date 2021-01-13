@@ -5,6 +5,7 @@ const API = {
   items: '/api/services/app/Project/GetCityProjectTree',
   list: '/api/services/app/Project/GetProjects', // 项目列表
   tree: '/api/services/app/Project/GetUserProjectTree',
+  newTree: '/api/services/app/City/GetDefaultCitys',
   item: '/api/services/app/Project/GetProjectEditById', // 项目详情forEdit
   view: '/api/services/app/Project/GetProjectByGUID',
   view2: '/api/services/app/Project/GetProjectByCode',
@@ -48,6 +49,14 @@ ProjectService.items = function list (parameter) {
 ProjectService.tree = function list () {
   return request({
     url: API.tree,
+    method: 'GET',
+    params: {}
+  })
+}
+
+ProjectService.newTree = function list () {
+  return request({
+    url: API.newTree,
     method: 'GET',
     params: {}
   })
