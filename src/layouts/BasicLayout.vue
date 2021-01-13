@@ -22,7 +22,7 @@
     <!--<setting-drawer :settings="settings" @change="handleSettingChange" />-->
     <template v-slot:rightContentRender>
       <span class="uat" v-if="appType === 'development'">DEV</span>
-      <span class="uat" v-if="appType === 'production'">UAT</span>
+      <span class="uat" v-if="appType === 'uat'">UAT</span>
       <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme"/>
     </template>
     <template v-slot:footerRender>

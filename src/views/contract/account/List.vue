@@ -27,7 +27,8 @@
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"
+              @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -194,7 +195,8 @@
             title: '合同编号',
             dataIndex: 'contractNo',
             width: 110,
-            scopedSlots: { customRender: 'contractNo' }
+            scopedSlots: { customRender: 'contractNo' },
+            sorter: true
         },
         {
             title: '合同名称',
@@ -211,7 +213,8 @@
             title: '签约日期',
             dataIndex: 'signDate',
             width: 110,
-            scopedSlots: { customRender: 'signDate' }
+            scopedSlots: { customRender: 'signDate' },
+            sorter: true
         },
         {
             title: '币种',
@@ -223,42 +226,48 @@
             dataIndex: 'contractAmount',
             align: 'center',
             width: 180,
-            scopedSlots: { customRender: 'contractAmount' }
+            scopedSlots: { customRender: 'contractAmount' },
+            sorter: true
         },
         {
             title: '累计变更金额',
             dataIndex: 'voAmount',
             align: 'center',
             width: 180,
-            scopedSlots: { customRender: 'voAmount' }
+            scopedSlots: { customRender: 'voAmount' },
+            sorter: true
         },
         {
             title: '预估结算金额',
             dataIndex: 'preSettleAmount',
             align: 'center',
             width: 180,
-            scopedSlots: { customRender: 'preSettleAmount' }
+            scopedSlots: { customRender: 'preSettleAmount' },
+            sorter: true
         },
         {
             title: '累计申请批准金额',
             dataIndex: 'requestAmount',
             align: 'center',
             width: 180,
-            scopedSlots: { customRender: 'requestAmount' }
+            scopedSlots: { customRender: 'requestAmount' },
+            sorter: true
         },
         {
             title: '累计支付金额',
             dataIndex: 'paymentAmount',
             align: 'center',
             width: 180,
-            scopedSlots: { customRender: 'paymentAmount' }
+            scopedSlots: { customRender: 'paymentAmount' },
+            sorter: true
         },
         {
             title: '累计发票金额',
             dataIndex: 'billAmount',
             align: 'center',
             width: 180,
-            scopedSlots: { customRender: 'billAmount' }
+            scopedSlots: { customRender: 'billAmount' },
+            sorter: true
         },
         {
             title: '甲方单位',
@@ -362,6 +371,9 @@
             }
         },
         methods: {
+            formSearch () {
+                this.$refs.table.refresh()
+            },
             clear () {
                 this.queryParam = {
                     ProjectID: this.queryParam.ProjectID,

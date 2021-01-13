@@ -26,7 +26,8 @@
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"
+              @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -217,7 +218,8 @@
         {
             title: '合同编号',
             dataIndex: 'contractNo',
-            scopedSlots: { customRender: 'contractNo' }
+            scopedSlots: { customRender: 'contractNo' },
+            sorter : true
         },
         {
             title: '合同名称',
@@ -236,7 +238,8 @@
         {
             title: '合同金额',
             dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            scopedSlots: { customRender: 'contractAmount' },
+            sorter : true
         },
         {
             title: '审核状态',
@@ -260,32 +263,38 @@
         },
         {
             title: '期数',
-            dataIndex: 'paymentPhase'
+            dataIndex: 'paymentPhase',
+            sorter : true
         },
         {
             title: '申请日期',
             dataIndex: 'creationTime',
-            scopedSlots: { customRender: 'creationTime' }
+            scopedSlots: { customRender: 'creationTime' },
+            sorter : true
         },
         {
             title: '付款单号',
             dataIndex: 'paymentCode',
-            scopedSlots: { customRender: 'paymentCode' }
+            scopedSlots: { customRender: 'paymentCode' },
+            sorter : true
         },
         {
             title: '申请批准金额',
             dataIndex: 'paymentRequestAmount',
-            scopedSlots: { customRender: 'paymentRequestAmount' }
+            scopedSlots: { customRender: 'paymentRequestAmount' },
+            sorter : true
         },
         {
             title: '支付金额',
             dataIndex: 'paymentAmount',
-            scopedSlots: { customRender: 'paymentAmount' }
+            scopedSlots: { customRender: 'paymentAmount' },
+            sorter : true
         },
         {
             title: '支付日期',
             dataIndex: 'paymentReceiveDate',
-            scopedSlots: { customRender: 'paymentReceiveDate' }
+            scopedSlots: { customRender: 'paymentReceiveDate' },
+            sorter : true
         },
         {
             title: '付款状态',
@@ -383,6 +392,9 @@
             },
         },
         methods: {
+            formSearch () {
+                this.$refs.contractTable.refresh()
+            },
             clear () {
                 this.queryParam2 = {
                     ProjectCode: this.queryParam2.ProjectCode,

@@ -130,7 +130,22 @@ table {
 
 .ant-table-placeholder {
   padding: 65px 0 50px;
+
   &:before {
     height: 15px;
+  }
+}
+
+.ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters:hover{
+  background: #06c!important;
+}
+
+.ant-table-thead > tr > th .ant-table-header-column .ant-table-column-sorters {
+  &:hover::before {
+    background: none !important;
+  }
+
+  &::before {
+    background: #06c !important;
   }
 }

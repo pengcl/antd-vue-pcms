@@ -26,7 +26,8 @@
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"
+              @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -224,7 +225,8 @@
         {
             title: '合同编号',
             dataIndex: 'contractNo',
-            scopedSlots: { customRender: 'contractNo' }
+            scopedSlots: { customRender: 'contractNo' },
+            sorter : true
         },
         {
             title: '合同名称',
@@ -248,7 +250,8 @@
         {
             title: '合同总金额(￥)',
             dataIndex: 'contractAmount',
-            scopedSlots: { customRender: 'contractAmount' }
+            scopedSlots: { customRender: 'contractAmount' },
+            sorter : true
         },
         {
             title: '乙方单位',
@@ -264,7 +267,8 @@
                     title: '竣工日期',
                     width: 110,
                     dataIndex: 'completionDate',
-                    scopedSlots: { customRender: 'completionDate' }
+                    scopedSlots: { customRender: 'completionDate' },
+                    sorter : true
                 },
                 {
                     title: '竣工证书',
@@ -283,7 +287,8 @@
                     title: '发起日期',
                     width: 110,
                     dataIndex: 'creationTime',
-                    scopedSlots: { customRender: 'creationTime' }
+                    scopedSlots: { customRender: 'creationTime' },
+                    sorter : true
                 },
                 {
                     title: '审批状态',
@@ -307,13 +312,15 @@
                     dataIndex: 'progressBalanceAmount',
                     align: 'center',
                     width: 180,
-                    scopedSlots: { customRender: 'progressBalanceAmount' }
+                    scopedSlots: { customRender: 'progressBalanceAmount' },
+                    sorter : true
                 },
                 {
                     title: '发起日期',
                     width: 110,
                     dataIndex: 'bContractCreationTime',
-                    scopedSlots: { customRender: 'bContractCreationTime' }
+                    scopedSlots: { customRender: 'bContractCreationTime' },
+                    sorter : true
                 },
                 {
                     title: '审批状态',
@@ -330,7 +337,8 @@
                     title: '发起日期',
                     dataIndex: 'bProjectCreationTime',
                     width: 110,
-                    scopedSlots: { customRender: 'bProjectCreationTime' }
+                    scopedSlots: { customRender: 'bProjectCreationTime' },
+                    sorter : true
                 },
                 {
                     title: '审批状态',
@@ -347,7 +355,8 @@
                     title: '发起日期',
                     dataIndex: 'bFinanceCreationTime',
                     width: 110,
-                    scopedSlots: { customRender: 'bFinanceCreationTime' }
+                    scopedSlots: { customRender: 'bFinanceCreationTime' },
+                    sorter : true
                 },
                 {
                     title: '审批状态',
@@ -472,6 +481,9 @@
             }
         },
         methods: {
+            formSearch () {
+                this.$refs.table.refresh()
+            },
             clear () {
                 this.queryParam = {
                     ProjectID: this.queryParam.ProjectID,

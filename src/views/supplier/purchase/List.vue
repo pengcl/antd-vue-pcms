@@ -12,7 +12,8 @@
         </a-row>
       </a-form>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"
+              @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="供应商名称">
@@ -149,7 +150,8 @@
                 {
                     title: '准入时间',
                     dataIndex: 'zrDate',
-                    scopedSlots: { customRender: 'zrDate' }
+                    scopedSlots: { customRender: 'zrDate' },
+                    sorter : true
                 }
             ]
 
@@ -177,6 +179,9 @@
             })
         },
         methods: {
+            formSearch () {
+                this.$refs.table.refresh()
+            },
             clear () {
                 this.queryParam = { RegisterType: 0 }
                 this.$refs.table.refresh()

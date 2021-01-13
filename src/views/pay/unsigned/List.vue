@@ -26,7 +26,8 @@
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"
+              @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="付款单号">
@@ -173,7 +174,8 @@
         },
         {
             title: '付款单号',
-            dataIndex: 'paymentOtherCode'
+            dataIndex: 'paymentOtherCode',
+            sorter: true
         },
         {
             title: '收款单位',
@@ -188,7 +190,8 @@
         {
             title: '金额',
             dataIndex: 'paymentAmount',
-            scopedSlots: { customRender: 'paymentAmount' }
+            scopedSlots: { customRender: 'paymentAmount' },
+            sorter: true
         },
         {
             title: '审批状态',
@@ -198,7 +201,8 @@
         {
             title: '建立日期',
             dataIndex: 'requestDate',
-            scopedSlots: { customRender: 'requestDate' }
+            scopedSlots: { customRender: 'requestDate' },
+            sorter: true
         },
         {
             title: '建立人',
@@ -277,6 +281,9 @@
             }
         },
         methods: {
+            formSearch () {
+                this.$refs.table.refresh()
+            },
             CreationTime_FromChange (date, dateString) {
                 this.queryParam.CreationTime_From = dateString
                 this.$forceUpdate()

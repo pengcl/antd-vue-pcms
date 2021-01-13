@@ -5,13 +5,13 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "serve:prod": "vue-cli-service serve --mode production",
+    "serve:uat": "vue-cli-service serve --mode uat",
     "build": "vue-cli-service build",
     "build:prod": "vue-cli-service build --mode production",
+    "build:uat": "vue-cli-service build --mode uat",
     "build:dev": "vue-cli-service build --mode development",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "build:preview": "vue-cli-service build --mode preview",
-    "build:uat": "vue-cli-service build --mode uat",
     "lint:nofix": "vue-cli-service lint --no-fix"
   },
   "dependencies": {

@@ -275,7 +275,7 @@ const columns = [
     title: '预计结算金额',
     dataIndex: 'preSettleAmount',
     scopedSlots: { customRender: 'preSettleAmount' },
-    wdith: 150,
+    width: 150,
     sorter : true
   },
   {
