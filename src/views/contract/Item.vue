@@ -373,9 +373,6 @@
             back () {
                 this.$router.push({ path: `/contract/list` })
             },
-            handleToEdit () {
-                this.$router.push({ path: `/contract/item/${this.id}?type=edit` })
-            },
             handleCancel () {
                 this.show = false
                 this.$router.push('/contract/list')
