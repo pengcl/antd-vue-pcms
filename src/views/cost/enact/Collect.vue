@@ -223,6 +223,7 @@
                 this.form = res.result.data
                 this.loading.save = false
                 const tempwindow = window.open('_blank')
+                console.log('url:',res.result.data)
                 tempwindow.location = res.result.data.startBPMUrl
               }
             }).catch(() => {

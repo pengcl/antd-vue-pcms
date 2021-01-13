@@ -31,7 +31,7 @@
             <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId"
                   slot-scope="text, record">
               <a-input-number
-                :disabled="type === 'view'"
+                :disabled="type === 'view' || auditStatus === '审核中'"
                 v-if="record.childs.length == 0"
                 v-model="record['cost' + item.costCenterId]"
                 @blur="e => checkChange(e, record, item.costCenterId)"
@@ -50,9 +50,9 @@
         <a-col :md="12" :sm="24">
           <a-button v-if="auditStatus === '未审核' || auditStatus === '已审核'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
           </a-button>
-          <a-button v-if="auditStatus !== '未审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
+          <a-button v-if="auditStatus === '审核中' || auditStatus === '已审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
           </a-button>
-          <a-button :disabled="type === 'view' || disabled" :loading="loading.save" @click="handleToSave" type="success">储存
+          <a-button :disabled="type === 'view' || disabled" :loading="loading.save" @click="handleToSave('save')" type="success">储存
           </a-button>
           <a-button @click="back" style="margin-left: 5px" type="danger">关闭</a-button>
         </a-col>
@@ -248,7 +248,7 @@
       back() {
         this.$router.push({path: `/cost/enact/list`})
       },
-      handleToSave() {
+      handleToSave(type) {
         this.disabled = true
         const result = {}
         const items = []
@@ -283,8 +283,13 @@
           this.loading.save = false
           this.disabled = false
           if (res.result.statusCode === 200) {
-            this.$message.info('修改成功')
-            this.back()
+            if (type === 'audit') {
+              const tempwindow = window.open('_blank')
+              tempwindow.location = this.startBPMUrl
+            } else {
+              this.$message.info('修改成功')
+              this.back()
+            }
           }
         })
       },
@@ -417,8 +422,8 @@
       runAudit() {
         const _this = this
         if (this.startBPMUrl !== '') {
-          const tempwindow = window.open('_blank')
-          tempwindow.location = this.startBPMUrl
+          this.handleToSave('audit')
+
         } else {
           _this.$message.error('启动审批链接不存在')
         }

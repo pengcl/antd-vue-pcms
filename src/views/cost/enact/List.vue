@@ -24,7 +24,7 @@
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item v-if="projectType !== 'noProject'" label="状态">
-                {{ auditStatus }}
+                {{ auditStatus }}（V.{{ version }}）
               </a-form-item>
             </a-col>
           </a-row>
@@ -87,7 +87,7 @@
             </a-button>
             <a-button
               :disabled="auditStatus !== '已审核'"
-              v-if="ac('EDIT')"
+              v-if="ac('EDIT') && auditStatus !== '审核中'"
               @click="handleToEdit(record)"
               type="primary"
               icon="form"
@@ -152,6 +152,7 @@
             return {
                 titleIds: [],
                 auditStatus: '',
+                version: '',
                 cities: null,
                 visible: false,
                 confirmLoading: false,
@@ -177,6 +178,8 @@
                             return CostService.subjectItems(requestParameters2)
                                 .then(res2 => {
                                     if (res2.result.data != null) {
+                                        this.auditStatus = res2.result.data.auditStatus
+                                        this.version = res2.result.data.version
                                         this.columnsWidth = 500 + res2.result.data.costCenterBudgetSubPlans.length * 200
                                         if (this.columnsWidth < 1560) {
                                             this.columnsWidth = 1560
@@ -250,7 +253,6 @@
                 const value = getPosValue(this.cities)
                 this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
                 this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
-                this.auditStatus = value.auditStatus ? value.auditStatus : getList(this.cities, 0).auditStatus
                 if (value.children.length > 0) {
                   this.projectType = 'noProject'
                 } else {
