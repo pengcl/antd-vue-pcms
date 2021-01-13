@@ -55,113 +55,119 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
-  import { TaskService } from '@/views/dashboard/task.service'
-  import { fixedList } from '@/utils/util'
+    import { STable, Ellipsis } from '@/components'
+    import { TaskService } from '@/views/dashboard/task.service'
+    import { fixedList } from '@/utils/util'
 
-  const columns = [
-    {
-      title: '项目',
-      dataIndex: 'project',
-      scopedSlots: { customRender: 'project' }
-    },
-    {
-      title: '',
-      dataIndex: 'detail',
-      scopedSlots: { customRender: 'detail' }
-    },
-    {
-      title: '操作',
-      dataIndex: 'action',
-      width: '150px',
-      scopedSlots: { customRender: 'action' }
-    }
-  ]
-
-  export default {
-    name: 'Tasks',
-    components: {
-      STable,
-      Ellipsis
-    },
-    data () {
-      this.columns = columns
-      return {
-        // create model
-        // 查询参数
-        queryParam: {},
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return TaskService.tasks(requestParameters)
-            .then(res => {
-              return fixedList(res, parameter)
-            })
+    const columns = [
+        {
+            title: '项目',
+            dataIndex: 'project',
+            scopedSlots: { customRender: 'project' }
         },
-        selectedRowKeys: [],
-        selectedRows: []
-      }
-    },
-    filters: {},
-    created () {
-      // getRoleList({ t: new Date() })
-    },
-    computed: {
-      rowSelection () {
-        return {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
+        {
+            title: '',
+            dataIndex: 'detail',
+            scopedSlots: { customRender: 'detail' }
+        },
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' }
         }
-      }
-    },
-    methods: {
-      search () {
-        this.$refs.table.refresh()
-      },
-      handleEdit (record) {
-        console.log(record)
-        window.location.href = record.workflowUrl
-      },
+    ]
 
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
-      }
+    export default {
+        name: 'Tasks',
+        components: {
+            STable,
+            Ellipsis
+        },
+        data () {
+            this.columns = columns
+            return {
+                // create model
+                // 查询参数
+                queryParam: {},
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    return TaskService.tasks(requestParameters)
+                        .then(res => {
+                            return fixedList(res, parameter)
+                        })
+                },
+                selectedRowKeys: [],
+                selectedRows: []
+            }
+        },
+        filters: {},
+        created () {
+            // getRoleList({ t: new Date() })
+        },
+        computed: {
+            rowSelection () {
+                return {
+                    selectedRowKeys: this.selectedRowKeys,
+                    onChange: this.onSelectChange
+                }
+            }
+        },
+        methods: {
+            search () {
+                this.$refs.table.refresh()
+            },
+            handleEdit (record) {
+                const _window = window.open('_blank')
+                _window.location = record.workflowUrl
+            },
+
+            onSelectChange (selectedRowKeys, selectedRows) {
+                this.selectedRowKeys = selectedRowKeys
+                this.selectedRows = selectedRows
+            }
+        }
     }
-  }
 </script>
 <style lang="less" scoped>
   /deep/ .row {
     display: flex;
     font-weight: 400;
     color: #333;
-    font-family: Microsoft Sans Serif,'微軟正黑體','微软正黑体'!important;
+    font-family: Microsoft Sans Serif, '微軟正黑體', '微软正黑体' !important;
+
     .col-lg-6 {
       flex: 0 0 50%;
       max-width: 50%;
     }
+
     .col-lg-3 {
       flex: 0 0 25%;
       max-width: 25%;
     }
+
     .btn-sm, .btn-group-sm > .btn {
       padding: 7px 10px;
       line-height: 1;
       border-radius: 3px;
       font-size: 13px;
     }
+
     .btn-primary {
-      border-color: #3A44E1!important;
+      border-color: #3A44E1 !important;
       color: #FFF;
-      background-color: #666EE8!important;
+      background-color: #666EE8 !important;
       box-sizing: content-box;
     }
+
     .btn-warning, .color-info.warning {
-      background-color: #FF9149!important;
-      border-color: #FF7216!important;
+      background-color: #FF9149 !important;
+      border-color: #FF7216 !important;
       color: #FFF;
     }
   }
+
   /deep/ .text-height {
     margin-top: 15px;
   }
