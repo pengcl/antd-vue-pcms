@@ -31,7 +31,13 @@
         </a-button>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+        v-if="show"
+        class="search-form"
+        @keyup.enter.native="search"
+      >
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="分判包编号">
