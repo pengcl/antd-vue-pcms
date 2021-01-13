@@ -416,12 +416,12 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核' && ac('VIEW') && isCanStartBPM">
             <a-button @click="view()" type="success">
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'update' && info.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'update' && info.auditStatus === '未审核' && ac('EDIT') && isCanStartBPM">
             <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
             </a-button>
@@ -488,6 +488,7 @@
                     view: false
                 },
                 disabled: false,
+                isCanStartBPM: false,
                 rules: {
                     cityID: [{ required: true, message: '请选择城市', trigger: 'change' }],
                     projectShortCode: [{ required: true, message: '请填写编码', trigger: 'blur' }],
@@ -575,6 +576,10 @@
                             this.form.currencyCode = 'CNY'
                         }
                     })
+                    ProjectService.edit(this.id).then(res => {
+                        this.isCanStartBPM = res.result.data.isCanStartBPM
+                    })
+
                 }
                 this.form.cityID = this.$route.query.cityID ? parseInt(this.$route.query.cityID, 10) : ''
             },
