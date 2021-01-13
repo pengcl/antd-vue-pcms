@@ -151,7 +151,8 @@
         },
         {
             title: '编号',
-            dataIndex: 'tradePackageCode'
+            dataIndex: 'tradePackageCode',
+            sorter: true
         },
         {
             title: '工程名称',
@@ -160,12 +161,14 @@
         {
             title: '预算金额',
             dataIndex: 'budgetAmount',
-            scopedSlots: { customRender: 'budgetAmount' }
+            scopedSlots: { customRender: 'budgetAmount' },
+            sorter: true
         },
         {
             title: '日期',
             dataIndex: 'packageDate',
-            scopedSlots: { customRender: 'packageDate' }
+            scopedSlots: { customRender: 'packageDate' },
+            sorter: true
         },
         {
             title: '经办人',
@@ -173,7 +176,8 @@
         },
         {
             title: '状态',
-            dataIndex: 'auditStatus'
+            dataIndex: 'auditStatus',
+            sorter: true
         }
     ]
 
