@@ -23,7 +23,7 @@
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"  @keyup.enter.native="search">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="指令编号">
@@ -104,13 +104,15 @@ const columns = [
     title: '合同编号',
     dataIndex: 'contractNo',
     width : 241,
-    scopedSlots: { customRender: 'contractNo' }
+    scopedSlots: { customRender: 'contractNo' },
+    sorter : true
   },
   {
     title: '变更编号',
     dataIndex: 'voNo',
     width : 275,
-    scopedSlots: { customRender: 'voNo' }
+    scopedSlots: { customRender: 'voNo' },
+    sorter : true
   },
   {
     title: '审核状态',
@@ -126,7 +128,8 @@ const columns = [
   {
     title: 'PMI编号',
     width : 275,
-    dataIndex: 'pmiNo'
+    dataIndex: 'pmiNo',
+    sorter : true
   },
   {
     title: '变更名称',
@@ -142,19 +145,22 @@ const columns = [
     title: '申报日期',
     width : 150,
     dataIndex: 'creationTime',
-    scopedSlots: { customRender: 'creationTime' }
+    scopedSlots: { customRender: 'creationTime' },
+    sorter : true
   },
   {
     title: '申报金额',
     width : 180,
     dataIndex: 'cipAmount',
-    scopedSlots: { customRender: 'cipAmount' }
+    scopedSlots: { customRender: 'cipAmount' },
+    sorter : true
   },
   {
     title: '变更日期',
     width : 150,
     dataIndex: 'pmiCreationTime',
-    scopedSlots: { customRender: 'pmiCreationTime' }
+    scopedSlots: { customRender: 'pmiCreationTime' },
+    sorter : true
   },
   {
     title: '上报为后补指令',
@@ -172,13 +178,15 @@ const columns = [
     title: '确认日期',
     width : 150,
     dataIndex: 'voCreationTime',
-    scopedSlots: { customRender: 'voCreationTime' }
+    scopedSlots: { customRender: 'voCreationTime' },
+    sorter : true
   },
   {
     title: '确认金额',
     width : 180,
     dataIndex: 'voAmount',
-    scopedSlots: { customRender: 'voAmount' }
+    scopedSlots: { customRender: 'voAmount' },
+    sorter : true
   }
 ]
 

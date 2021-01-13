@@ -222,7 +222,8 @@ const columns = [
   {
     title: '分判包编号',
     dataIndex: 'tradePackageCode',
-    scopedSlots: { customRender: 'tradePackageCode' }
+    scopedSlots: { customRender: 'tradePackageCode' },
+    sorter : true
   },
   {
     title: '分判包描述',
@@ -231,12 +232,14 @@ const columns = [
   {
     title: '预算金额',
     dataIndex: 'budgetAmount',
-    scopedSlots: { customRender: 'budgetAmount' }
+    scopedSlots: { customRender: 'budgetAmount' },
+    sorter : true
   },
   {
     title: '日期',
     dataIndex: 'packageDate',
-    scopedSlots: { customRender: 'packageDate' }
+    scopedSlots: { customRender: 'packageDate' },
+    sorter : true
   },
   {
     title: '状态',
@@ -509,7 +512,6 @@ export default {
       this.$forceUpdate()
     },
     search () {
-      this.show = !this.show
       this.$refs.table.refresh(true)
     },
     hanldeAddBugetItem () {
