@@ -31,7 +31,13 @@
         </a-button>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+        v-if="show"
+        class="search-form"
+        @keyup.enter.native="search"
+      >
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="分判包编号">
@@ -216,7 +222,8 @@ const columns = [
   {
     title: '分判包编号',
     dataIndex: 'tradePackageCode',
-    scopedSlots: { customRender: 'tradePackageCode' }
+    scopedSlots: { customRender: 'tradePackageCode' },
+    sorter : true
   },
   {
     title: '分判包描述',
@@ -225,12 +232,14 @@ const columns = [
   {
     title: '预算金额',
     dataIndex: 'budgetAmount',
-    scopedSlots: { customRender: 'budgetAmount' }
+    scopedSlots: { customRender: 'budgetAmount' },
+    sorter : true
   },
   {
     title: '日期',
     dataIndex: 'packageDate',
-    scopedSlots: { customRender: 'packageDate' }
+    scopedSlots: { customRender: 'packageDate' },
+    sorter : true
   },
   {
     title: '状态',
@@ -503,7 +512,6 @@ export default {
       this.$forceUpdate()
     },
     search () {
-      this.show = !this.show
       this.$refs.table.refresh(true)
     },
     hanldeAddBugetItem () {

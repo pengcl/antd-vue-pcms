@@ -78,6 +78,7 @@
           <template>
             {{ record.code }}
             <a-button
+              :disabled="auditStatus !== '已审核'"
               v-if="ac('VIEW')"
               @click="handleToItem(record)"
               type="success"
@@ -85,6 +86,7 @@
               title="查看">
             </a-button>
             <a-button
+              :disabled="auditStatus !== '已审核'"
               v-if="ac('EDIT')"
               @click="handleToEdit(record)"
               type="primary"
@@ -92,13 +94,13 @@
               style="margin-left: 4px"
               title="编辑">
             </a-button>
-            <a-button
-              @click="handleToItem(record)"
-              type="primary"
-              icon="plus-square"
-              style="margin-left: 4px"
-              title="审批记录">
-            </a-button>
+<!--            <a-button-->
+<!--              @click="handleToItem(record)"-->
+<!--              type="primary"-->
+<!--              icon="plus-square"-->
+<!--              style="margin-left: 4px"-->
+<!--              title="审批记录">-->
+<!--            </a-button>-->
           </template>
         </span>
       </s-table>

@@ -38,7 +38,13 @@
         </a-button>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form">
+      <a-form
+        :label-col="{ span: 8 }"
+        :wrapper-col="{ span: 16 }"
+        v-if="show"
+        class="search-form"
+        @keyup.enter.native="search"
+      >
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="编号">
@@ -145,7 +151,8 @@
         },
         {
             title: '编号',
-            dataIndex: 'tradePackageCode'
+            dataIndex: 'tradePackageCode',
+            sorter: true
         },
         {
             title: '工程名称',
@@ -154,12 +161,14 @@
         {
             title: '预算金额',
             dataIndex: 'budgetAmount',
-            scopedSlots: { customRender: 'budgetAmount' }
+            scopedSlots: { customRender: 'budgetAmount' },
+            sorter: true
         },
         {
             title: '日期',
             dataIndex: 'packageDate',
-            scopedSlots: { customRender: 'packageDate' }
+            scopedSlots: { customRender: 'packageDate' },
+            sorter: true
         },
         {
             title: '经办人',
@@ -167,7 +176,8 @@
         },
         {
             title: '状态',
-            dataIndex: 'auditStatus'
+            dataIndex: 'auditStatus',
+            sorter: true
         }
     ]
 
