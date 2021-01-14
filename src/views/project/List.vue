@@ -241,7 +241,6 @@
             ProjectService.newTree().then(res => {
                 this.cities = res.result.data.items
                 const value = getPosValue(this.cities)
-              console.log(value)
                 this.queryParam.Id = value.id ? value.id : getCityId(value)
                 this.$refs.table.refresh()
             })

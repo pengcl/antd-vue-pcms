@@ -178,6 +178,17 @@
             :parser="value => value.replace('次', '')"/>
         </a-form-model-item>
       </a-col>
+      <a-col :md="24" :sm="24">
+        <a-form-model-item
+          label="中标通知"
+        >
+          <a v-for="(item,index) in data.cgZBNoticelst"
+             :key="index"
+             :href="item.pdfUrl"
+             target="_blank"
+             style="margin-right: 5px">中标通知{{index}}</a>
+        </a-form-model-item>
+      </a-col>
       <contract-info-retention :data="data" :type="type" :id="id"></contract-info-retention>
       <contract-info-retention-release :data="data" :type="type" :id="id"></contract-info-retention-release>
       <contract-info-advance-charge :data="data" :type="type" :id="id"></contract-info-advance-charge>
@@ -317,107 +328,116 @@
 </template>
 
 <script>
-  import { Currency as CurrencyService } from '@/api/currency'
-  import { Base as BaseService } from '@/api/base'
-  import ContractInfoRetention from '@/views/contract/components/contractInfo/retention'
-  import ContractInfoRetentionRelease from '@/views/contract/components/contractInfo/retentionRelease'
-  import ContractInfoAdvanceCharge from '@/views/contract/components/contractInfo/advanceCharge'
-  import ContractInfoBond from '@/views/contract/components/contractInfo/bond'
-  import ContractInfoInsurance from '@/views/contract/components/contractInfo/insurance'
-  import ContractInfoFluctuationClause from '@/views/contract/components/contractInfo/fluctuationClause'
-  import ContractInfoPaymentTerms from '@/views/contract/components/contractInfo/paymentTerms'
-  export default {
-    name: 'ContractInfo',
-    components: { ContractInfoPaymentTerms, ContractInfoFluctuationClause, ContractInfoInsurance, ContractInfoBond, ContractInfoAdvanceCharge, ContractInfoRetentionRelease, ContractInfoRetention },
-    data () {
-      return {
-        date: null,
-        selection: {},
-        loading: false,
-        rules: {
-          baseCurrencyID: [{ required: true, message: '请选择基本币种', trigger: 'change' }],
-          currencyID: [{ required: true, message: '请选择币种', trigger: 'change' }],
-          isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }],
-          taxRate: [{ required: true, message: '请填写适用增值税率', trigger: 'blur' }]
+    import { Currency as CurrencyService } from '@/api/currency'
+    import { Base as BaseService } from '@/api/base'
+    import ContractInfoRetention from '@/views/contract/components/contractInfo/retention'
+    import ContractInfoRetentionRelease from '@/views/contract/components/contractInfo/retentionRelease'
+    import ContractInfoAdvanceCharge from '@/views/contract/components/contractInfo/advanceCharge'
+    import ContractInfoBond from '@/views/contract/components/contractInfo/bond'
+    import ContractInfoInsurance from '@/views/contract/components/contractInfo/insurance'
+    import ContractInfoFluctuationClause from '@/views/contract/components/contractInfo/fluctuationClause'
+    import ContractInfoPaymentTerms from '@/views/contract/components/contractInfo/paymentTerms'
+
+    export default {
+        name: 'ContractInfo',
+        components: {
+            ContractInfoPaymentTerms,
+            ContractInfoFluctuationClause,
+            ContractInfoInsurance,
+            ContractInfoBond,
+            ContractInfoAdvanceCharge,
+            ContractInfoRetentionRelease,
+            ContractInfoRetention
+        },
+        data () {
+            return {
+                date: null,
+                selection: {},
+                loading: false,
+                rules: {
+                    baseCurrencyID: [{ required: true, message: '请选择基本币种', trigger: 'change' }],
+                    currencyID: [{ required: true, message: '请选择币种', trigger: 'change' }],
+                    isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }],
+                    taxRate: [{ required: true, message: '请填写适用增值税率', trigger: 'blur' }]
+                }
+            }
+        },
+        created () {
+            CurrencyService.list().then(res => {
+                this.selection.currencies = res.result.data.items
+                this.$forceUpdate()
+            })
+            BaseService.unitTypes().then(res => {
+                this.selection.units = res.result.data.items
+                this.$forceUpdate()
+            })
+        },
+        props: {
+            data: {
+                type: Object,
+                default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
+            },
+            id: {
+                type: String,
+                default: '0'
+            }
+        },
+        watch: {
+            'data.contract.contractAmount' (value) {
+                if (typeof value === 'number') {
+                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
+                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+                }
+            },
+            'data.contract.taxRate' (value) {
+                if (typeof value === 'number') {
+                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
+                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+                }
+            },
+            'data.master.contractAmount' (value) {
+                if (typeof value === 'number') {
+                    const equivalentAmount = value * this.data.contract.currencyExchangeRate
+                    this.data.contract.equivalentAmount = equivalentAmount || 0
+                }
+            },
+            'data.contract.currencyExchangeRate' (value) {
+                if (typeof value === 'number') {
+                    const equivalentAmount = this.data.master.contractAmount * value
+                    this.data.contract.equivalentAmount = equivalentAmount || 0
+                }
+            },
+            'data.contract.masterContractID' () {
+                const equivalentAmount = this.data.master.contractAmount * this.data.contract.currencyExchangeRate
+                this.data.contract.equivalentAmount = equivalentAmount || 0
+            }
+        },
+        methods: {
+            add (target) {
+                const item = {
+                    id: 0,
+                    isDeleted: false,
+                    retentionGuid: 0,
+                    contractID: this.id,
+                    description: '',
+                    percentage: ''
+                }
+                this.data[target].push(item)
+            },
+            del (item) {
+                item.isDisabled = true
+            },
+            clear (target) {
+                this.data[target].forEach(item => {
+                    item.isDisabled = true
+                })
+            }
         }
-      }
-    },
-    created () {
-      CurrencyService.list().then(res => {
-        this.selection.currencies = res.result.data.items
-        this.$forceUpdate()
-      })
-      BaseService.unitTypes().then(res => {
-        this.selection.units = res.result.data.items
-        this.$forceUpdate()
-      })
-    },
-    props: {
-      data: {
-        type: Object,
-        default: null
-      },
-      type: {
-        type: String,
-        default: 'view'
-      },
-      id: {
-        type: String,
-        default: '0'
-      }
-    },
-    watch: {
-      'data.contract.contractAmount' (value) {
-        if (typeof value === 'number') {
-          this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
-          this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
-        }
-      },
-      'data.contract.taxRate' (value) {
-        if (typeof value === 'number') {
-          this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
-          this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
-        }
-      },
-      'data.master.contractAmount' (value) {
-        if (typeof value === 'number') {
-          const equivalentAmount = value * this.data.contract.currencyExchangeRate
-          this.data.contract.equivalentAmount = equivalentAmount || 0
-        }
-      },
-      'data.contract.currencyExchangeRate' (value) {
-        if (typeof value === 'number') {
-          const equivalentAmount = this.data.master.contractAmount * value
-          this.data.contract.equivalentAmount = equivalentAmount || 0
-        }
-      },
-      'data.contract.masterContractID' () {
-        const equivalentAmount = this.data.master.contractAmount * this.data.contract.currencyExchangeRate
-        this.data.contract.equivalentAmount = equivalentAmount || 0
-      }
-    },
-    methods: {
-      add (target) {
-        const item = {
-          id: 0,
-          isDeleted: false,
-          retentionGuid: 0,
-          contractID: this.id,
-          description: '',
-          percentage: ''
-        }
-        this.data[target].push(item)
-      },
-      del (item) {
-        item.isDisabled = true
-      },
-      clear (target) {
-        this.data[target].forEach(item => {
-          item.isDisabled = true
-        })
-      }
     }
-  }
 </script>
 
 <style lang="less" scoped>
@@ -431,11 +451,12 @@
 
     thead {
       tr {
-        &:first-child{
-          th{
+        &:first-child {
+          th {
             background-color: #f5f5f5;
           }
         }
+
         th {
           background-color: #06c;
           color: #fff;
