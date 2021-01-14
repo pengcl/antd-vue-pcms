@@ -22,28 +22,30 @@
         </a-form>
       </div>
 
+      <div class="table-operator">
+        <a-button type="success">搜索</a-button>
+      </div>
+
       <s-table
         style="margin-top: 5px"
         ref="table"
         size="default"
-        rowKey="key"
-        bordered
+        rowKey="workflowId"
         :columns="columns"
         :data="loadData"
+        :rowSelection="rowSelection"
         :alert="false"
+        :class="'no-border'"
         showPagination="auto"
       >
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter"/>
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
+
+        <span slot="created" slot-scope="text">
+          {{text | moment}}
         </span>
 
-        <span slot="action">
+        <span slot="action" slot-scope="text,record">
           <template>
-            <a-button class="btn-success" type="primary" icon="file-text" title="查看">
-            </a-button>
+            <a-button icon="form" @click="handleEdit(record)" type="primary"></a-button>
           </template>
         </span>
       </s-table>
@@ -52,71 +54,87 @@
 </template>
 
 <script>
-  import moment from 'moment'
-  import { STable, Ellipsis } from '@/components'
-  import { TaskService } from '@/views/dashboard/task.service'
+    import moment from 'moment'
+    import { fixedList } from '@/utils/util'
+    import { STable, Ellipsis } from '@/components'
+    import { TaskService } from '@/views/dashboard/task.service'
 
-  const columns = [
-    {
-      title: '操作',
-      dataIndex: 'action',
-      width: '32px',
-      scopedSlots: { customRender: 'action' }
-    },
-    {
-      title: '流程',
-      dataIndex: 'no'
-    },
-    {
-      title: '任务标题',
-      dataIndex: 'description',
-      scopedSlots: { customRender: 'description' }
-    },
-    {
-      title: '任务描述',
-      dataIndex: 'callNo',
-      scopedSlots: { customRender: 'callNo' }
-    },
-    {
-      title: '任务备注',
-      dataIndex: 'city',
-      scopedSlots: { customRender: 'city' }
-    },
-    {
-      title: '最后更新日期',
-      dataIndex: 'status',
-      scopedSlots: { customRender: 'status' }
-    }
-  ]
-
-  export default {
-    name: 'Participate',
-    components: {
-      STable,
-      Ellipsis
-    },
-    data () {
-      this.columns = columns
-      return {
-        // 查询参数
-        queryParam: {},
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          const requestParameters = Object.assign({}, parameter, this.queryParam)
-          return TaskService.participates(requestParameters)
-            .then(res => {
-              console.log(res)
-              return res.result
-            })
+    const columns = [
+        {
+            title: '项目',
+            dataIndex: 'workflowTitle',
+            scopedSlots: { customRender: 'workflowTitle' }
+        },
+        {
+            title: '当前步骤',
+            dataIndex: 'taskTitle',
+            align:'center'
+        },
+        {
+            title: '申请人',
+            dataIndex: 'author',
+            align:'center'
+        },
+        {
+            title: '申请日期',
+            dataIndex: 'created',
+            scopedSlots: { customRender: 'created' },
+            align:'center'
+        },
+        {
+            title: '操作',
+            dataIndex: 'action',
+            width: '150px',
+            scopedSlots: { customRender: 'action' },
+            align:'center'
         }
-      }
-    },
-    created () {
-      // getRoleList({ t: new Date() })
-    },
-    methods: {
+    ]
+
+    export default {
+        name: 'Participate',
+        components: {
+            STable,
+            Ellipsis
+        },
+        data () {
+            this.columns = columns
+            return {
+                // 查询参数
+                queryParam: {},
+                selectedRowKeys: [],
+                selectedRows: [],
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    return TaskService.participates(requestParameters)
+                        .then(res => {
+                            return fixedList(res, parameter)
+                        })
+                }
+            }
+        },
+        created () {
+            // getRoleList({ t: new Date() })
+        },
+        computed: {
+            rowSelection () {
+                return {
+                    selectedRowKeys: this.selectedRowKeys,
+                    onChange: this.onSelectChange
+                }
+            }
+        },
+        methods: {
+            onSelectChange (selectedRowKeys, selectedRows) {
+                this.selectedRowKeys = selectedRowKeys
+                this.selectedRows = selectedRows
+            },
+            handleEdit (record) {
+                const _window = window.open('_blank')
+                _window.location = record.workflowUrl
+            },
+        }
     }
-  }
 </script>
 <style lang="less" scoped>
   /*/deep/*/

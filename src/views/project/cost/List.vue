@@ -24,7 +24,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID || auditStatus !== '已审核'" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
+        <a-button :disabled="!queryParam.ProjectGUID || auditStatus !== '已审核' || projectType === 'project'" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
         </a-button>
         <a-button type="primary" style="float: right">汇出</a-button>
       </div>

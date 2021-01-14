@@ -20,7 +20,7 @@ export const asyncRouterMap = [
         name: 'dashboard',
         redirect: '/dashboard/tasks',
         component: RouteView,
-        meta: { title: 'menu.dashboard', keepAlive: true, icon: 'home' },
+        meta: { title: 'menu.dashboard', keepAlive: false, icon: 'home' },
         children: [
           {
             path: '/dashboard/tasks',
@@ -32,7 +32,7 @@ export const asyncRouterMap = [
             path: '/dashboard/participate',
             name: 'Participate',
             component: () => import('@/views/dashboard/Participate'),
-            meta: { title: 'menu.dashboard.participate', keepAlive: true }
+            meta: { title: 'menu.dashboard.participate', keepAlive: false }
           }
         ]
       },
