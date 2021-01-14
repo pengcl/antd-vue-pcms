@@ -250,7 +250,7 @@
                 this.cities = cities
                 const value = getPosValue(this.cities)
                 this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
-                if (value.children.length > 0) {
+              if (typeof (value.children) !== 'undefined' && value.children.length > 0) {
                   this.projectType = 'noProject'
                 } else {
                   this.projectType = 'project'
@@ -346,7 +346,6 @@
             }
         },
         activated () {
-          console.log('keep alive activeted')
           this.$refs.table.refresh()
         }
     }

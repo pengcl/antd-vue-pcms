@@ -217,7 +217,7 @@
             this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
             this.projectType = value.type ? value.type : getList(this.cities, 0).type
             this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
-            if (value.children.length > 0) {
+            if (typeof (value.children) !== 'undefined' && value.children.length > 0) {
               this.projectType = 'noProject'
             } else {
               this.projectType = 'project'
@@ -233,6 +233,9 @@
                     onChange: this.onSelectChange
                 }
             }
+        },
+        activated() {
+          this.$refs.table.refresh()
         },
         methods: {
             ac (action) {
