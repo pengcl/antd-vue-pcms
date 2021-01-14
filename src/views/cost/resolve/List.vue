@@ -234,6 +234,9 @@
                 }
             }
         },
+        activated() {
+          this.$refs.table.refresh()
+        },
         methods: {
             ac (action) {
               return ac(action, this.$route)

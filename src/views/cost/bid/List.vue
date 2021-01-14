@@ -346,7 +346,6 @@
             }
         },
         activated () {
-          console.log('keep alive activeted')
           this.$refs.table.refresh()
         }
     }
