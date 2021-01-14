@@ -43,7 +43,7 @@
                 style="margin-right: 5px;">审批记录</a-button>
               <a-button
                 v-if="ac('ImportExport')"
-                :disabled="projectType === undefined || projectType === 'noProject'"
+                :disabled="projectType === undefined || projectType === 'noProject' || auditStatus === '审核中'"
                 type="success"
                 @click="handleToImport">导入导出</a-button>
             </a-col>

@@ -223,7 +223,6 @@
                 this.form = res.result.data
                 this.loading.save = false
                 const tempwindow = window.open('_blank')
-                console.log('url:',res.result.data)
                 tempwindow.location = res.result.data.startBPMUrl
               }
             }).catch(() => {
@@ -233,8 +232,13 @@
         })
       },
       viewAudit() {
-        const tempwindow = window.open('_blank')
-        tempwindow.location = this.form.viewBPMUrl
+        CostService.budgetPlanAuditSave(this.form).then(res => {
+          if (res.result.statusCode === 200) {
+            this.form = res.result.data
+            const tempwindow = window.open('_blank')
+            tempwindow.location = res.result.data.viewBPMUrl
+          }
+        })
       }
     }
   }
