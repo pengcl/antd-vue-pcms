@@ -106,15 +106,16 @@
       <div class="table-operator">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'edit' && (data.auditStatus === '未审核') && ac('EDIT')" @click="startBPM"
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && (data.auditStatus === '未审核') && ac('EDIT')" @click="startBPM"
               >启动审批流程</a-button
             >
-            <a-button type="success" :loading="loading.showBPM" v-if="data.auditStatus == '审核中' || data.auditStatus == '已审核' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="type === 'view' && (data.auditStatus == '审核中' || data.auditStatus == '已审核') && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
           <a-col :md="24" :sm="24" style="margin-top: 10px">
-            <a-button type="success" :loading="loading.save" v-if="type != 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()">{{data.id ? '编辑' : '储存'}}</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type === 'view' && ac('EDIT') && data.auditStatus === '未审核'" @click="$router.push({ path: `/change/cip/constructionOrganizeDesign/${contractGuid}?projectCode=${projectCode}&type=edit` })">编辑</a-button>
+            <a-button type="success" :loading="loading.save" v-if="type != 'view' && ac(type === 'add' ? 'ADD' : 'EDIT')" @click="save()">储存</a-button>
             <a-button type="danger" @click="back">关闭</a-button>
           </a-col>
         </a-row>
@@ -240,7 +241,8 @@ export default {
     startBPM() {
       this.loading.startBPM = true
       const that = this
-      this.save(innerStartBPM)
+      innerStartBPM()
+      // this.save(innerStartBPM)
       function innerStartBPM(){
         ChangeService.startBuildingDesignBPM({ BDGuid : that.data.bdGuid, sProjectCode : that.data.projectCode}).then(res => {
           if(res.result.statusCode === 200){
