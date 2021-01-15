@@ -252,7 +252,8 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                if (this.projectGUID === '') {
+              console.log(this.projectGUID)
+                if (this.ProjectGUID === '' || typeof (this.ProjectGUID) === 'undefined') {
                   this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
                   this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
                 } else {

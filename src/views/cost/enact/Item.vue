@@ -52,7 +52,7 @@
           </a-button>
           <a-button v-if="auditStatus === '审核中' || auditStatus === '已审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
           </a-button>
-          <a-button :disabled="type === 'view' || disabled" :loading="loading.save" @click="handleToSave('save')" type="success">储存
+          <a-button v-if="auditStatus === '未审核' || auditStatus === '已审核'" :disabled="type === 'view' || disabled" :loading="loading.save" @click="handleToSave('save')" type="success">储存
           </a-button>
           <a-button @click="back" style="margin-left: 5px" type="danger">关闭</a-button>
         </a-col>
@@ -113,8 +113,7 @@
           save: false
         },
         disabled:false,
-        startBPMUrl: '',
-        viewBPMUrl: '',
+        startOrViewBPMUrl: '',
         auditStatus: '',
         active: '',
         // 高级搜索 展开/关闭
@@ -228,7 +227,7 @@
       const parameter = { ProjectGUID: this.ProjectGUID , ElementTypeId: this.id }
       CostService.budgetPlanAuditInfo(parameter).then(res => {
         if (res.result.statusCode === 200) {
-          this.startBPMUrl = res.result.data.startOrViewBPMUrl
+          this.startOrViewBPMUrl = res.result.data.startOrViewBPMUrl
           this.auditStatus = res.result.data.auditStatus
         }
       })
@@ -285,7 +284,7 @@
           if (res.result.statusCode === 200) {
             if (type === 'audit') {
               const tempwindow = window.open('_blank')
-              tempwindow.location = this.startBPMUrl
+              tempwindow.location = this.startOrViewBPMUrl
             } else {
               this.$message.info('修改成功')
               this.back()
@@ -421,7 +420,7 @@
       },
       runAudit() {
         const _this = this
-        if (this.startBPMUrl !== '') {
+        if (this.startOrViewBPMUrl !== '') {
           this.handleToSave('audit')
 
         } else {
@@ -430,9 +429,9 @@
       },
       viewAudit() {
         const _this = this
-        if (this.viewBPMUrl !== '') {
+        if (this.startOrViewBPMUrl !== '') {
           const tempwindow = window.open('_blank')
-          tempwindow.location = this.viewBPMUrl
+          tempwindow.location = this.startOrViewBPMUrl
         } else {
           _this.$message.error('查看审批链接不存在')
         }
