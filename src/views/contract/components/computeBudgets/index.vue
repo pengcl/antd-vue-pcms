@@ -7,14 +7,14 @@
     :closable="false"
   >
     <template slot="footer">
-      <a-button key="back" @click="() => { $emit('cancel') }">
+      <a-button key="back" @click="handleCancel()">
         关闭
       </a-button>
       <a-button
-        :disabled="statusCode !== 200 || (amount === 0 && data.data.length === 0)"
+        :disabled="statusCode !== 200 || (amount === 0 && data.data.length === 0) || disabled"
         key="submit"
         type="primary"
-        @click="() => { $emit('ok') }">
+        @click="handleOk()">
         预算确认
       </a-button>
     </template>
@@ -149,363 +149,419 @@
 </template>
 
 <script>
-  import { STable, Ellipsis } from '@/components'
-  import { ContractService } from '@/views/contract/contract.service'
-  import { ChangeService } from '@/views/change/change.service'
+    import { STable, Ellipsis } from '@/components'
+    import { ContractService } from '@/views/contract/contract.service'
+    import { ChangeService } from '@/views/change/change.service'
 
-  const columns = [
-    {
-      title: '科目',
-      dataIndex: 'elementName',
-      width: '30%'
-    },
-    {
-      title: '行业',
-      dataIndex: 'itemTypeName',
-      width: '140px'
-    },
-    {
-      title: '业态',
-      dataIndex: 'costCenterName',
-      width: '140px'
-    },
-    {
-      title: '预算余额(a)',
-      dataIndex: 'generalTradeAmount',
-      scopedSlots: { customRender: 'generalTradeAmount' }
-    },
-    {
-      title: '行业预算(b)',
-      dataIndex: 'budgetPlanDetailAmount',
-      scopedSlots: { customRender: 'budgetPlanDetailAmount' }
-    },
-    {
-      title: '合同金额(c)',
-      dataIndex: 'contractSplitAmount',
-      scopedSlots: { customRender: 'contractSplitAmount' }
-    },
-    {
-      title: '定标盈余(d)',
-      dataIndex: 'tenderSurplus',
-      scopedSlots: { customRender: 'tenderSurplus' }
-    },
-    {
-      title: '变更预留-固定(e1)',
-      dataIndex: 'alterPlan',
-      scopedSlots: { customRender: 'alterPlan' }
-    },
-    {
-      title: '变更预留-暂定(e2)',
-      dataIndex: 'temporaryAlterPlan',
-      scopedSlots: { customRender: 'temporaryAlterPlan' }
-    },
-    {
-      title: '差额(f)',
-      dataIndex: 'useBalanceAmount',
-      scopedSlots: { customRender: 'useBalanceAmount' }
-    }
-  ]
-  const _columns = {
-    108: [
-      {
-        title: '业态',
-        dataIndex: 'costCenterName'
-      },
-      {
-        title: '科目',
-        dataIndex: 'elementName'
-      },
-      {
-        title: '变更预留金额',
-        dataIndex: 'alterPlan',
-        scopedSlots: { customRender: 'alterPlan' }
-      },
-      {
-        title: '本次使用金额',
-        dataIndex: 'addedUseAmount',
-        scopedSlots: { customRender: 'addedUseAmount' }
-      },
-      {
-        title: '差额',
-        dataIndex: 'balanceAmount',
-        scopedSlots: { customRender: 'balanceAmount' }
-      }
-    ],
-    109: [
-      {
-        title: '业态',
-        dataIndex: 'costCenterName'
-      },
-      {
-        title: '定标盈余',
-        dataIndex: 'surplusAmount',
-        scopedSlots: { customRender: 'surplusAmount' }
-      },
-      {
-        title: '本次使用金额',
-        dataIndex: 'addedUseAmount',
-        scopedSlots: { customRender: 'addedUseAmount' }
-      },
-      {
-        title: '差额',
-        dataIndex: 'balanceAmount',
-        scopedSlots: { customRender: 'balanceAmount' }
-      }
-    ],
-    110: [
-      {
-        title: '业态',
-        dataIndex: 'costCenterName'
-      },
-      {
-        title: '科目',
-        dataIndex: 'elementName'
-      },
-      {
-        title: '预算余额',
-        dataIndex: 'tradeBalanceAmount',
-        scopedSlots: { customRender: 'tradeBalanceAmount' }
-      },
-      {
-        title: '本次使用金额',
-        dataIndex: 'addedUseAmount',
-        scopedSlots: { customRender: 'addedUseAmount' }
-      },
-      {
-        title: '差额',
-        dataIndex: 'balanceAmount',
-        scopedSlots: { customRender: 'balanceAmount' }
-      }
+    const columns = [
+        {
+            title: '科目',
+            dataIndex: 'elementName',
+            width: '30%'
+        },
+        {
+            title: '行业',
+            dataIndex: 'itemTypeName',
+            width: '140px'
+        },
+        {
+            title: '业态',
+            dataIndex: 'costCenterName',
+            width: '140px'
+        },
+        {
+            title: '预算余额(a)',
+            dataIndex: 'generalTradeAmount',
+            scopedSlots: { customRender: 'generalTradeAmount' }
+        },
+        {
+            title: '行业预算(b)',
+            dataIndex: 'budgetPlanDetailAmount',
+            scopedSlots: { customRender: 'budgetPlanDetailAmount' }
+        },
+        {
+            title: '合同金额(c)',
+            dataIndex: 'contractSplitAmount',
+            scopedSlots: { customRender: 'contractSplitAmount' }
+        },
+        {
+            title: '定标盈余(d)',
+            dataIndex: 'tenderSurplus',
+            scopedSlots: { customRender: 'tenderSurplus' }
+        },
+        {
+            title: '变更预留-固定(e1)',
+            dataIndex: 'alterPlan',
+            scopedSlots: { customRender: 'alterPlan' }
+        },
+        {
+            title: '变更预留-暂定(e2)',
+            dataIndex: 'temporaryAlterPlan',
+            scopedSlots: { customRender: 'temporaryAlterPlan' }
+        },
+        {
+            title: '差额(f)',
+            dataIndex: 'useBalanceAmount',
+            scopedSlots: { customRender: 'useBalanceAmount' }
+        }
     ]
-  }
-
-  export default {
-    name: 'ContractComputeBudgets',
-    components: {
-      STable,
-      Ellipsis
-    },
-    data () {
-      return {
-        columns: columns,
-        data: { data: [] },
-        total: {},
-        balance: {},
-        balances: [],
-        selection: {},
-        queryParam: { useStore: this.contract.useStore },
-        statusCode: 200,
-        // 加载数据方法 必须为 Promise 对象
-        loadData: parameter => {
-          this.queryParam.contractGuid = this.contractGuid
-          const e = { target: {
-            value: this.queryParam.useStore
-          } }
-          this.storeChange(e, true)
-          if (this.contract.contractCategory === 16) {
-            if (this.queryParam.useStore === 108) {
-              return ContractService.computeBudgets_108(this.queryParam).then(res => {
-                this.statusCode = res.result.statusCode
-                this.total = {}
-                this.balance = {}
-                this.balances = []
-                res.result.data.forEach((item, index) => {
-                  item.index = index
-                })
-                this.getTotal(res.result.data)
-                this.getBalance(res.result.data)
-                this.getBalances()
-                return res.result
-              })
+    const _columns = {
+        108: [
+            {
+                title: '业态',
+                dataIndex: 'costCenterName'
+            },
+            {
+                title: '科目',
+                dataIndex: 'elementName'
+            },
+            {
+                title: '变更预留金额',
+                dataIndex: 'alterPlan',
+                scopedSlots: { customRender: 'alterPlan' }
+            },
+            {
+                title: '本次使用金额',
+                dataIndex: 'addedUseAmount',
+                scopedSlots: { customRender: 'addedUseAmount' }
+            },
+            {
+                title: '差额',
+                dataIndex: 'balanceAmount',
+                scopedSlots: { customRender: 'balanceAmount' }
             }
-            if (this.queryParam.useStore === 109) {
-              return ContractService.computeBudgets_109(this.queryParam).then(res => {
-                this.statusCode = res.result.statusCode
-                this.total = {}
-                this.balance = {}
-                this.balances = []
-                res.result.data.forEach((item, index) => {
-                  item.index = index
-                })
-                this.getTotal(res.result.data)
-                this.getBalance(res.result.data)
-                this.getBalances()
-                return res.result
-              })
+        ],
+        109: [
+            {
+                title: '业态',
+                dataIndex: 'costCenterName'
+            },
+            {
+                title: '定标盈余',
+                dataIndex: 'surplusAmount',
+                scopedSlots: { customRender: 'surplusAmount' }
+            },
+            {
+                title: '本次使用金额',
+                dataIndex: 'addedUseAmount',
+                scopedSlots: { customRender: 'addedUseAmount' }
+            },
+            {
+                title: '差额',
+                dataIndex: 'balanceAmount',
+                scopedSlots: { customRender: 'balanceAmount' }
             }
-            if (this.queryParam.useStore === 110) {
-                  return ContractService.computeBudgets_110(this.queryParam).then(res => {
-                      this.statusCode = res.result.statusCode
-                      this.total = {}
-                      this.balance = {}
-                      this.balances = []
-                      res.result.data.forEach((item, index) => {
-                          item.index = index
-                      })
-                      this.getTotal(res.result.data)
-                      this.getBalance(res.result.data)
-                      this.getBalances()
-                      return res.result
-                  })
-              }
-          } else {
-            return ContractService.computeBudgets(this.queryParam).then(res => {
-              this.statusCode = res.result.statusCode
-              this.total = {}
-              this.balance = {}
-              this.balances = []
-              res.result.data.forEach((item, index) => {
-                item.index = index
-              })
-              this.getTotal(res.result.data)
-              this.getBalance(res.result.data)
-              this.getBalances()
-              return res.result
-            })
-          }
-        },
-        rules: {
-          value: [
-            { type: 'number', required: true, message: '请输入项目名称(中文)' }
-          ]
-        },
-        form: {
-          balances: []
-        }
-      }
-    },
-    props: {
-      contractGuid: {
-        type: String,
-        default: ''
-      },
-      visible: {
-        type: Boolean,
-        required: true
-      },
-      amount: {
-        default: 0
-      },
-      contract: {
-        type: Object,
-        default: null
-      }
-    },
-    computed: {},
-    created () {
-    },
-    watch: {
-      'visible' (value) {
-        if (value && this.$refs.table) {
-          this.$refs.table.refresh()
-        }
-      },
-      'contract.contractCategory' (value) {
-        if (value === 16) {
-          ChangeService.storeTypes().then(res => {
-            this.selection.storeTypes = res.result.data
-            this.queryParam.useStore = this.getStoreType(this.selection.storeTypes, this.queryParam.useStore)
-            this.$forceUpdate()
-          })
-        } else {
-          ContractService.storeTypes().then(res => {
-            this.selection.storeTypes = res.result.data
-            this.queryParam.useStore = this.getStoreType(this.selection.storeTypes, this.queryParam.useStore)
-            this.$forceUpdate()
-          })
-        }
-      }
-    },
-    methods: {
-      getStoreType (items, value) {
-        let index = 0
-        items.forEach((item, i) => {
-          if (item.id === value) {
-            index = i
-          }
-        })
-        return items[index].id
-      },
-      change (record) {
-        setTimeout(() => {
-          if (record.budgetPlanDetailAmount - record.contractSplitAmount >= record.contractSplitAmount * 0.05) {
-            record.alterPlan = record.contractSplitAmount * 0.05
-            record.TemporaryAlterPlan = record.contractSplitAmount * 0.05
-          } else {
-            const alterPlan = record.budgetPlanDetailAmount - record.contractSplitAmount
-            record.alterPlan = alterPlan >= 0 ? alterPlan : 0
-            const TemporaryAlterPlan = record.budgetPlanDetailAmount - record.contractSplitAmount
-            record.TemporaryAlterPlan = TemporaryAlterPlan >= 0 ? TemporaryAlterPlan : 0
-          }
-          /* if (this.queryParam.useStore !== 106) { */
-          const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan - record.TemporaryAlterPlan
-          record.tenderSurplus = tenderSurplus >= 0 ? tenderSurplus : 0
-          /* } */
-          record.balanceAmount = record.budgetPlanDetailAmount - record.contractSplitAmount - record.tenderSurplus - record.alterPlan - record.TemporaryAlterPlan
-          this.getBalance(this.$refs.table.localDataSource)
-          this.getBalances()
-        }, 100)
-      },
-      subChange (record) {
-        let balanceAmount = 0
-        if (this.queryParam.useStore === 108) {
-          balanceAmount = record.alterPlan - record.addedUseAmount
-        }
-        if (this.queryParam.useStore === 109) {
-          balanceAmount = record.surplusAmount - record.addedUseAmount
-        }
-        record.balanceAmount = balanceAmount > 0 ? 0 : balanceAmount
-      },
-      getTotal (items) {
-        if (items) {
-          items.forEach(item => {
-            if (this.total[item.costCenterCode]) {
-              this.total[item.costCenterCode].value = this.total[item.costCenterCode].value + item.contractSplitAmount
-            } else {
-              this.total[item.costCenterCode] = { name: item.costCenterName, value: item.contractSplitAmount }
+        ],
+        110: [
+            {
+                title: '业态',
+                dataIndex: 'costCenterName'
+            },
+            {
+                title: '科目',
+                dataIndex: 'elementName'
+            },
+            {
+                title: '预算余额',
+                dataIndex: 'tradeBalanceAmount',
+                scopedSlots: { customRender: 'tradeBalanceAmount' }
+            },
+            {
+                title: '本次使用金额',
+                dataIndex: 'addedUseAmount',
+                scopedSlots: { customRender: 'addedUseAmount' }
+            },
+            {
+                title: '差额',
+                dataIndex: 'balanceAmount',
+                scopedSlots: { customRender: 'balanceAmount' }
             }
-          })
-        }
-      },
-      getBalanceItem (key, items) {
-        let max = this.total[key].value
-        items.forEach(item => {
-          max = max - item.contractSplitAmount
-        })
-        return { name: this.total[key].name, value: max }
-      },
-      getBalance (records) {
-        for (const key in this.total) {
-          let items = JSON.parse(JSON.stringify(records))
-          items = items.filter((data) => data.costCenterCode === key)
-          this.balance[key] = this.getBalanceItem(key, items)
-        }
-      },
-      getBalances () {
-        const balances = []
-        for (const key in this.balance) {
-          balances.push({
-            key,
-            name: this.balance[key].name,
-            value: this.balance[key].value
-          })
-        }
-        this.form.balances = balances
-        this.$forceUpdate()
-      },
-      storeChange (e, nonRefresh) {
-        this.queryParam.useStore = e.target.value
-        if (this.contract.contractCategory === 16) {
-          this.columns = _columns[this.queryParam.useStore]
-        } else {
-          this.columns = columns
-        }
-        if (!nonRefresh) {
-          this.$refs.table.refresh()
-        }
-      }
+        ]
     }
-  }
+
+    export default {
+        name: 'ContractComputeBudgets',
+        components: {
+            STable,
+            Ellipsis
+        },
+        data () {
+            return {
+                columns: columns,
+                data: { data: [] },
+                total: {},
+                balance: {},
+                balances: [],
+                selection: {},
+                queryParam: { useStore: this.contract.useStore },
+                statusCode: 200,
+                disabled: false,
+                // 加载数据方法 必须为 Promise 对象
+                loadData: parameter => {
+                    this.queryParam.contractGuid = this.contractGuid
+                    const e = {
+                        target: {
+                            value: this.queryParam.useStore
+                        }
+                    }
+                    this.storeChange(e, true)
+                    if (this.contract.contractCategory === 16) {
+                        if (this.queryParam.useStore === 108) {
+                            return ContractService.computeBudgets_108(this.queryParam).then(res => {
+                                this.statusCode = res.result.statusCode
+                                this.total = {}
+                                this.balance = {}
+                                this.balances = []
+                                res.result.data.forEach((item, index) => {
+                                    item.index = index
+                                })
+                                this.getTotal(res.result.data)
+                                this.getBalance(res.result.data)
+                                this.getBalances()
+                                return res.result
+                            })
+                        }
+                        if (this.queryParam.useStore === 109) {
+                            return ContractService.computeBudgets_109(this.queryParam).then(res => {
+                                this.statusCode = res.result.statusCode
+                                this.total = {}
+                                this.balance = {}
+                                this.balances = []
+                                res.result.data.forEach((item, index) => {
+                                    item.index = index
+                                })
+                                this.getTotal(res.result.data)
+                                this.getBalance(res.result.data)
+                                this.getBalances()
+                                return res.result
+                            })
+                        }
+                        if (this.queryParam.useStore === 110) {
+                            return ContractService.computeBudgets_110(this.queryParam).then(res => {
+                                this.statusCode = res.result.statusCode
+                                this.total = {}
+                                this.balance = {}
+                                this.balances = []
+                                res.result.data.forEach((item, index) => {
+                                    item.index = index
+                                })
+                                this.getTotal(res.result.data)
+                                this.getBalance(res.result.data)
+                                this.getBalances()
+                                return res.result
+                            })
+                        }
+                    } else {
+                        return ContractService.computeBudgets(this.queryParam).then(res => {
+                            this.statusCode = res.result.statusCode
+                            this.total = {}
+                            this.balance = {}
+                            this.balances = []
+                            res.result.data.forEach((item, index) => {
+                                item.index = index
+                            })
+                            this.getTotal(res.result.data)
+                            this.getBalance(res.result.data)
+                            this.getBalances()
+                            return res.result
+                        })
+                    }
+                },
+                rules: {
+                    value: [
+                        { type: 'number', required: true, message: '请输入项目名称(中文)' }
+                    ]
+                },
+                form: {
+                    balances: []
+                }
+            }
+        },
+        props: {
+            contractGuid: {
+                type: String,
+                default: ''
+            },
+            visible: {
+                type: Boolean,
+                required: true
+            },
+            amount: {
+                default: 0
+            },
+            contract: {
+                type: Object,
+                default: null
+            }
+        },
+        computed: {},
+        created () {
+        },
+        watch: {
+            'visible' (value) {
+                if (value && this.$refs.table) {
+                    this.$refs.table.refresh()
+                }
+            },
+            'contract.contractCategory' (value) {
+                if (value === 16) {
+                    ChangeService.storeTypes().then(res => {
+                        this.selection.storeTypes = res.result.data
+                        this.queryParam.useStore = this.getStoreType(this.selection.storeTypes, this.queryParam.useStore)
+                        this.$forceUpdate()
+                    })
+                } else {
+                    ContractService.storeTypes().then(res => {
+                        this.selection.storeTypes = res.result.data
+                        this.queryParam.useStore = this.getStoreType(this.selection.storeTypes, this.queryParam.useStore)
+                        this.$forceUpdate()
+                    })
+                }
+            }
+        },
+        methods: {
+            getStoreType (items, value) {
+                let index = 0
+                items.forEach((item, i) => {
+                    if (item.id === value) {
+                        index = i
+                    }
+                })
+                return items[index].id
+            },
+            change (record) {
+                setTimeout(() => {
+                    if (record.budgetPlanDetailAmount - record.contractSplitAmount >= record.contractSplitAmount * 0.05) {
+                        record.alterPlan = record.contractSplitAmount * 0.05
+                        record.TemporaryAlterPlan = record.contractSplitAmount * 0.05
+                    } else {
+                        const alterPlan = record.budgetPlanDetailAmount - record.contractSplitAmount
+                        record.alterPlan = alterPlan >= 0 ? alterPlan : 0
+                        const TemporaryAlterPlan = record.budgetPlanDetailAmount - record.contractSplitAmount
+                        record.TemporaryAlterPlan = TemporaryAlterPlan >= 0 ? TemporaryAlterPlan : 0
+                    }
+                    /* if (this.queryParam.useStore !== 106) { */
+                    const tenderSurplus = record.budgetPlanDetailAmount - record.contractSplitAmount - record.alterPlan - record.TemporaryAlterPlan
+                    record.tenderSurplus = tenderSurplus >= 0 ? tenderSurplus : 0
+                    /* } */
+                    record.balanceAmount = record.budgetPlanDetailAmount - record.contractSplitAmount - record.tenderSurplus - record.alterPlan - record.TemporaryAlterPlan
+                    this.getBalance(this.$refs.table.localDataSource)
+                    this.getBalances()
+                }, 100)
+            },
+            subChange (record) {
+                let balanceAmount = 0
+                if (this.queryParam.useStore === 108) {
+                    balanceAmount = record.alterPlan - record.addedUseAmount
+                }
+                if (this.queryParam.useStore === 109) {
+                    balanceAmount = record.surplusAmount - record.addedUseAmount
+                }
+                record.balanceAmount = balanceAmount > 0 ? 0 : balanceAmount
+            },
+            getTotal (items) {
+                if (items) {
+                    items.forEach(item => {
+                        if (this.total[item.costCenterCode]) {
+                            this.total[item.costCenterCode].value = this.total[item.costCenterCode].value + item.contractSplitAmount
+                        } else {
+                            this.total[item.costCenterCode] = {
+                                name: item.costCenterName,
+                                value: item.contractSplitAmount
+                            }
+                        }
+                    })
+                }
+            },
+            getBalanceItem (key, items) {
+                let max = this.total[key].value
+                items.forEach(item => {
+                    max = max - item.contractSplitAmount
+                })
+                return { name: this.total[key].name, value: max }
+            },
+            getBalance (records) {
+                for (const key in this.total) {
+                    let items = JSON.parse(JSON.stringify(records))
+                    items = items.filter((data) => data.costCenterCode === key)
+                    this.balance[key] = this.getBalanceItem(key, items)
+                }
+            },
+            getBalances () {
+                const balances = []
+                for (const key in this.balance) {
+                    balances.push({
+                        key,
+                        name: this.balance[key].name,
+                        value: this.balance[key].value
+                    })
+                }
+                this.form.balances = balances
+                this.$forceUpdate()
+            },
+            storeChange (e, nonRefresh) {
+                this.queryParam.useStore = e.target.value
+                if (this.contract.contractCategory === 16) {
+                    this.columns = _columns[this.queryParam.useStore]
+                } else {
+                    this.columns = columns
+                }
+                if (!nonRefresh) {
+                    this.$refs.table.refresh()
+                }
+            },
+            handleCancel () {
+                this.visible = false
+                this.$router.push('/contract/list')
+            },
+            handleOk () {
+                this.disabled = true
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        const type = this.contract.budgetIsConfirm ? 'update' : 'create'
+                        const form = {
+                            contractGuid: this.contractGuid,
+                            useStore: this.queryParam.useStore,
+                            budgetIsConfirm: true
+                        }
+                        if (this.contract.contractCategory === 16) {
+                            if (form.useStore === 108) {
+                                form.contractUsePlanlst = this.$refs.table.localDataSource
+                            }
+                            if (form.useStore === 109) {
+                                form.contractUseSurpluslst = this.$refs.table.localDataSource
+                            }
+                            if (form.useStore === 110) {
+                                form.contractUseGeneralTradePlanlst = this.$refs.table.localDataSource
+                            }
+                            ContractService[type + 'Budgets_' + this.queryParam.useStore](form).then(res => {
+                                if (res.result.statusCode === 200) {
+                                    this.visible = false
+                                    this.$message.success('确认成功')
+                                    location.href = `/contract/item/${res.result.data}?type=view`
+                                } else {
+                                    this.disabled = false
+                                }
+                            })
+                        } else {
+                            form.contractBudgetAdjustlst = this.$refs.table.localDataSource
+                            ContractService[type + 'Budgets'](form).then(res => {
+                                if (res.result.statusCode === 200) {
+                                    this.visible = false
+                                    this.$message.success('确认成功')
+                                    location.href = `/contract/item/${res.result.data}?type=view`
+                                } else {
+                                    this.disabled = false
+                                }
+                            })
+                        }
+                    } else {
+                        this.disabled = false
+                    }
+                })
+            },
+        }
+    }
 </script>
 <style lang="less" scoped>
   /deep/ table {

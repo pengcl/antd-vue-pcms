@@ -33,7 +33,8 @@
         </a-button>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form" @keyup.enter.native="formSearch">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"
+              @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -165,7 +166,7 @@
         {
             title: '合同编号',
             dataIndex: 'contractNo',
-            sorter : true
+            sorter: true
         },
         {
             title: '合同名称',
@@ -176,13 +177,13 @@
             title: '合同金额',
             dataIndex: 'contractAmount',
             scopedSlots: { customRender: 'contractAmount' },
-            sorter : true
+            sorter: true
         },
         {
             title: '签约日期',
             dataIndex: 'signDate',
             scopedSlots: { customRender: 'signDate' },
-            sorter : true
+            sorter: true
         },
         {
             title: '审批状态',
@@ -197,7 +198,7 @@
         {
             title: '建立日期',
             dataIndex: 'creationTime',
-            sorter : true
+            sorter: true
         },
         {
             title: '建立者',
@@ -256,7 +257,7 @@
             })
         },
         methods: {
-            contractNoChange(e){
+            contractNoChange (e) {
                 console.log(e)
                 this.$refs.table.refresh()
             },
@@ -286,11 +287,12 @@
                     content: '是否确定删除选中合同信息?',
                     onOk () {
                         ContractService.delete(record.contractGuid).then(res => {
-                            that.$message.info('删除成功').then(() => {
+                            if (res.result.data) {
+                                that.$message.info('删除成功')
                                 that.$refs.table.refresh()
-                            })
-                        }).catch(() => {
-                            that.$message.error(res.result.msg)
+                            } else {
+                                that.$message.error(res.result.msg)
+                            }
                         })
                     },
                     onCancel () {
@@ -298,7 +300,7 @@
                     }
                 })
             },
-            formSearch(){
+            formSearch () {
                 this.$refs.table.refresh()
             },
             search () {

@@ -416,10 +416,12 @@
                 this.$router.push({ path: '/checkout/contract/list' })
             },
             handleOk () {
+                this.okDisabled = true
                 this.loading = true
                 if (this.useStore !== 108 && this.useStore !== 109 && this.useStore !== 110) {
                     this.$message.warn('请选择预算确认类别')
                     this.loading = false
+                    this.okDisabled = false
                     return false
                 }
                 const params = {
@@ -434,9 +436,12 @@
                         this.$message.success('预算确认成功')
                         this.visible = false
                         this.$router.push({ path: `/checkout/contract/item/${this.gid}?type=view` })
+                    } else {
+                        this.okDisabled = false
                     }
                 }).catch(() => {
                     this.loading = false
+                    this.okDisabled = false
                 })
             },
             changeVoUseAmount (record, attr) {
