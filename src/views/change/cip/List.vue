@@ -546,8 +546,6 @@ export default {
       const type =
         this.contractSelected.bdStatus == '' || this.contractSelected.bdStatus == '未申请'
           ? 'add'
-          : this.contractSelected.bdStatus == '未审核'
-          ? 'edit'
           : 'view'
       this.$router.push({
         path: `/change/cip/constructionOrganizeDesign/${this.contractSelected.contractGuid}?projectCode=${this.contractSelected.projectID}&type=${type}`
