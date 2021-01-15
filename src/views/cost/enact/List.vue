@@ -43,7 +43,7 @@
                 style="margin-right: 5px;">审批记录</a-button>
               <a-button
                 v-if="ac('ImportExport')"
-                :disabled="projectType === undefined || projectType === 'noProject'"
+                :disabled="projectType === undefined || projectType === 'noProject' || auditStatus === '审核中'"
                 type="success"
                 @click="handleToImport">导入导出</a-button>
             </a-col>
@@ -78,7 +78,7 @@
           <template>
             {{ record.code }}
             <a-button
-              :disabled="auditStatus !== '已审核'"
+              :disabled="auditStatus === '审核中'"
               v-if="ac('VIEW')"
               @click="handleToItem(record)"
               type="success"
@@ -86,7 +86,7 @@
               title="查看">
             </a-button>
             <a-button
-              :disabled="auditStatus !== '已审核'"
+              :disabled="auditStatus === '审核中'"
               v-if="ac('EDIT') && auditStatus !== '审核中'"
               @click="handleToEdit(record)"
               type="primary"
