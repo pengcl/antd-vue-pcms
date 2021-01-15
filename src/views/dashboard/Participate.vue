@@ -68,25 +68,25 @@
         {
             title: '当前步骤',
             dataIndex: 'taskTitle',
-            align:'center'
+            align: 'center'
         },
         {
             title: '申请人',
             dataIndex: 'author',
-            align:'center'
+            align: 'center'
         },
         {
             title: '申请日期',
             dataIndex: 'created',
             scopedSlots: { customRender: 'created' },
-            align:'center'
+            align: 'center'
         },
         {
             title: '操作',
             dataIndex: 'action',
             width: '150px',
             scopedSlots: { customRender: 'action' },
-            align:'center'
+            align: 'center'
         }
     ]
 
@@ -115,6 +115,11 @@
         },
         created () {
             // getRoleList({ t: new Date() })
+        },
+        watch: {
+            '$route' (path) {
+                this.$refs.table.refresh()
+            }
         },
         computed: {
             rowSelection () {

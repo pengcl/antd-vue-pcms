@@ -106,6 +106,11 @@
         created () {
             // getRoleList({ t: new Date() })
         },
+        watch:{
+            '$route' (path){
+                this.$refs.table.refresh()
+            }
+        },
         computed: {
             rowSelection () {
                 return {
