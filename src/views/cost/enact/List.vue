@@ -161,6 +161,7 @@
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
+                ProjectGUID: this.$route.query.ProjectGUID,
                 queryParam: {},
                 projectType: undefined,
                 // 加载数据方法 必须为 Promise 对象
@@ -251,8 +252,12 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-                this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
-                this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
+                if (this.projectGUID === '') {
+                  this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
+                  this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
+                } else {
+                  this.queryParam.ProjectGUID = this.ProjectGUID
+                }
                 if (typeof (value.children) !== 'undefined' && value.children.length > 0) {
                   this.projectType = 'noProject'
                 } else {
