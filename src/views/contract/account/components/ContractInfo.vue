@@ -178,6 +178,17 @@
             :parser="value => value.replace('次', '')"/>
         </a-form-model-item>
       </a-col>
+      <a-col :md="24" :sm="24">
+        <a-form-model-item
+          label="中标通知"
+        >
+          <a v-for="(item,index) in data.cgZBNoticelst"
+             :key="index"
+             :href="item.pdfUrl"
+             target="_blank"
+             style="margin-right: 5px">中标通知{{index}}</a>
+        </a-form-model-item>
+      </a-col>
       <contract-info-retention :data="data" :type="type" :id="id"></contract-info-retention>
       <contract-info-retention-release :data="data" :type="type" :id="id"></contract-info-retention-release>
       <contract-info-advance-charge :data="data" :type="type" :id="id"></contract-info-advance-charge>
