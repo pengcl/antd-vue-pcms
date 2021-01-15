@@ -6,7 +6,8 @@ const API = {
   create: '/api/services/app/ProjectCostCenter/Create',
   update: '/api/services/app/ProjectCostCenter/Update',
   delete: '/api/services/app/ProjectCostCenter/Delete',
-  bpm: '/api/services/app/ProjectCostCenter/StartBPM'
+  bpm: '/api/services/app/ProjectCostCenter/StartBPM',
+  secCostAllocateTypes: '/api/services/app/GeneralType/GetSecCostAllocateTypes',
 }
 
 const CostService = {}
@@ -31,6 +32,14 @@ CostService.item = function (Id) {
     url: API.item,
     method: 'GET',
     params: { Id }
+  })
+}
+
+CostService.secCostAllocateTypes = function () {
+  return request({
+    url: API.secCostAllocateTypes,
+    method: 'GET',
+    params: {}
   })
 }
 

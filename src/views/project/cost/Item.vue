@@ -119,11 +119,9 @@
                     placeholder="请选择二次分摊"
                     @change="secCostAllocateTypeChange"
                     v-model="form.secCostAllocateTypeID">
-                    <a-select-option :value="1">不适用(NA)</a-select-option>
-                    <a-select-option :value="2">地下室之功能空间(E1)</a-select-option>
-                    <a-select-option :value="3">地下室之后勤区/设备房(E2)</a-select-option>
-                    <a-select-option :value="4">地下室停车场(E3)</a-select-option>
-                    <a-select-option :value="5">公建配套(EO)</a-select-option>
+                    <a-select-option v-for="(item,index) in secCostAllocateTypes"
+                                     :key="index"
+                                     :value="item.id">{{item.nameCN}}</a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -775,6 +773,7 @@
                 visible: false,
                 confirmLoading: false,
                 mdls: null,
+                secCostAllocateTypes: null,
                 rules: {
                     costCenterName: [
                         { required: true, message: '请填写成本中心名称', trigger: 'blur' }
@@ -808,6 +807,9 @@
             this.getData()
             CostService.list({ ProjectGUID: this.ProjectGUID, SkipCount: 0, MaxResultCount: 9999 }).then(res => {
                 this.costList = res.result.data.items
+            })
+            CostService.secCostAllocateTypes().then(res => {
+                this.secCostAllocateTypes = res.result.data
             })
         },
         computed: {
@@ -889,7 +891,7 @@
                 this.form.totalRA = raUpperGround + raBasement
             },
             'form.secCostAllocateTypeID' (value) {
-                if (value === 1) {
+                if (value === 8) {
                     this.filterShareRuleTypes = this.shareRuleTypes
                     this.rules.shareCostCenter = [{ required: false, trigger: 'change' }]
                 } else {
@@ -900,7 +902,7 @@
         },
         methods: {
             secCostAllocateTypeChange (value) {
-                if (value === 1) {
+                if (value === 8) {
                     this.form.shareRule = 133
                     this.form.shares = []
                     if (this.form.shareCostCenter && this.form.shareCostCenter.length > 0) {

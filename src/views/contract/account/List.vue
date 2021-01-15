@@ -200,7 +200,7 @@
         },
         {
             title: '合同名称',
-            width: 130,
+            width: 300,
             dataIndex: 'contractName',
         },
         {

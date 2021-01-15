@@ -118,7 +118,8 @@
             @click="handleToAdd"
             :disabled="
               !queryParam2.contractGuid ||
-                (professionType.indexOf(contractSelected.contractProfession) > -1 && !contractSelected.bdIsComplete)
+                (professionType.indexOf(contractSelected.contractProfession) > -1 && !contractSelected.bdIsComplete
+                &&  contractSelected.createMode != 'C')
             "
           >新增</a-button
           >
@@ -142,6 +143,7 @@
             :disabled="
               contractSelected.contractGuid == undefined ||
                 professionType.indexOf(contractSelected.contractProfession) < 0
+                || contractSelected.createMode === 'C'
             "
             @click="handleDesign"
           >施工组织设计</a-button
@@ -544,8 +546,6 @@ export default {
       const type =
         this.contractSelected.bdStatus == '' || this.contractSelected.bdStatus == '未申请'
           ? 'add'
-          : this.contractSelected.bdStatus == '未审核'
-          ? 'edit'
           : 'view'
       this.$router.push({
         path: `/change/cip/constructionOrganizeDesign/${this.contractSelected.contractGuid}?projectCode=${this.contractSelected.projectID}&type=${type}`
