@@ -167,7 +167,7 @@
         ref="table2"
         rowKey="cipGuid"
         bordered
-        :scroll="{ x: 1400 }"
+        :scroll="{ x: 1600 }"
         :columns="_columns"
         :alert="false"
         :data="loadData2"
@@ -292,25 +292,30 @@ const _columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '125px',
     scopedSlots: { customRender: 'action' }
   },
   {
     title: '审核状态',
     dataIndex: 'auditStatus',
     scopedSlots: { customRender: 'auditStatus' },
-    width: 100
+    width: 128
   },
   {
     title: '变更编号',
     dataIndex: 'voNo',
-    width: 320
+    width: 280
+  },
+  {
+    title: '变更名称',
+    dataIndex: 'voName',
+    width: 220
   },
   {
     title: '申请金额',
     dataIndex: 'cipAmount',
     scopedSlots: { customRender: 'cipAmount' },
-    width: 150
+    width: 160
   },
   {
     title: '申报日期',
@@ -327,13 +332,13 @@ const _columns = [
     title: '变更确认',
     dataIndex: 'voStatus',
     scopedSlots: { customRender: 'voStatus' },
-    width: 150
+    width: 180
   },
   {
     title: '相关现场签证',
     dataIndex: 'spotVisaCount',
     scopedSlots: { customRender: 'spotVisaCount' },
-    width: 150
+    width: 120
   }
 ]
 
