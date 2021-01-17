@@ -25,7 +25,7 @@
             :data-source="datas"
             :alert="false"
             :pagination="false"
-            :scroll="{ x: columnsWidth, y: 500 }"
+            :scroll="{ x: columnsWidth, y: 700 }"
             :defaultExpandAllRows="true"
           >
             <span :slot="'cost' + item.costCenterId" v-for="item in ars" :key="'cost' + item.costCenterId"
@@ -42,6 +42,13 @@
               <template v-else>
                 {{ record['cost' + item.costCenterId]| NumberFormat }}
               </template>
+            </span>
+
+            <span slot="amountCount" slot-scope="text">
+              <p style="text-align: right">
+                <span style="font-weight: bold;padding-right: 10px">{{text|NumberFormat}}</span>
+                <!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
+              </p>
             </span>
           </a-table>
         </a-col>
@@ -87,6 +94,13 @@
       fixed: 'left',
       dataIndex: 'elementInfoNameCN',
       key: 'elementInfoNameCN'
+    },
+    {
+      title: '合计',
+      width: 200,
+      fixed: 'left',
+      dataIndex: 'amountCount',
+      scopedSlots: {customRender: 'amountCount'}
     }
   ]
 
@@ -130,7 +144,7 @@
           }
           return CostService.subjectViewItems(requestParameters).then(res => {
             this.ars = res.result.data
-            this.columnsWidth = 500 + this.ars.length * 200
+            this.columnsWidth = 700 + this.ars.length * 200
             if (this.columnsWidth < 1560) {
               this.columnsWidth = 1560
             }
@@ -142,7 +156,7 @@
               obj.dataIndex = 'cost' + item.costCenterId
               obj.scopedSlots = {customRender: 'cost' + item.costCenterId}
               if (index !== this.ars.length) {
-                obj.width = (this.columnsWidth - 500) / this.ars.length
+                obj.width = (this.columnsWidth - 700) / this.ars.length
               }
               _columns.push(obj)
             })
@@ -158,6 +172,7 @@
             //获取树级数量
             this.levelData(result)
             this.datas = result
+            console.log(this.datas)
           })
 
           function forEachItem(datas, elementId) {
@@ -182,6 +197,7 @@
             for (var i in datas) {
               var data = datas[i]
               data['costCenters'] = []
+              let itemsAmount = 0
               columnDatas.forEach(item => {
                 if (item.elementItem) {
                   var costName = 'cost' + item.costCenterId
@@ -194,9 +210,11 @@
                       data[costName] = costColumn.amount !== null ? costColumn.amount : 0
                       center['amount'] = costColumn.amount !== null ? costColumn.amount : 0
                     }
+                    itemsAmount = itemsAmount + data[costName]
                     data['costCenters'].push(center)
                   }
                 }
+                data.amountCount = itemsAmount
               })
               if (data.childs && data.childs.length > 0) {
                 forEachRow(data.childs, columnDatas)
@@ -207,15 +225,22 @@
 
           function insertFirstRow(data, columnDatas) {
             data['costCenters'] = []
+            let itemsAmount = 0
             columnDatas.forEach(item => {
+              const costCenter = {
+                costCenterId: item.costCenterId
+              }
+              data['costCenters'].push(costCenter)
               var costName = 'cost' + item.costCenterId
               if (item.elementItem) {
                 var costColumn = forEachItem([item.elementItem], data.elementInfoId)
                 if (costColumn != null) {
                   data[costName] = costColumn.amount !== null ? costColumn.amount : 0
                 }
+                itemsAmount = itemsAmount + data[costName]
               }
             })
+            data.amountCount = itemsAmount
             return data
           }
         }
@@ -305,16 +330,29 @@
         this.datas.forEach(item => {
 
           function childSum(datas,costCenterId) {
-            let result = null
+            let childCost = 0
             for (var i in datas) {
+              let result = 0
+
               const data = datas[i]
-              result += data['cost' + costCenterId]
               if (data.childs && data.childs.length > 0) {
                 result += childSum(data.childs, costCenterId)
+              } else {
+                result += data['cost' + costCenterId]
               }
+              data['cost' + costCenterId] = result
+              childCost = childCost + result
+
+              // 组装合计金额
+              let itemsAmount = 0
+              data.costCenters.forEach(center => {
+                itemsAmount = itemsAmount + data['cost' + center.costCenterId]
+              })
+              data['amountCount'] = itemsAmount
             }
-            return result
+            return childCost
           }
+
 
           item.children.forEach(child => {
             let childCost = 0
@@ -325,8 +363,23 @@
             }
             child['cost' + costCenterId] = childCost
             totalCost += child['cost' + costCenterId]
+
+            // 组装合计金额
+            let itemsAmount = 0
+            child.costCenters.forEach(center => {
+                itemsAmount = itemsAmount + child['cost' + center.costCenterId]
+            })
+            child['amountCount'] = itemsAmount
+            parentAmount = itemsAmount
           })
           item['cost' + costCenterId] = totalCost
+
+          // 组装合计金额
+          let parentAmount = 0
+          item.costCenters.forEach(center => {
+            parentAmount = parentAmount + item['cost' + center.costCenterId]
+          })
+          item['amountCount'] = parentAmount
         })
         if (!this.isUpdate) {
           const item = {}

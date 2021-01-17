@@ -60,7 +60,7 @@
         :columns="columns"
         :data="loadData"
         :alert="false"
-        :scroll="{ x: columnsWidth,y: 500 }"
+        :scroll="{ x: columnsWidth,y: 700 }"
         showPagination="auto"
       >
         <span slot="description" slot-scope="text">
@@ -135,6 +135,14 @@
             width: 300,
             fixed: 'left',
             dataIndex: 'name'
+        },
+        {
+          title: '合计',
+          className: 'title-center',
+          width: 200,
+          fixed: 'left',
+          dataIndex: 'amountCount',
+          scopedSlots: {customRender: 'cost'}
         }
     ]
 
@@ -157,7 +165,7 @@
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
-                columnsWidth: 500,
+                columnsWidth: 700,
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
@@ -181,7 +189,7 @@
                                     if (res2.result.data != null) {
                                         this.auditStatus = res2.result.data.auditStatus
                                         this.version = res2.result.data.version
-                                        this.columnsWidth = 500 + res2.result.data.costCenterBudgetSubPlans.length * 200
+                                        this.columnsWidth = 700 + res2.result.data.costCenterBudgetSubPlans.length * 200
                                         if (this.columnsWidth < 1560) {
                                             this.columnsWidth = 1560
                                         }
@@ -194,7 +202,7 @@
                                             obj.dataIndex = 'cost' + subjectItem1.costCenterId
                                             obj.scopedSlots = { customRender: 'cost' }
                                             if (index !== res2.result.data.costCenterBudgetSubPlans.length) {
-                                                obj.width = (this.columnsWidth - 500) / res2.result.data.costCenterBudgetSubPlans.length
+                                                obj.width = (this.columnsWidth - 700) / res2.result.data.costCenterBudgetSubPlans.length
                                             }
                                             _columns.push(obj)
                                             this.titleIds.push('cost' + subjectItem1.costCenterId)
@@ -206,7 +214,7 @@
                                             obj['id'] = item.id
                                             obj['code'] = item.code
                                             obj['name'] = item.nameCN
-
+                                            let itemsAmount = 0
                                             if (res2.result.data != null) {
                                                 res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
                                                     // 加载成本
@@ -214,13 +222,16 @@
                                                     subjectItem2.mainElements.forEach(itemA => {
                                                         if (item.id === itemA.elementTypeId) {
                                                             obj[costName] = itemA.amount
+                                                            itemsAmount = itemsAmount + obj[costName]
                                                         }
                                                     })
                                                     if (!obj[costName]) {
                                                         obj[costName] = 0
+                                                        itemsAmount = 0
                                                     }
                                                 })
                                             }
+                                            obj.amountCount = itemsAmount
                                             result.result.data.push(obj)
                                         })
                                     }
