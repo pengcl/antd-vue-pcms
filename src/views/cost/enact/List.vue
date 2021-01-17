@@ -40,7 +40,8 @@
               <a-button
                 :disabled="projectType === undefined || projectType === 'noProject'"
                 type="success"
-                style="margin-right: 5px;">审批记录</a-button>
+                style="margin-right: 5px;"
+                @click="showAuditModal">审批记录</a-button>
               <a-button
                 v-if="ac('ImportExport')"
                 :disabled="projectType === undefined || projectType === 'noProject' || auditStatus === '审核中'"
@@ -74,6 +75,12 @@
           </p>
         </span>
 
+        <span slot="auditStatus" slot-scope="text,record">
+          <p style="text-align: right">
+            <span style="font-weight: bold;padding-right: 10px">{{text}} （V.{{record.version }}）</span>
+          </p>
+        </span>
+
         <span slot="action" slot-scope="text, record">
           <template>
             {{ record.code }}
@@ -94,17 +101,21 @@
               style="margin-left: 4px"
               title="编辑">
             </a-button>
-<!--            <a-button-->
-<!--              @click="handleToItem(record)"-->
-<!--              type="primary"-->
-<!--              icon="plus-square"-->
-<!--              style="margin-left: 4px"-->
-<!--              title="审批记录">-->
-<!--            </a-button>-->
+            <a-button
+              @click="handleToItem(record)"
+              type="primary"
+              icon="plus-square"
+              style="margin-left: 4px"
+              title="审批记录">
+            </a-button>
           </template>
         </span>
       </s-table>
     </a-card>
+    <!-- 主列表审批记录 -->
+    <audit-list-modal ref="auditListModal"></audit-list-modal>
+    <!-- 科目审批记录 -->
+    <audit-sub-list-modal ref="auditSubListModal"></audit-sub-list-modal>
   </page-header-wrapper>
 </template>
 
@@ -118,6 +129,8 @@
     import { fixedList, getPosValue, getList } from '@/utils/util'
     import storage from 'store'
     import { ac } from '@/views/user/user.service'
+    import AuditListModal from '@/views/cost/enact/modal/AuditListModal'
+    import AuditSubListModal from '@/views/cost/enact/modal/AuditSubListModal'
 
     const defaultColumns = [
 
@@ -137,6 +150,14 @@
             dataIndex: 'name'
         },
         {
+          title: '审核状态',
+          className: 'title-center',
+          width: 150,
+          fixed: 'left',
+          dataIndex: 'auditStatus',
+          scopedSlots: { customRender: 'auditStatus' }
+        },
+        {
           title: '合计',
           className: 'title-center',
           width: 200,
@@ -151,9 +172,11 @@
     export default {
         name: 'CostEnactList',
         components: {
-            STable,
-            Ellipsis,
-            StepByStepModal
+          STable,
+          Ellipsis,
+          StepByStepModal,
+          AuditListModal,
+          AuditSubListModal
         },
         data () {
             this.columns = columns
@@ -165,7 +188,7 @@
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
-                columnsWidth: 700,
+                columnsWidth: 850,
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
@@ -189,7 +212,7 @@
                                     if (res2.result.data != null) {
                                         this.auditStatus = res2.result.data.auditStatus
                                         this.version = res2.result.data.version
-                                        this.columnsWidth = 700 + res2.result.data.costCenterBudgetSubPlans.length * 200
+                                        this.columnsWidth = 850 + res2.result.data.costCenterBudgetSubPlans.length * 200
                                         if (this.columnsWidth < 1560) {
                                             this.columnsWidth = 1560
                                         }
@@ -202,7 +225,7 @@
                                             obj.dataIndex = 'cost' + subjectItem1.costCenterId
                                             obj.scopedSlots = { customRender: 'cost' }
                                             if (index !== res2.result.data.costCenterBudgetSubPlans.length) {
-                                                obj.width = (this.columnsWidth - 700) / res2.result.data.costCenterBudgetSubPlans.length
+                                                obj.width = (this.columnsWidth - 850) / res2.result.data.costCenterBudgetSubPlans.length
                                             }
                                             _columns.push(obj)
                                             this.titleIds.push('cost' + subjectItem1.costCenterId)
@@ -214,6 +237,7 @@
                                             obj['id'] = item.id
                                             obj['code'] = item.code
                                             obj['name'] = item.nameCN
+
                                             let itemsAmount = 0
                                             if (res2.result.data != null) {
                                                 res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
@@ -229,6 +253,13 @@
                                                         obj[costName] = 0
                                                         itemsAmount = 0
                                                     }
+                                                })
+                                                res2.result.data.elementAuditList.forEach(subjectItem3 => {
+                                                  // 加载科目审批状态
+                                                  if (item.id === subjectItem3.mainElementId) {
+                                                    obj['auditStatus'] = subjectItem3.auditStatus
+                                                    obj['version'] = subjectItem3.version
+                                                  }
                                                 })
                                             }
                                             obj.amountCount = itemsAmount
@@ -263,7 +294,6 @@
                 })
                 this.cities = cities
                 const value = getPosValue(this.cities)
-              console.log(this.projectGUID)
                 if (this.ProjectGUID === '' || typeof (this.ProjectGUID) === 'undefined') {
                   this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
                   this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
@@ -295,7 +325,7 @@
                 return ac(action, this.$route)
             },
             handleToItem (record) {
-                this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
+                this.$refs.auditSubListModal.show(this.queryParam.ProjectGUID, record.id)
             },
             handleToEdit (record) {
                 this.$router.push({ path: `/cost/enact/item/${record.id}?type=edit&ProjectGUID=${this.queryParam.ProjectGUID}` })
@@ -326,7 +356,10 @@
               }
               this.$refs.table.refresh()
               this.$forceUpdate()
-            }
+            },
+            showAuditModal() {
+                this.$refs.auditListModal.show(this.queryParam.ProjectGUID)
+            },
         }
     }
 </script>

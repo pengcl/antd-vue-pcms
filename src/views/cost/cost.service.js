@@ -12,6 +12,8 @@ const API = {
   budgetTemplateFile: '/api/services/app/BudgetPlan/GetProjectBudgetImportTemplate', //获取预算模板文件
   uploadBudgetFile: '/api/services/app/BudgetSubPlan/ProjectBudgetUpload', //项目预算导入
   budgetPlanAuditInfo: '/api/services/app/BudgetSubPlan/ProjectBudgetSubPlanStartBPM', // 科目启动审核信息
+  budgetPlanAuditList: '/api/services/app/BudgetPlan/GetProjectPlanPackageList', // 获取项目的预算审核包列表集合
+  budgetSubPlanAuditList: '/api/services/app/BudgetSubPlan/GetProjectBudgetSubPackageList', // 获取项目主科目的预算审批列表
   //专业分判包
   industryItems: '/api/services/app/TenderPackage/GetPaged' ,//专业分判包列表
   industryCreate: '/api/services/app/TenderPackage/CreateTenderPackage' ,//添加专业分判包
@@ -471,6 +473,22 @@ CostService.projectTenderPackageStartBPM = function (ProjectTenderPackageGUID) {
     url: API.projectTenderPackageStartBPM,
     method: 'POST',
     params: {ProjectTenderPackageGUID}
+  })
+}
+
+CostService.budgetPlanAuditList = function (parameter) {
+  return request({
+    url: API.budgetPlanAuditList,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.budgetSubPlanAuditList = function (parameter) {
+  return request({
+    url: API.budgetSubPlanAuditList,
+    method: 'get',
+    params: parameter
   })
 }
 

@@ -65,12 +65,18 @@
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
-            <a-button style="margin-right: 10px" type="success">导入导出</a-button>
-            <a-button type="success">审批记录</a-button>
+            <a-button
+              :disabled="auditStatus === '审核中'"
+              type="success"
+              style="margin-right: 20px"
+              @click="handleToImport">导入导出</a-button>
+            <a-button type="success" @click="handleToItem">审批记录</a-button>
           </a-button-group>
         </a-col>
       </a-row>
     </a-card>
+    <!-- 科目审批记录 -->
+    <audit-sub-list-modal ref="auditSubListModal"></audit-sub-list-modal>
   </page-header-wrapper>
 </template>
 
@@ -79,6 +85,7 @@
   import {ContractService} from '@/views/contract/contract.service'
   import {SwaggerService} from '@/api/swagger.service'
   import {Ellipsis, STable} from '@/components'
+  import AuditSubListModal from '@/views/cost/enact/modal/AuditSubListModal'
 
   const defaultColumns = [
     {
@@ -110,7 +117,8 @@
     name: 'Table',
     components: {
       STable,
-      Ellipsis
+      Ellipsis,
+      AuditSubListModal
     },
     data() {
       this.columns = columns
@@ -488,7 +496,13 @@
         } else {
           _this.$message.error('查看审批链接不存在')
         }
-      }
+      },
+      handleToImport () {
+        this.$router.push({ path: `/cost/enact/import?ProjectGUID=${this.queryParam.ProjectGUID}` })
+      },
+      handleToItem () {
+        this.$refs.auditSubListModal.show(this.ProjectGUID, this.id)
+      },
     }
   }
 </script>
