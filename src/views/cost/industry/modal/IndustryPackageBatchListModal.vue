@@ -67,6 +67,7 @@
           this.queryParam.ProjectGUID = this.ProjectGUID
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return CostService.getProjectTenderPackageBatchRegs(requestParameters).then(res => {
+            this.$refs.table.refresh()
             return fixedList(res, requestParameters)
           })
         }

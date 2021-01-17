@@ -21,7 +21,7 @@
         showPagination="auto"
         :rowSelection="{onSelect : onSelect,type: 'radio' }"
       >
-        <span slot="packageDate" slot-scope="text, record">
+        <span slot="packageDate" slot-scope="text">
           {{ text | date }}
         </span>
       </s-table>
@@ -84,8 +84,7 @@
       show (id) {
         this.visible = true
         this.ProjectGUID = id
-        this.loadData()
-        this.$forceUpdate()
+        this.$refs.table.refresh()
       },
       onSelect (row) {
         this.selected = row

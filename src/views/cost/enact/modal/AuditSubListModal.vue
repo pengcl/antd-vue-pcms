@@ -86,8 +86,7 @@
         this.visible = true
         this.ProjectGUID = ProjectGUID
         this.ElementTypeId = ElementTypeId
-        this.loadData()
-        this.$forceUpdate()
+        this.$refs.table.refresh()
       },
       onSelect (row) {
         this.selected = row
