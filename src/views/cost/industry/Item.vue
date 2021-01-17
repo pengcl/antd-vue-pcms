@@ -84,7 +84,7 @@
         </a-row>
       <a-row>
         <a-col :md="12" :sm="24">
-          <a-button type="success" style="margin-right: 20px" v-if="type==='view' && this.form.auditStatus === '未审核'" :loading="loading.startBPM" @click="startBPM" 
+          <a-button type="success" style="margin-right: 20px" v-if="type==='view' && this.form.auditStatus === '未审核' && ac('ADD')" :loading="loading.startBPM" @click="startBPM" 
             :disabled="form.budgetAmount <= 0">启动审批流程</a-button>
 
         </a-col>
@@ -104,7 +104,8 @@
 <script>
   import { CostService } from '@/views/cost/cost.service'
   import { SwaggerService } from '@/api/swagger.service'
-  import moment from "moment";
+  import moment from "moment"
+  import { ac } from '@/views/user/user.service'
 
   export default {
     name: 'Edit',
@@ -197,6 +198,9 @@
       }
     },
     methods: {
+      ac (action) {
+        return ac(action, this.$route)
+      },
       onChange (value, option) {
         this.form.costCenters = []
         option.forEach(item => {

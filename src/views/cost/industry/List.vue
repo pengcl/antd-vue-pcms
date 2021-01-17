@@ -23,9 +23,9 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="handleToAdd">新增</a-button>
-        <a-button :disabled="!queryParam.ProjectGUID || this.$refs.table._data.localDataSource.length < 1" type="success" @click="addBatch">新增审批</a-button>
-        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="viewBatch">查看审批</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID" type="success" v-if="ac('ADD')" @click="handleToAdd">新增</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID || this.$refs.table._data.localDataSource.length < 1" type="success" @click="addBatch" v-if="ac('ADD')">新增审批</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="viewBatch" v-if="ac('VIEW')">查看审批</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -114,6 +114,7 @@
               type="primary"
               icon="form"
               style="margin-left: 4px"
+              v-if="ac('EDIT')"
               title="编辑"
               @click="handleToEdit(record)"
             ></a-button>
@@ -123,6 +124,7 @@
               style="margin-left: 4px"
               :disabled="!!record.contractGUID || !!record.projectTenderPackageId || !!record.budgetAmount"
               @click="handleToRemove(record)"
+              v-if="ac('DELETE')"
               title="删除"
             ></a-button>
           </template>
@@ -142,14 +144,14 @@
           <a-button
             type="success"
             :disabled="selectedPackage === null || !!selectedPackage.contractGUID"
-            @click="hanldeAddBugetItem"
+            @click="hanldeAddBugetItem" v-if="ac('ADD')"
           >新增预算
           </a-button>
           <a-button
             type="danger"
             style="margin-left: 10px"
-            v-if="this.selectedRowKeys.length > 0"
-            @click="handleBatchRemoveBudgetItem"
+            v-if="this.selectedRowKeys.length > 0 && ac('ADD')"
+            @click="handleBatchRemoveBudgetItem" 
           >删除预算</a-button
           >
         </a-col>
@@ -176,6 +178,7 @@
                 selectedPackage === null || !!selectedPackage.projectTenderPackageId || !!selectedPackage.contractGUID
               "
               style="margin-left: 4px"
+              v-if="ac('ADD')"
               @click="handleRemoveBudgetItem(record)"
               title="删除"
             ></a-button>
@@ -210,6 +213,7 @@ import { CostService } from '@/views/cost/cost.service'
 import { fixedList, getPosValue, getList } from '@/utils/util'
 import CostIndustryModal from '@/views/cost/industry/modal/IndustryModal'
 import IndustryPackageBatchListModal from '@/views/cost/industry/modal/IndustryPackageBatchListModal'
+import { ac } from '@/views/user/user.service'
 import storage from 'store'
 
 const columns = [
@@ -428,6 +432,9 @@ export default {
     this.$refs.table.refresh()
   },
   methods: {
+    ac (action) {
+      return ac(action, this.$route)
+    },
     getBudgetAmt (record) {
       this.selectedPackage = record
       this.pid = record.id

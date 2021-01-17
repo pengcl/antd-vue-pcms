@@ -39,7 +39,7 @@
             <div
               style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px"
             >
-              <a-button :disabled="type === 'view'" icon="plus" @click="add()"> 新增 </a-button>
+              <a-button :disabled="type === 'view'" icon="plus" @click="add()" v-if="ac('ADD')"> 新增 </a-button>
             </div>
             <a-table
               ref="table"
@@ -58,6 +58,7 @@
                   style="margin-left: 4px"
                   :disabled="type === 'view'"
                   @click="del(item, index)"
+                  v-if="ac('DELETE')"
                   title="删除"
                 ></a-button>
               </span>
@@ -75,9 +76,17 @@
             type="success"
             :loading="loading.startBPM"
             style="margin-right: 20px"
-            v-if="type === 'view' && form.auditStatus === '未审核'"
+            v-if="type === 'view' && form.auditStatus === '未审核' && ac('ADD')"
             @click="startBPM"
           >启动审批流程</a-button
+          >
+          <a-button
+            type="success"
+            :loading="loading.showBPM"
+            style="margin-right: 20px"
+            v-if="type === 'view' && (form.auditStatus === '审核中' || form.auditStatus === '已审核') && ac('VIEW')"
+            @click="showBPM"
+          >查看审批流程</a-button
           >
         </a-col>
         <a-col :md="12" :sm="24">
@@ -85,7 +94,7 @@
             <a-button
               type="success"
               @click="$router.push({ path: `/cost/industry/batch/${form.tenderPackageBatchGUID}?ProjectGUID=${ProjectGUID}&type=edit` })"
-              v-if="type === 'view' && form.auditStatus === '未审核'"
+              v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')"
             >编辑</a-button
             >
             <a-button type="success" :loading="loading.save" @click="handleToSave" v-if="type !== 'view'">储存</a-button>
@@ -113,6 +122,7 @@ import { ProjectService } from '@/views/project/project.service'
 import { formatList } from '@/mock/util'
 import { compare } from '@/utils/util'
 import IndustryPackageBatchModal from './modal/industryPackageBatchModal.vue'
+import { ac } from '@/views/user/user.service'
 
 const columns = [
   {
@@ -187,6 +197,9 @@ export default {
     }
   },
   methods: {
+    ac (action) {
+      return ac(action, this.$route)
+    },
     add () {
       this.show.tenderShow = true
     },
