@@ -8,6 +8,11 @@
     @ok="handleOk"
     :confirm-loading="loading"
   >
+    <template slot="footer">
+      <a-button @click="handleCancel">关闭</a-button>
+      <a-button v-if="ac('SAVE')" type="primary" @click="handleCancel">保存</a-button>
+    </template>
+
     <a-card :bordered="false">
       <a-form-model
         ref="form"
@@ -104,6 +109,7 @@
   import {SwaggerService} from "@/api/swagger.service";
   import {addItem, removeItem} from "@/api/base";
   import {CostService} from "@/views/cost/cost.service";
+  import {ac} from "@/views/user/user.service";
 
   export default {
     name: 'CostIndustryModal',
@@ -344,10 +350,13 @@
       },
       getStyle ( item ) {
         let defaultStyle = 'margin-top: 20px;'
-        if( item.nameCN.length < 10 ) {
+        if ( item.nameCN.length < 10 ) {
           defaultStyle = defaultStyle + 'width:130px;'
         }
         return defaultStyle
+      },
+      ac (action) {
+        return ac(action, this.$route)
       }
     }
   }
