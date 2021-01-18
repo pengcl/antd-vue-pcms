@@ -55,7 +55,7 @@
       </a-row>
       <a-row style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button v-if="auditStatus === '未审核' || auditStatus === '已审核'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
+          <a-button v-if="(auditStatus === '未审核' || auditStatus === '已审核') && mainAuditStatus!== '审核中'" type="primary" style="margin-right: 20px" @click="runAudit">启动审批流程
           </a-button>
           <a-button v-if="auditStatus === '审核中' || auditStatus === '已审核'" type="success" style="margin-right: 20px" @click="viewAudit">查看审批流程
           </a-button>
@@ -137,6 +137,7 @@
         disabled:false,
         startOrViewBPMUrl: '',
         auditStatus: '',
+        mainAuditStatus: '',
         active: '',
         // 高级搜索 展开/关闭
         advanced: false,
@@ -262,6 +263,7 @@
         if (res.result.statusCode === 200) {
           this.startOrViewBPMUrl = res.result.data.startOrViewBPMUrl
           this.auditStatus = res.result.data.auditStatus
+          this.mainAuditStatus = res.result.data.mainAuditStatus
         }
       })
     },
