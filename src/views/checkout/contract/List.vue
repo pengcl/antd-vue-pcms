@@ -172,7 +172,7 @@
         </span>
 
         <span slot="bContractAuditStatus" slot-scope="text,record">
-          <a @click="handleToContractItem(record.bContractGID,'view')">{{text}}</a>
+          <a @click="handleToContractItem(record.bContractGID,'view')" v-if="ac('VIEW')">{{text}}</a>
         </span>
 
         <span slot="progressBalanceAmount" slot-scope="text">
