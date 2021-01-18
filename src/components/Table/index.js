@@ -11,7 +11,7 @@ export default {
 
       localLoading: false,
       localDataSource: [],
-      localPagination: Object.assign({}, this.pagination)
+      localPagination: Object.assign({showTotal : (total)=> <span class="pagination_total" styl="position:absolute;right:0">{total}</span>}, this.pagination)
     }
   },
   props: Object.assign({}, T.props, {
@@ -364,10 +364,15 @@ export default {
       </a-table>
     )
 
+    const _pageiantion = (
+      <a-pagination></a-pagination>
+    ) 
+
     return (
       <div class="table-wrapper">
         { showAlert ? this.renderAlert() : null }
         { table }
+        {/* { _pageiantion } */}
       </div>
     )
   }

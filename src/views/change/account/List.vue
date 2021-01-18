@@ -105,6 +105,7 @@ const columns = [
     dataIndex: 'contractNo',
     width : 241,
     scopedSlots: { customRender: 'contractNo' },
+    ellipsis : true,
     sorter : true
   },
   {
@@ -112,6 +113,7 @@ const columns = [
     dataIndex: 'voNo',
     width : 275,
     scopedSlots: { customRender: 'voNo' },
+    ellipsis : true,
     sorter : true
   },
   {
@@ -129,16 +131,19 @@ const columns = [
     title: 'PMI编号',
     width : 275,
     dataIndex: 'pmiNo',
+    ellipsis : true,
     sorter : true
   },
   {
     title: '变更名称',
     width : 251,
+    ellipsis : true,
     dataIndex: 'voName'
   },
   {
     title: '变更类型',
     width : 100,
+    ellipsis : true,
     dataIndex: 'voType'
   },
   {
