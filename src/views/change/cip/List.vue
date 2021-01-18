@@ -242,48 +242,49 @@ const columns = [
     title: '审批状态',
     dataIndex: 'auditStatus',
     scopedSlots: { customRender: 'auditStatus' },
-    width: 100
+    width: '100px'
   },
   {
     title: '结算状态',
     dataIndex: 'balanceStatus',
-    width: 100
+    width: '100px'
   },
   {
     title: '合同编号',
     dataIndex: 'contractNo',
     scopedSlots: { customRender: 'contractNo' },
-    width: 250,
+    width: '220px',
     sorter : true
   },
   {
     title: '合同名称',
     dataIndex: 'contractName',
-    width: 250
+    width: '300px',
+    ellipsis : true
   },
   {
     title: '币种',
     dataIndex: 'currency',
-    width: 80
+    width: '80px'
   },
   {
     title: '合同金额',
     dataIndex: 'contractAmount',
     scopedSlots: { customRender: 'contractAmount' },
-    width: 150,
+    width: '150px',
     sorter : true
   },
   {
     title: '预计结算金额',
     dataIndex: 'preSettleAmount',
     scopedSlots: { customRender: 'preSettleAmount' },
-    width: 150,
+    width: '150px',
     sorter : true
   },
   {
     title: '签约日期',
     dataIndex: 'signDate',
-    width: 120,
+    width: '120px',
     sorter : true
   }
 ]
@@ -299,7 +300,7 @@ const _columns = [
     title: '审核状态',
     dataIndex: 'auditStatus',
     scopedSlots: { customRender: 'auditStatus' },
-    width: 128
+    width: 135
   },
   {
     title: '变更编号',
