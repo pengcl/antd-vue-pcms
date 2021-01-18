@@ -21,16 +21,16 @@
               <a-button-group style="float: right">
                 <a-button type="success"
                           style="margin-right: 10px"
-                          v-if="queryParam.ProjectID"
+                          v-if="queryParam.ProjectID && ac('ADD')"
                           @click="handleAdd">新增年度资金计划
                 </a-button>
                 <a-button type="success"
-                          v-if="queryParam.ProjectID"
+                          v-if="queryParam.ProjectID && ac('ADD')"
                           style="margin-right: 10px"
                           @click="addMonthPlan">新增月度资金计划
                 </a-button>
                 <a-button type="success"
-                          v-if="queryParam.ProjectID"
+                          v-if="queryParam.ProjectID && ac('VIEW')"
                           @click="visible2 = true">查看历史版本
                 </a-button>
               </a-button-group>
@@ -79,7 +79,7 @@
         <span slot="action" slot-scope="text, record">
           <template>
             <a-button-group v-if="record.isRoot">
-              <a-button @click="startBPM(record)">发起审批</a-button>
+              <a-button @click="startBPM(record)" v-if="ac('EDIT')">发起审批</a-button>
             </a-button-group>
             <a-button-group v-if="!record.isRoot">
             <a-button

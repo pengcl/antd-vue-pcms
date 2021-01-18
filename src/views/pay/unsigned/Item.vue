@@ -142,7 +142,7 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="approve()" type="success">
               启动审批流程
             </a-button>
@@ -154,7 +154,7 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="edit" type="success">
               编辑
             </a-button>

@@ -120,7 +120,7 @@
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button type="success" @click="handleToAdd" v-if="id && canAdd && ac('ADD')">新增付款</a-button>
-          <a-button type="success" style="margin-left: 10px" @click="handToInvoice">发票管理</a-button>
+          <a-button type="success" style="margin-left: 10px" @click="handToInvoice" :disabled="true">发票管理</a-button>
         </a-col>
       </a-row>
       <s-table
@@ -219,7 +219,7 @@
             title: '合同编号',
             dataIndex: 'contractNo',
             scopedSlots: { customRender: 'contractNo' },
-            sorter : true
+            sorter: true
         },
         {
             title: '合同名称',
@@ -239,7 +239,7 @@
             title: '合同金额',
             dataIndex: 'contractAmount',
             scopedSlots: { customRender: 'contractAmount' },
-            sorter : true
+            sorter: true
         },
         {
             title: '审核状态',
@@ -264,37 +264,37 @@
         {
             title: '期数',
             dataIndex: 'paymentPhase',
-            sorter : true
+            sorter: true
         },
         {
             title: '申请日期',
             dataIndex: 'creationTime',
             scopedSlots: { customRender: 'creationTime' },
-            sorter : true
+            sorter: true
         },
         {
             title: '付款单号',
             dataIndex: 'paymentCode',
             scopedSlots: { customRender: 'paymentCode' },
-            sorter : true
+            sorter: true
         },
         {
             title: '申请批准金额',
             dataIndex: 'paymentRequestAmount',
             scopedSlots: { customRender: 'paymentRequestAmount' },
-            sorter : true
+            sorter: true
         },
         {
             title: '支付金额',
             dataIndex: 'paymentAmount',
             scopedSlots: { customRender: 'paymentAmount' },
-            sorter : true
+            sorter: true
         },
         {
             title: '支付日期',
             dataIndex: 'paymentReceiveDate',
             scopedSlots: { customRender: 'paymentReceiveDate' },
-            sorter : true
+            sorter: true
         },
         {
             title: '付款状态',

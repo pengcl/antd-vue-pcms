@@ -90,13 +90,13 @@
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="edit" type="success">
               编辑
             </a-button>
           </a-button-group>
           <a-button-group
-            v-if="type === 'view' && form.contract.auditStatus === '审核中' && ac('VIEW') && ac('BUDGETCHECK') && (form.contract.contractCategory === 15 || form.contract.contractCategory === 17)">
+            v-if="type === 'view' && form.contract.auditStatus === '审核中' && ac('BUDGETCHECK') && (form.contract.contractCategory === 15 || form.contract.contractCategory === 17)">
             <a-button @click="review" type="success">
               预算复核
             </a-button>

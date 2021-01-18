@@ -3,11 +3,12 @@
     <a-card :bordered="false">
       <a-row :gutter="48">
         <a-col :md="24" :sm="24">
-          <a-button :disabled="type === 'view'" type="success" @click="handleAddIndustry">
+          <a-button :disabled="type === 'view'" v-if="ac('EDIT')" type="success" @click="handleAddIndustry">
             引入专业分判包
           </a-button>
           <a-button type="success"
                     style="margin-left: 10px"
+                    v-if="ac('VIEW')"
                     @click="handleViewHistoryVersion">查看历史版本
           </a-button>
         </a-col>

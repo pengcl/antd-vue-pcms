@@ -401,7 +401,7 @@
                 <a-upload name="file"
                           :disabled="type === 'view'"
                           :multiple="false"
-                          v-if="item.billType"
+                          v-if="item.invoiceType"
                           :before-upload="beforeUpload">
                   <a-button @click="choose(index)">请选择</a-button>
                 </a-upload>
@@ -414,8 +414,8 @@
                   :disabled="type === 'view'"
                   placeholder="请选择"
                   @change="onchange"
-                  v-model="item.billType"
-                  v-decorator="['item.billType', { rules: [{required: true, message: '请选择票据类型'}] }]">
+                  v-model="item.invoiceType"
+                  v-decorator="['item.invoiceType', { rules: [{required: true, message: '请选择票据类型'}] }]">
                   <a-select-option
                     v-for="type in billTypeList"
                     :value="type"
@@ -702,7 +702,7 @@
                     contractGID: this.data['contractGID'],
                     isDeleted: false,
                     isTemp: true,
-                    billType: '',
+                    invoiceType: '',
                     billNum: '',
                     billAmount: '',
                     taxRate: '',
