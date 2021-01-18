@@ -85,7 +85,7 @@
           <template>
             {{ record.code }}
             <a-button
-              v-if="ac('VIEW')"
+              v-if="ac('VIEW') && !!record.auditStatus"
               @click="handleToView(record)"
               type="success"
               icon="file-text"
@@ -93,7 +93,7 @@
             </a-button>
             <a-button
               :disabled="auditStatus === '审核中'"
-              v-if="ac('EDIT') && auditStatus !== '审核中'"
+              v-if="ac('EDIT') && auditStatus !== '审核中' && !!record.auditStatus"
               @click="handleToEdit(record)"
               type="primary"
               icon="form"
@@ -101,6 +101,7 @@
               title="编辑">
             </a-button>
             <a-button
+              v-if="!!record.auditStatus"
               @click="handleToItem(record)"
               type="primary"
               icon="plus-square"
