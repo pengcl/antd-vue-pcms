@@ -32,7 +32,7 @@
             <a-col :md="10" :sm="24">
               <a-button
                 v-if="ac('BudgetGather')"
-                :disabled="projectType === undefined || projectType === 'noProject'"
+                :disabled="(projectType === undefined || projectType === 'noProject') && isStartAudit === true"
                 type="success"
                 style="margin-right: 5px"
                 @click="handleToCollect">预算汇总
@@ -85,9 +85,8 @@
           <template>
             {{ record.code }}
             <a-button
-              :disabled="auditStatus === '审核中'"
               v-if="ac('VIEW')"
-              @click="handleToItem(record)"
+              @click="handleToView(record)"
               type="success"
               icon="file-text"
               title="查看">
@@ -183,6 +182,7 @@
             return {
                 titleIds: [],
                 auditStatus: '',
+                isStartAudit: false,
                 version: '',
                 cities: null,
                 visible: false,
@@ -212,6 +212,7 @@
                                     if (res2.result.data != null) {
                                         this.auditStatus = res2.result.data.auditStatus
                                         this.version = res2.result.data.version
+                                        this.isStartAudit = res2.result.data.isStartAudit
                                         this.columnsWidth = 850 + res2.result.data.costCenterBudgetSubPlans.length * 200
                                         if (this.columnsWidth < 1560) {
                                             this.columnsWidth = 1560
@@ -336,6 +337,9 @@
             },
             handleToAdd () {
                 this.$router.push({ path: `/cost/enact/item/0?type=add` })
+            },
+            handleToView (record) {
+              this.$router.push({ path: `/cost/enact/item/${record.id}?type=view&ProjectGUID=${this.queryParam.ProjectGUID}` })
             },
             onSelect (value, option) {
               storage.set('POS', option.pos)
