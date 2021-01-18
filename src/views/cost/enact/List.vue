@@ -237,7 +237,6 @@
                                             obj['id'] = item.id
                                             obj['code'] = item.code
                                             obj['name'] = item.nameCN
-
                                             let itemsAmount = 0
                                             if (res2.result.data != null) {
                                                 res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
@@ -246,12 +245,11 @@
                                                     subjectItem2.mainElements.forEach(itemA => {
                                                         if (item.id === itemA.elementTypeId) {
                                                             obj[costName] = itemA.amount
-                                                            itemsAmount = itemsAmount + obj[costName]
+                                                            itemsAmount += itemA.amount
                                                         }
                                                     })
                                                     if (!obj[costName]) {
                                                         obj[costName] = 0
-                                                        itemsAmount = 0
                                                     }
                                                 })
                                                 res2.result.data.elementAuditList.forEach(subjectItem3 => {
