@@ -7,7 +7,7 @@
             <a-col :md="12" :sm="24">
               工程专业预算
               <a-button type="success" style="margin-left: 20px">审批记录</a-button>
-<!--              <a-button type="success" @click="createGT" style="margin-left: 20px">生成GT</a-button>-->
+              <a-button v-if="ac('CreateGT')" type="success" @click="createGT" style="margin-left: 20px">生成GT</a-button>
             </a-col>
           </a-row>
         </a-form>
