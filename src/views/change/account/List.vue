@@ -165,8 +165,7 @@ const columns = [
   {
     title: '上报为后补指令',
     width : 110,
-    dataIndex: 'isBeforeApply',
-    scopedSlots: { customRender: 'isBeforeApply' }
+    dataIndex: 'isBeforeApply'
   },
   {
     title: '确认状态',

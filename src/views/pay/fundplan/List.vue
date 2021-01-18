@@ -300,7 +300,7 @@
                 return ac(action, this.$route)
             },
             handleToItem (record) {
-                this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=view&projectCode=` + record.projectCode + `&year=` + record.year })
+                this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=view&projectCode=` + record.projectCode + `&year=` + record.year + (record.monthLastNum ? '&month=' + record.monthLastNum : '') })
             },
             handleToEdit (record) {
                 this.$router.push({ path: `/pay/fundplan/item/${record.elementCode}?type=update&projectCode=` + record.projectCode + `&year=` + record.year })

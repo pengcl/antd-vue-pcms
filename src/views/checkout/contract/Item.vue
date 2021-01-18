@@ -56,25 +56,25 @@
       </a-tabs>
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('C_EDIT')">
             <a-button @click="approve" type="success"
                       :disabled="form.balanceCertificateAuditStatus !== '已审核' && !form.useStore">
               启动审批流程
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核'">
             <a-button @click="view" type="success">
               查看审批
             </a-button>
           </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('C_EDIT')">
             <a-button @click="edit" type="success">
               编辑
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
+          <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'C_ADD' : 'C_EDIT')">
             <a-button @click="save" type="success" :disabled="disabled">
               储存
             </a-button>
