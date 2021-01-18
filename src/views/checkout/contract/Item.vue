@@ -62,7 +62,7 @@
               启动审批流程
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核'">
+          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="view" type="success">
               查看审批
             </a-button>
