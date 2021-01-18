@@ -19,7 +19,7 @@
         :alert="false"
         :scroll="{ y : 300}"
         showPagination="auto"
-        :rowSelection="{onSelect : onSelect,type: 'radio' }"
+        :rowSelection="rowSelection"
       >
         <span slot="packageDate" slot-scope="text">
           {{ text | date }}
@@ -74,20 +74,35 @@
             return fixedList(res, requestParameters)
           })
         },
+        selectedRowKeys: [],
+        selectedRows: []
       }
     },
     created () {},
     props: {
     },
-    computed: {},
+    computed: {
+      rowSelection () {
+        const that = this
+        return {
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange,
+          type: 'radio',
+          onSelect: function (record, selected, selectRows, nativeEvent) {
+            that.selected = record
+          }
+        }
+      }
+    },
     methods: {
       show (id) {
         this.visible = true
         this.ProjectGUID = id
         this.$refs.table.refresh()
       },
-      onSelect (row) {
-        this.selected = row
+      onSelectChange (selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys
+        this.selectedRows = selectedRows
       },
       // 取消
       handleCancel () {
@@ -96,10 +111,10 @@
       // 确定
       handleOk () {
         if (this.selected) {
-          this.visible = false
           const tempwindow = window.open('_blank')
           tempwindow.location = this.selected.viewBPMUrl
-          this.selected = ''
+          this.$refs.table.clearSelected()
+          this.visible = false
         } else {
           this.$message.warn('请选择对应记录')
         }

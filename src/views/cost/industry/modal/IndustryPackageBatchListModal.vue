@@ -18,7 +18,7 @@
       :alert="false"
       :scroll="{ y : 300}"
       showPagination="auto"
-      :rowSelection="{onSelect : onSelect,type: 'radio' }"
+      :rowSelection="rowSelection"
     >
       <span slot="creationTime" slot-scope="text">{{text | moment}}</span>
     </s-table>
@@ -70,10 +70,23 @@
             this.$refs.table.refresh()
             return fixedList(res, requestParameters)
           })
-        }
+        },
+        selectedRowKeys: [],
+        selectedRows: []
       }
     },
     computed: {
+      rowSelection () {
+        const that = this
+        return {
+          selectedRowKeys: this.selectedRowKeys,
+          onChange: this.onSelectChange,
+          type: 'radio',
+          onSelect: function (record, selected, selectRows, nativeEvent) {
+            that.selected = record
+          }
+        }
+      }
     },
     props: {
       ProjectGUID: {
@@ -87,14 +100,16 @@
       }
     },
     methods: {
-      onSelect (row) {
-        this.selected = row
+      onSelectChange (selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys
+        this.selectedRows = selectedRows
       },
       onOk(){
-        if(this.selected){
+        if (this.selected) {
           this.visible = false
+          this.$refs.table.clearSelected()
           this.$router.push({ path: `/cost/industry/batch/${this.selected.tenderPackageBatchGUID}?ProjectGUID=${this.ProjectGUID}&type=view` })
-        }else{
+        } else {
           this.$message.warn('请选择对应批次')
         }
       },
