@@ -77,7 +77,7 @@
 
         <span slot="auditStatus" slot-scope="text,record">
           <p style="text-align: right">
-            <span style="font-weight: bold;padding-right: 10px">{{text}} （V.{{record.version }}）</span>
+            <span v-if="!!record.auditStatus" style="font-weight: bold;padding-right: 10px">{{text}} （V.{{record.version }}）</span>
           </p>
         </span>
 
@@ -233,6 +233,7 @@
                                         })
                                         this.columns = _columns
                                         this.$forceUpdate()
+                                        let allAmountCount = 0 // 汇总树总金额
                                         res.result.data.forEach(item => {
                                             const obj = {}
                                             obj['id'] = item.id
@@ -261,10 +262,33 @@
                                                   }
                                                 })
                                             }
+                                            // 汇总行总金额
                                             obj.amountCount = itemsAmount
+                                            // 汇总树总金额
+                                            allAmountCount += itemsAmount
                                             result.result.data.push(obj)
                                         })
-                                    }
+                                        // 计算列合计金额
+                                        const columnObj = {}
+                                        columnObj.amountCount = allAmountCount
+                                        if (res2.result.data != null) {
+                                          res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
+                                            // 加载成本
+                                            let columnAmount = 0
+                                            const costName = 'cost' + subjectItem2.costCenterId
+                                            subjectItem2.mainElements.forEach(itemA => {
+                                                columnAmount += itemA.amount
+                                            })
+                                            if (columnAmount > 0 ) {
+                                              columnObj[costName] = columnAmount
+                                            } else {
+                                              columnObj[costName] = 0
+                                            }
+                                          })
+                                        }
+                                        result.result.data.push(columnObj)
+                                        console.log(result.result.data)
+                                      }
                                     return fixedList(result, parameter)
                                 })
                         })
