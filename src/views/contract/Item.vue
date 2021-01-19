@@ -78,7 +78,8 @@
           :md="24"
           :sm="24"
           style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group
+            v-if="type === 'view' && form.contract.auditStatus === '未审核' && form.contract.createMode !== 'C' && ac('EDIT')">
             <a-button :loading="loading.bpm" @click="bpm" type="success">
               启动审批流程
             </a-button>
@@ -86,6 +87,16 @@
           <a-button-group v-if="type === 'view' && form.contract.auditStatus !== '未审核' && ac('VIEW')">
             <a-button :loading="loading.view" @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('OneClickAudit')">
+            <a-button @click="approve" type="success">
+              审核通过
+            </a-button>
+          </a-button-group>
+          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '已审核' && ac('OneClickUnAudit')">
+            <a-button @click="cancelAudit" type="success">
+              取消审核
             </a-button>
           </a-button-group>
         </a-col>
@@ -206,6 +217,22 @@
             }
         },
         methods: {
+            approve () {
+                ContractService.approve(this.id).then(res => {
+                    if (res.result.data) {
+                        this.$message.success('审核通过成功！')
+                        this.$router.push({ path: `/contract/list` })
+                    }
+                })
+            },
+            cancelAudit () {
+                ContractService.cancelAudit(this.id).then(res => {
+                    if (res.result.data) {
+                        this.$message.success('取消审核成功！')
+                        this.$router.push({ path: `/contract/list` })
+                    }
+                })
+            },
             ac (action) {
                 return ac(action, this.$route)
             },
