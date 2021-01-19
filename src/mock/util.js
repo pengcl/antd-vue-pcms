@@ -48,7 +48,7 @@ export const formatList = (items, option) => {
     if (option) {
       item[option.key] = option.value
     }
-    item.label = item.projectName
+    item.label = item.projectShortName
     item.value = item.projectGUID
     list.push(item)
   })
