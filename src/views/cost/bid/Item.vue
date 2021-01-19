@@ -299,7 +299,8 @@
           if (this.form.tenderPackages) {
             CostService.bidIndustryItems({
               ProjectGUID: this.ProjectGUID,
-              ProjectTenderPackageId: this.id
+              ProjectTenderPackageId: this.id,
+              IsAudit: true
             }).then(res2 => {
               //获取下拉分判包列表
               this.industryItems = JSON.parse(JSON.stringify(res2.result.data))
