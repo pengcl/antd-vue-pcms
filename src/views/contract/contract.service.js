@@ -28,6 +28,8 @@ const API = {
   updateBudgets_110: '/api/services/app/Contract/UpdateContractUseGeneralTrade',
   bpm: '/api/services/app/Contract/StartBPM',
   review: '/api/services/app/Contract/ContractORGNSCResetBudget',
+  approve: '/api/services/app/Contract/ContractAuditWithOutWorkFlow',
+  cancelAudit: '/api/services/app/Contract/ContractCancelAuditWithOutWorkFlow'
 }
 
 const ContractService = {}
@@ -84,6 +86,22 @@ ContractService.create = function (parameter) {
     url: API.create,
     method: 'POST',
     data: parameter
+  })
+}
+
+ContractService.approve = function (contractGuid) {
+  return request({
+    url: API.approve,
+    method: 'POST',
+    params: { contractGuid }
+  })
+}
+
+ContractService.cancelAudit = function (contractGuid) {
+  return request({
+    url: API.cancelAudit,
+    method: 'POST',
+    params: { contractGuid }
   })
 }
 
@@ -246,7 +264,6 @@ ContractService.bpm = function (ContractGuid, sProjectCode) {
     params: { ContractGuid, sProjectCode }
   })
 }
-
 
 ContractService.review = function (contractGuid) {
   return request({
