@@ -387,7 +387,7 @@
       },
       ProjectGUID() {
         return this.$route.query.ProjectGUID
-      }npm
+      }
     },
     methods: {
       ac (action) {
