@@ -366,116 +366,99 @@
         <base-info-payment :data="item" :type="type" :id="id" :index="index+1"
                            @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
         <base-info-attachment :master-id="data.attachmentID ? data.attachmentID : 0"
-                              :data="item"
+                              :data="item" xi
                               :type="type"
                               :id="id"
                               @on-change-masterId="changeMasterId"></base-info-attachment>
       </div>
       <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票信息</a-col>
       <a-col :md="24" :sm="24">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-            <tr>
-              <th colspan="9">
-                <a-button icon="plus" @click="add('billList')" :disabled="type === 'view'">
-                  新增发票
-                </a-button>
-              </th>
-            </tr>
-            <tr>
-              <th>操作</th>
-              <th>票据类型</th>
-              <th>编号</th>
-              <th>发票金额</th>
-              <th>税率</th>
-              <th>不含税金额</th>
-              <th>发票日期</th>
-              <th>发票附件</th>
-              <th>备注</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="!item.isDeleted" v-for="(item,index) in data.billList" :key="index">
-              <td>
-                <a-upload name="file"
-                          :disabled="type === 'view'"
-                          :multiple="false"
-                          v-if="item.invoiceType"
-                          :before-upload="beforeUpload">
+        <div
+          style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
+          <a-button icon="plus" @click="add('billList')" :disabled="type === 'view'">
+            新增发票
+          </a-button>
+        </div>
+        <a-table
+          ref="table"
+          :row-key="record => record._id"
+          :columns="columns"
+          :data-source="data.billList | filterDeleted"
+          :scroll="{  x: 'calc(700px + 50%)' }"
+          bordered
+        >
+          <span slot="action" slot-scope="text,record,index">
+            <a-upload name="file"
+                      :disabled="type === 'view'"
+                      :multiple="false"
+                      v-if="record.invoiceType"
+                      :before-upload="beforeUpload">
                   <a-button @click="choose(index)">请选择</a-button>
                 </a-upload>
                 <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
                   删除
                 </a-button>
-              </td>
-              <td>
-                <a-select
-                  :disabled="type === 'view'"
-                  placeholder="请选择"
-                  @change="onchange"
-                  v-model="item.invoiceType"
-                  v-decorator="['item.invoiceType', { rules: [{required: true, message: '请选择票据类型'}] }]">
+          </span>
+
+          <span slot="invoiceType" slot-scope="text,record">
+            <a-select
+              :disabled="type === 'view'"
+              placeholder="请选择"
+              @change="onchange"
+              v-model="record.invoiceType"
+              v-decorator="['item.invoiceType', { rules: [{required: true, message: '请选择票据类型'}] }]">
                   <a-select-option
                     v-for="type in billTypeList"
                     :value="type"
                     :key="type">{{ type }}
                   </a-select-option>
                 </a-select>
-              </td>
-              <td>
-                <a-input :disabled="type === 'view'" v-model="item.billNum"></a-input>
-              </td>
-              <td>
-                <a-input-number :disabled="type === 'view'"
-                                v-model="item.billAmount"
-                                @change="billAmountChange"
-                                :min="0"
-                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :precision="2"></a-input-number>
-              </td>
-              <td>
-                <a-input-number :disabled="type === 'view'"
-                                v-model="item.taxRate"
-                                @change="taxRateChange"
-                                :min="0"
-                                :max="100"
-                                :formatter="value => `${value}%`"
-                                :parser="value => value.replace('%', '')"></a-input-number>
-              </td>
-              <td>
-                <a-input-number :disabled="type === 'view'"
-                                v-model="item.noTaxAmount"
-                                @change="noTaxAmountChange"
-                                :min="0"
-                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :precision="2"></a-input-number>
-              </td>
-              <td>
-                <a-date-picker :disabled="type === 'view'" v-model="item.billDate" @change="dateChange"></a-date-picker>
-              </td>
-              <td>
-                <a :href="item.billFileUrl" target="_blank" v-if="item.billFileName">{{item.billFileName}}</a>
-              </td>
-              <td>
-                <a-input :disabled="type === 'view'" v-model="item.remark"></a-input>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">发票合计</td>
-              <td colspan="7"></td>
-            </tr>
-            <tr>
-              <td colspan="2">累计发票金额</td>
-              <td colspan="7"></td>
-            </tr>
-            <tr>
-              <td colspan="2">累计票款差额</td>
-              <td colspan="7"></td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+          </span>
+
+          <span slot="billNum" slot-scope="text,record">
+            <a-input :disabled="type === 'view'" v-model="record.billNum"></a-input>
+          </span>
+
+          <span slot="billAmount" slot-scope="text,record">
+            <a-input-number :disabled="type === 'view'"
+                            v-model="record.billAmount"
+                            @change="billAmountChange"
+                            :min="0"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </span>
+
+          <span slot="taxRate" slot-scope="text,record">
+            <a-input-number :disabled="type === 'view'"
+                            v-model="record.taxRate"
+                            @change="taxRateChange"
+                            :min="0"
+                            :max="100"
+                            :formatter="value => `${value}%`"
+                            :parser="value => value.replace('%', '')"></a-input-number>
+          </span>
+
+          <span slot="noTaxAmount" slot-scope="text,record">
+            <a-input-number :disabled="type === 'view'"
+                            v-model="record.noTaxAmount"
+                            @change="noTaxAmountChange"
+                            :min="0"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </span>
+
+          <span slot="billDate" slot-scope="text,record">
+            <a-date-picker :disabled="type === 'view'" v-model="record.billDate" @change="dateChange"></a-date-picker>
+          </span>
+
+          <span slot="billFileName" slot-scope="text,record">
+            <a :href="record.billFileUrl" target="_blank" v-if="record.billFileName">{{record.billFileName}}</a>
+          </span>
+
+          <span slot="remark" slot-scope="text,record">
+            <a-input :disabled="type === 'view'" v-model="record.remark"></a-input>
+          </span>
+        </a-table>
       </a-col>
     </a-row>
   </a-form-model>
@@ -492,11 +475,69 @@
     import ViewContractNsc from '../modules/ViewContractNSC'
     import PaymentRequestAmountForm from '../modules/PaymentRequestAmountForm'
 
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            width: 130
+        },
+        {
+            title: '票据类型',
+            dataIndex: 'invoiceType',
+            scopedSlots: { customRender: 'invoiceType' },
+            width: 180
+        },
+        {
+            title: '编号',
+            dataIndex: 'billNum',
+            scopedSlots: { customRender: 'billNum' },
+            width: 150
+        },
+        {
+            title: '发票金额',
+            dataIndex: 'billAmount',
+            scopedSlots: { customRender: 'billAmount' },
+            width: 180,
+        },
+        {
+            title: '税率',
+            dataIndex: 'taxRate',
+            scopedSlots: { customRender: 'taxRate' },
+            width: 150
+        },
+        {
+            title: '不含税金额',
+            dataIndex: 'noTaxAmount',
+            scopedSlots: { customRender: 'noTaxAmount' },
+            width: 180,
+        },
+        {
+            title: '发票日期',
+            dataIndex: 'billDate',
+            scopedSlots: { customRender: 'billDate' },
+            width: 180
+        },
+        {
+            title: '发票附件',
+            dataIndex: 'billFileName',
+            scopedSlots: { customRender: 'billFileName' },
+            width: 180
+        },
+        {
+            title: '备注',
+            dataIndex: 'remark',
+            scopedSlots: { customRender: 'remark' },
+            width: 150
+        }
+    ]
+
     export default {
         name: 'BaseInfo',
         components: { PaymentRequestAmountForm, ViewContractNsc, BaseInfoAttachment, BaseInfoPayment, CreateBankForm },
         data () {
             return {
+                columns: columns,
                 selection: {},
                 loading: false,
                 paymentTypes: [],
@@ -589,6 +630,11 @@
             SignedService.paymentMethodTypes().then(res => {
                 this.paymentMethodTypes = res.result.data
             })
+        },
+        filters: {
+            filterDeleted (items) {
+                return items.filter(item => !item.isDeleted)
+            }
         },
         props: {
             data: {
