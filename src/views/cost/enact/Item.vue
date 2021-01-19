@@ -500,7 +500,7 @@
         }
       },
       handleToImport () {
-        this.$router.push({ path: `/cost/enact/import?ProjectGUID=${this.queryParam.ProjectGUID}` })
+        this.$router.push({ path: `/cost/enact/subimport?ProjectGUID=${this.ProjectGUID}&MainElementId=${this.id}` })
       },
       handleToItem () {
         this.$refs.auditSubListModal.show(this.ProjectGUID, this.id)

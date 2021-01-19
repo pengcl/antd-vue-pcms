@@ -10,7 +10,7 @@
   >
     <template slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
-      <a-button v-if="ac('SAVE')" type="primary" @click="handleCancel">保存</a-button>
+      <a-button v-if="ac('SAVE')" type="primary" :loading="loading" @click="handleOk">保存</a-button>
     </template>
 
     <a-card :bordered="false">

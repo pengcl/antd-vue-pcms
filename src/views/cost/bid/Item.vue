@@ -284,7 +284,7 @@
       //   this.$forceUpdate()
       // })
       if (this.type === 'add') {
-        CostService.bidIndustryItems({ProjectGUID: this.ProjectGUID, ProjectTenderPackageId: this.id}).then(res => {
+        CostService.bidIndustryItems({ProjectGUID: this.ProjectGUID, ProjectTenderPackageId: this.id, IsAudit: true}).then(res => {
           this.industryItems = JSON.parse(JSON.stringify(res.result.data))
           this.$forceUpdate()
         })

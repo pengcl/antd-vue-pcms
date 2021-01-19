@@ -232,6 +232,7 @@
         })
       },
       viewAudit() {
+        this.form.isView = true
         CostService.budgetPlanAuditSave(this.form).then(res => {
           if (res.result.statusCode === 200) {
             this.form = res.result.data

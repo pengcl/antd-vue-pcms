@@ -53,6 +53,7 @@ const locale = {
   'menu.cost.enact.item': '成本预算编制',
   'menu.cost.enact.collect': '成本预算汇总',
   'menu.cost.enact.import': '成本预算导入',
+  'menu.cost.enact.subimport': '成本科目预算导入',
   'menu.cost.resolve.list': '预算分解',
   'menu.cost.resolve.item': '专业预算查看',
   'menu.cost.industry.list': '专业分判包',
