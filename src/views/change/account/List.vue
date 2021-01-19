@@ -51,6 +51,7 @@
         size="default"
         rowKey="cipGuid"
         bordered
+        :alter="false"
         :columns="columns"
         :data="loadData"
         :scroll="{ x: 2600 }"
@@ -215,7 +216,7 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
-        console.log('loadData request parameters:', requestParameters)
+        console.log('loadData request parameters:', requestParameters,!this.queryParam.ProjectGUID)
         if(!this.queryParam.ProjectGUID){
           return nullFixedList(requestParameters)
         }else{
@@ -266,8 +267,7 @@ export default {
     onSelect (value, option) {
       storage.set('POS', option.pos)
       this.queryParam.ProjectID = option.$options.propsData.dataRef.projectCode
-      this.queryParam.ProjectGUID = value.projectGUID
-      this.$refs.table.clearSelected()
+      this.queryParam.ProjectGUID = value
       this.$refs.table.refresh()
       this.$forceUpdate()
     },
