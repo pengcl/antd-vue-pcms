@@ -123,6 +123,7 @@ import { formatList } from '@/mock/util'
 import { compare } from '@/utils/util'
 import IndustryPackageBatchModal from './modal/industryPackageBatchModal.vue'
 import { ac } from '@/views/user/user.service'
+import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
 const columns = [
   {
