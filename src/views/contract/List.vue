@@ -183,26 +183,32 @@
             title: '签约日期',
             dataIndex: 'signDate',
             scopedSlots: { customRender: 'signDate' },
+            width: 110,
             sorter: true
         },
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
+            width: 78,
             scopedSlots: { customRender: 'auditStatus' }
         },
         {
             title: '预算确认状态',
             dataIndex: 'budgetIsConfirm',
+            align: 'center',
             scopedSlots: { customRender: 'budgetIsConfirm' }
         },
         {
             title: '建立日期',
             dataIndex: 'creationTime',
+            width: 110,
             sorter: true
         },
         {
             title: '建立者',
             dataIndex: 'creatorUser',
+            width: 100,
+            align: 'center',
             scopedSlots: { customRender: 'creatorUser' }
         }
     ]

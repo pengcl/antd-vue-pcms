@@ -184,12 +184,12 @@
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
-            width: 78,
+            width: 90,
         },
         {
             title: '结算状态',
             dataIndex: 'balanceStatus',
-            width: 78
+            width: 90
         },
         {
             title: '合同编号',
@@ -212,13 +212,13 @@
         {
             title: '签约日期',
             dataIndex: 'signDate',
-            width: 110,
+            width: 120,
             scopedSlots: { customRender: 'signDate' },
             sorter: true
         },
         {
             title: '币种',
-            width: 78,
+            width: 90,
             dataIndex: 'currency',
         },
         {
@@ -292,6 +292,7 @@
         {
             title: '经办人',
             width: 100,
+            align: 'center',
             dataIndex: 'creatorUser',
         },
     ]

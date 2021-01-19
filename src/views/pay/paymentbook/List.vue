@@ -128,7 +128,7 @@
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
-            width: '78px',
+            width: '90px',
         },
         {
             title: '收款单位',
@@ -138,7 +138,7 @@
         {
             title: '申请时间',
             dataIndex: 'creationTime',
-            width: '110px',
+            width: '120px',
             scopedSlots: { customRender: 'creationTime' },
             sorter : true
         },
@@ -168,6 +168,7 @@
         {
             title: '申请人',
             dataIndex: 'creatorUser',
+            align: 'center',
             width: '100px',
         },
         {
@@ -179,12 +180,12 @@
             title: '支付方式',
             dataIndex: 'paymentMethod',
             align: 'center',
-            width: '90px',
+            width: '100px',
         },
         {
             title: '付款类型',
             dataIndex: 'paymentType',
-            width: '90px',
+            width: '100px',
         },
     ]
 
