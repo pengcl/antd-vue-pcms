@@ -89,12 +89,14 @@
               查看审批
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '未审核' && ac('OneClickAudit')">
+          <a-button-group
+            v-if="type === 'view' && form.contract.auditStatus === '未审核' && form.contract.createMode === 'C' && ac('OneClickAudit')">
             <a-button @click="approve" type="success">
               审核通过
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && form.contract.auditStatus === '已审核' && ac('OneClickUnAudit')">
+          <a-button-group
+            v-if="type === 'view' && form.contract.auditStatus === '已审核' && form.contract.createMode === 'C' && ac('OneClickUnAudit')">
             <a-button @click="cancelAudit" type="success">
               取消审核
             </a-button>

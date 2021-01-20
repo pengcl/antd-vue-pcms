@@ -17,6 +17,8 @@ const API = {
   costCenterBudgetItems: '/api/services/app/TradeBudget/GetPaymentOtherAddCostCenterBudgetItems',
   addTradeBudgets: '/api/services/app/TradeBudget/PaymentOtherBatchAddTradeBudgets',
   useTradeBudgets: '/api/services/app/TradeBudget/PaymentOtherBatchUseTradeBudgets',
+  audit: '/api/services/app/PaymentOther/OneClickAudit',
+  cancelAudit: '/api/services/app/PaymentOther/OneClickUnAudit'
 }
 
 const UnSignedService = {}
@@ -49,6 +51,22 @@ UnSignedService.initData = function (projectGUID) {
     url: API.initData,
     method: 'get',
     params: { projectGUID }
+  })
+}
+
+UnSignedService.audit = function (gid) {
+  return request({
+    url: API.audit,
+    method: 'POST',
+    params: { gid }
+  })
+}
+
+UnSignedService.cancelAudit = function (gid) {
+  return request({
+    url: API.cancelAudit,
+    method: 'POST',
+    params: { gid }
   })
 }
 
@@ -115,7 +133,6 @@ UnSignedService.addTradeBudgets = function (parameter) {
     data: parameter
   })
 }
-
 
 UnSignedService.useTradeBudgets = function (parameter) {
   return request({

@@ -30,6 +30,8 @@ const API = {
   NSCContract: '/api/services/app/Payment/GetPaymentNSCContract',
   NSCInfoList: '/api/services/app/Payment/GetContractNSCInfoList',
   requestListForView: '/api/services/app/Payment/GetPaymentRequestListForView',
+  audit: '/api/services/app/Payment/OneClickAudit',
+  cancelAudit: '/api/services/app/Payment/OneClickUnAudit'
 }
 
 const SignedService = {}
@@ -230,6 +232,22 @@ SignedService.create = function (parameter) {
     url: API.create,
     method: 'POST',
     data: parameter
+  })
+}
+
+SignedService.audit = function (gid) {
+  return request({
+    url: API.audit,
+    method: 'POST',
+    params: { gid }
+  })
+}
+
+SignedService.cancelAudit = function (gid) {
+  return request({
+    url: API.cancelAudit,
+    method: 'POST',
+    params: { gid }
   })
 }
 

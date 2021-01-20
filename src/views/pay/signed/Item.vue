@@ -12,7 +12,7 @@
 
       <a-row :gutter="48">
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
-          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
+          <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && form.createMode !== 'C' && ac('EDIT')">
             <a-button @click="approve" type="success">
               启动审批流程
             </a-button>
@@ -20,6 +20,18 @@
           <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group
+            v-if="type === 'view' && form.auditStatus === '未审核' && form.createMode === 'C' && ac('OneClickAudit')">
+            <a-button @click="audit" type="success">
+              审核通过
+            </a-button>
+          </a-button-group>
+          <a-button-group
+            v-if="type === 'view' && form.auditStatus === '已审核' && form.createMode === 'C' && ac('OneClickUnAudit')">
+            <a-button @click="cancelAudit" type="success">
+              取消审核
             </a-button>
           </a-button-group>
         </a-col>
@@ -87,6 +99,22 @@
             },
         },
         methods: {
+            audit () {
+                SignedService.audit(this.id).then(res => {
+                    if (res.result.data) {
+                        this.$message.success('审核通过成功！')
+                        this.getData()
+                    }
+                })
+            },
+            cancelAudit () {
+                SignedService.cancelAudit(this.id).then(res => {
+                    if (res.result.data) {
+                        this.$message.success('取消审核成功！')
+                        this.getData()
+                    }
+                })
+            },
             getData () {
                 if (this.type === 'view') {
                     SignedService.viewInfo(this.id).then(res => {
