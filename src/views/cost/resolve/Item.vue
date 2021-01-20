@@ -42,7 +42,7 @@
                   title="新增">
                 </a-button>
                 <a-popconfirm
-                  v-if="record.isDelete && !record.isUsed"
+                  v-if="record.isDelete && record.isCanDel"
                   title="是否要删除此行？"
                   @confirm="handleToRemove(record)">
                   <a-button
