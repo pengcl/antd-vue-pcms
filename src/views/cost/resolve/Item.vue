@@ -92,7 +92,7 @@
           if (costCenterId === budget.costCenterId && budget.groupId === groupId) {
             obj = {}
             obj['name'] = 'cost' + budget.costCenterId
-            obj['value'] = budget.budgetValue
+            obj['value'] = budget.initBudgetValue
           }
         })
       }
@@ -290,6 +290,13 @@
       width: 200,
       fixed: 'left',
       dataIndex: 'BudgetTitle'
+    },
+    {
+      title: '合计',
+      width: 150,
+      fixed: 'left',
+      dataIndex: 'amountCount',
+      scopedSlots: {customRender: 'cost'}
     }
   ]
 
@@ -350,13 +357,6 @@
                 childrenObj.scopedSlots = {customRender: 'cost'}
                 obj.children.push(childrenObj)
                 _columns.push(obj)
-              })
-              _columns.push({
-                title: '合计',
-                width: 150,
-                fixed: 'right',
-                dataIndex: 'amountCount',
-                scopedSlots: {customRender: 'cost'}
               })
               // 组装动态列对应的行数据
               const list = getLineData(res.result.data[0].elementItem.childs, res.result.data)
