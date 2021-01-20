@@ -90,14 +90,14 @@
       <div class="table-operator" style="margin-top:8px;">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.createMode !== 'C' && form.voMasterInfo.auditStatus === '未审核'  && ac('EDIT')" @click="startBPM">启动审批流程</a-button>
-            <a-button type="success" :loading="loading.showBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中') && form.createMode !== 'C' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.createMode !== 'C' && form.voMasterInfo.auditStatus === '未审核'  && ac('EDIT')" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中') && form.voMasterInfo.createMode !== 'C' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
 
             <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !pmiUrl && ac('ADD')" @click="createPMI">生成项目指令</a-button>
             <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl  && ac('VIEW')" @click="showPMI">查看项目指令</a-button>
 
-            <a-button type="success" :loading="loading.startCBPM" v-if="type === 'view' && form.createMode === 'C' && form.voMasterInfo.auditStatus === '未审核'  && ac('OneClickAudit')" @click="startCBPM">审核通过</a-button>
-            <a-button type="danger" :loading="loading.cancelCBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' ) && form.createMode === 'C' && ac('OneClickUnAudit')" @click="cancelCBPM">取消审核</a-button>
+            <a-button type="success" :loading="loading.startCBPM" v-if="type === 'view' && form.voMasterInfo.createMode === 'C' && form.voMasterInfo.auditStatus === '未审核'  && ac('OneClickAudit')" @click="startCBPM">审核通过</a-button>
+            <a-button type="danger" :loading="loading.cancelCBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' ) && form.voMasterInfo.createMode === 'C' && ac('OneClickUnAudit')" @click="cancelCBPM">取消审核</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
