@@ -90,11 +90,14 @@
       <div class="table-operator" style="margin-top:8px;">
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
-            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.auditStatus === '未审核'  && ac('EDIT')" @click="startBPM">启动审批流程</a-button>
-            <a-button type="success" :loading="loading.showBPM" v-if="form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.createMode !== 'C' && form.voMasterInfo.auditStatus === '未审核'  && ac('EDIT')" @click="startBPM">启动审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中') && form.createMode !== 'C' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
 
             <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !pmiUrl && ac('ADD')" @click="createPMI">生成项目指令</a-button>
             <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl  && ac('VIEW')" @click="showPMI">查看项目指令</a-button>
+
+            <a-button type="success" :loading="loading.startCBPM" v-if="type === 'view' && form.createMode === 'C' && form.voMasterInfo.auditStatus === '未审核'  && ac('OneClickAudit')" @click="startCBPM">审核通过</a-button>
+            <a-button type="danger" :loading="loading.cancelCBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' ) && form.createMode === 'C' && ac('OneClickUnAudit')" @click="cancelCBPM">取消审核</a-button>
           </a-col>
         </a-row>
         <a-row :gutter="48">
@@ -145,7 +148,9 @@
           cancel : false,
           showBPM : false,
           createPMI : false,
-          showPMI : false
+          showPMI : false,
+          startCBPM : false,
+          cancelCBPM : false,
         },
         disabled:false,
         contract: SwaggerService.getForm('ContractOutputDto'),
@@ -442,6 +447,30 @@
         }else{
           location.href = `/change/${stageLower}/item/${this.form.voMasterInfo.voGuid}?type=view&contractGuid=${this.contractGuid}&stage=${this.stage}`
         }
+      },
+      startCBPM(){
+        this.loading.startCBPM = true
+        ChangeService.vOAuditWithOutWorkFlow(form.voMasterInfo.voGuid).then(res =>{
+          this.loading.startCBPM = false
+          if(res.result.statusCode === 200){
+            this.$message.success('已审核通过')
+            location.reload(true)
+          }
+        }).catch(() =>{
+          this.loading.startCBPM = false
+        })
+      },
+      cancelCBPM(){
+        this.loading.cancelCBPM = true
+        ChangeService.vOCancelAuditWithOutWorkFlow(form.voMasterInfo.voGuid).then(res =>{
+          this.loading.cancelCBPM = false
+          if(res.result.statusCode === 200){
+            this.$message.success('已取消审核')
+            location.reload(true)
+          }
+        }).catch(() =>{
+          this.loading.cancelCBPM = false
+        })
       }
     }
   }
