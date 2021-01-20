@@ -221,7 +221,7 @@
                 ContractService.approve(this.id).then(res => {
                     if (res.result.data) {
                         this.$message.success('审核通过成功！')
-                        this.$router.push({ path: `/contract/list` })
+                        this.getData()
                     }
                 })
             },
@@ -229,7 +229,7 @@
                 ContractService.cancelAudit(this.id).then(res => {
                     if (res.result.data) {
                         this.$message.success('取消审核成功！')
-                        this.$router.push({ path: `/contract/list` })
+                        this.getData()
                     }
                 })
             },

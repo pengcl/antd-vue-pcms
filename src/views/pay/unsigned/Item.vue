@@ -127,6 +127,15 @@
               </a-select>
             </a-form-model-item>
           </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-model-item
+              label="本地付款编号"
+            >
+              <a-input :disabled="type === 'view'"
+                       v-model="form.localPaymentCode"
+                       placeholder="请输入本地付款编号"></a-input>
+            </a-form-model-item>
+          </a-col>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
           <payment-info :data="form" :type="type" :id="id"></payment-info>
           <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">预算列表</a-col>
