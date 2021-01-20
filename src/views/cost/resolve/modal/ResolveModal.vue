@@ -53,7 +53,7 @@
                 <td style="width: 100px">
                   <a-button @click="del(index)" icon="delete" type="danger"></a-button>
                 </td>
-                <td><div style="width: 100px"></div></td>
+                <td><div style="width: 100px"></div>{{item.amountCount|NumberFormat}}</td>
                 <td style="width: 200px">
                   <a-form-model-item
                     class="simple"
@@ -89,6 +89,7 @@
                       :disabled="form.costCenterItems[index].centers[aIndex].disabled"
                       v-model="form.costCenterItems[index].centers[aIndex].amount"
                       :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                      @blur="e => checkChange(e, record, index,form.costCenterItems[index])"
                       :parser="value => value.replace(/\\s?|(,*)/g, '')"
                     >
                     </a-input-number>
@@ -135,6 +136,7 @@
         defaultSave: true,
         visible: false,
         elementInfoNameCN: '',
+        amountCount: 0,
         resolveItem: {},
         columnLength: 3,
         elementTradeTypes: [],
@@ -279,7 +281,8 @@
         const item = {
           groupId: this.groupId + 1,
           tradeTypeId: '',
-          centers: centers
+          centers: centers,
+          amountCount: 0
         }
         this.groupId = this.groupId + 1
         addItem(item, this.form.costCenterItems)
@@ -357,6 +360,13 @@
       },
       ac (action) {
         return ac(action, this.$route)
+      },
+      checkChange(e, record, index, costCenter) {
+        let amountCount = 0
+        costCenter.centers.forEach(item => {
+          amountCount += item.amount
+        })
+        this.form.costCenterItems[index].amountCount = amountCount
       }
     }
   }
