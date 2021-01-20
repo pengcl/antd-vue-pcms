@@ -29,7 +29,7 @@
           placeholder="用户名"
           v-decorator="[
             'userNameOrEmailAddress',
-            {initialValue: appType === 'uat' ? '' : 'test01', rules: [{ required: true, message: '请输入用户名' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
+            {initialValue: appType === 'dev' ? 'test01' : '', rules: [{ required: true, message: '请输入用户名' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
           ]"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
@@ -42,7 +42,7 @@
           placeholder="密码"
           v-decorator="[
             'password',
-            {initialValue: appType === 'uat' ? '' : 'abc123', rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
+            {initialValue: appType === 'dev' ? 'abc123' : '', rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
           ]"
         >
           <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>

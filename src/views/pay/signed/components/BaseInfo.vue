@@ -6,12 +6,21 @@
     :label-col="{ span: 8 }"
     :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
-      <a-col :md="24" :sm="24">
+      <a-col :md="12" :sm="24">
         <a-form-model-item
           label="项目编号及名称"
         >
           <a-input :disabled="true"
                    v-model="data.projectCode + ' ' + data.projectName"></a-input>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
+          label="本地付款编号"
+        >
+          <a-input :disabled="type === 'view'"
+                   v-model="data.localPaymentCode"
+                   placeholder="请输入本地付款编号"></a-input>
         </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">

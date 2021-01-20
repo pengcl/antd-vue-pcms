@@ -68,6 +68,10 @@ const API = {
   //变更台账
   getVoBookInfoBySearch: '/api/services/app/VO/GetVoBookInfoBySearch',//变更台账列表
   exportVOBook: '/api/services/app/VO/ExportVOBook',//导出变更台账
+
+  //一键审批
+  vOAuditWithOutWorkFlow : '/api/services/app/VO/VOAuditWithOutWorkFlow',//一键审核（针对新成本导入的变更）
+  vOCancelAuditWithOutWorkFlow: '/api/services/app/VO/VOCancelAuditWithOutWorkFlow',//一键取消审核（针对新成本导入的数据）
 }
 
 const ChangeService = {}
@@ -704,7 +708,6 @@ ChangeService.createSpotVisa = function(parameter){
 	  })
 }
 
-
 /**
  * 更新现场签证
  */
@@ -757,6 +760,28 @@ ChangeService.exportVOBook = function(params){
 	    url: API.exportVOBook,
 	    method: 'get',
 	    params: params
+	  })
+}
+
+/**
+ * 一键审核（针对新成本导入的变更）
+ */
+ChangeService.vOAuditWithOutWorkFlow = function(voGuid){
+	return request({
+	    url: API.vOAuditWithOutWorkFlow,
+	    method: 'post',
+	    data: {voGuid}
+	  })
+}
+
+/**
+ * 一键取消审核（针对新成本导入的数据）
+ */
+ChangeService.vOCancelAuditWithOutWorkFlow = function(voGuid){
+	return request({
+	    url: API.vOCancelAuditWithOutWorkFlow,
+	    method: 'post',
+	    data: {voGuid}
 	  })
 }
 

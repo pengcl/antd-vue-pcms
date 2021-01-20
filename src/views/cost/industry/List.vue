@@ -24,8 +24,8 @@
 
       <div class="table-operator">
         <a-button :disabled="!queryParam.ProjectGUID" type="success" v-if="ac('ADD')" @click="handleToAdd">新增</a-button>
-        <a-button :disabled="!queryParam.ProjectGUID || this.$refs.table._data.localDataSource.length < 1" type="success" @click="addBatch" v-if="ac('ADD')">新增审批</a-button>
-        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="viewBatch" v-if="ac('VIEW')">查看审批</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID || this.$refs.table._data.localDataSource.length < 1" type="success" @click="addBatch" v-if="ac('ADD')">新增审核</a-button>
+        <a-button :disabled="!queryParam.ProjectGUID" type="success" @click="viewBatch" v-if="ac('VIEW')">查看审核</a-button>
         <a-button type="primary" style="margin-left: 5px" @click="show = !show">
           <a-icon type="search"></a-icon>
         </a-button>
@@ -73,7 +73,7 @@
                 <a-select-option value="">所有</a-select-option>
                 <a-select-option value="未审核">未审核</a-select-option>
                 <a-select-option value="审核中">审核中</a-select-option>
-                <a-select-option value="已审批">已审批</a-select-option>
+                <a-select-option value="已审核">已审核</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -143,14 +143,14 @@
         <a-col :md="12" :sm="24">
           <a-button
             type="success"
-            :disabled="selectedPackage === null || !!selectedPackage.contractGUID"
+            :disabled="selectedPackage === null || !!selectedPackage.contractGUID || selectedPackage.auditStatus === '审核中'"
             @click="hanldeAddBugetItem" v-if="ac('ADD')"
           >新增预算
           </a-button>
           <a-button
             type="danger"
             style="margin-left: 10px"
-            v-if="this.selectedRowKeys.length > 0 && ac('ADD')"
+            v-if="this.selectedRowKeys.length > 0 && ac('ADD') && selectedPackage != null && selectedPackage.auditStatus === '未审核'"
             @click="handleBatchRemoveBudgetItem" 
           >删除预算</a-button
           >
@@ -175,10 +175,10 @@
               type="danger"
               icon="delete"
               :disabled="
-                selectedPackage === null || !!selectedPackage.projectTenderPackageId || !!selectedPackage.contractGUID
+                selectedPackage === null || !!selectedPackage.projectTenderPackageId || !!selectedPackage.contractGUID || selectedPackage.auditStatus === '审核中'
               "
               style="margin-left: 4px"
-              v-if="ac('ADD')"
+              v-if="ac('DELETE')"
               @click="handleRemoveBudgetItem(record)"
               title="删除"
             ></a-button>
@@ -595,7 +595,7 @@ export default {
           }
         }
       }).catch((e) =>{
-        console.log('专业分判包-点击新增审批失败',e)
+        console.log('专业分判包-点击新增审核失败',e)
       })
     },
     viewBatch(){

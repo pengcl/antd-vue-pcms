@@ -175,11 +175,13 @@
         {
             title: '付款单号',
             dataIndex: 'paymentOtherCode',
+            width: '200px',
             sorter: true
         },
         {
             title: '收款单位',
             dataIndex: 'payeePartyNameList',
+            width: '250px',
             scopedSlots: { customRender: 'payeePartyNameList' }
         },
         {
