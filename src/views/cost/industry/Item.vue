@@ -81,8 +81,32 @@
               <a-input :disabled="true" v-model="form.budgetAmount" placeholder="汇总明细项金额"></a-input>
             </a-form-model-item>
           </a-col>
+          <a-col :md="24" :sm="24">
+          <s-table
+            style="margin-top: 5px"
+            ref="table2"
+            size="default"
+            v-if="type === 'view'"
+            rowKey="id"
+            bordered
+            :columns="_columns"
+            :data="loadData2"
+            :alert="false"
+            :showPagination="false"
+          >
+            <span slot="budgetValue" slot-scope="text">{{ text | NumberFormat }}</span>
+            <template slot="contractGUID">
+              <a @click="jumpToContract">{{ form.contractNo || '' }}</a>
+            </template>
+            <template slot="projectTenderPackageId">
+              <a @click="jumpToProjectTenderPackage">{{
+                form.projectTenderPackageCode || ''
+              }}</a>
+            </template>
+          </s-table>
+          </a-col>
         </a-row>
-      <a-row>
+      <a-row style="margin-top:10px;">
         <a-col :md="12" :sm="24">
           <a-button type="success" style="margin-right: 20px" v-if="type==='view' && this.form.auditStatus === '未审核' && ac('ADD')" :loading="loading.startBPM" @click="startBPM" 
             :disabled="form.budgetAmount <= 0">启动审批流程</a-button>
@@ -106,10 +130,45 @@
   import { SwaggerService } from '@/api/swagger.service'
   import moment from "moment"
   import { ac } from '@/views/user/user.service'
+  import { STable, Ellipsis } from '@/components'
 
+  const _columns = [
+    {
+      title: '业态成本中心',
+      dataIndex: 'costCenterName'
+    },
+    {
+      title: '科目名称',
+      dataIndex: 'elementInfoNameCN'
+    },
+    {
+      title: '专业',
+      dataIndex: 'budgetTitle'
+    },
+    {
+      title: '金额',
+      dataIndex: 'budgetValue',
+      scopedSlots: { customRender: 'budgetValue' }
+    },
+    {
+      title: '招投标包',
+      dataIndex: 'projectTenderPackageId',
+      scopedSlots: { customRender: 'projectTenderPackageId' }
+    },
+    {
+      title: '合同',
+      dataIndex: 'contractGUID',
+      scopedSlots: { customRender: 'contractGUID' }
+    }
+  ]
   export default {
     name: 'Edit',
+     components: {
+      STable,
+      Ellipsis,
+    },
     data () {
+      this._columns = _columns
       return {
         centers: [],
         costCenters: [],
@@ -127,6 +186,13 @@
           costCenters: [{ required: true, message: '请选择范围', trigger: 'blur' }],
           // itemTypeId: [{ required: true, message: '请选择分判包类型', trigger: 'change' }],
           elementTypeId: [{ required: true, message: '请选择科目类型', trigger: 'change' }]
+        },
+        loadData2: parameter => {
+          return CostService.budgetItems({ Id: this.id }).then(res => {
+            if (res.result.data != null) {
+              return res.result
+            }
+          })
         }
       }
     },
@@ -265,6 +331,14 @@
         this.centers = centers
         this.form.costCenters = this.centers
         this.$forceUpdate()
+      },
+      jumpToContract () {
+        this.$router.push({ path: `/contract/item/${this.form.contractGUID}?type=view` })
+      },
+      jumpToProjectTenderPackage () {
+        this.$router.push({
+          path: `/cost/bid/item/${this.form.projectTenderPackageId}?ProjectGUID=${this.ProjectGUID}&type=view`
+        })
       }
     }
   }
