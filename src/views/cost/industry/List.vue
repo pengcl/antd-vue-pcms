@@ -322,6 +322,13 @@ export default {
           this.handleSelected = false
         }
         const requestParameters = Object.assign({}, parameter, this.queryParam)
+        if (!parameter.sorting) {
+          this.queryParam.sorting = 'packageDate'
+          this.queryParam.sortOrder = 'desc'
+        } else {
+          this.queryParam.sorting = parameter.sorting
+          this.queryParam.sortOrder = parameter.sortOrder
+        }
         if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
           return CostService.industryItems(requestParameters).then(res => {
             if (res.result.data != null) {
