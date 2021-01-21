@@ -19,6 +19,7 @@ const API = {
   shareRuleTypes: '/api/services/app/GeneralType/GetShareRuleTypes',
   getARCTypes: '/api/services/app/GeneralType/GetARCTypes',
   uploadOffline: '/api/services/app/UploadAppservice/CommonUploadOffline',
+  viewCostBpm: '/api/services/app/Bpm/GetNWCostAuditInfo',
 }
 
 const Base = {}
@@ -122,6 +123,14 @@ Base.removeFile = function (ifileDetialID) {
 Base.viewBpm = function (BusinessGUID) {
   return request({
     url: API.viewBpm,
+    method: 'GET',
+    params: { BusinessGUID }
+  })
+}
+
+Base.viewCostBpm = function (BusinessGUID) {
+  return request({
+    url: API.viewCostBpm,
     method: 'GET',
     params: { BusinessGUID }
   })

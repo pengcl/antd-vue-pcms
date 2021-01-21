@@ -156,9 +156,15 @@
               启动审批流程
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && ac('VIEW')">
+          <a-button-group v-if="type === 'view' && form.auditStatus !== '未审核' && form.createMode !== 'C' && ac('VIEW')">
             <a-button @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group
+            v-if="type === 'view' && form.auditStatus !== '未审核' && form.createMode === 'C' && ac('VIEW')">
+            <a-button @click="viewCostBpm" type="success">
+              查看审批流程
             </a-button>
           </a-button-group>
           <a-button-group
@@ -334,7 +340,7 @@
                     }
                 })
             },
-            cancelAudit(){
+            cancelAudit () {
                 UnSignedService.cancelAudit(this.id).then(res => {
                     if (res.result.data) {
                         this.$message.success('取消审核成功！')
@@ -476,6 +482,12 @@
             },
             view () {
                 BaseService.viewBpm(this.id).then(res => {
+                    const tempwindow = window.open('_blank')
+                    tempwindow.location = res.result.data
+                })
+            },
+            viewCostBpm () {
+                BaseService.viewCostBpm(this.id).then(res => {
                     const tempwindow = window.open('_blank')
                     tempwindow.location = res.result.data
                 })

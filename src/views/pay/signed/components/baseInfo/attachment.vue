@@ -51,12 +51,8 @@
             <td>
               <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
             </td>
-            <td>
-              <a-input v-model="item.creationTime" :disabled="true"></a-input>
-            </td>
-            <td>
-              <a-input v-model="item.creatorUser" :disabled="true"></a-input>
-            </td>
+            <td>{{item.creationTime | moment}}</td>
+            <td>{{item.creatorUser}}</td>
           </tr>
           </tbody>
         </table>
@@ -118,7 +114,7 @@
         },
         methods: {
             getFileList (id, value) {
-                BaseService.fileList(id, value, '', '').then(res => {
+                BaseService.fileList(id, this.id, 'payall', value).then(res => {
                     const fileList = []
                     if (res.result.data.length > 0) {
                         res.result.data.forEach(item => {
@@ -190,10 +186,10 @@
                 const formData = new FormData()
                 formData.append('file', file)
                 formData.append('masterId', this.masterId)
-                formData.append('businessID', this.type === 'update' ? this.data['secondaryContractGID'] : this.data['contractGID'])
+                formData.append('businessID', this.type === 'update' ? this.id : '')
                 formData.append('businessType', 'payment')
-                formData.append('subInfo1', '') //文件类型
-                formData.append('subInfo2', '') // 文件名
+                formData.append('subInfo1', this.attachmentType) //文件类型
+                formData.append('subInfo2', this.type === 'update' ? this.data['secondaryContractGID'] : this.data['contractGID']) // 文件名
                 formData.append('subInfo3', '') // 合同id
                 this.uploading = true
                 const _this = this

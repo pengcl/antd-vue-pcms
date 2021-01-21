@@ -84,9 +84,16 @@
               启动审批流程
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'view' && form.contract.auditStatus !== '未审核' && ac('VIEW')">
+          <a-button-group
+            v-if="type === 'view' && form.contract.auditStatus !== '未审核' && form.contract.createMode !== 'C' && ac('VIEW')">
             <a-button :loading="loading.view" @click="view" type="success">
               查看审批
+            </a-button>
+          </a-button-group>
+          <a-button-group
+            v-if="type === 'view' && form.contract.auditStatus !== '未审核' && form.contract.createMode === 'C' && ac('VIEW')">
+            <a-button @click="viewCostBpm" type="success">
+              查看审批流程
             </a-button>
           </a-button-group>
           <a-button-group
@@ -319,6 +326,12 @@
                 this.loading.view = true
                 BaseService.viewBpm(this.form.contract.contractGuid).then(res => {
                     this.loading.view = false
+                    const _window = window.open('_blank')
+                    _window.location = res.result.data
+                })
+            },
+            viewCostBpm () {
+                BaseService.viewCostBpm(this.form.contract.contractGuid).then(res => {
                     const _window = window.open('_blank')
                     _window.location = res.result.data
                 })
