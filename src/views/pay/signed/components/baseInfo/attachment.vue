@@ -6,7 +6,7 @@
         <table>
           <thead>
           <tr>
-            <th colspan="5">
+            <th colspan="6">
               <a-button icon="plus" @click="add" :disabled="type === 'view'">
                 新增
               </a-button>
@@ -16,6 +16,7 @@
             <th>操作</th>
             <th>文件名称</th>
             <th>附件名称</th>
+            <th>页数</th>
             <th>上传时间</th>
             <th>上传人</th>
           </tr>
@@ -38,7 +39,7 @@
               <a-select
                 :disabled="type === 'view'"
                 placeholder="请选择"
-                v-model="item.fileType"
+                v-model="item.subInfo1"
                 @change="onChange"
                 v-decorator="['item.attachmentType', { rules: [{required: true, message: '请选择文件类型'}] }]">
                 <a-select-option
@@ -51,6 +52,7 @@
             <td>
               <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
             </td>
+            <td>{{item.filePage}}</td>
             <td>{{item.creationTime | moment}}</td>
             <td>{{item.creatorUser}}</td>
           </tr>
@@ -121,9 +123,10 @@
                             fileList.push({
                                 isDeleted: false,
                                 isTemp: false,
-                                fileType: item.fileType,
+                                subInfo1: item.subInfo1,
                                 fileName: item.fileName,
                                 fileUrl: item.fileUrl,
+                                filePage: '',
                                 fileId: item.id,
                                 creationTime: item.creationTime,
                                 creatorUser: item.creatorUser
