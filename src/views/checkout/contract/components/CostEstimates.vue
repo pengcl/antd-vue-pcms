@@ -324,7 +324,7 @@
                 this.fileList.push(params)
             },
             getFiles () {
-                BaseService.fileList(this.data.attachmentID, this.data.balanceCertificateGID, 'balanceContract', '').then(_res => {
+                BaseService.fileList(this.data.attachmentID, this.id, 'BQ', '').then(_res => {
                     const data = _res.result.data
                     const fileList = []
                     data.forEach(item => {
@@ -380,8 +380,8 @@
                 formData.append('businessID', this.id === '0' ? '' : this.id)
                 formData.append('businessType', 'balanceContract')
                 formData.append('remark', this.fileList[this.index].remark) // 文件类型
-                formData.append('subInfo1', file.name) // 文件名
-                formData.append('subInfo2', this.data.balanceCertificateGID) // 合同id
+                formData.append('subInfo1', 'BQ') // 文件名
+                formData.append('subInfo2', '') // 合同id
                 this.uploading = true
 
                 // You can use any AJAX library you like

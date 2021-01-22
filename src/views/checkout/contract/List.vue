@@ -226,7 +226,7 @@
             title: '合同编号',
             dataIndex: 'contractNo',
             scopedSlots: { customRender: 'contractNo' },
-            sorter : true
+            sorter: true
         },
         {
             title: '合同名称',
@@ -236,22 +236,26 @@
         {
             title: '审核状态',
             dataIndex: 'auditStatus',
+            width: 90,
             scopedSlots: { customRender: 'auditStatus' }
         },
         {
             title: '结算状态',
+            width: 90,
             dataIndex: 'balanceStatus',
         },
         {
             title: '合同类型',
             dataIndex: 'contractCategory',
+            width: 130,
+            align: 'center',
             scopedSlots: { customRender: 'contractCategory' }
         },
         {
             title: '合同总金额(￥)',
             dataIndex: 'contractAmount',
             scopedSlots: { customRender: 'contractAmount' },
-            sorter : true
+            sorter: true
         },
         {
             title: '乙方单位',
@@ -268,7 +272,7 @@
                     width: 110,
                     dataIndex: 'completionDate',
                     scopedSlots: { customRender: 'completionDate' },
-                    sorter : true
+                    sorter: true
                 },
                 {
                     title: '竣工证书',
@@ -288,7 +292,7 @@
                     width: 110,
                     dataIndex: 'creationTime',
                     scopedSlots: { customRender: 'creationTime' },
-                    sorter : true
+                    sorter: true
                 },
                 {
                     title: '审批状态',
@@ -313,14 +317,14 @@
                     align: 'center',
                     width: 180,
                     scopedSlots: { customRender: 'progressBalanceAmount' },
-                    sorter : true
+                    sorter: true
                 },
                 {
                     title: '发起日期',
                     width: 110,
                     dataIndex: 'bContractCreationTime',
                     scopedSlots: { customRender: 'bContractCreationTime' },
-                    sorter : true
+                    sorter: true
                 },
                 {
                     title: '审批状态',
@@ -338,7 +342,7 @@
                     dataIndex: 'bProjectCreationTime',
                     width: 110,
                     scopedSlots: { customRender: 'bProjectCreationTime' },
-                    sorter : true
+                    sorter: true
                 },
                 {
                     title: '审批状态',
@@ -356,7 +360,7 @@
                     dataIndex: 'bFinanceCreationTime',
                     width: 110,
                     scopedSlots: { customRender: 'bFinanceCreationTime' },
-                    sorter : true
+                    sorter: true
                 },
                 {
                     title: '审批状态',

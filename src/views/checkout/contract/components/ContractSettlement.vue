@@ -198,7 +198,7 @@
           <a-button icon="upload" style="margin-right: 10px">上传文件</a-button>
         </a-upload>
         <a :href="file.url" v-show="file.url" target="_blank">{{file.name}}</a>
-        <a-button icon="delete" type="danger" @click="remove" v-show="file.id" style="margin-left: 10px"></a-button>
+        <a-button icon="delete" type="danger" @click="remove" v-show="file.id" :disabled="type === 'view'" style="margin-left: 10px"></a-button>
         <a-modal
           title="删除申报文件"
           :maskClosable="false"
@@ -347,7 +347,7 @@
                 formData.append('masterId', this.data.attachmentID)
                 formData.append('businessID', this.id === '0' ? '' : this.id)
                 formData.append('businessType', 'balanceContract')
-                formData.append('subInfo1', file.name) // 文件名
+                formData.append('subInfo1', '') // 文件名
                 formData.append('subInfo2', this.data.balanceCertificateGID)
                 this.uploading = true
                 const _this = this
@@ -380,7 +380,7 @@
                 this.visible = false
             },
             getFiles () {
-                BaseService.fileList(this.data.attachmentID, this.data.balanceCertificateGID, 'balanceContract', '').then(_res => {
+                BaseService.fileList(this.data.attachmentID, this.id, '', this.data.balanceCertificateGID).then(_res => {
                     const data = _res.result.data
                     const fileList = []
                     data.forEach(item => {
@@ -397,6 +397,13 @@
                         }
                     })
                     this.fileList = fileList
+                    if (this.fileList.length > 0) {
+                        this.file = {
+                            name: this.fileList[0].name,
+                            id: this.fileList[0].id,
+                            url: this.fileList[0].url,
+                        }
+                    }
                 })
             },
         }
