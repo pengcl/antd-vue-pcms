@@ -86,6 +86,8 @@
                 </template>
               </span>
               <span slot="estimatedAmount" slot-scope="text">{{text | NumberFormat}}</span>
+              <span slot="creationTime" slot-scope="text">{{text | date}}</span>
+              
             </s-table>
           </a-col>
         </a-row>
@@ -125,15 +127,27 @@ const columns = [
   {
     title: '潜在变更编号',
     dataIndex: 'voNo',
-    width: '350px',
+    width: '250px',
     scopedSlots: { customRender: 'voNo' },
     sorter : true,
     ellipsis : true
   },
   {
+    title : '变更名称',
+    dataIndex : 'voName',
+    width : '200px',
+    ellipsis : true
+  },
+  {
+    title : '变更类型',
+    dataIndex : 'voType',
+    width : '150px',
+    ellipsis : true
+  },
+  {
     title: '潜在变更预估金额',
     dataIndex: 'estimatedAmount',
-    width: '350',
+    width: '200px',
     scopedSlots: { customRender: 'estimatedAmount' },
     sorter : true,
     ellipsis : true
@@ -141,8 +155,22 @@ const columns = [
   {
     title: '审核状态',
     dataIndex: 'auditStatus',
-    width: '180px',
+    width: '120px',
     scopedSlots: { customRender: 'auditStatus' }
+  },
+  {
+    title : '申报日期',
+    dataIndex : 'creationTime',
+    width : '120px',
+    ellipsis : true,
+    sorter : true,
+    scopedSlots: { customRender: 'creationTime' }
+  },
+  {
+    title : '经办人',
+    dataIndex : 'creatorUser',
+    width : '120px',
+    ellipsis : true
   }
 ]
 
