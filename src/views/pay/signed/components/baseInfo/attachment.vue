@@ -26,7 +26,7 @@
             <td>
               <a-upload name="file"
                         :disabled="type === 'view'"
-                        v-if="item.fileType"
+                        v-if="item.subInfo1"
                         :multiple="false"
                         :before-upload="beforeUpload">
                 <a-button @click="choose(index)">请选择</a-button>
