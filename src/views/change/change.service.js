@@ -72,6 +72,14 @@ const API = {
   //一键审批
   vOAuditWithOutWorkFlow : '/api/services/app/VO/VOAuditWithOutWorkFlow',//一键审核（针对新成本导入的变更）
   vOCancelAuditWithOutWorkFlow: '/api/services/app/VO/VOCancelAuditWithOutWorkFlow',//一键取消审核（针对新成本导入的数据）
+
+  //潜在变更
+  getQZListByContractGuid: '/api/services/app/VO/GetQZListByContractGuid',//根据合同guid获取潜在变更列表
+  getQZVOAllInfoByGuid: '/api/services/app/VO/GetQZVOAllInfoByGuid',//获取潜在变更主表及相关表信息
+  createQZAllVoInfo: '/api/services/app/VO/CreateQZAllVoInfo',//新增潜在变更主表及相关表信息
+  updateQZVOAllInfo: '/api/services/app/VO/UpdateQZVOAllInfo',//更新潜在变更主表及相关表
+  deleteQZVOAllInfo: '/api/services/app/VO/DeleteQZVOAllInfo',//废弃潜在变更主表及相关表
+  getQZBaseInfo: '/api/services/app/VO/GetQZBaseInfo',//获取潜在变更的相关基础数据
 }
 
 const ChangeService = {}
@@ -785,4 +793,69 @@ ChangeService.vOCancelAuditWithOutWorkFlow = function(voGuid){
 	  })
 }
 
+/**
+ * 根据合同guid获取潜在变更列表
+ */
+ChangeService.getQZListByContractGuid = function(params){
+	return request({
+	    url: API.getQZListByContractGuid,
+	    method: 'get',
+	    params: params
+	  })
+}
+
+/**
+ * 获取潜在变更主表及相关表信息
+ */
+ChangeService.getQZVOAllInfoByGuid = function(voGuid){
+	return request({
+	    url: API.getQZVOAllInfoByGuid,
+	    method: 'get',
+	    params: {voGuid}
+	  })
+}
+
+/**
+ * 新增潜在变更主表及相关表信息
+ */
+ChangeService.createQZAllVoInfo = function(parameter){
+	return request({
+	    url: API.createQZAllVoInfo,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+/**
+ * 更新潜在变更主表及相关表
+ */
+ChangeService.updateQZVOAllInfo = function(parameter){
+	return request({
+	    url: API.updateQZVOAllInfo,
+	    method: 'put',
+	    data: parameter
+	  })
+}
+
+/**
+ * 废弃潜在变更主表及相关表
+ */
+ChangeService.deleteQZVOAllInfo = function(voguid){
+	return request({
+	    url: API.deleteQZVOAllInfo,
+	    method: 'delete',
+	    params: {voguid}
+	  })
+}
+
+/**
+ * 获取潜在变更的相关基础数据
+ */
+ChangeService.getQZBaseInfo = function(ContractGuid){
+	return request({
+	    url: API.getQZBaseInfo,
+	    method: 'get',
+	    params: {ContractGuid}
+	  })
+}
 export { ChangeService }

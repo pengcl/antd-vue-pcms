@@ -1,24 +1,16 @@
 <template>
   <a-form-model
     ref="form"
-    :model="data.voMasterInfo"
+    :model="data.qzvoMasterInfo"
     :rules="rules"
     :label-col="{ span: 8 }"
     :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
-      <!-- <a-col :md="12" :sm="24" >
-        <a-form-model-item label="本地指令编号">
-          <a-input
-            :disabled="type === 'view'"
-            v-model="data.voMasterInfo.localVONo"
-          ></a-input>
-        </a-form-model-item>
-      </a-col> -->
       <a-col :md="24" :sm="24" >
         <a-form-model-item label="变更名称" prop="voName">
           <a-input
             :disabled="type === 'view'"
-            v-model="data.voMasterInfo.voName"
+            v-model="data.qzvoMasterInfo.voName"
           ></a-input>
         </a-form-model-item>
       </a-col>
@@ -78,7 +70,7 @@
           <a-textarea
             :disabled="type === 'view'"
             placeholder="请输入变更原因"
-            v-model="data.voMasterInfo.reason"
+            v-model="data.qzvoMasterInfo.reason"
           ></a-textarea>
         </a-form-model-item>
       </a-col>
@@ -87,7 +79,7 @@
           <a-textarea
             :disabled="type === 'view'"
             placeholder="请输入变更内容"
-            v-model="data.voMasterInfo.voContent"
+            v-model="data.qzvoMasterInfo.voContent"
           ></a-textarea>
         </a-form-model-item>
       </a-col>
@@ -96,7 +88,7 @@
           <a-select
             placeholder="请选择"
             :disabled="type === 'view'"
-            v-model="data.voMasterInfo.voTypeId"
+            v-model="data.qzvoMasterInfo.voTypeId"
             @change="changeVoType">
             <a-select-option :key="index" v-for="(item,index) in selection.voTypes" :value="item.id">{{item.nameCN}}</a-select-option>
           </a-select>
@@ -117,7 +109,7 @@
           <a-row>
             <a-col :span="6">
               <a-form-model-item prop="voHasEffect">
-                <a-radio-group v-model="data.voMasterInfo.voHasEffect" @change="effecChange" :disabled="type === 'view'">
+                <a-radio-group v-model="data.qzvoMasterInfo.voHasEffect" @change="effecChange" :disabled="type === 'view'">
                   <a-radio :value="true">
                     有影响
                   </a-radio>
@@ -131,9 +123,9 @@
               <a-form-model-item prop="effectResult">
                 <a-select
                   placeholder="请选择"
-                  :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
+                  :disabled="type === 'view' || !data.qzvoMasterInfo.voHasEffect"
                   style="width : 90%"
-                  v-model="data.voMasterInfo.effectResult">
+                  v-model="data.qzvoMasterInfo.effectResult">
                   <a-select-option value="增加">增加</a-select-option>
                   <a-select-option value="减少">减少</a-select-option>
                 </a-select>
@@ -142,7 +134,8 @@
             <a-col :span="8">
               <a-form-model-item prop="effectDay">
               <a-input-number
-                :disabled="type === 'view' || !data.voMasterInfo.voHasEffect"
+                v-model="data.qzvoMasterInfo.effectDay"
+                :disabled="type === 'view' || !data.qzvoMasterInfo.voHasEffect"
                 :formatter="value => `${value}日`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\日\s?|(,*)/g, '')"
               ></a-input-number>
@@ -154,10 +147,11 @@
       <a-col :md="24" :sm="24">
         <a-row>
           <a-col :span="10">
-            <a-form-model-item label="潜在变更预估金额" prop="sourceValue">
+            <a-form-model-item label="潜在变更预估金额" prop="estimatedAmount">
               <a-input-number
                 :disabled="type === 'view'"
                 placeholder="潜在变更预估金额"
+                v-model="data.qzvoMasterInfo.estimatedAmount"
                 :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\元\s?|(,*)/g, '')"
                 :precision="2"
@@ -198,22 +192,14 @@
           effectDay : [ { validator : this.checkEffectDay, type:'number' }],
           reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
           voName : [{ required : true, message : '请输入变更名称'}],
-          // packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
-          // consultantEstimatedAmount: [{ required: true, message: '请输入顾问估算金额', trigger: 'change' }],
-          sourceValue : [{required : true,message:'请输入潜在变更预估金额',trigger : 'blur'}],
+          estimatedAmount : [{required : true,message:'请输入潜在变更预估金额',trigger : 'blur'}],
         }
       }
     },
     created () {
-      ChangeService.getSourceTypes().then(res =>{
-        this.selection.sourceTypes = res.result.data
-      })
       ChangeService.getVOTypeTree(130).then(res =>{
         if(res.result.statusCode === 200){
           this.selection.voTypes = res.result.data.voTypeTree
-          // if(this.data.voMasterInfo.voTypeId){
-          //   this.changeVoType(this.data.voMasterInfo.voTypeId,null,flag)
-          // }
           this.$forceUpdate()
         }
       })
@@ -258,27 +244,31 @@
         })
       },
       'data' (value) {
-        // 初始化reasonType值，转换为checkboxgroup认同的值
-        // if (this.data.voMasterInfo.reasonTypeIDs) {
-        //   this.reasonType = this.splitVal(this.data.voMasterInfo.reasonTypeIDs)
-        // }
-        // // 转换接收公司，抄送公司选中信息为下拉框识别的值
-        // if (this.data.voPartylst) {
-        //   this.data.voPartylst.forEach(item => {
-        //     if (!item.isSendCopy) {
-        //       this.to = item.partID
-        //       this.toRate = item.percentage
-        //     } else {
-        //       if (this.cc.indexOf(item.partID) < 0) {
-        //         this.cc.push(item.partID)
-        //       }
-        //     }
-        //   })
-        //   if(this.data.voMasterInfo.cipType){
-        //     this.cipTypeChange(this.data.voMasterInfo.cipType,null,true)
-        //   }
-        // }
-        // this.$forceUpdate()
+        //初始化reasonType值，转换为checkboxgroup认同的值
+        if (this.data.qzvoMasterInfo.reasonTypeIDs) {
+          this.reasonType = this.splitVal(this.data.qzvoMasterInfo.reasonTypeIDs)
+        }
+        // 转换接收公司，抄送公司选中信息为下拉框识别的值
+        if (this.data.qzvoPartylst) {
+          this.data.qzvoPartylst.forEach(item => {
+            if (!item.isSendCopy) {
+              this.to = item.partID
+              this.toRate = item.percentage
+            } else {
+              if (this.cc.indexOf(item.partID) < 0) {
+                this.cc.push(item.partID)
+              }
+            }
+          })
+          if(this.data.qzvoMasterInfo.voTypeId){
+            const _that = this
+            setTimeout(function(){
+              _that.changeVoType(_that.data.qzvoMasterInfo.voTypeId,null,true)
+            },500)
+            
+          }
+        }
+        this.$forceUpdate()
       }
     },
     methods: {
@@ -305,18 +295,18 @@
               temp.percentage = 0
               temp.isSendCopy = true
               temp.isTemp = true
-              this.data.voPartylst.push(temp)
+              this.data.qzvoPartylst.push(temp)
             } else {
               repeatData.isDeleted = false
             }
           }
         })
         // 清理vopartyLst中比cc多出的公司信息
-        this.data.voPartylst.forEach((party, index) => {
+        this.data.qzvoPartylst.forEach((party, index) => {
           if (party.isSendCopy) {
             if (vals.indexOf(party.partID) < 0) {
               if (party.isTemp) {
-                this.data.voPartylst.splice(index, 1)
+                this.data.qzvoPartylst.splice(index, 1)
               } else {
                 party.isDeleted = true
               }
@@ -326,7 +316,7 @@
 
         // 根据partID及抄送与否 获取修改voPartyLst对象中的对应公司信息
         function getPartyByID (partID, isSendCopy) {
-          var party = that.data.voPartylst.filter(item => item.partID === partID && item.isSendCopy === isSendCopy)
+          var party = that.data.qzvoPartylst.filter(item => item.partID === partID && item.isSendCopy === isSendCopy)
           if (party.length > 0) {
             return party[0]
           }
@@ -346,7 +336,7 @@
       // 监听的同时转换checkboxgroup选中值为保存接口所需的以;号分隔的字符串
       changeReasonType (checkedValues) {
         if(checkedValues.length > 0){
-          this.data.voMasterInfo.reasonTypeIds = checkedValues.join(';')
+          this.data.qzvoMasterInfo.reasonTypeIDs = checkedValues.join(';')
         }
       },
       // 变更类型change监听，变更后清空reasonType值
@@ -360,6 +350,7 @@
         if(voTypeData.length > 0){
           this.selection.reasonTypes = voTypeData[0].reasonTypelst
         }
+        console.log('进入变更事件')
         this.$forceUpdate()
       },
       // 整理承包/顾问单位公司信息(包括接收公司，抄送公司）
@@ -381,13 +372,13 @@
             temp.percentage = this.toRate
             temp.isSendCopy = false
             let repeat = false
-            this.data.voPartylst.forEach((party, index) => {
+            this.data.qzvoPartylst.forEach((party, index) => {
               if (!party.isSendCopy) {
                 if (party.partID != this.to) {
                   if (!party.isTemp) {
                     party.isDeleted = true
                   } else {
-                    this.data.voPartylst.splice(index, 1)
+                    this.data.qzvoPartylst.splice(index, 1)
                   }
                 } else {
                   party.isDeleted = false
@@ -396,7 +387,7 @@
               }
             })
             if (!repeat) {
-              this.data.voPartylst.push(temp)
+              this.data.qzvoPartylst.push(temp)
             }
           }
         })
@@ -408,8 +399,8 @@
         console.log(value)
         if (!value) {
           this.rules.effectResult[0].required = false
-          this.data.voMasterInfo.effectResult = ''
-          this.data.voMasterInfo.effectDay = '0'
+          this.data.qzvoMasterInfo.effectResult = ''
+          this.data.qzvoMasterInfo.effectDay = '0'
         }else{
           this.rules.effectResult[0].required = true
         }
@@ -430,11 +421,11 @@
         }
       },
       checkEffectDay(rule,value,callback){
-        if(this.data.voMasterInfo.voHasEffect && this.data.voMasterInfo.effectResult != '' && this.data.voMasterInfo.effectResult != null){
+        if(this.data.qzvoMasterInfo.voHasEffect && this.data.qzvoMasterInfo.effectResult != '' && this.data.qzvoMasterInfo.effectResult != null){
           if(value === null || value === ''){
             callback(new Error('请输入影响天数'))
           }else {
-            const isAdd = this.data.voMasterInfo.effectResult === '增加'
+            const isAdd = this.data.qzvoMasterInfo.effectResult === '增加'
             if(isAdd && value < 0.000000000000001){
               callback(new Error('增加的天数必须大于0'))
             }else if(!isAdd && value > -0.000000000000001){

@@ -91,7 +91,7 @@
         <a-row :gutter="48">
           <a-col :md="24" :sm="24">
             <a-button type="success" :loading="loading.startBPM" v-if="type === 'view' && form.voMasterInfo.createMode !== 'C' && form.voMasterInfo.auditStatus === '未审核'  && ac('EDIT')" @click="startBPM">启动审批流程</a-button>
-            <a-button type="success" :loading="loading.showBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中') && form.voMasterInfo.createMode !== 'C' && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
+            <a-button type="success" :loading="loading.showBPM" v-if="type === 'view' && (form.voMasterInfo.auditStatus === '已审核' || form.voMasterInfo.auditStatus === '审核中') && ac('VIEW')" @click="showBPM">查看审批流程</a-button>
 
             <a-button type="success" :loading="loading.createPMI" v-if="type === 'view' && stage === 'CIP' && form.voMasterInfo.auditStatus === '已审核' && !pmiUrl && ac('ADD')" @click="createPMI">生成项目指令</a-button>
             <a-button type="success" :loading="loading.showPMI" v-if="type === 'view' && stage === 'CIP'  && pmiUrl  && ac('VIEW')" @click="showPMI">查看项目指令</a-button>
@@ -328,7 +328,11 @@
       },
       showBPM(){
         this.loading.showBPM = true
-        BaseService.viewBpm(this.form.voMasterInfo.voGuid).then(res => {
+        let action = 'viewBpm'
+        if(this.form.voMasterInfo.createMode === 'C'){
+          action = 'viewCostBpm'
+        }
+        BaseService[action](this.form.voMasterInfo.voGuid).then(res => {
           this.loading.showBPM= false
           window.open(res.result.data)
         })
