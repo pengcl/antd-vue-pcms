@@ -35,7 +35,7 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="累计潜在变更预估金额">
-              1,000,000.00 元
+              {{ cipInfo.accumulateEstimatedAmount	| NumberFormat}} 元
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24" style="margin-bottom : 10px;" >
@@ -47,14 +47,12 @@
           </a-col>
           <a-col :md="24" :sm="24" style="margin-bottom: 10px;margin-top: 10px">
             <s-table
-              rowKey="svGuid"
+              rowKey="id"
               ref="table"
-              :showPagination="false"
               :columns="columns"
               :alert="false"
               :data="loadData"
               bordered
-              :scroll="{ y: 300 }"
             >
               <span slot="action" slot-scope="text, item">
                 <template>
@@ -71,7 +69,6 @@
                     class="btn-info"
                     type="primary"
                     icon="form"
-                    style="margin-left: 4px"
                     title="编辑"
                     v-if="ac('EDIT')"
                     :disabled="item.auditStatus.indexOf('未审核') < 0 "
@@ -80,7 +77,6 @@
                   <a-button
                     type="danger"
                     icon="delete"
-                    style="margin-left: 4px"
                     title="废弃"
                     :loading="loading.delCer"
                     v-if="ac('DELETE')"
@@ -89,6 +85,7 @@
                   ></a-button>
                 </template>
               </span>
+              <span slot="estimatedAmount" slot-scope="text">{{text | NumberFormat}}</span>
             </s-table>
           </a-col>
         </a-row>
@@ -122,25 +119,29 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '200px',
+    width: '180px',
     scopedSlots: { customRender: 'action' }
   },
   {
     title: '潜在变更编号',
-    dataIndex: 'svCode',
+    dataIndex: 'voNo',
     width: '350px',
-    scopedSlots: { customRender: 'svCode' }
+    scopedSlots: { customRender: 'voNo' },
+    sorter : true,
+    ellipsis : true
   },
   {
     title: '潜在变更预估金额',
-    dataIndex: 'Amount',
-    width: '350px',
-    scopedSlots: { customRender: 'Amount' }
+    dataIndex: 'estimatedAmount',
+    width: '350',
+    scopedSlots: { customRender: 'estimatedAmount' },
+    sorter : true,
+    ellipsis : true
   },
   {
     title: '审核状态',
     dataIndex: 'auditStatus',
-    width: '200px',
+    width: '180px',
     scopedSlots: { customRender: 'auditStatus' }
   }
 ]
@@ -155,23 +156,21 @@ export default {
     return {
       loading: { delCer: false },
       columns: columns,
-      cipInfo: SwaggerService.getForm('VOInfoForSpotVisaDto'),
+      cipInfo: SwaggerService.getForm('QZVOBaseInfoDto'),
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return ChangeService.getSpotVisaListByVoGuid(this.id).then(res => {
-          return res.result
-          // return fixedList(res, parameter)
+        parameter.ContractGuid = this.id
+        return ChangeService.getQZListByContractGuid(parameter).then(res => {
+          return fixedList(res, parameter)
         })
       }
     }
   },
   created () {
-    ChangeService.changeItem({ guid: this.id }).then((res) => {
-      this.cipInfo = Object.assign(this.cipInfo,res.result)
-      ProjectService.view2(this.cipInfo.projectID).then((res1) => {
-        this.cipInfo = Object.assign(this.cipInfo,res1.result.data)
-        console.log('cipInfo',this.cipInfo)
-      })
+    ChangeService.getQZBaseInfo(this.id).then(res =>{
+      if(res.result.statusCode === 200){
+        this.cipInfo = res.result.data
+      }
     })
   },
   computed: {
@@ -187,30 +186,30 @@ export default {
       this.$router.push({ path: `/change/cip/list` })
     },
     view (record) {
-      this.$router.push({ path: `/change/cip/latent/item/${record.svGuid}?contractGuid=${this.id}&type=view` })
+      this.$router.push({ path: `/change/cip/latent/item/${record.voGuid}?contractGuid=${this.id}&type=view` })
     },
     edit (record) {
-      this.$router.push({ path: `/change/cip/latent/item/${record.svGuid}?contractGuid=${this.id}&type=edit` })
+      this.$router.push({ path: `/change/cip/latent/item/${record.voGuid}?contractGuid=${this.id}&type=edit` })
     },
     del (record) {
       const that = this
       this.$confirm({
-        title: '删除现场签证',
-        content: '是否确定删除选中现场签证信息?',
+        title: '删除潜在变更',
+        content: '是否确定删除选中潜在变更信息?',
         onOk () {
           that.loading.delCer = true
-          ChangeService.deleteSpotVisa(record.svGuid)
+          ChangeService.deleteQZVOAllInfo(record.voGuid)
             .then(res => {
               that.loading.delCer = false
               if (res.result.statusCode === 200) {
-                that.$message.info('现场签证删除成功')
+                that.$message.info('潜在变更删除成功')
                 that.$refs.table.refresh()
               }
             })
             .catch(e => {
               that.loading.delCer = false
-              console.log('现场签证删除失败', e)
-              that.$message.error('现场签证删除失败')
+              console.log('潜在变更删除失败', e)
+              that.$message.error('潜在变更删除失败')
             })
         },
         onCancel () {}

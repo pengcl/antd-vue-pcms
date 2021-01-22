@@ -109,7 +109,8 @@ export default {
       fileInfo: '',
       filePage: null,
       index: 0,
-      arcTypeList : []
+      arcTypeList : [],
+      hasLoading : false
     }
   },
   props: {
@@ -132,9 +133,14 @@ export default {
     bqInfo : {
       type : String,
       default : ''
+    },
+    masterInfoField : {
+      typ : String,
+      default : 'voMasterInfo'
     }
   },
-  watch: {},
+  watch: {
+  },
   created () {
     ChangeService.fileTypes().then(res => {
       this.fileTypeList = res.result.data
@@ -145,15 +151,22 @@ export default {
 
     BaseService.getARCTypes().then(res => {
       this.arcTypeList = res.result.data
-    })
-    BaseService.masterID(this.data.voMasterInfo.voGuid).then(res => {
-      this.data.fileMasterId = res.result.data
-      BaseService.fileList(this.data.fileMasterId, this.data.voMasterInfo.voGuid, this.bqInfo, '').then(_res => {
-        this.fileList = _res.result.data
-      })
+      this.loadFileList()
     })
   },
   methods: {
+    loadFileList (){
+      const _that = this
+      setTimeout(function(){
+        if(_that.data.fileMasterId){
+          _that.hasLoading = true
+          BaseService.fileList(_that.data.fileMasterId, _that.data[_that.masterInfoField].voGuid, _that.bqInfo, '').then(_res => {
+            _that.fileList = _res.result.data
+          })
+        }
+      },700)
+     
+    },
     choose (index) {
       this.index = index
     },
@@ -216,7 +229,7 @@ export default {
     },
     handleUpload (file) {
       const formData = new FormData()
-      const businessType = this.data.voMasterInfo.cipType && this.data.voMasterInfo.cipType === 131 ? 'VO' : this.stage
+      const businessType = this.data[this.masterInfoField].cipType && this.data[this.masterInfoField].cipType === 131 ? 'VO' : this.stage
       formData.append('file', file)
       formData.append('masterId', this.data.fileMasterId)
       formData.append('businessID', '')
@@ -247,7 +260,7 @@ export default {
         })
     },
     uploadOffline(item){
-      const businessType = this.data.voMasterInfo.cipType && this.data.voMasterInfo.cipType === 131 ? 'VO' : this.stage
+      const businessType = this.data[this.masterInfoField].cipType && this.data[this.masterInfoField].cipType === 131 ? 'VO' : this.stage
       item.businessType = businessType
       BaseService.uploadOffline(item).then(res =>{
         if(res.result.statusCode === 200){
