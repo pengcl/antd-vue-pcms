@@ -2,6 +2,7 @@ import request from '@/utils/request'
 
 const API = {
   tasks: '/api/services/app/Bpm/UserTask', // 项目列表
+  task: '/api/services/app/Bpm/GetBPMAuditInfo',
   participates: '/api/services/app/Bpm/UserAuditTasks', // 项目详情forEdit
   updateEntity: '/api/services/app/Vendor/GetVendorChangeEntity',
   generate: '/api/services/app/Vendor/CreateVendorChangeBG',
@@ -21,6 +22,14 @@ TaskService.tasks = function list (parameter) {
     url: API.tasks,
     method: 'POST',
     data: parameter
+  })
+}
+
+TaskService.task = function list (BusinessGUID) {
+  return request({
+    url: API.task,
+    method: 'GET',
+    params: { BusinessGUID }
   })
 }
 

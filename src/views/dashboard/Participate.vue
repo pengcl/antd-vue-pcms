@@ -40,7 +40,7 @@
       >
 
         <span slot="created" slot-scope="text">
-          {{text | moment}}
+          {{ text | moment }}
         </span>
 
         <span slot="action" slot-scope="text,record">
@@ -135,9 +135,15 @@
                 this.selectedRows = selectedRows
             },
             handleEdit (record) {
-                const _window = window.open('_blank')
-                _window.location = record.workflowUrl
-            },
+              TaskService.task(record.workflowId).then(res => {
+                if (res.result.data) {
+                  const _window = window.open('_blank')
+                  _window.location = res.result.data
+                } else {
+                  this.$message.error('流程打开异常，请联系系统管理员')
+                }
+              })
+            }
         }
     }
 </script>

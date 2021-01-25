@@ -23,7 +23,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success" @click="handleAdd">搜索</a-button>
+        <a-button type="success" @click="search">搜索</a-button>
       </div>
 
       <s-table
@@ -106,8 +106,8 @@
         created () {
             // getRoleList({ t: new Date() })
         },
-        watch:{
-            '$route' (path){
+        watch: {
+            '$route' (path) {
                 this.$refs.table.refresh()
             }
         },
@@ -124,8 +124,16 @@
                 this.$refs.table.refresh()
             },
             handleEdit (record) {
-                const _window = window.open('_blank')
-                _window.location = record.workflowUrl
+              TaskService.task(record.workflowId).then(res => {
+                if (res.result.data) {
+                  const _window = window.open('_blank')
+                  _window.location = res.result.data
+                } else {
+                  this.$message.error('流程打开异常，请联系系统管理员')
+                }
+              })
+                /* const _window = window.open('_blank')
+                _window.location = record.workflowUrl */
             },
 
             onSelectChange (selectedRowKeys, selectedRows) {
