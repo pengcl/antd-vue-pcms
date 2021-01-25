@@ -42,7 +42,7 @@
     {
       title: '编制时间',
       dataIndex: 'creationTime',
-      scopedSlots: { customRender: 'creationTime' }
+      scopedSlots: { customRender: 'creationTime' },
     },
     {
       title: '编制人',
@@ -66,8 +66,9 @@
         loadData: parameter => {
           this.queryParam.ProjectGUID = this.ProjectGUID
           const requestParameters = Object.assign({}, parameter, this.queryParam)
+          requestParameters.sorting = "creationTime"
+          requestParameters.sortOrder = "desc"
           return CostService.getProjectTenderPackageBatchRegs(requestParameters).then(res => {
-            this.$refs.table.refresh()
             return fixedList(res, requestParameters)
           })
         },
