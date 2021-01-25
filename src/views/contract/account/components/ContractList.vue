@@ -7,7 +7,7 @@
       :label-col="{ span: 8 }"
       :wrapper-col="{ span: 16 }">
       <a-row :gutter="24">
-        <a-col :md="8" :sm="24">
+        <a-col :md="12" :sm="24">
           <a-form-model-item
             label="合同金额"
             prop="contractAmount"
@@ -22,7 +22,7 @@
               :precision="2"/>
           </a-form-model-item>
         </a-col>
-        <a-col :md="8" :sm="24">
+        <a-col :md="12" :sm="24">
           <a-form-model-item
             label="有效合同金额"
             prop="contractEffectAmount"
@@ -37,7 +37,7 @@
               :precision="2"/>
           </a-form-model-item>
         </a-col>
-        <a-col :md="8" :sm="24">
+        <a-col :md="12" :sm="24">
           <a-form-model-item
             label="合同内暂定款金额"
             prop="contractPSAmount"
@@ -52,7 +52,7 @@
               :precision="2"/>
           </a-form-model-item>
         </a-col>
-        <a-col :md="8" :sm="24">
+        <a-col :md="12" :sm="24">
           <a-form-model-item
             label="合同内可选择项目金额"
             prop="contractOPTAmount"
@@ -67,7 +67,7 @@
               :precision="2"/>
           </a-form-model-item>
         </a-col>
-        <a-col :md="8" :sm="24">
+        <a-col :md="12" :sm="24">
           <a-form-model-item
             label="专业分包合同金额"
             prop="contractPCPreAmount"
@@ -82,7 +82,7 @@
               :precision="2"/>
           </a-form-model-item>
         </a-col>
-        <a-col :md="8" :sm="24">
+        <a-col :md="12" :sm="24">
           <a-form-model-item
             label="甲供材金额"
             prop="contractDSAmount"

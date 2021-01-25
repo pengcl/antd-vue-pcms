@@ -232,6 +232,13 @@
                 projectType: undefined,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                    if (!parameter.sorting) {
+                        this.queryParam.sorting = 'creationTime'
+                        this.queryParam.sortOrder = 'desc'
+                    } else {
+                        this.queryParam.sorting = parameter.sorting
+                        this.queryParam.sortOrder = parameter.sortOrder
+                    }
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     if (this.queryParam.ProjectGUID) {
                         return ContractService.items(requestParameters).then(res => {
