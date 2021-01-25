@@ -213,6 +213,8 @@
         <a-col :md="12" :sm="24">
           <a-button type="success" style="margin-right: 20px" @click="startBPM" :loading="loading.startBPM" v-if="type === 'view' && form.auditStatus === '未审核'">启动审批流程</a-button>
           <a-button type="success" style="margin-right: 20px" @click="showBPM" :loading="loading.showBPM" v-if="type === 'view' && (form.auditStatus === '审核中' || form.auditStatus === '已审核')">查看审批流程</a-button>
+          <a-button type="success" style="margin-right: 20px" @click="showApplyUrl" v-if="costSystemApplyUrl">查看采购申请</a-button>
+
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
@@ -248,6 +250,7 @@
         removeTenderPackages: [],//编辑时移除的分判包列表
         addPlans: [],//编辑时新增的计划列表
         removePlans: [],//编辑时移除的计划列表
+        costSystemApplyUrl: '',// 查看采购申请url
         loading: {
           save: false,
           startBPM : false,
@@ -296,6 +299,7 @@
       if (this.type !== 'add') {
         CostService.bidItem({Id: this.id}).then(res => {
           this.form = res.result.data
+          this.costSystemApplyUrl = this.form.costSystemApplyUrl
           if (this.form.tenderPackages) {
             CostService.bidIndustryItems({
               ProjectGUID: this.ProjectGUID,
@@ -534,6 +538,9 @@
             window.open(res.result.data)
           },200)
         })
+      },
+      showApplyUrl() {
+        window.open(this.costSystemApplyUrl)
       }
     }
   }
