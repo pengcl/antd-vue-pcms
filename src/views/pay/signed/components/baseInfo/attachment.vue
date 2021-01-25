@@ -52,7 +52,7 @@
             <td>
               <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
             </td>
-            <td>{{item.filePage}}</td>
+            <td><a-input-number v-model="item.filePage"></a-input-number></td>
             <td>{{item.creationTime | moment}}</td>
             <td>{{item.creatorUser}}</td>
           </tr>
@@ -126,7 +126,7 @@
                                 subInfo1: item.subInfo1,
                                 fileName: item.fileName,
                                 fileUrl: item.fileUrl,
-                                filePage: '',
+                                filePage: item.filePage,
                                 fileId: item.id,
                                 creationTime: item.creationTime,
                                 creatorUser: item.creatorUser
@@ -147,7 +147,8 @@
                 const item = {
                     isDeleted: false,
                     isTemp: true,
-                    fileType: '',
+                    subInfo1: '',
+                    filePage: '',
                     fileName: '',
                     fileUrl: '',
                     fileId: '',

@@ -20,16 +20,7 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="申请部门" prop="sponsorDeptGID">
-              <a-tree-select
-                :disabled="true"
-                style="width: 100%"
-                :tree-data="dps"
-                @select="onSelect"
-                :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
-                search-placeholder="请选择"
-                v-model="form.sponsorDeptGID"
-                :suffixIcon="dps ? '' : '加载中...'">
-              </a-tree-select>
+              <a-input v-model="form.sponsorDeptName" :disabled="true"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">

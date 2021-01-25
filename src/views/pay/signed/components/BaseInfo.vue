@@ -428,10 +428,10 @@
             <a-input :disabled="type === 'view'" v-model="record.billNum"></a-input>
           </span>
 
-          <span slot="billAmount" slot-scope="text,record">
+          <span slot="billAmount" slot-scope="text,record,index">
             <a-input-number :disabled="type === 'view'"
                             v-model="record.billAmount"
-                            @change="billAmountChange"
+                            @change="e => billAmountChange(e,record,'billAmount')"
                             :min="0"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
@@ -440,7 +440,7 @@
           <span slot="taxRate" slot-scope="text,record">
             <a-input-number :disabled="type === 'view'"
                             v-model="record.taxRate"
-                            @change="taxRateChange"
+                            @change="e => taxRateChange(e,record,'taxRate')"
                             :min="0"
                             :max="100"
                             :formatter="value => `${value}%`"
@@ -717,10 +717,18 @@
                 this.data.paymentRequestAmount = _paymentRequestAmount
                 this.$forceUpdate()
             },
-            billAmountChange (value) {
+            billAmountChange (value, record, key) {
+                record[key] = value
+                if (record['taxRate']) {
+                    record['noTaxAmount'] = record[key] * record['taxRate'] / 100
+                }
                 this.$forceUpdate()
             },
-            taxRateChange (value) {
+            taxRateChange (value, record, key) {
+                record[key] = value
+                if (record['billAmount']) {
+                    record['noTaxAmount'] = record[key] * record['billAmount'] / 100
+                }
                 this.$forceUpdate()
             },
             noTaxAmountChange (value) {

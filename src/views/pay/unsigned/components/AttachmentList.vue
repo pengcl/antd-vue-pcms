@@ -80,15 +80,20 @@
             }
         },
         created () {
-            if (this.type !== 'create') {
-                BaseService.masterID(this.id).then(_res => {
-                    this.getFileList(_res.result.data)
-                })
+
+        },
+        watch: {
+            'data.attachmentID' (value) {
+                if (value) {
+                    if (this.type !== 'create') {
+                        this.getFileList(value)
+                    }
+                }
             }
         },
         methods: {
             getFileList (id) {
-                BaseService.fileList(id, this.id, 'paymentOther', '').then(res => {
+                BaseService.fileList(id, this.id, '', '').then(res => {
                     this.fileList = res.result.data
                 })
             },
@@ -142,7 +147,8 @@
                 formData.append('masterId', this.masterID)
                 formData.append('businessID', this.type === 'create' ? '' : this.id)
                 formData.append('businessType', 'paymentOther')
-                formData.append('subInfo1', file.name) // 文件名
+                formData.append('subInfo1', '') // 文件名
+                formData.append('subInfo2', '')
                 this.uploading = true
                 const _this = this
                 this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
