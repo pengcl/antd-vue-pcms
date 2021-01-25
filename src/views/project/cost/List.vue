@@ -24,7 +24,8 @@
       </div>
 
       <div class="table-operator">
-        <a-button :disabled="!queryParam.ProjectGUID || auditStatus !== '已审核' || projectType === 'project'" v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
+        <a-button :disabled="!queryParam.ProjectGUID || auditStatus !== '已审核' || projectType === 'project'"
+                  v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
         </a-button>
         <a-button type="primary" style="float: right">汇出</a-button>
       </div>
@@ -58,10 +59,14 @@
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :scroll="{ x: 'calc(700px + 50%)'}"
       >
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
-        </span>
+
+        <span slot="propertyTypeID" slot-scope="text">{{ getName(tagTree,text) }}</span>
+        <span slot="developmentPurposeID" slot-scope="text">{{ getName(types,text) }}</span>
+        <span slot="totalGFA" slot-scope="text">{{ text | NumberFormat }}</span>
+        <span slot="totalRA" slot-scope="text">{{ text | NumberFormat }}</span>
+        <span slot="totalCFAIncludeParking" slot-scope="text">{{ text | NumberFormat }}</span>
         <span slot="creationTime" slot-scope="text">{{ text | moment('yyyy-MM-DD') }}</span>
         <span slot="lastModificationTime" slot-scope="text">{{ text | moment('yyyy-MM-DD') }}</span>
 
@@ -100,52 +105,129 @@
     import { ac } from '@/views/user/user.service'
     import storage from 'store'
     import { formatList } from '@/mock/util'
+    import { Base as BaseService } from '@/api/base'
 
     const columns = [
         {
             title: '操作',
             dataIndex: 'action',
-            width: '150px',
+            width: 120,
             scopedSlots: { customRender: 'action' }
         },
         {
-            title: '成本中心编号',
+            title: '成本中心编码',
             dataIndex: 'costCenterCode',
-            sorter : true
+            width: 120,
+            sorter: true
         },
         {
             title: '成本中心名称',
             dataIndex: 'costCenterName',
+            width: 150,
             scopedSlots: { customRender: 'costCenterName' }
         },
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
+            width: 90,
             scopedSlots: { customRender: 'auditStatus' }
+        },
+        {
+            title: '业态标签',
+            width: 180,
+            dataIndex: 'propertyTypeID',
+            scopedSlots: { customRender: 'propertyTypeID' }
+        },
+        {
+            title: '业态属性',
+            width: 90,
+            align: 'center',
+            dataIndex: 'developmentPurposeID',
+            scopedSlots: { customRender: 'developmentPurposeID' }
+        },
+        {
+            title: '总计容面积（GFA）',
+            align: 'center',
+            width: 180,
+            dataIndex: 'totalGFA',
+            scopedSlots: { customRender: 'totalGFA' }
+        },
+        {
+            title: '总可售/可租面积（RA）',
+            align: 'center',
+            width: 180,
+            dataIndex: 'totalRA',
+            scopedSlots: { customRender: 'totalRA' }
+        },
+        {
+            title: '总建筑面积(不含车库)(CFA)',
+            align: 'center',
+            width: 180,
+            dataIndex: 'totalCFAIncludeParking',
+            scopedSlots: { customRender: 'totalCFAIncludeParking' }
+        },
+        {
+            title: '单位/车位数',
+            align: 'center',
+            width: 100,
+            dataIndex: 'roomCarParkNo',
         },
         {
             title: '创建者',
             dataIndex: 'creatorUser',
+            width: 100,
             scopedSlots: { customRender: 'creatorUser' }
         },
         {
             title: '创建日期',
             dataIndex: 'creationTime',
+            width: 120,
             scopedSlots: { customRender: 'creationTime' },
-            sorter : true
-        },
-        {
-            title: '最后更新者',
-            dataIndex: 'lastModifierUser',
-            scopedSlots: { customRender: 'lastModifierUser' }
+            sorter: true
         },
         {
             title: '最后更新日期',
             dataIndex: 'lastModificationTime',
+            width: 120,
             scopedSlots: { customRender: 'lastModificationTime' },
-            sorter : true
+            sorter: true
         }
     ]
+
+    const _formatList = (items) => {
+        const list = []
+        items.forEach(item => {
+            if (item.childs && item.childs.length > 0) {
+                item.selectable = false
+                item.children = _formatList(item.childs)
+            } else {
+                item.children = null
+            }
+            item.label = item.nameCN
+            item.value = item.id
+            list.push(item)
+        })
+        return list
+    }
+
+    function getName (items, id) {
+        let name = ''
+        if (items) {
+            items.forEach(item => {
+                if (!name) {
+                    if (item.id === id) {
+                        name = item.nameCN
+                        name = item.nameCN
+                    } else {
+                        if (item.children && item.children.length > 0) {
+                            name = getName(item.children, id)
+                        }
+                    }
+                }
+            })
+        }
+        return name
+    }
 
     export default {
         name: 'ProjectCostList',
@@ -160,6 +242,8 @@
                 cities: null,
                 projectType: null,
                 auditStatus: null,
+                tagTree: null,
+                types: null,
                 queryParam: {},
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
@@ -192,8 +276,17 @@
                 this.$refs.table.refresh()
                 this.$forceUpdate()
             })
+            BaseService.centerTags().then(res => {
+                this.tagTree = _formatList([res.result.data])
+            })
+            BaseService.centerTypes().then(res => {
+                this.types = res.result.data
+            })
         },
         methods: {
+            getName (items, id) {
+                return getName(items, id)
+            },
             ac (action) {
                 return ac(action, this.$route)
             },
