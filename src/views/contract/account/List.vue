@@ -43,9 +43,9 @@
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-item label="供应商名称">
+            <a-form-item label="合作方">
               <a-input v-model="queryParam.VendorName"
-                       placeholder="请输入供应商名称"></a-input>
+                       placeholder="请输入合作方"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="12" :sm="24">

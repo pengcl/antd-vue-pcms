@@ -116,13 +116,14 @@
               style="margin-left: 4px"
               v-if="ac('EDIT')"
               title="编辑"
+              :disabled="record.auditStatus != '未审核'"
               @click="handleToEdit(record)"
             ></a-button>
             <a-button
               type="danger"
               icon="delete"
               style="margin-left: 4px"
-              :disabled="!!record.contractGUID || !!record.projectTenderPackageId || !!record.budgetAmount"
+              :disabled="!!record.contractGUID || !!record.projectTenderPackageId || !!record.budgetAmount || record.auditStatus != '未审核'"
               @click="handleToRemove(record)"
               v-if="ac('DELETE')"
               title="删除"
@@ -175,7 +176,7 @@
               type="danger"
               icon="delete"
               :disabled="
-                selectedPackage === null || !!selectedPackage.projectTenderPackageId || !!selectedPackage.contractGUID || selectedPackage.auditStatus === '审核中'
+                selectedPackage === null || !!selectedPackage.projectTenderPackageId || !!selectedPackage.contractGUID || selectedPackage.auditStatus === '审核中' || selectedPackage.auditStatus === '已审核'
               "
               style="margin-left: 4px"
               v-if="ac('DELETE')"
@@ -607,6 +608,10 @@ export default {
     },
     viewBatch(){
       this.$refs.industryPackageBatchListModal.visible = true
+      if(this.$refs.industryPackageBatchListModal.$refs.table){
+        this.$refs.industryPackageBatchListModal.$refs.table.clearSelected()
+        this.$refs.industryPackageBatchListModal.$refs.table.refresh()
+      }
     },
     reset(){
       const tempQueryParam = { ProjectID : this.queryParam.ProjectID,ProjectGUID : this.queryParam.ProjectGUID}
