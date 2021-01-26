@@ -212,6 +212,13 @@
                   // this.queryParam['Sorting'] = 'packageDate'
                   // this.queryParam['SortOrder'] = 'DESC'
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
+                    if (!parameter.sorting) {
+                      this.queryParam.sorting = 'packageDate'
+                      this.queryParam.sortOrder = 'desc'
+                    } else {
+                      this.queryParam.sorting = parameter.sorting
+                      this.queryParam.sortOrder = parameter.sortOrder
+                    }
                     if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID !== '' && this.projectType !== 'noProject') {
                         return CostService.bidItems(requestParameters)
                             .then(res => {
