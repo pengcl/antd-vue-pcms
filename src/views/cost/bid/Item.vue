@@ -462,7 +462,8 @@
         })
       },
       back() {
-        this.$router.push({path: `/cost/bid/list`})
+        // this.$router.push({path: `/cost/bid/list`})
+        this.$router.push({ path: `/cost/bid/item/${this.id}?ProjectGUID=${this.ProjectGUID}&type=view` })
       },
       delIndustry(index) {
         const items = this.form.tenderPackages
