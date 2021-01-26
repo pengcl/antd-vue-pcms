@@ -512,7 +512,6 @@
             },
             handleCancel () {
                 this.visible = false
-                this.$router.push('/contract/list')
             },
             handleOk () {
                 this.disabled = true

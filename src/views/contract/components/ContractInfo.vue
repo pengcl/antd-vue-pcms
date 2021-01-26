@@ -139,7 +139,7 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item
-          label="是否需出差"
+          label="约定出差"
           prop="isNeedTrip"
         >
           <a-radio-group name="isNeedTrip" v-model="data.contract.isNeedTrip">
@@ -186,7 +186,7 @@
              :key="index"
              :href="item.pdfUrl"
              target="_blank"
-             style="margin-right: 5px">中标通知{{index}}</a>
+             style="margin-right: 5px">中标通知{{index+1}}.pdf</a>
         </a-form-model-item>
       </a-col>
       <contract-info-retention :data="data" :type="type" :id="id"></contract-info-retention>
@@ -228,10 +228,11 @@
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
-          label="合同签署日期">
-          <a-date-picker :disabled="type === 'view'" v-model="data.contract.signDate"></a-date-picker>
-        </a-form-item>
+        <a-form-model-item
+          label="合同签署日期"
+          prop="signDate">
+          <a-date-picker style="width: 100%" :disabled="type === 'view'" v-model="data.contract.signDate"></a-date-picker>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
@@ -358,7 +359,8 @@
                     baseCurrencyID: [{ required: true, message: '请选择基本币种', trigger: 'change' }],
                     currencyID: [{ required: true, message: '请选择币种', trigger: 'change' }],
                     isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }],
-                    taxRate: [{ required: true, message: '请填写适用增值税率', trigger: 'blur' }]
+                    taxRate: [{ required: true, message: '请填写适用增值税率', trigger: 'blur' }],
+                    signDate: [{ required: true, message: '请选择合同签署日期', trigger: 'change' }]
                 }
             }
         },

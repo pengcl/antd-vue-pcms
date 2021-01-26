@@ -114,26 +114,26 @@
         {
             title: '合同编号',
             dataIndex: 'contractNo',
-            width: '110px',
+            width: '230px',
             scopedSlots: { customRender: 'contractNo' },
             sorter : true
         },
         {
             title: '付款单号',
             dataIndex: 'paymentCode',
-            width: '110px',
+            width: '200px',
             scopedSlots: { customRender: 'paymentCode' },
             sorter : true
         },
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
-            width: '90px',
+            width: '100px',
         },
         {
             title: '收款单位',
             dataIndex: 'vendorName',
-            width: '180px',
+            width: '250px',
         },
         {
             title: '申请时间',
@@ -145,30 +145,26 @@
         {
             title: '付款期数',
             dataIndex: 'paymentPhase',
-            width: '78px',
-            align: 'center',
+            width: '90px',
             sorter : true
         },
         {
             title: '申请批准金额',
             dataIndex: 'requestAmount',
-            align: 'center',
-            width: '180px',
+            width: '150px',
             scopedSlots: { customRender: 'requestAmount' },
             sorter : true
         },
         {
             title: '本期支付金额',
             dataIndex: 'paymentAmount',
-            align: 'center',
-            width: '180px',
+            width: '150px',
             scopedSlots: { customRender: 'paymentAmount' },
             sorter : true
         },
         {
             title: '申请人',
             dataIndex: 'creatorUser',
-            align: 'center',
             width: '100px',
         },
         {
@@ -179,8 +175,7 @@
         {
             title: '支付方式',
             dataIndex: 'paymentMethod',
-            align: 'center',
-            width: '100px',
+            width: '130px',
         },
         {
             title: '付款类型',
