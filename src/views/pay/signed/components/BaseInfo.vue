@@ -375,7 +375,7 @@
         <base-info-payment :data="item" :type="type" :id="id" :index="index+1"
                            @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
         <base-info-attachment :master-id="data.attachmentID ? data.attachmentID : 0"
-                              :data="item" xi
+                              :data="item"
                               :type="type"
                               :id="id"
                               @on-change-masterId="changeMasterId"></base-info-attachment>
