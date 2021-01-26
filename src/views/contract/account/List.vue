@@ -184,115 +184,108 @@
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
-            width: 90,
+            width: '100px',
         },
         {
             title: '结算状态',
             dataIndex: 'balanceStatus',
-            width: 90
+            width: '100px'
         },
         {
             title: '合同编号',
             dataIndex: 'contractNo',
-            width: 110,
+            width: '230px',
             scopedSlots: { customRender: 'contractNo' },
             sorter: true
         },
         {
             title: '合同名称',
-            width: 300,
+            width: '300px',
             dataIndex: 'contractName',
         },
         {
             title: '合同类型',
             dataIndex: 'contractCategory',
-            width: 130,
+            width: '130px',
             scopedSlots: { customRender: 'contractCategory' }
         },
         {
             title: '签约日期',
             dataIndex: 'signDate',
-            width: 120,
+            width: '120px',
             scopedSlots: { customRender: 'signDate' },
             sorter: true
         },
         {
             title: '币种',
-            width: 90,
+            width: '80px',
             dataIndex: 'currency',
         },
         {
             title: '合同金额',
             dataIndex: 'contractAmount',
-            align: 'center',
-            width: 180,
+            width: '150px',
             scopedSlots: { customRender: 'contractAmount' },
             sorter: true
         },
         {
             title: '累计变更金额',
             dataIndex: 'voAmount',
-            align: 'center',
-            width: 180,
+            width: '150px',
             scopedSlots: { customRender: 'voAmount' },
             sorter: true
         },
         {
             title: '预估结算金额',
             dataIndex: 'preSettleAmount',
-            align: 'center',
-            width: 180,
+            width: '150px',
             scopedSlots: { customRender: 'preSettleAmount' },
             sorter: true
         },
         {
             title: '累计申请批准金额',
             dataIndex: 'requestAmount',
-            align: 'center',
-            width: 180,
+            width: '150px',
             scopedSlots: { customRender: 'requestAmount' },
             sorter: true
         },
         {
             title: '累计支付金额',
             dataIndex: 'paymentAmount',
-            align: 'center',
-            width: 180,
+            width: '150px',
             scopedSlots: { customRender: 'paymentAmount' },
             sorter: true
         },
         {
             title: '累计发票金额',
             dataIndex: 'billAmount',
-            align: 'center',
-            width: 180,
+            width: '150px',
             scopedSlots: { customRender: 'billAmount' },
             sorter: true
         },
         {
             title: '甲方单位',
-            width: 180,
+            width: '180px',
             dataIndex: 'partyName',
         },
         {
             title: '乙方单位',
-            width: 180,
+            width: '180px',
             dataIndex: 'parcon',
         },
         {
             title: '所属项目',
-            width: 180,
+            width: '180px',
             dataIndex: 'projectName',
         },
         {
             title: '申请部门',
-            width: 130,
+            width: '130px',
             dataIndex: 'departmentName',
         },
         {
             title: '经办人',
-            width: 100,
-            align: 'center',
+            width: '100px',
             dataIndex: 'creatorUser',
         },
     ]

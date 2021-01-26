@@ -96,6 +96,7 @@
         :alert="false"
         :rowSelection="rowSelection"
         showPagination="auto"
+        :scroll="{ x: 'calc(700px + 50%)'}"
       >
         <span slot="contractNo" slot-scope="text, record">
             <a @click="handleToContractInfo(record)">{{text}}</a>
@@ -153,7 +154,7 @@
         </span>
 
         <span slot="file_PdfPath" slot-scope="text,record">
-            <a :href="record.file_PdfPathUrl" target="_blank" v-if="text">{{text}}</a>
+            <a :href="record.file_PdfPathUrl" target="_blank" v-if="text">竣工证书.pdf</a>
         </span>
 
 
@@ -225,41 +226,44 @@
         {
             title: '合同编号',
             dataIndex: 'contractNo',
+            width: '230px',
             scopedSlots: { customRender: 'contractNo' },
             sorter: true
         },
         {
             title: '合同名称',
             dataIndex: 'contractName',
+            width: '300px',
             scopedSlots: { customRender: 'contractName' }
         },
         {
             title: '审核状态',
             dataIndex: 'auditStatus',
-            width: 90,
+            width: '100px',
             scopedSlots: { customRender: 'auditStatus' }
         },
         {
             title: '结算状态',
-            width: 90,
+            width: '100px',
             dataIndex: 'balanceStatus',
         },
         {
             title: '合同类型',
             dataIndex: 'contractCategory',
-            width: 130,
-            align: 'center',
+            width: '130px',
             scopedSlots: { customRender: 'contractCategory' }
         },
         {
             title: '合同总金额(￥)',
             dataIndex: 'contractAmount',
+            width: '150px',
             scopedSlots: { customRender: 'contractAmount' },
             sorter: true
         },
         {
             title: '乙方单位',
             dataIndex: 'contractPartyCON',
+            width: '180px',
         }
     ]
 
@@ -269,7 +273,7 @@
             children: [
                 {
                     title: '竣工日期',
-                    width: 110,
+                    width: 120,
                     dataIndex: 'completionDate',
                     scopedSlots: { customRender: 'completionDate' },
                     sorter: true
@@ -289,14 +293,14 @@
                 },
                 {
                     title: '发起日期',
-                    width: 110,
+                    width: 120,
                     dataIndex: 'creationTime',
                     scopedSlots: { customRender: 'creationTime' },
                     sorter: true
                 },
                 {
                     title: '审批状态',
-                    width: 78,
+                    width: 100,
                     dataIndex: 'auditStatus',
                     scopedSlots: { customRender: 'auditStatus' }
                 }
@@ -307,28 +311,27 @@
             children: [
                 {
                     title: '结算日期',
-                    width: 110,
+                    width: 120,
                     dataIndex: 'progressBalanceDate',
                     scopedSlots: { customRender: 'progressBalanceDate' }
                 },
                 {
                     title: '结算申请金额',
                     dataIndex: 'progressBalanceAmount',
-                    align: 'center',
-                    width: 180,
+                    width: 150,
                     scopedSlots: { customRender: 'progressBalanceAmount' },
                     sorter: true
                 },
                 {
                     title: '发起日期',
-                    width: 110,
+                    width: 120,
                     dataIndex: 'bContractCreationTime',
                     scopedSlots: { customRender: 'bContractCreationTime' },
                     sorter: true
                 },
                 {
                     title: '审批状态',
-                    width: 78,
+                    width: 100,
                     dataIndex: 'bContractAuditStatus',
                     scopedSlots: { customRender: 'bContractAuditStatus' }
                 }
@@ -340,13 +343,13 @@
                 {
                     title: '发起日期',
                     dataIndex: 'bProjectCreationTime',
-                    width: 110,
+                    width: 120,
                     scopedSlots: { customRender: 'bProjectCreationTime' },
                     sorter: true
                 },
                 {
                     title: '审批状态',
-                    width: 90,
+                    width: 100,
                     dataIndex: 'bProjectAuditStatus',
                     scopedSlots: { customRender: 'bProjectAuditStatus' }
                 }
@@ -358,13 +361,13 @@
                 {
                     title: '发起日期',
                     dataIndex: 'bFinanceCreationTime',
-                    width: 110,
+                    width: 120,
                     scopedSlots: { customRender: 'bFinanceCreationTime' },
                     sorter: true
                 },
                 {
                     title: '审批状态',
-                    width: 90,
+                    width: 100,
                     dataIndex: 'bFinanceAuditStatus',
                     scopedSlots: { customRender: 'bFinanceAuditStatus' }
                 }

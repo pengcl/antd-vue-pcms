@@ -384,26 +384,21 @@
                 if (isValid) {
                     let items = JSON.parse(JSON.stringify(this.form.contractBQNewlst))
                     items = items.filter(item => !item.isDeleted)
-                    if (items.length > 0) {
-                        this.loading.save = true
-                        this.disabled = true
-                        ContractService[this.type](this.form).then((res, err) => {
-                            this.disabled = false
-                            this.loading.save = false
-                            if (res.result.statusCode === 200) {
-                                this.contractGuid = this.type === 'create' ? res.result.data : res.result.data.contractGuid
-                                const show = this.type === 'create' ? this.form.contract.contractAmount > 0 : res.result.data.bAmountIsChangeResult
-                                if (show) {
-                                    this.showBudgets()
-                                } else {
-                                    this.$message.success('保存成功')
-                                }
+                    this.loading.save = true
+                    this.disabled = true
+                    ContractService[this.type](this.form).then((res, err) => {
+                        this.disabled = false
+                        this.loading.save = false
+                        if (res.result.statusCode === 200) {
+                            this.contractGuid = this.type === 'create' ? res.result.data : res.result.data.contractGuid
+                            const show = this.type === 'create' ? this.form.contract.contractAmount > 0 : res.result.data.bAmountIsChangeResult
+                            if (show) {
+                                this.showBudgets()
+                            } else {
+                                this.$message.success('保存成功')
                             }
-                        })
-                    } else {
-                        alert('您要在合同量清单中至少选择一条带数项！')
-                        this.activeKey = 4
-                    }
+                        }
+                    })
                 }
             },
             handleChange (selectedItems) {

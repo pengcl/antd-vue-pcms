@@ -85,6 +85,7 @@
                ref="contractTable"
                rowKey="contractGuid"
                :rowSelection="rowSelection"
+               :scroll="{ x: 'calc(700px + 50%)'}"
                bordered>
         <span slot="contractNo" slot-scope="text, record">
             <a @click="handleToContractInfo(record)">{{text}}</a>
@@ -219,38 +220,42 @@
             title: '合同编号',
             dataIndex: 'contractNo',
             scopedSlots: { customRender: 'contractNo' },
+            width: '220px',
             sorter: true
         },
         {
             title: '合同名称',
             dataIndex: 'contractName',
+            width: '300px',
             scopedSlots: { customRender: 'contractName' }
         },
         {
             title: '乙方单位',
+            width: '180px',
             dataIndex: 'partyInfo',
         },
         {
             title: '币种',
             dataIndex: 'currency',
-            width: '78px'
+            width: '80px',
         },
         {
             title: '合同金额',
             dataIndex: 'contractAmount',
             scopedSlots: { customRender: 'contractAmount' },
+            width: '150px',
             sorter: true
         },
         {
             title: '审核状态',
             dataIndex: 'auditStatus',
             scopedSlots: { customRender: 'auditStatus' },
-            width: '78px'
+            width: '100px'
         },
         {
             title: '结算状态',
             dataIndex: 'balanceStatus',
-            width: '78px'
+            width: '100px'
         }
     ]
 
