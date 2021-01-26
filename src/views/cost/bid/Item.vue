@@ -220,7 +220,7 @@
           <a-button-group style="float: right">
             <a-button :disabled="type === 'view' || disabled" :loading="loading.save" type="success" @click="handleToSave">储存
             </a-button>
-            <a-button type="danger" style="margin-left: 5px" @click="back">关闭</a-button>
+            <a-button type="danger" style="margin-left: 5px" @click="backList">关闭</a-button>
           </a-button-group>
         </a-col>
       </a-row>
@@ -462,6 +462,10 @@
         })
       },
       back() {
+        // this.$router.push({path: `/cost/bid/list`})
+        this.$router.push({ path: `/cost/bid/item/${this.id}?ProjectGUID=${this.ProjectGUID}&type=view` })
+      },
+      backList() {
         this.$router.push({path: `/cost/bid/list`})
       },
       delIndustry(index) {

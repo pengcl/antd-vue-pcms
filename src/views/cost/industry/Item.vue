@@ -110,7 +110,8 @@
         <a-col :md="12" :sm="24">
           <a-button type="success" style="margin-right: 20px" v-if="type==='view' && this.form.auditStatus === '未审核' && ac('ADD')" :loading="loading.startBPM" @click="startBPM" 
             :disabled="form.budgetAmount <= 0">启动审批流程</a-button>
-
+          <a-button type="success" style="margin-right: 20px" v-if="type==='view' && (this.form.auditStatus === '已审核' ||this.form.auditStatus === '审核中') && ac('VIEW')" :loading="loading.viewBPM" @click="viewBPM" 
+            >查看审批流程</a-button>
         </a-col>
         <a-col :md="12" :sm="24">
           <a-button-group style="float: right">
@@ -131,6 +132,7 @@
   import moment from "moment"
   import { ac } from '@/views/user/user.service'
   import { STable, Ellipsis } from '@/components'
+  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
 
   const _columns = [
     {
@@ -176,7 +178,8 @@
         elementItems: [],
         loading : {
           save : false,
-          startBPM : false
+          startBPM : false,
+          viewBPM : false,
         },
         disabled:false,
         form: SwaggerService.getForm('TenderPackageCreateInputDto'),
@@ -317,7 +320,15 @@
         })
       },
       viewBPM(){
-
+        this.loading.viewBPM= true
+        BaseService.viewBpm(this.form.tenderPackageBatchGUID).then(res => {
+          this.loading.viewBPM= false
+          if(res.result.statusCode === 200){
+            setTimeout(function(){
+              window.open(res.result.data)
+            },200)
+          }
+        })
       },
       itemTypeChange(value,option){
         console.log('option',option.$options,option)
