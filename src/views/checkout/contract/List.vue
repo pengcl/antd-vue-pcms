@@ -154,7 +154,7 @@
         </span>
 
         <span slot="file_PdfPath" slot-scope="text,record">
-            <a :href="record.file_PdfPathUrl" target="_blank" v-if="text">{{text}}</a>
+            <a :href="record.file_PdfPathUrl" target="_blank" v-if="text">竣工证书.pdf</a>
         </span>
 
 

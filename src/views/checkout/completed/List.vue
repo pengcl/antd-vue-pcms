@@ -134,7 +134,7 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-model-item label="竣工证书">
-              <a :href="form.file_PdfPathUrl" target="_blank">{{form.file_PdfPath}}</a>
+              <a :href="form.file_PdfPathUrl" target="_blank" v-if="form.file_PdfPath">竣工证书.pdf</a>
             </a-form-model-item>
           </a-col>
         </a-row>
