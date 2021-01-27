@@ -65,6 +65,56 @@
               ></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-model-item label="图纸及技术要求是否已经项目审核同意" prop="isXiangMuShenHe">
+              <a-radio-group v-model="form.isXiangMuShenHe" :disabled="type === 'view'">
+                <a-radio :value="是">
+                  是
+                </a-radio>
+                <a-radio :value="否">
+                  否
+                </a-radio>
+              </a-radio-group>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-model-item label="图纸及技术要求是否已经技术部审核同意" prop="isJiShuBuShenHe">
+              <a-radio-group v-model="form.isJiShuBuShenHe" :disabled="type === 'view'">
+                <a-radio :value="是">
+                  是
+                </a-radio>
+                <a-radio :value="否">
+                  否
+                </a-radio>
+              </a-radio-group>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险" prop="needBuyInsurance">
+              <a-checkbox v-model="form.needBuyInsurance" @click="checkInsurance()"></a-checkbox>{{text}}
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="保险备注">
+              <a-textarea
+                :disabled="type === 'view'"
+                placeholder="特殊情况，不需同时购买上述三种保险，请另行说明。"
+                rows="3"
+                v-model="form.insuranceRemarks"
+              >
+              </a-textarea>
+            </a-form-model-item>
+          </a-col>
+          <a-col :md="24" :sm="24">
+            <a-form-model-item label="采购建议" prop="remarks">
+              <a-textarea
+                :disabled="type === 'view'"
+                rows="3"
+                v-model="form.remarks"
+              >
+              </a-textarea>
+            </a-form-model-item>
+          </a-col>
           <a-col :md="24" :sm="24">
             <table>
               <thead>
@@ -263,6 +313,9 @@
           packageTitle: [{required: true, message: '请输入工程名称', trigger: 'blur'}],
           description: [{required: true, message: '请输入说明', trigger: 'change'}],
           itemTypeId: [{required: true, message: '请选择招投标类型', trigger: 'change'}],
+          isXiangMuShenHe: [{required: true, message: '请选择图纸及技术要求是否已经项目审核同意', trigger: 'change'}],
+          isJiShuBuShenHe: [{required: true, message: '请选择图纸及技术要求是否已经技术部审核同意', trigger: 'change'}],
+          needBuyInsurance: [{required: true, message: '请选择需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险', trigger: 'change'}],
           tenderPackages: [],
           plans: []
 
