@@ -245,6 +245,7 @@
                     obj.elementInfoId = item.elementId
                     obj.groupId = item.id
                     obj.isDelete = true
+                    obj.isCanDel = true
                     obj.isUsed = false
                     obj.key = Number(Math.random().toString() + Date.now()).toString(36)
                     obj.isLast = true

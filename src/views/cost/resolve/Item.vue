@@ -184,6 +184,7 @@
           })
           budgetItem.amountCount = budgetsAmount
           budgetItem.isUsed = budget.isUsed
+          budgetItem.isCanDel = budget.isCanDel
           budgetItem.isDelete = true
           budgetItem.isLast = true
           objItems.push(budgetItem)
