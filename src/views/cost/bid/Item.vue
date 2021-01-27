@@ -78,7 +78,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
-            <a-form-model-item label="图纸及技术要求是否已经技术部审核同意" prop="isJiShuBuShenHe">
+            <a-form-model-item label="图纸及技术要求是否已经技术部审核同意" prop="isJiShuBuShenHe" class="required-space">
               <a-radio-group v-model="form.isJiShuBuShenHe" :disabled="type === 'view'">
                 <a-radio :value="是">
                   是
@@ -90,7 +90,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险" prop="needBuyInsurance">
+            <a-form-model-item label="需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险" prop="needBuyInsurance" class="required-space">
               <a-checkbox v-model="form.needBuyInsurance" @click="checkInsurance()"></a-checkbox>{{text}}
             </a-form-model-item>
           </a-col>
