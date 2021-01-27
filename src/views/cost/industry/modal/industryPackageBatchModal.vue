@@ -27,6 +27,7 @@
         </span>
       </template>
       <span slot="budgetAmount" slot-scope="text">{{text | NumberFormat}}</span>
+      <span slot="creationTime" slot-scope="text">{{text | date}}</span>
     </s-table>
   </a-modal>
 </template>
@@ -54,6 +55,11 @@
       title: '金额',
       dataIndex: 'budgetAmount',
       scopedSlots: { customRender: 'budgetAmount' }
+    },
+    {
+      title: '日期',
+      dataIndex: 'creationTime',
+      scopedSlots: { customRender: 'creationTime' }
     }
   ]
   export default {
@@ -73,6 +79,8 @@
           this.queryParam.ProjectGUID = this.ProjectGUID
           this.queryParam.isAudit = false
           const requestParameters = Object.assign({}, parameter, this.queryParam)
+          requestParameters.sorting = "creationTime"
+          requestParameters.sortOrder = "desc"
           return CostService.bidIndustryItems(requestParameters).then(res => {
             return fixedList(res, requestParameters)
           })
