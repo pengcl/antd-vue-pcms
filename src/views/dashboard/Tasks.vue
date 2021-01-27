@@ -105,7 +105,7 @@
         },
         filters: {},
         created () {
-            this.dataRefresh()
+
         },
         watch: {
             '$route' (path) {
@@ -145,6 +145,7 @@
             handleEdit (record) {
                 TaskService.task(record.workflowId).then(res => {
                     if (res.result.data) {
+                        this.dataRefresh()
                         const _window = window.open('_blank')
                         _window.location = res.result.data
                     } else {
