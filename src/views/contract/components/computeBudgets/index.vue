@@ -512,6 +512,7 @@
             },
             handleCancel () {
                 this.visible = false
+                location.href = `/contract/item/${this.contractGuid}?type=view`
             },
             handleOk () {
                 this.disabled = true

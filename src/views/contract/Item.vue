@@ -396,6 +396,7 @@
                                 this.showBudgets()
                             } else {
                                 this.$message.success('保存成功')
+                                this.$router.push({ path: `/contract/item/${this.contractGuid}?type=view` })
                             }
                         }
                     })
