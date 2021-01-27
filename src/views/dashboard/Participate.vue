@@ -35,7 +35,7 @@
         :data="loadData"
         :rowSelection="rowSelection"
         :alert="false"
-        :class="'no-border'"
+        :class="intervalId ? 'interval no-border' : 'no-border'"
         showPagination="auto"
       >
 
@@ -106,12 +106,14 @@
                 intervalId: null,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                  this.pageNo = parameter.pageNo
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     return TaskService.participates(requestParameters)
                         .then(res => {
                             return fixedList(res, parameter)
                         })
-                }
+                },
+              pageNo: 1
             }
         },
         created () {
@@ -120,7 +122,10 @@
         watch: {
             '$route' (path) {
                 this.$refs.table.refresh()
-            }
+            },
+          'pageNo' () {
+            this.clear()
+          }
         },
         computed: {
             rowSelection () {
@@ -146,8 +151,8 @@
             },
             // 停止定时器
             clear () {
-                clearInterval(this.intervalId) //清除计时器
-                this.intervalId = null //设置为null
+                clearInterval(this.intervalId) // 清除计时器
+                this.intervalId = null // 设置为null
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
@@ -168,5 +173,30 @@
     }
 </script>
 <style lang="less" scoped>
-  /*/deep/*/
+  .interval {
+    /deep/ .ant-spin.ant-spin-spinning {
+      display: none;
+    }
+
+    /deep/ .ant-spin-blur {
+      user-select: unset !important;
+      pointer-events: unset !important;
+      opacity:1 !important;
+      &::after {
+        display: none !important;
+      }
+    }
+
+    /deep/ .ant-spin-spinning {
+      display: none !important;
+    }
+
+    /deep/ .ant-spin-container::after {
+      display: none !important;
+    }
+
+    /deep/ .ant-spin-nested-loading > div:not('.ant-spin-container') {
+      display: none;
+    }
+  }
 </style>

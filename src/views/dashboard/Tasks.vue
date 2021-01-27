@@ -34,7 +34,7 @@
         :data="loadData"
         :alert="false"
         :rowSelection="rowSelection"
-        :class="'no-border'"
+        :class="intervalId ? 'interval no-border' : 'no-border'"
         showPagination="auto"
       >
         <span slot="project" slot-scope="text,record">
@@ -58,7 +58,6 @@
     import { STable, Ellipsis } from '@/components'
     import { TaskService } from '@/views/dashboard/task.service'
     import { fixedList } from '@/utils/util'
-
     const columns = [
         {
             title: '项目',
@@ -93,14 +92,16 @@
                 intervalId: null,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
+                  this.pageNo = parameter.pageNo
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     return TaskService.tasks(requestParameters)
                         .then(res => {
-                            return fixedList(res, parameter)
+                          return fixedList(res, parameter)
                         })
                 },
                 selectedRowKeys: [],
-                selectedRows: []
+                selectedRows: [],
+              pageNo: 1
             }
         },
         filters: {},
@@ -110,7 +111,10 @@
         watch: {
             '$route' (path) {
                 this.$refs.table.refresh()
-            }
+            },
+          'pageNo' () {
+            this.clear()
+          }
         },
         computed: {
             rowSelection () {
@@ -136,8 +140,8 @@
             },
             // 停止定时器
             clear () {
-                clearInterval(this.intervalId) //清除计时器
-                this.intervalId = null //设置为null
+                clearInterval(this.intervalId) // 清除计时器
+                this.intervalId = null // 设置为null
             },
             search () {
                 this.$refs.table.refresh()
@@ -203,5 +207,32 @@
 
   /deep/ .text-height {
     margin-top: 15px;
+  }
+
+  .interval {
+    /deep/ .ant-spin.ant-spin-spinning {
+      display: none;
+    }
+
+    /deep/ .ant-spin-blur {
+      user-select: unset !important;
+      pointer-events: unset !important;
+      opacity:1 !important;
+      &::after {
+        display: none !important;
+      }
+    }
+
+    /deep/ .ant-spin-spinning {
+      display: none !important;
+    }
+
+    /deep/ .ant-spin-container::after {
+      display: none !important;
+    }
+
+    /deep/ .ant-spin-nested-loading > div:not('.ant-spin-container') {
+      display: none;
+    }
   }
 </style>

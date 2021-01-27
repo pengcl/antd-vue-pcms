@@ -454,7 +454,7 @@
       },
       startCBPM(){
         this.loading.startCBPM = true
-        ChangeService.vOAuditWithOutWorkFlow(form.voMasterInfo.voGuid).then(res =>{
+        ChangeService.vOAuditWithOutWorkFlow(this.form.voMasterInfo.voGuid).then(res =>{
           this.loading.startCBPM = false
           if(res.result.statusCode === 200){
             this.$message.success('已审核通过')
@@ -466,7 +466,7 @@
       },
       cancelCBPM(){
         this.loading.cancelCBPM = true
-        ChangeService.vOCancelAuditWithOutWorkFlow(form.voMasterInfo.voGuid).then(res =>{
+        ChangeService.vOCancelAuditWithOutWorkFlow(this.form.voMasterInfo.voGuid).then(res =>{
           this.loading.cancelCBPM = false
           if(res.result.statusCode === 200){
             this.$message.success('已取消审核')
