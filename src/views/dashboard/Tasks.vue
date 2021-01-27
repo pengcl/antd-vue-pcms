@@ -90,6 +90,7 @@
                 // create model
                 // 查询参数
                 queryParam: {},
+                intervalId: null,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -104,7 +105,7 @@
         },
         filters: {},
         created () {
-            // getRoleList({ t: new Date() })
+            this.dataRefresh()
         },
         watch: {
             '$route' (path) {
@@ -119,19 +120,37 @@
                 }
             }
         },
+        destroyed () {
+            this.clear()
+        },
         methods: {
+            dataRefresh () {
+                // 计时器正在进行中，退出函数
+                if (this.intervalId != null) {
+                    return
+                }
+                // 计时器为空，操作
+                this.intervalId = setInterval(() => {
+                    this.$refs.table.refresh()
+                }, 5000)
+            },
+            // 停止定时器
+            clear () {
+                clearInterval(this.intervalId) //清除计时器
+                this.intervalId = null //设置为null
+            },
             search () {
                 this.$refs.table.refresh()
             },
             handleEdit (record) {
-              TaskService.task(record.workflowId).then(res => {
-                if (res.result.data) {
-                  const _window = window.open('_blank')
-                  _window.location = res.result.data
-                } else {
-                  this.$message.error('流程打开异常，请联系系统管理员')
-                }
-              })
+                TaskService.task(record.workflowId).then(res => {
+                    if (res.result.data) {
+                        const _window = window.open('_blank')
+                        _window.location = res.result.data
+                    } else {
+                        this.$message.error('流程打开异常，请联系系统管理员')
+                    }
+                })
                 /* const _window = window.open('_blank')
                 _window.location = record.workflowUrl */
             },
