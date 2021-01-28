@@ -62,7 +62,6 @@
                               @change="paymentAmountChange"
                               :disabled="type === 'view'"
                               v-model="item.paymentAmount"
-                              :min="0"
                               :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :parser="value => value.replace(/\-\s?|(,*)/g, '')"
                               :precision="2"
@@ -142,6 +141,15 @@
         watch: {
             'data' (value) {
                 this.getVendor(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID'])
+            },
+            'data.detailList' (value) {
+                if (value && value.length > 0) {
+                    this.data.detailList.forEach(item => {
+                        if (item.paymentAmount) {
+                            item.paymentAmount = Math.abs(item.paymentAmount)
+                        }
+                    })
+                }
             }
         },
         created () {
@@ -153,6 +161,13 @@
                 SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID']).then(res => {
                     this.vendorTypes = res.result.data
                     this.$forceUpdate()
+                })
+            }
+            if (this.data.detailList && this.data.detailList.length > 0) {
+                this.data.detailList.forEach(item => {
+                    if (item.paymentAmount) {
+                        item.paymentAmount = Math.abs(item.paymentAmount)
+                    }
                 })
             }
         },
