@@ -503,6 +503,9 @@
         this.form.itemTypeId = 0
         this.form.projectGUID = this.ProjectGUID
         console.log(this.form)
+        if (this.form.fileMasterId === '') {
+          this.form.fileMasterId = 0
+        }
         this.$refs.form.validate(valid => {
           if (valid) {
             this.disabled = true
@@ -669,24 +672,26 @@
         this.fileList.push(params)
       },
       getFiles () {
-        BaseService.fileList(this.form.fileMasterId, this.form.projectTenderPackageGUID, '', '').then(_res => {
-          const data = _res.result.data
-          const fileList = []
-          data.forEach(item => {
-            if (item) {
-              fileList.push({
-                date: item.creationTime,
-                creator: item.creatorUser,
-                name: item.fileName,
-                url: item.fileUrl,
-                remark: item.remark,
-                id: item.id,
-                masterID: item.masterID
-              })
-            }
+        if (this.form.fileMasterId) {
+          BaseService.fileList(this.form.fileMasterId, this.form.projectTenderPackageGUID, '', '').then(_res => {
+            const data = _res.result.data
+            const fileList = []
+            data.forEach(item => {
+              if (item) {
+                fileList.push({
+                  date: item.creationTime,
+                  creator: item.creatorUser,
+                  name: item.fileName,
+                  url: item.fileUrl,
+                  remark: item.remark,
+                  id: item.id,
+                  masterID: item.masterID
+                })
+              }
+            })
+            this.fileList = fileList
           })
-          this.fileList = fileList
-        })
+        }
       },
       delFile (index) {
         if (this.fileList[index].isTemp) {
