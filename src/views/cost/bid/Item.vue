@@ -518,6 +518,12 @@
           if (valid) {
             this.disabled = true
             this.loading.save = true
+            if (this.form.tenderPackages.length <= 0) {
+              this.$message.error(`请选择专业分判包`)
+              this.loading.save = false
+              this.disabled = false
+              return false
+            }
             if (this.type === 'add') {
               CostService.bidCreate(this.form).then(res => {
                 if (res.result.statusCode === 200) {
