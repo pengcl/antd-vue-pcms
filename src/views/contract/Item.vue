@@ -392,7 +392,7 @@
                         if (res.result.statusCode === 200) {
                             this.contractGuid = this.type === 'create' ? res.result.data : res.result.data.contractGuid
                             const show = this.type === 'create' ? this.form.contract.contractAmount > 0 : res.result.data.bAmountIsChangeResult
-                            if (show) {
+                            if (show && items.length > 0) {
                                 this.showBudgets()
                             } else {
                                 this.$message.success('保存成功')
