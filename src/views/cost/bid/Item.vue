@@ -387,60 +387,68 @@
       //   this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
       //   this.$forceUpdate()
       // })
-      if (this.type === 'add') {
-        CostService.bidIndustryItems({ProjectGUID: this.ProjectGUID, ProjectTenderPackageId: this.id, IsAudit: true}).then(res => {
-          this.industryItems = JSON.parse(JSON.stringify(res.result.data))
-          this.$forceUpdate()
-        })
-      }
-      CostService.matterItems().then(res => {
-        this.matterItems = JSON.parse(JSON.stringify(res.result.data))
-        this.$forceUpdate()
-      })
-      if (this.type !== 'add') {
-        // 获取分判包详情内容
-        CostService.bidItem({Id: this.id}).then(res => {
-          this.form = res.result.data
-          this.costSystemApplyUrl = this.form.costSystemApplyUrl
-          // 组装专业分判包信息
-          if (this.form.tenderPackages) {
-            CostService.bidIndustryItems({
-              ProjectGUID: this.ProjectGUID,
-              ProjectTenderPackageId: this.id,
-              IsAudit: true
-            }).then(res2 => {
-              //获取下拉分判包列表
-              this.industryItems = JSON.parse(JSON.stringify(res2.result.data))
-              //组装编辑返回的下拉框内容，并判断重复
-              let packages = JSON.parse(JSON.stringify(this.form.tenderPackages))
-              this.form.tenderPackages = []
-              packages.forEach(item => {
-                let isHaving = false
-                this.industryItems.forEach(industryItem => {
-                  if (industryItem.id === item.id) {
-                    isHaving = true
-                  }
-                })
-                if (!isHaving) {
-                  this.form.tenderPackages.push(item.id)
-                  item.isEditItem = true
-                  this.industryItems.push(item)
-                }
-              })
-              this.form.plans.forEach(item => {
-                item.isEditItem = true
-              })
-            })
-          }
-          // 获取附件列表
-          this.getFiles()
-          this.$forceUpdate()
-        })
-      } else {
-        this.form.packageDate = moment(new Date())
+      this.getData()
+    },
+    watch: {
+      '$route' (value) {
+        this.getData()
       }
     },
     methods: {
+      getData(){
+        if (this.type === 'add') {
+          CostService.bidIndustryItems({ProjectGUID: this.ProjectGUID, ProjectTenderPackageId: this.id, IsAudit: true}).then(res => {
+            this.industryItems = JSON.parse(JSON.stringify(res.result.data))
+            this.$forceUpdate()
+          })
+        }
+        CostService.matterItems().then(res => {
+          this.matterItems = JSON.parse(JSON.stringify(res.result.data))
+          this.$forceUpdate()
+        })
+        if (this.type !== 'add') {
+          // 获取分判包详情内容
+          CostService.bidItem({Id: this.id}).then(res => {
+            this.form = res.result.data
+            this.costSystemApplyUrl = this.form.costSystemApplyUrl
+            // 组装专业分判包信息
+            if (this.form.tenderPackages) {
+              CostService.bidIndustryItems({
+                ProjectGUID: this.ProjectGUID,
+                ProjectTenderPackageId: this.id,
+                IsAudit: true
+              }).then(res2 => {
+                //获取下拉分判包列表
+                this.industryItems = JSON.parse(JSON.stringify(res2.result.data))
+                //组装编辑返回的下拉框内容，并判断重复
+                let packages = JSON.parse(JSON.stringify(this.form.tenderPackages))
+                this.form.tenderPackages = []
+                packages.forEach(item => {
+                  let isHaving = false
+                  this.industryItems.forEach(industryItem => {
+                    if (industryItem.id === item.id) {
+                      isHaving = true
+                    }
+                  })
+                  if (!isHaving) {
+                    this.form.tenderPackages.push(item.id)
+                    item.isEditItem = true
+                    this.industryItems.push(item)
+                  }
+                })
+                this.form.plans.forEach(item => {
+                  item.isEditItem = true
+                })
+              })
+            }
+            // 获取附件列表
+            this.getFiles()
+            this.$forceUpdate()
+          })
+        } else {
+          this.form.packageDate = moment(new Date())
+        }
+      },
       getIndustryItem(index) {
         let industryItem = {}
         const value = this.form.tenderPackages[index]
@@ -515,7 +523,7 @@
                 if (res.result.statusCode === 200) {
                   this.$message.info('新增成功')
                   this.loading.save = false
-                  this.back()
+                  this.back(res.result.data.id)
                 }
               }).catch(() => {
                 this.loading.save = false
@@ -560,7 +568,7 @@
                 if (res.result.statusCode === 200) {
                   this.$message.info('修改成功')
                   this.loading.save = false
-                  this.back()
+                  this.back(this.id)
                 }
               }).catch(() => {
                 this.loading.save = false
@@ -570,9 +578,9 @@
           }
         })
       },
-      back() {
+      back(id) {
         // this.$router.push({path: `/cost/bid/list`})
-        this.$router.push({ path: `/cost/bid/item/${this.id}?ProjectGUID=${this.ProjectGUID}&type=view` })
+        this.$router.push({ path: `/cost/bid/item/`+id+`?ProjectGUID=${this.ProjectGUID}&type=view` })
       },
       backList() {
         this.$router.push({path: `/cost/bid/list`})
