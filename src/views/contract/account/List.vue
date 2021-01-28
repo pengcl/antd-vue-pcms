@@ -114,10 +114,6 @@
           <a @click="handleToItem(record.contractGuid)">{{text}}</a>
         </span>
 
-        <span slot="contractCategory" slot-scope="text">
-            {{text === 15 ? '原合同' : text === 16 ? '补充合同' : '专业分包合同'}}
-        </span>
-
         <span slot="signDate" slot-scope="text">
             {{text | date}}
         </span>
@@ -207,7 +203,6 @@
             title: '合同类型',
             dataIndex: 'contractCategory',
             width: '130px',
-            scopedSlots: { customRender: 'contractCategory' }
         },
         {
             title: '签约日期',
