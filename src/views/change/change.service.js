@@ -778,7 +778,7 @@ ChangeService.vOAuditWithOutWorkFlow = function(voGuid){
 	return request({
 	    url: API.vOAuditWithOutWorkFlow,
 	    method: 'post',
-	    data: {voGuid}
+	    params: {voGuid}
 	  })
 }
 
@@ -789,7 +789,7 @@ ChangeService.vOCancelAuditWithOutWorkFlow = function(voGuid){
 	return request({
 	    url: API.vOCancelAuditWithOutWorkFlow,
 	    method: 'post',
-	    data: {voGuid}
+	    params: {voGuid}
 	  })
 }
 

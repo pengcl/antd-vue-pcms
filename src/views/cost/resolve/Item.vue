@@ -42,7 +42,7 @@
                   title="新增">
                 </a-button>
                 <a-popconfirm
-                  v-if="record.isDelete && record.isCanDel"
+                  v-if="record.isShow && record.isCanDel"
                   title="是否要删除此行？"
                   @confirm="handleToRemove(record)">
                   <a-button
@@ -184,7 +184,8 @@
           })
           budgetItem.amountCount = budgetsAmount
           budgetItem.isUsed = budget.isUsed
-          budgetItem.isDelete = true
+          budgetItem.isCanDel = budget.isCanDel
+          budgetItem.isShow = true
           budgetItem.isLast = true
           objItems.push(budgetItem)
         })
@@ -218,6 +219,7 @@
         obj.isCreate = false
       }
     })
+    console.log(list)
     return list
   }
 
