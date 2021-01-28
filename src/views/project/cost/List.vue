@@ -141,34 +141,29 @@
         {
             title: '业态属性',
             width: 90,
-            align: 'center',
             dataIndex: 'developmentPurposeID',
             scopedSlots: { customRender: 'developmentPurposeID' }
         },
         {
             title: '总计容面积（GFA）',
-            align: 'center',
             width: 180,
             dataIndex: 'totalGFA',
             scopedSlots: { customRender: 'totalGFA' }
         },
         {
             title: '总可售/可租面积（RA）',
-            align: 'center',
             width: 180,
             dataIndex: 'totalRA',
             scopedSlots: { customRender: 'totalRA' }
         },
         {
             title: '总建筑面积(不含车库)(CFA)',
-            align: 'center',
             width: 180,
             dataIndex: 'totalCFAIncludeParking',
             scopedSlots: { customRender: 'totalCFAIncludeParking' }
         },
         {
             title: '单位/车位数',
-            align: 'center',
             width: 100,
             dataIndex: 'roomCarParkNo',
         },
