@@ -310,6 +310,7 @@
           <a-button type="success" style="margin-right: 20px" @click="startBPM" :loading="loading.startBPM" v-if="type === 'view' && form.auditStatus === '未审核'">启动审批流程</a-button>
           <a-button type="success" style="margin-right: 20px" @click="showBPM" :loading="loading.showBPM" v-if="type === 'view' && (form.auditStatus === '审核中' || form.auditStatus === '已审核')">查看审批流程</a-button>
           <a-button type="success" style="margin-right: 20px" @click="showApplyUrl" v-if="costSystemApplyUrl">查看采购申请</a-button>
+          <a-button type="success" style="margin-right: 20px" @click="exportPurchaseFile" v-if="form.auditStatus === '已审核'">导出采购</a-button>
 
         </a-col>
         <a-col :md="12" :sm="24">
@@ -772,6 +773,18 @@
               _this.visible = false
             }
           })
+      },
+      exportPurchaseFile () {
+        CostService.exportPurchaseFile(this.form.projectTenderPackageGUID).then(res => {
+          this.loading.startBPM = false
+          if (res.result.statusCode === 200) {
+            setTimeout(function() {
+              window.open(res.result.data)
+            }, 200)
+          }
+        }).catch((e) =>{
+          this.loading.startBPM = false
+        })
       }
     }
   }
