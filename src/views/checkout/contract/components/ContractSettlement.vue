@@ -176,7 +176,6 @@
       <a-form-model-item label="结算调整" prop="balanceAdjustAmount">
         <a-input-number v-model="data.balanceAdjustAmount"
                         :disabled="true"
-                        :min="0"
                         :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                         :precision="2"></a-input-number>
       </a-form-model-item>

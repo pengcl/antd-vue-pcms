@@ -8,7 +8,7 @@
     :closable="false"
     :maskClosable="false"
     :confirm-loading="loading"
-    :okButtonProps="{ props: { disabled: okDisabled }}"
+    :okButtonProps="{ props: { disabled: okDisabled || statusCode !== 200 }}"
   >
     <div>
       <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
@@ -235,6 +235,7 @@
                 rowSpans: {},
                 selection: {},
                 useStore: 0,
+                statusCode: 200,
                 okDisabled: false,
                 // 高级搜索 展开/关闭
                 advanced: false,
@@ -245,6 +246,7 @@
                     if (this.useStore === 108) {
                         return CheckoutService['budgetList_' + this.useStore](this.gid)
                             .then(res => {
+                                this.statusCode = res.result.statusCode
                                 if (res.result.statusCode === 900) {
                                     this.refreshStoreBalance(108, true)
                                     return new Promise((resolve, reject) => {
@@ -282,6 +284,7 @@
                     if (this.useStore === 109) {
                         return CheckoutService['budgetList_' + this.useStore](this.gid)
                             .then(res => {
+                                this.statusCode = res.result.statusCode
                                 if (res.result.statusCode === 900) {
 
                                     this.refreshStoreBalance(109, true)
@@ -313,7 +316,8 @@
                     if (this.useStore === 110) {
                         return CheckoutService['budgetList_' + this.useStore](this.gid)
                             .then(res => {
-                                if (res.result.statusCode == 900) {
+                                this.statusCode = res.result.statusCode
+                                if (res.result.statusCode === 900) {
                                     this.refreshStoreBalance(110, true)
                                     return new Promise((resolve, reject) => {
                                         resolve({ data: [] })
