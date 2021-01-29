@@ -776,14 +776,9 @@
       },
       exportPurchaseFile () {
         CostService.exportPurchaseFile(this.form.projectTenderPackageGUID).then(res => {
-          this.loading.startBPM = false
           if (res.result.statusCode === 200) {
-            setTimeout(function() {
-              window.open(res.result.data)
-            }, 200)
+            this.$message.success('导出采购成功')
           }
-        }).catch((e) =>{
-          this.loading.startBPM = false
         })
       }
     }
