@@ -65,8 +65,8 @@
               ></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-model-item label="图纸及技术要求是否已经项目审核同意" prop="isXiangMuShenHe">
+          <a-col :md="24" :sm="24">
+            <a-form-model-item class="spc" label="图纸及技术要求是否已经项目审核同意" prop="isXiangMuShenHe" >
               <a-radio-group style="margin-left: 5px" v-model="form.isXiangMuShenHe" :disabled="type === 'view'">
                 <a-radio value="是">
                   是
@@ -77,8 +77,8 @@
               </a-radio-group>
             </a-form-model-item>
           </a-col>
-          <a-col :md="12" :sm="24">
-            <a-form-model-item label="图纸及技术要求是否已经技术部审核同意" prop="isJiShuBuShenHe" class="required-space">
+          <a-col :md="24" :sm="24">
+            <a-form-model-item class="spc" label="图纸及技术要求是否已经技术部审核同意" prop="isJiShuBuShenHe">
               <a-radio-group style="margin-left: 5px" v-model="form.isJiShuBuShenHe" :disabled="type === 'view'">
                 <a-radio value="是">
                   是
@@ -90,7 +90,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="24" :sm="24">
-            <a-form-model-item label="需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险" prop="needBuyInsurance" class="required-space">
+            <a-form-model-item class="spc" label="需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险" prop="needBuyInsurance">
               <a-radio-group style="margin-left: 5px" v-model="form.needBuyInsurance" :disabled="type === 'view'">
                 <a-radio :value="1">
                   需要
@@ -834,6 +834,15 @@
     /deep/ .ant-form-item-control-wrapper.ant-col-16 {
       width: 100% !important;
     }
+  }
+
+  /deep/ .spc .ant-form-item-label {
+    white-space: normal !important;
+    width: 32em !important;
+  }
+
+  /deep/ .spc .ant-form-item-control-wrapper {
+    width: calc(100% - 32em) !important;
   }
 
 </style>
