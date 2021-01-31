@@ -52,7 +52,7 @@
             <td>
               <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
             </td>
-            <td><a-input-number v-model="item.filePage"></a-input-number></td>
+            <td><a-input-number v-model="item.filePage" :disabled="type === 'view'"></a-input-number></td>
             <td>{{item.creationTime | moment}}</td>
             <td>{{item.creatorUser}}</td>
           </tr>
@@ -192,6 +192,7 @@
                 formData.append('masterId', this.masterId)
                 formData.append('businessID', this.type === 'update' ? this.id : '')
                 formData.append('businessType', 'payment')
+                formData.append('filePage', this.fileList[this.index].filePage)
                 formData.append('subInfo1', this.attachmentType) //文件类型
                 formData.append('subInfo2', this.type === 'update' ? this.data['secondaryContractGID'] : this.data['contractGID']) // 文件名
                 formData.append('subInfo3', '') // 合同id
@@ -205,6 +206,7 @@
                     .then((response) => {
                         this.$emit('on-change-masterId', response.result.data.masterID)
                         this.fileList[this.index].fileName = response.result.data.fileName
+                        this.fileList[this.index].filePage = response.result.data.filePage
                         this.fileList[this.index].fileId = response.result.data.id
                         this.fileList[this.index].creationTime = response.result.data.creationTime
                         this.fileList[this.index].creatorUser = response.result.data.creatorUser

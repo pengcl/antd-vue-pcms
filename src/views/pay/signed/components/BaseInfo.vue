@@ -687,7 +687,8 @@
                         _paymentAmount += this.paymentAmount[key]
                     }
                 }
-                this.data.paymentAmount = _paymentAmount
+                // this.data.paymentAmount = _paymentAmount
+                this.$set(this.data, 'paymentAmount', _paymentAmount)
                 this.$forceUpdate()
             },
             paymentRequestAmountChange (value) {
@@ -700,7 +701,7 @@
                         _paymentRequestAmount += this.paymentRequestAmount[key]
                     }
                 }
-                this.data.paymentRequestAmount = _paymentRequestAmount
+                this.$set(this.data, 'paymentRequestAmount', _paymentRequestAmount)
                 this.$forceUpdate()
             },
             paymentRequestAmountChange2 (value) {
@@ -714,7 +715,8 @@
                         _paymentRequestAmount += this.paymentRequestAmount[key]
                     }
                 }
-                this.data.paymentRequestAmount = _paymentRequestAmount
+                // this.data.paymentRequestAmount = _paymentRequestAmount
+                this.$set(this.data, 'paymentRequestAmount', _paymentRequestAmount)
                 this.$forceUpdate()
             },
             billAmountChange (value, record, key) {

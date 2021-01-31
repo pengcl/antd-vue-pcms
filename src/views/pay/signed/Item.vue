@@ -102,6 +102,7 @@
         watch: {
             '$route' (path) {
                 this.getData()
+                this.disabled = false
             },
         },
         methods: {
