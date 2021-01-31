@@ -34,6 +34,7 @@ const API = {
   bidIndustryItems: '/api/services/app/TenderPackage/GetTenderPackageList',//专业分判包下拉列表
   bidUpdate: '/api/services/app/ProjectTenderPackage/UpdateProjectTenderPackage', //修改招投标分判包
   projectTenderPackageStartBPM: '/api/services/app/ProjectTenderPackage/ProjectTenderPackageStartBPM',//发起流程的地址
+  exportPurchaseFile: '/api/services/app/NwCost/CreateCgApply', // 导出采购清单
   //预算分解
   resolveTreeItems: '/api/services/app/TradeBudget/GetProjectCostCenterTradeBudgetTree',//获取分解列表数据
   itemTree: '/api/services/app/Element/GetElementTreeList', //获取大类科目里面的子科目树
@@ -501,6 +502,15 @@ CostService.budgetImportTemplate = function (parameter) {
     params: parameter
   })
 }
+
+CostService.exportPurchaseFile = function (ProjectTenderPackageGUID) {
+  return request({
+    url: API.exportPurchaseFile,
+    method: 'POST',
+    params: {ProjectTenderPackageGUID}
+  })
+}
+
 
 /**
  * login func
