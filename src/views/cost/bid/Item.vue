@@ -388,6 +388,10 @@
       //   this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
       //   this.$forceUpdate()
       // })
+      if (this.type === 'add') {
+        // 初始化为0，防止文件上传提交的时候undefined
+        this.form.projectTenderPackageGUID = '0'
+      }
       this.getData()
     },
     watch: {
