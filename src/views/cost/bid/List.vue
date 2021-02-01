@@ -69,7 +69,7 @@
                 v-decorator="[queryParam.AuditStatus, { rules: [{required: true, message: '请选择'}] }]">
                 <a-select-option value="未审核">未审核</a-select-option>
                 <a-select-option value="审核中">审核中</a-select-option>
-                <a-select-option value="已审批">已审批</a-select-option>
+                <a-select-option value="已审核">已审核</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
