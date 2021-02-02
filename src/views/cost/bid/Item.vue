@@ -125,180 +125,182 @@
           <a-col :md="24" :sm="24">
             <table>
               <thead>
-              <tr>
-                <th colspan="5">
-                  <a-button @click="addIndustry()" :disabled="type === 'view'" icon="plus" type="success">
-                    新增专业分判包
-                  </a-button>
-                </th>
-              </tr>
-              <tr>
-                <th style="width: 10%">操作</th>
-                <th style="width: 20%">专业分判包编号</th>
-                <th style="width: 25%">描述</th>
-                <th style="width: 25%">范围</th>
-                <th style="width: 20%">金额</th>
-              </tr>
+                <tr>
+                  <th colspan="7">
+                    <a-button @click="addIndustry()" :disabled="type === 'view'" icon="plus" type="success">
+                      新增专业分判包
+                    </a-button>
+                  </th>
+                </tr>
+                <tr>
+                  <th style="width: 5%">操作</th>
+                  <th style="width: 10%">分期/阶段</th>
+                  <th style="width: 15%">专业分判包编号</th>
+                  <th style="width: 15%">描述</th>
+                  <th style="width: 20%">范围</th>
+                  <th style="width: 15%">金额</th>
+                  <th style="width: 20%">合同</th>
+                </tr>
               </thead>
               <tbody>
-              <tr v-for="(item,index) in form.tenderPackages" :key="index">
-                <td>
-                  <a-button
-                    :disabled="getDelDisabled(index)"
-                    @click="delIndustry(index)"
-                    icon="delete"
-                    type="danger"></a-button>
-                </td>
-                <td>
-                  <a-form-model-item
-                    class="simple"
-                    style="margin-top: 20px"
-                    :prop="'tenderPackages.' + index"
-                    :rules="[{required: true, message: '请选择专业分判包', trigger: 'change' }]"
-                  >
-                    <a-select
-                      :disabled="getDisabled(index)"
-                      showSearch
-                      option-filter-prop="children"
-                      :filter-option="filterOption"
-                      placeholder="请选择"
-                      v-model="form.tenderPackages[index]"
+                <tr v-for="(item,index) in form.tenderPackages" :key="index">
+                  <td>
+                    <a-button
+                      :disabled="getDelDisabled(index)"
+                      @click="delIndustry(index)"
+                      icon="delete"
+                      type="danger"></a-button>
+                  </td>
+                  <td>{{ getIndustryItem(index).projectName }}</td>
+                  <td>
+                    <a-form-model-item
+                      class="simple"
+                      style="margin-top: 20px"
+                      :prop="'tenderPackages.' + index"
+                      :rules="[{required: true, message: '请选择专业分判包'}]"
                     >
-                      <a-select-option
-                        v-for="(option,i) in getIndustrysList(industryItems,form.tenderPackages,form.tenderPackages[index])"
-                        :key="i"
-                        :value="option.id">
-                        {{ option.packageTitle }}
-                      </a-select-option>
-                    </a-select>
-                  </a-form-model-item>
-                </td>
-                <td>{{ getIndustryItem(index).packageTitle }}</td>
-                <td>
+                      <a-input
+                        :hidden="true"
+                        v-model="form.tenderPackages[index]"
+                       ></a-input>
+                      <a-input
+                        :disabled="type === 'view' || getIndustryItem(index).isEditItem"
+                        :value="getIndustryItem(index).packageTitle"
+                        @click="showSelect(index)"></a-input>
+                    </a-form-model-item>
+                  </td>
+                  <td>{{ getIndustryItem(index).packageTitle }}</td>
+                  <td>
                     <span v-for="childItem in getIndustryItem(index).costCenters" :key="childItem.costCenterId">
                       【 {{ childItem.costCenterName }} 】
                     </span>
-                </td>
-                <td>{{ getIndustryItem(index).budgetAmount | NumberFormat }}</td>
-              </tr>
+                  </td>
+                  <td>{{ getIndustryItem(index).budgetAmount | NumberFormat }}</td>
+                  <td>{{ getIndustryItem(index).contractNo }}</td>
+                </tr>
               </tbody>
             </table>
           </a-col>
           <a-col :md="24" :sm="24">
             <table>
               <thead>
-              <tr>
-                <th colspan="5">
-                  <a-button :disabled="type === 'view'" @click="addPlan()" icon="plus" type="success">
-                    招投标计划
-                  </a-button>
-                </th>
-              </tr>
-              <tr>
-                <th style="width: 10%">操作</th>
-                <th style="width: 25%">工作项</th>
-                <th style="width: 20%">计划开始时间</th>
-                <th style="width: 20%">计划完成时间</th>
-                <th style="width: 25%">备注</th>
-              </tr>
+                <tr>
+                  <th colspan="5">
+                    <a-button :disabled="type === 'view'" @click="addPlan()" icon="plus" type="success">
+                      招投标计划
+                    </a-button>
+                  </th>
+                </tr>
+                <tr>
+                  <th style="width: 10%">操作</th>
+                  <th style="width: 25%">工作项</th>
+                  <th style="width: 20%">计划开始时间</th>
+                  <th style="width: 20%">计划完成时间</th>
+                  <th style="width: 25%">备注</th>
+                </tr>
               </thead>
               <tbody>
-              <tr v-if="!item.isDeleted" v-for="(item,index) in form.plans" :key="index">
-                <td>
-                  <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>
-                </td>
-                <td>
-                  <a-form-model-item
-                    class="simple"
-                    style="margin-top: 20px"
-                    :prop="'plans.' + index"
-                    :rules="[{required: true, message: '请选择工作项', trigger: 'change' }]"
-                  >
-                    <a-select
-                      :disabled="getPlanDisabled(index)"
-                      placeholder="请选择"
-                      v-model="form.plans[index].planTitle"
+                <tr v-if="!item.isDeleted" v-for="(item,index) in form.plans" :key="index">
+                  <td>
+                    <a-button :disabled="type === 'view'" @click="delPlan(index)" icon="delete" type="danger"></a-button>
+                  </td>
+                  <td>
+                    <a-form-model-item
+                      class="simple"
+                      style="margin-top: 20px"
+                      :prop="'plans.' + index"
+                      :rules="[{required: true, message: '请选择工作项', trigger: 'change' }]"
                     >
-                      <a-select-option
-                        v-for="option in matterItems"
-                        :key="option.id"
-                        :value="option.matterValue">
-                        {{ option.matterValue }}
-                      </a-select-option>
-                    </a-select>
-                  </a-form-model-item>
-                </td>
-                <td>
-                  <a-form-model-item
-                    class="simple"
-                    style="margin-top: 20px"
-                    :prop="'plans.' + index +'.planStartDate'"
-                    :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
-                    <a-date-picker
-                      :disabled="getPlanDisabled(index)"
-                      v-model="form.plans[index].planStartDate"></a-date-picker>
-                  </a-form-model-item>
-                </td>
-                <td>
-                  <a-form-model-item
-                    class="simple"
-                    style="margin-top: 20px"
-                    :prop="'plans.' + index +'.planEndDate'"
-                    :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
-                    <a-date-picker
-                      :disabled="getPlanDisabled(index)"
-                      v-model="form.plans[index].planEndDate"></a-date-picker>
-                  </a-form-model-item>
-                </td>
-                <td>
-                  <a-form-model-item
-                    class="simple"
-                    style="margin-top: 20px"
-                    :prop="'plans.' + index +'.remarks'"
-                    :rules="[{required: false, message: '请填写描述', trigger: 'blur' }]">
-                    <a-input :disabled="getPlanDisabled(index)" v-model="form.plans[index].remarks"></a-input>
-                  </a-form-model-item>
-                </td>
-              </tr>
+                      <a-select
+                        :disabled="getPlanDisabled(index)"
+                        placeholder="请选择"
+                        v-model="form.plans[index].planTitle"
+                      >
+                        <a-select-option
+                          v-for="option in matterItems"
+                          :key="option.id"
+                          :value="option.matterValue">
+                          {{ option.matterValue }}
+                        </a-select-option>
+                      </a-select>
+                    </a-form-model-item>
+                  </td>
+                  <td>
+                    <a-form-model-item
+                      class="simple"
+                      style="margin-top: 20px"
+                      :prop="'plans.' + index +'.planStartDate'"
+                      :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
+                      <a-date-picker
+                        :disabled="getPlanDisabled(index)"
+                        v-model="form.plans[index].planStartDate"></a-date-picker>
+                    </a-form-model-item>
+                  </td>
+                  <td>
+                    <a-form-model-item
+                      class="simple"
+                      style="margin-top: 20px"
+                      :prop="'plans.' + index +'.planEndDate'"
+                      :rules="[{required: true, message: '请填写日期', trigger: 'blur' }]">
+                      <a-date-picker
+                        :disabled="getPlanDisabled(index)"
+                        v-model="form.plans[index].planEndDate"></a-date-picker>
+                    </a-form-model-item>
+                  </td>
+                  <td>
+                    <a-form-model-item
+                      class="simple"
+                      style="margin-top: 20px"
+                      :prop="'plans.' + index +'.remarks'"
+                      :rules="[{required: false, message: '请填写描述', trigger: 'blur' }]">
+                      <a-input :disabled="getPlanDisabled(index)" v-model="form.plans[index].remarks"></a-input>
+                    </a-form-model-item>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </a-col>
           <a-col :md="24" :sm="24">
             <table>
               <thead>
-              <tr>
-                <th colspan="5">
-                  <a-button :disabled="type === 'view'" @click="addFile()" icon="plus" type="success">
-                    新增附件
-                  </a-button>
-                </th>
-              </tr>
-              <tr>
-                <th style="width: 25%">操作</th>
-                <th style="width: 25%">附件</th>
-                <th style="width: 25%">备注</th>
-                <th style="width: 25%">最后修改日期</th>
-              </tr>
+                <tr>
+                  <th colspan="5">
+                    <a-button :disabled="type === 'view'" @click="addFile()" icon="plus" type="success">
+                      新增附件
+                    </a-button>
+                  </th>
+                </tr>
+                <tr>
+                  <th style="width: 25%">操作</th>
+                  <th style="width: 25%">附件</th>
+                  <th style="width: 25%">备注</th>
+                  <th style="width: 25%">最后修改日期</th>
+                </tr>
               </thead>
               <tbody>
-              <tr v-if="!file.isDeleted" v-for="(file,index) in fileList" :key="index">
-                <td>
-                  <a-upload
-                    :multiple="false"
-                    :disabled="type === 'view'"
-                    :before-upload="beforeUpload"
-                  >
-                    <a-button @click="choose(index)">请选择</a-button>
-                  </a-upload>
-                  <a-button :disabled="type === 'view'" v-if="file.id" :loadding="loading" @click="delFile(index)" type="danger"
-                            icon="delete"></a-button>
-                </td>
-                <td><a :href="file.url" target="_blank">{{file.name}}</a></td>
-                <td>
-                  <a-input v-model="file.remark" :disabled="type === 'view'"></a-input>
-                </td>
-                <td>{{ file.date | moment }}</td>
-              </tr>
+                <tr v-if="!file.isDeleted" v-for="(file,index) in fileList" :key="index">
+                  <td>
+                    <a-upload
+                      :multiple="false"
+                      :disabled="type === 'view'"
+                      :before-upload="beforeUpload"
+                    >
+                      <a-button @click="choose(index)">请选择</a-button>
+                    </a-upload>
+                    <a-button
+                      :disabled="type === 'view'"
+                      v-if="file.id"
+                      :loadding="loading"
+                      @click="delFile(index)"
+                      type="danger"
+                      icon="delete"></a-button>
+                  </td>
+                  <td><a :href="file.url" target="_blank">{{ file.name }}</a></td>
+                  <td>
+                    <a-input v-model="file.remark" :disabled="type === 'view'"></a-input>
+                  </td>
+                  <td>{{ file.date | moment }}</td>
+                </tr>
               </tbody>
             </table>
           </a-col>
@@ -321,20 +323,34 @@
           </a-button-group>
         </a-col>
       </a-row>
+      <industry-list-modal
+        ref="industryListModal"
+        v-if="this.ProjectGUID"
+        :ProjectGUID="this.ProjectGUID"
+        :refreshParent="selectRefresh"
+      ></industry-list-modal>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-  import {CostService} from '@/views/cost/cost.service'
-  import {SwaggerService} from '@/api/swagger.service'
-  import {addItem, removeItem} from '@/api/base'
+  import { CostService } from '@/views/cost/cost.service'
+  import { SwaggerService } from '@/api/swagger.service'
+  import { addItem, removeItem, Base as BaseService, DIALOGCONFIG } from '@/api/base'
   import moment from 'moment'
-  import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
+  import IndustryListModal from '@/views/cost/bid/modal/IndustryListModal'
+
+  import { Ellipsis, STable } from '@/components'
+  import StepByStepModal from '@/views/list/modules/StepByStepModal'
+  import CostIndustryModal from '@/views/cost/industry/modal/IndustryModal'
+  import IndustryPackageBatchListModal from '@/views/cost/industry/modal/IndustryPackageBatchListModal'
 
   export default {
     name: 'Edit',
-    data() {
+    components: {
+      IndustryListModal
+    },
+    data () {
       return {
         centers: [],
         costCenters: [],
@@ -343,28 +359,28 @@
         tenderPackages: [],
         matterItems: [],
         plans: [],
-        addTenderPackages: [],//编辑时新增的分判包列表
-        removeTenderPackages: [],//编辑时移除的分判包列表
-        addPlans: [],//编辑时新增的计划列表
-        removePlans: [],//编辑时移除的计划列表
-        costSystemApplyUrl: '',// 查看采购申请url
+        addTenderPackages: [], // 编辑时新增的分判包列表
+        removeTenderPackages: [], // 编辑时移除的分判包列表
+        addPlans: [], // 编辑时新增的计划列表
+        removePlans: [], // 编辑时移除的计划列表
+        costSystemApplyUrl: '', // 查看采购申请url
         loading: {
           save: false,
-          startBPM : false,
-          showBPM : false
+          startBPM: false,
+          showBPM: false
         },
         index: 0,
         fileList: [],
-        disabled:false,
+        disabled: false,
         form: SwaggerService.getForm('ProjectTenderPackageCreateInputDto'),
         rules: {
-          packageDate: [{required: true, message: '请选择日期', trigger: 'blur'}],
-          packageTitle: [{required: true, message: '请输入工程名称', trigger: 'blur'}],
-          description: [{required: true, message: '请输入说明', trigger: 'change'}],
-          itemTypeId: [{required: true, message: '请选择招投标类型', trigger: 'change'}],
-          isXiangMuShenHe: [{required: true, message: '请选择图纸及技术要求是否已经项目审核同意', trigger: 'change'}],
-          isJiShuBuShenHe: [{required: true, message: '请选择图纸及技术要求是否已经技术部审核同意', trigger: 'change'}],
-          needBuyInsurance: [{required: true, message: '请选择需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险', trigger: 'change'}],
+          packageDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
+          packageTitle: [{ required: true, message: '请输入工程名称', trigger: 'blur' }],
+          description: [{ required: true, message: '请输入说明', trigger: 'change' }],
+          itemTypeId: [{ required: true, message: '请选择招投标类型', trigger: 'change' }],
+          isXiangMuShenHe: [{ required: true, message: '请选择图纸及技术要求是否已经项目审核同意', trigger: 'change' }],
+          isJiShuBuShenHe: [{ required: true, message: '请选择图纸及技术要求是否已经技术部审核同意', trigger: 'change' }],
+          needBuyInsurance: [{ required: true, message: '请选择需发包方购买工程一切险、第三者责任险、建筑工程团体意外伤害险', trigger: 'change' }],
           tenderPackages: [],
           plans: []
 
@@ -372,18 +388,18 @@
       }
     },
     computed: {
-      id() {
+      id () {
         return parseInt(this.$route.params.id)
       },
-      type() {
+      type () {
         return this.$route.query.type
       },
-      ProjectGUID() {
+      ProjectGUID () {
         return this.$route.query.ProjectGUID
       }
     },
     filters: {},
-    created() {
+    created () {
       // CostService.budgetTypeItems().then(res => {
       //   this.budgetTypeItems = JSON.parse(JSON.stringify(res.result.data))
       //   this.$forceUpdate()
@@ -400,51 +416,28 @@
       }
     },
     methods: {
-      getData(){
-        if (this.type === 'add') {
-          CostService.bidIndustryItems({ProjectGUID: this.ProjectGUID, ProjectTenderPackageId: this.id, IsAudit: true}).then(res => {
-            this.industryItems = JSON.parse(JSON.stringify(res.result.data))
-            this.$forceUpdate()
-          })
-        }
+      getData () {
         CostService.matterItems().then(res => {
           this.matterItems = JSON.parse(JSON.stringify(res.result.data))
           this.$forceUpdate()
         })
         if (this.type !== 'add') {
           // 获取分判包详情内容
-          CostService.bidItem({Id: this.id}).then(res => {
+          CostService.bidItem({ Id: this.id }).then(res => {
             this.form = res.result.data
             this.costSystemApplyUrl = this.form.costSystemApplyUrl
             // 组装专业分判包信息
             if (this.form.tenderPackages) {
-              CostService.bidIndustryItems({
-                ProjectGUID: this.ProjectGUID,
-                ProjectTenderPackageId: this.id,
-                IsAudit: true
-              }).then(res2 => {
-                //获取下拉分判包列表
-                this.industryItems = JSON.parse(JSON.stringify(res2.result.data))
-                //组装编辑返回的下拉框内容，并判断重复
-                let packages = JSON.parse(JSON.stringify(this.form.tenderPackages))
+                // 获取下拉分判包列表
+                this.industryItems = JSON.parse(JSON.stringify(this.form.tenderPackages))
                 this.form.tenderPackages = []
-                packages.forEach(item => {
-                  let isHaving = false
-                  this.industryItems.forEach(industryItem => {
-                    if (industryItem.id === item.id) {
-                      isHaving = true
-                    }
-                  })
-                  if (!isHaving) {
+                this.industryItems.forEach(item => {
                     this.form.tenderPackages.push(item.id)
                     item.isEditItem = true
-                    this.industryItems.push(item)
-                  }
                 })
                 this.form.plans.forEach(item => {
                   item.isEditItem = true
                 })
-              })
             }
             // 获取附件列表
             this.getFiles()
@@ -454,7 +447,7 @@
           this.form.packageDate = moment(new Date())
         }
       },
-      getIndustryItem(index) {
+      getIndustryItem (index) {
         let industryItem = {}
         const value = this.form.tenderPackages[index]
         this.industryItems.forEach((item) => {
@@ -464,7 +457,7 @@
         })
         return industryItem
       },
-      getDisabled(index) {
+      getDisabled (index) {
         if (this.type === 'add') {
           return false
         } else if (this.type === 'view') {
@@ -477,7 +470,7 @@
           return isDisabled
         }
       },
-      getDelDisabled(index) {
+      getDelDisabled (index) {
         if (this.type === 'add') {
           return false
         } else if (this.type === 'view') {
@@ -488,7 +481,7 @@
           return isDisabled
         }
       },
-      getPlanDisabled(index) {
+      getPlanDisabled (index) {
         if (this.type === 'add') {
           return false
         } else if (this.type === 'view') {
@@ -499,10 +492,10 @@
           return isDisabled
         }
       },
-      addIndustry() {
+      addIndustry () {
         this.form.tenderPackages.push('')
       },
-      addPlan() {
+      addPlan () {
         const item = {
           planTitle: '',
           planStartDate: '',
@@ -512,10 +505,9 @@
         }
         addItem(item, this.form.plans)
       },
-      handleToSave() {
+      handleToSave () {
         this.form.itemTypeId = 0
         this.form.projectGUID = this.ProjectGUID
-        console.log(this.form)
         if (this.form.fileMasterId === '') {
           this.form.fileMasterId = 0
         }
@@ -546,7 +538,7 @@
                 this.form.tenderPackages.forEach(item => {
                   this.industryItems.forEach(industryItem => {
                     if (item === industryItem.id && !industryItem.isEditItem) {
-                      this.addTenderPackages.push({projectTenderPackageId: this.id, tenderPackageId: item})
+                      this.addTenderPackages.push({ projectTenderPackageId: this.id, tenderPackageId: item })
                     }
                   })
                 })
@@ -589,44 +581,46 @@
           }
         })
       },
-      back(id) {
+      back (id) {
         // this.$router.push({path: `/cost/bid/list`})
-        this.$router.push({ path: `/cost/bid/item/`+id+`?ProjectGUID=${this.ProjectGUID}&type=view` })
+        this.$router.push({ path: `/cost/bid/item/` + id + `?ProjectGUID=${this.ProjectGUID}&type=view` })
       },
-      backList() {
-        this.$router.push({path: `/cost/bid/list`})
+      backList () {
+        this.$router.push({ path: `/cost/bid/list` })
       },
-      delIndustry(index) {
+      delIndustry (index) {
         const items = this.form.tenderPackages
         if (this.type === 'edit') {
           const item = items[index]
           this.industryItems.forEach(industryItem => {
             if (industryItem.id === item && industryItem.isEditItem) {
               // 移除的计划放到移除对象
-              this.removeTenderPackages.push({projectTenderPackageId: this.id, tenderPackageId: industryItem.id})
+              this.removeTenderPackages.push({ projectTenderPackageId: this.id, tenderPackageId: industryItem.id })
             }
           })
         }
         items.splice(index, 1)
+        this.industryItems.splice(index, 1)
+        this.$forceUpdate()
       },
-      delPlan(index) {
+      delPlan (index) {
         const items = this.form.plans
         if (this.type === 'edit') {
           const item = items[index]
           if (item && item.isEditItem) {
             // 移除的计划放到移除对象
-            this.removePlans.push({projectTenderPackageId: this.id, plansId: item.id})
+            this.removePlans.push({ projectTenderPackageId: this.id, plansId: item.id })
           }
         }
         removeItem(index, items)
         this.$forceUpdate()
       },
-      filterOption(input, option) {
+      filterOption (input, option) {
         return (
           option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
         )
       },
-      getIndustrysList(industrysItems, tenderPackages, value) {
+      getIndustrysList (industrysItems, tenderPackages, value) {
         const _industrysItems = JSON.parse(JSON.stringify(industrysItems))
         tenderPackages.forEach(p => {
           const index = this.getIndex(_industrysItems, p)
@@ -640,7 +634,7 @@
         }
         return _industrysItems
       },
-      getIndex(items, value) {
+      getIndex (items, value) {
         let i = null
         items.forEach((item, index) => {
           if (item.id === value) {
@@ -649,29 +643,29 @@
         })
         return i
       },
-      startBPM(){
+      startBPM () {
         this.loading.startBPM = true
-        CostService.projectTenderPackageStartBPM(this.form.projectTenderPackageGUID).then(res =>{
+        CostService.projectTenderPackageStartBPM(this.form.projectTenderPackageGUID).then(res => {
           this.loading.startBPM = false
-          if(res.result.statusCode === 200){
-            setTimeout(function(){
+          if (res.result.statusCode === 200) {
+            setTimeout(function () {
               window.open(res.result.data)
-            },200)
+            }, 200)
           }
-        }).catch((e) =>{
+        }).catch((e) => {
           this.loading.startBPM = false
         })
       },
-      showBPM(){
+      showBPM () {
         this.loading.showBPM = true
         BaseService.viewBpm(this.form.projectTenderPackageGUID).then(res => {
-          this.loading.showBPM= false
-          setTimeout(function(){
+          this.loading.showBPM = false
+          setTimeout(function () {
             window.open(res.result.data)
-          },200)
+          }, 200)
         })
       },
-      showApplyUrl() {
+      showApplyUrl () {
         window.open(this.costSystemApplyUrl)
       },
       choose (index) {
@@ -784,6 +778,30 @@
             this.$message.success('导出采购成功')
           }
         })
+      },
+      // 弹出分判包选择框
+      showSelect (index) {
+        this.$refs.industryListModal.showModal(this.ProjectGUID, this.id, index)
+      },
+      selectRefresh (item) {
+        let isHaving = false
+        if (this.form.tenderPackages) {
+          this.form.tenderPackages.forEach(packageItem => {
+            if (packageItem === item.id) {
+              isHaving = true
+            }
+          })
+        }
+        if (!isHaving) {
+          const index = item.index
+          this.industryItems[index] = item
+          this.form.tenderPackages[index] = item.id
+          this.$set(this.form, 'tenderPackages', JSON.parse(JSON.stringify(this.form.tenderPackages)))
+          this.$forceUpdate()
+        } else {
+          this.$message.error('请不要添加重复的专业分判包')
+        }
+
       }
     }
   }
