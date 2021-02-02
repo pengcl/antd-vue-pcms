@@ -209,7 +209,7 @@
                                         id: tradeType.id,
                                         costCenterId: tradeType.costCenterId,
                                         budgetValue: tradeType.budgetValue,
-                                        elementInfoId: tradeType.elementInfoId + '' + tradeType.id,
+                                        elementInfoId: tradeType.elementInfoId,
                                         elementInfoCode: tradeType.elementInfoCode,
                                         elementInfoNameCN: tradeType.elementInfoNameCN,
                                         itemKey: tradeType.itemKey
@@ -224,10 +224,10 @@
                                         child[costName] = []
                                     }
                                     const temp = costColumn.tradeBudgetInfo
-                                    if (child.elementInfoId === temp.elementInfoId + '' + temp.id) {
+                                    if (child.elementInfoId === temp.elementInfoId) {
                                         child[costName].push({
-                                            id: child.id,
-                                            amount: child.budgetValue,
+                                            id: temp.id,
+                                            amount: temp.budgetValue,
                                             checked: false
                                         })
                                     }

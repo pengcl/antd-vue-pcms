@@ -21,6 +21,7 @@
             v-model="data.contract.deptGuid"
             :suffixIcon="dps ? '' : '加载中...'">
           </a-tree-select>
+          <p v-if="isNotEndNode1" style="color: red;margin-bottom: 0">请选择末级</p>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -38,7 +39,7 @@
             v-model="data.contract.exeDeptGuid"
             :suffixIcon="dps ? '' : '加载中...'">
           </a-tree-select>
-          <p v-if="isNotEndNode" style="color: red;margin-bottom: 0">请选择末级</p>
+          <p v-if="isNotEndNode2" style="color: red;margin-bottom: 0">请选择末级</p>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -426,7 +427,8 @@
                 vendor: null,
                 partyB: null,
                 dps: null,
-                isNotEndNode: false,
+                isNotEndNode1: false,
+                isNotEndNode2: false,
                 rules: {
                     deptGuid: [{ required: true, message: '请选择申请部门', trigger: 'change' }],
                     exeDeptGuid: [{ required: true, message: '请选择执行部门', trigger: 'change' }],
@@ -573,17 +575,26 @@
             }
         },
         methods: {
-            onSelect (value) {
+            onSelect (value, node, extra) {
                 this.data.contract.deptName = getDptName(value, this.dps)
+                extra.selectedNodes.forEach((item, index) => {
+                    if (index === 0) {
+                        if (item.data.props.dataRef.children) {
+                            this.isNotEndNode1 = true
+                        }else {
+                            this.isNotEndNode1 = false
+                        }
+                    }
+                })
             },
             onSelect2 (value, node, extra) {
                 this.data.contract.exeDeptName = getDptName(value, this.dps)
                 extra.selectedNodes.forEach((item, index) => {
                     if (index === 0) {
                         if (item.data.props.dataRef.children) {
-                            this.isNotEndNode = true
+                            this.isNotEndNode2 = true
                         }else {
-                            this.isNotEndNode = false
+                            this.isNotEndNode2 = false
                         }
                     }
                 })
