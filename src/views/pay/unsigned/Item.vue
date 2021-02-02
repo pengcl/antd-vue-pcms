@@ -20,7 +20,17 @@
           </a-col>
           <a-col :md="12" :sm="24">
             <a-form-model-item label="申请部门" prop="sponsorDeptGID">
-              <a-input v-model="form.sponsorDeptName" :disabled="true"></a-input>
+              <a-tree-select
+                :disabled="type === 'view'"
+                style="width: 100%"
+                :tree-data="dps"
+                @select="onSelect"
+                :dropdown-style="{ maxHeight: '400px', overflowH: 'auto' }"
+                search-placeholder="请选择"
+                v-model="form.sponsorDeptGID"
+                :suffixIcon="dps ? '' : '加载中...'">
+              </a-tree-select>
+              <p v-if="isNotEndNode" style="color: red;margin-bottom: 0">请选择末级</p>
             </a-form-model-item>
           </a-col>
           <a-col :md="12" :sm="24">
@@ -257,6 +267,7 @@
                 departmentList: [],
                 elementItems: [],
                 disabled: false,
+                isNotEndNode: false,
                 dialog: DIALOGCONFIG,
                 dps: null,
                 rules: {
@@ -342,8 +353,17 @@
             ac (action) {
                 return ac(action, this.$route)
             },
-            onSelect (value) {
+            onSelect (value, node, extra) {
                 this.form.sponsorDeptName = getDptName(value, this.dps)
+                extra.selectedNodes.forEach((item, index) => {
+                    if (index === 0) {
+                        if (item.data.props.dataRef.children) {
+                            this.isNotEndNode = true
+                        } else {
+                            this.isNotEndNode = false
+                        }
+                    }
+                })
             },
             elementTypeChange (value, option) {
                 const index = option.data.key

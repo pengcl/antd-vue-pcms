@@ -56,9 +56,12 @@
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-model-item
-          label="合同付款期限">
-          <a-input-number :disabled="true"
-                          v-model="data.paymentDeadlineDay" style="width: 100%"></a-input-number>
+          label="合同付款期限"
+          prop="paymentDeadlineDay">
+          <a-input-number :disabled="type === 'view'"
+                          v-model="data.paymentDeadlineDay"
+                          style="width: 100%"
+                          @change="paymentDeadlineDayChange"></a-input-number>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -573,7 +576,8 @@
                     paymentAmount: [{ required: true, message: '请输入本期支付金额', trigger: 'change' }],
                     expenseAccountType: [{ required: true, message: '请选择付款凭证', trigger: 'change' }],
                     paymentContent: [{ required: true, message: '请输入付款说明', trigger: 'change' }],
-                    paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }]
+                    paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
+                    paymentDeadlineDay: [{ required: true, message: '请输入合同付款期限', trigger: 'change' }]
                 }
             }
         },
@@ -660,6 +664,18 @@
             }
         },
         methods: {
+            paymentDeadlineDayChange (value) {
+                if (this.data.paymentReceiveDate) {
+                    var receiveDate = new Date(this.data.paymentReceiveDate)
+                    var startDate = new Date(receiveDate.getFullYear(), receiveDate.getMonth(), receiveDate.getDate())
+                    var intValue = 0
+                    var endDate = null
+                    intValue = startDate.getTime()
+                    intValue += value * (24 * 3600 * 1000)
+                    endDate = new Date(intValue)
+                    this.data.paymentDeadline = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate()
+                }
+            },
             handleShowPaymentRequestAmount (e, contractGID) {
                 this.$set(this.mdls, e, null)
                 this.$set(this.visibles, e, true)
@@ -737,14 +753,18 @@
                 this.$forceUpdate()
             },
             receiveDateChange (date, dateString) {
-                var receiveDate = new Date(dateString)
-                var startDate = new Date(receiveDate.getFullYear(), receiveDate.getMonth(), receiveDate.getDate())
-                var intValue = 0
-                var endDate = null
-                intValue = startDate.getTime()
-                intValue += this.data.paymentDeadlineDay * (24 * 3600 * 1000)
-                endDate = new Date(intValue)
-                this.data.paymentDeadline = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate()
+                if (dateString) {
+                    var receiveDate = new Date(dateString)
+                    var startDate = new Date(receiveDate.getFullYear(), receiveDate.getMonth(), receiveDate.getDate())
+                    var intValue = 0
+                    var endDate = null
+                    intValue = startDate.getTime()
+                    intValue += this.data.paymentDeadlineDay * (24 * 3600 * 1000)
+                    endDate = new Date(intValue)
+                    this.data.paymentDeadline = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate()
+                } else {
+                    this.data.paymentDeadline = ''
+                }
             },
             changeMasterId (val) {
                 this.data.attachmentID = val
