@@ -235,10 +235,7 @@
       </a-row>
     </a-form-model>
     <share-tool-modal ref="shareTool"
-                      :visible="visible"
-                      :data="data"
-                      @cancel="handleCancel"
-                      @ok="handleOk"></share-tool-modal>
+                      :contract="data"></share-tool-modal>
   </div>
 </template>
 
@@ -291,7 +288,6 @@
                 columns: columns,
                 fileList: [],
                 index: 0,
-                visible: false,
                 rules: {
                     contractAmount: [{ required: true, message: '请选择带数项生成合同金额', trigger: 'change' }],
                     contractEffectAmount: [{ required: true, message: '请选择带数项生成合同有效金额', trigger: 'change' }],
@@ -390,26 +386,25 @@
             }
         },
         methods: {
-            handleOk () {
-
-            },
-            handleCancel () {
-                this.visible = false
-            },
             clear () {
                 clearItems(this.data.contractBQNewlst)
             },
             showShareTool () {
-                this.visible = true
+                this.$refs.shareTool.showTable()
             },
-            add (stringNo) {
-                const data = SwaggerService.getForm('ContractBQDto')
-                data._id = new Date().getTime()
+            add (addData) {
+                let data = SwaggerService.getForm('ContractBQDto')
+                if (addData) {
+                    data = Object.assign({}, addData)
+                    data.contractBQGuid = ''
+                    data.contractID = ''
+                } else {
+                    data.allAmount = 0
+                }
                 data.id = 0
                 data.isDeleted = false
                 data.isTemp = true
                 data.contractID = this.id === '0' ? '' : this.id
-                data.allAmount = 0
                 this.data.contractBQNewlst.push(data)
             },
             del (index) {
