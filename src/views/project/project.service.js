@@ -19,6 +19,7 @@ const API = {
   updateStage: '/api/services/app/Project/UpdateProjectStage', // 添加项目阶段
   bpm: '/api/services/app/Project/StartBPM',
   edit: '/api/services/app/Project/GetProjectEditById',
+  projectTree: '/api/services/app/Project/GetProjectFullTree' // 根据projectGUID获取当前项目数
 }
 
 const ProjectService = {}
@@ -164,6 +165,14 @@ ProjectService.updateStage = function (parameter) {
     url: API.updateStage,
     method: 'PUT',
     data: parameter
+  })
+}
+
+ProjectService.projectTree = function list (parameter) {
+  return request({
+    url: API.projectTree,
+    method: 'GET',
+    params: parameter
   })
 }
 
