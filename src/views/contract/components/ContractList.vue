@@ -117,6 +117,8 @@
             <a-button :disabled="type === 'view'" icon="plus" @click="add()">
               新增
             </a-button>
+            <a-button :disabled="type === 'view'" style="margin-left: 15px" @click="showShareTool">分摊工具</a-button>
+            <a-button :disabled="type === 'view'" icon="stop" @click="clear()" style="margin-left: 15px">重置</a-button>
             <!--<a-button
               :loading="loading"
               :disabled="type === 'view'"
@@ -232,13 +234,19 @@
         </a-col>
       </a-row>
     </a-form-model>
+    <share-tool-modal ref="shareTool"
+                      :visible="visible"
+                      :data="data"
+                      @cancel="handleCancel"
+                      @ok="handleOk"></share-tool-modal>
   </div>
 </template>
 
 <script>
-    import { Base as BaseService, removeItem } from '@/api/base'
+    import { Base as BaseService, removeItem, clearItems } from '@/api/base'
     import { SwaggerService } from '@/api/swagger.service'
     import { ContractService } from '@/views/contract/contract.service'
+    import ShareToolModal from './contractList/ShareToolModal'
 
     const columns = [
         {
@@ -274,6 +282,7 @@
 
     export default {
         name: 'ContractList',
+        components: { ShareToolModal },
         data () {
             return {
                 selection: {},
@@ -282,6 +291,7 @@
                 columns: columns,
                 fileList: [],
                 index: 0,
+                visible: false,
                 rules: {
                     contractAmount: [{ required: true, message: '请选择带数项生成合同金额', trigger: 'change' }],
                     contractEffectAmount: [{ required: true, message: '请选择带数项生成合同有效金额', trigger: 'change' }],
@@ -380,6 +390,18 @@
             }
         },
         methods: {
+            handleOk () {
+
+            },
+            handleCancel () {
+                this.visible = false
+            },
+            clear () {
+                clearItems(this.data.contractBQNewlst)
+            },
+            showShareTool () {
+                this.visible = true
+            },
             add (stringNo) {
                 const data = SwaggerService.getForm('ContractBQDto')
                 data._id = new Date().getTime()
@@ -573,7 +595,6 @@
                             _this.data.fileMasterId = data.masterID
                             _this.$message.success('上传成功')
                             _this.$emit('ok', res.url)
-                            _this.visible = false
                         }
                     })
             }

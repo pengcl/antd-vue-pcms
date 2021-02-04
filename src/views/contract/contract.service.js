@@ -29,7 +29,8 @@ const API = {
   bpm: '/api/services/app/Contract/StartBPM',
   review: '/api/services/app/Contract/ContractORGNSCResetBudget',
   approve: '/api/services/app/Contract/ContractAuditWithOutWorkFlow',
-  cancelAudit: '/api/services/app/Contract/ContractCancelAuditWithOutWorkFlow'
+  cancelAudit: '/api/services/app/Contract/ContractCancelAuditWithOutWorkFlow',
+  shareTool: '/api/services/app/Contract/GetContractBQByCCShare',
 }
 
 const ContractService = {}
@@ -84,6 +85,14 @@ ContractService.storeTypes = function (parameter) {
 ContractService.create = function (parameter) {
   return request({
     url: API.create,
+    method: 'POST',
+    data: parameter
+  })
+}
+
+ContractService.shareTool = function (parameter) {
+  return request({
+    url: API.shareTool,
     method: 'POST',
     data: parameter
   })
