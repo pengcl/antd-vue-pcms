@@ -7,6 +7,7 @@
             style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
             <a-button :disabled="type === 'view'" icon="plus" @click="add()"> 新增 </a-button>
             <a-button @click="clear()" :disabled="type === 'view'" icon="stop"> 重置 </a-button>
+            <a-button :disabled="type === 'view'" icon="plus" @click="splitBq"> 分摊工具 </a-button>
             <a-button :disabled="type === 'view'" @click="replaceByContract"> 按原合同条款 </a-button>
           </div>
           <a-table
@@ -76,6 +77,7 @@
       </a-row>
     </a-form-model>
     <contract-bq-modal ref="bqModal" :contract="contract" :data="data"></contract-bq-modal>
+    <split-bq-modal ref="splitBQModal" :contract="contract"></split-bq-modal>
   </div>
 </template>
 
@@ -87,6 +89,7 @@ import { SwaggerService } from '@/api/swagger.service'
 import { ChangeService } from '@/views/change/change.service'
 import { ContractService } from '@/views/contract/contract.service'
 import AttachmentList from '@/views/change/cip/components/AttachmentList'
+import SplitBqModal from '@/views/change/cip/components/modal/SplitBQModal'
 
 const columns = [
   {
@@ -118,7 +121,7 @@ const columns = [
 
 export default {
   name: 'CostEstimates',
-  components: { ContractBqModal,AttachmentList },
+  components: { ContractBqModal,AttachmentList , SplitBqModal },
   data() {
     return {
       columns: columns,
@@ -262,6 +265,9 @@ export default {
         return "delete-row"
       }
       return ""
+    },
+    splitBq(){
+      this.$refs.splitBQModal.showTable()
     }
   },
 }
@@ -331,7 +337,7 @@ table {
         text-align: center;
 
         .ant-input {
-          min-width: 60px;
+          min-width: 120px;
         }
 
         /deep/ .has-error .ant-form-explain {
