@@ -300,7 +300,7 @@
                 const obj = {}
                 obj['costCenterId'] = center.costCenterId
                 obj['elementInfoId'] = center.elementInfoId
-                obj['amount'] = center.amount !== null ? center.amount : 0
+                obj['amount'] = center.amount ? center.amount : 0
 
                 items.push(obj)
               })
