@@ -20,6 +20,7 @@ const API = {
   getARCTypes: '/api/services/app/GeneralType/GetARCTypes',
   uploadOffline: '/api/services/app/UploadAppservice/CommonUploadOffline',
   viewCostBpm: '/api/services/app/Bpm/GetNWCostAuditInfo',
+  shareTypes: '/api/services/app/GeneralType/GetBQShareTypes',
 }
 
 const Base = {}
@@ -34,6 +35,14 @@ const Base = {}
 Base.secretTypes = function () {
   return request({
     url: API.secretTypes,
+    method: 'GET',
+    params: {}
+  })
+}
+
+Base.shareTypes = function () {
+  return request({
+    url: API.shareTypes,
     method: 'GET',
     params: {}
   })

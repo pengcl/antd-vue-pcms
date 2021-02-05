@@ -80,6 +80,10 @@ const API = {
   updateQZVOAllInfo: '/api/services/app/VO/UpdateQZVOAllInfo',//更新潜在变更主表及相关表
   deleteQZVOAllInfo: '/api/services/app/VO/DeleteQZVOAllInfo',//废弃潜在变更主表及相关表
   getQZBaseInfo: '/api/services/app/VO/GetQZBaseInfo',//获取潜在变更的相关基础数据
+
+  //分摊工具
+  getVOBQByCCShare: '/api/services/app/VO/GetVOBQByCCShare',//分摊工具
+  getBQShareTypes: '/api/services/app/GeneralType/GetBQShareTypes',// 获取分摊方式的接口
 }
 
 const ChangeService = {}
@@ -856,6 +860,28 @@ ChangeService.getQZBaseInfo = function(ContractGuid){
 	    url: API.getQZBaseInfo,
 	    method: 'get',
 	    params: {ContractGuid}
+	  })
+}
+
+/**
+ * 分摊工具
+ */
+ChangeService.getVOBQByCCShare = function(parameter){
+	return request({
+	    url: API.getVOBQByCCShare,
+	    method: 'post',
+	    data: parameter
+	  })
+}
+
+/**
+ * 量清单分摊类型
+ */
+ChangeService.getBQShareTypes = function(){
+	return request({
+	    url: API.getBQShareTypes,
+	    method: 'get',
+	    params: {}
 	  })
 }
 export { ChangeService }
