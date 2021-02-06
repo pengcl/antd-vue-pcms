@@ -220,9 +220,6 @@
                 mdl: null,
                 // 高级搜索 展开/关闭
                 advanced: false,
-                itemType: null,
-                shareType: null,
-                allAmount: null,
                 selectedRowKeys: [],
                 selectedRows: [],
                 secCostAllocateTypes: null
