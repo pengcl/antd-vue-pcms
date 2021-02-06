@@ -960,7 +960,7 @@
             },
             view () {
                 this.loading.view = true
-                BaseService.viewBpm(this.form.projectGUID).then(res => {
+                BaseService.viewBpm(this.form.ccBusinessGuid).then(res => {
                     this.loading.view = false
                     const _window = window.open('_blank')
                     _window.location = res.result.data
@@ -968,7 +968,7 @@
             },
             bpm () {
                 this.loading.bpm = true
-                CostService.bpm(this.form.projectGUID).then(res => {
+                CostService.bpm(this.form.ccBusinessGuid).then(res => {
                     this.loading.bpm = false
                     const _window = window.open('_blank')
                     this.getData()

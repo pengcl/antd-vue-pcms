@@ -174,7 +174,7 @@
                             _this.fileList[this.index].url = data.fileUrl
                             _this.fileList[this.index].id = data.id
                             _this.fileList[this.index].masterID = data.masterID
-                            _this.data.fileMasterId = data.masterID
+                            _this.data.attachmentID = data.masterID
                             _this.$message.success('上传成功')
                             _this.$emit('ok', res.url)
                             _this.visible = false
