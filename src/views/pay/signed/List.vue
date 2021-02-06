@@ -120,7 +120,7 @@
 
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
-          <a-button type="success" @click="handleToAdd" v-if="id && canAdd && ac('ADD')">新增付款</a-button>
+          <a-button type="success" @click="handleToAdd" v-if="queryParam.ContractGID && canAdd && ac('ADD')">新增付款</a-button>
           <a-button type="success" style="margin-left: 10px" @click="handToInvoice" :disabled="true">发票管理</a-button>
         </a-col>
       </a-row>
@@ -339,8 +339,8 @@
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
-                    if (this.id) {
-                        return SignedService.paymentList(this.id).then(res => {
+                    if (this.queryParam.ContractGID) {
+                        return SignedService.paymentList(requestParameters).then(res => {
                             return fixedList(res, requestParameters)
                         })
                     } else {
@@ -389,7 +389,7 @@
                     onChange: this.onSelectChange,
                     type: 'radio',
                     onSelect: function (record, selected, selectRows, nativeEvent) {
-                        that.id = record.contractGuid
+                        that.queryParam.ContractGID  = record.contractGuid
                         that.getContractAmt(record.contractGuid)
                         that.$refs.table.refresh()
                     }
@@ -406,7 +406,7 @@
                     ProjectGUID: this.queryParam2.ProjectGUID
                 }
                 this.contractAmt = {}
-                this.id = ''
+                this.queryParam.ContractGID = ''
                 this.$refs.contractTable.clearSelected()
                 this.$refs.table.refresh()
                 this.$refs.contractTable.refresh()
