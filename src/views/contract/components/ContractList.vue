@@ -235,7 +235,8 @@
       </a-row>
     </a-form-model>
     <share-tool-modal ref="shareTool"
-                      :contract="data"></share-tool-modal>
+                      :contract="data"
+                      :type="type"></share-tool-modal>
   </div>
 </template>
 

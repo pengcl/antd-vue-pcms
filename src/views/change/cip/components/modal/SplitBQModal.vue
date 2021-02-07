@@ -3,6 +3,7 @@
     :visible="visible"
     width="90%"
     :maskClosable="false"
+    :closable="false"
     title="分摊工具"
     :confirm-loading="confirmLoading"
     @ok="handleOk">
@@ -119,13 +120,11 @@
             :prop="'tableData.' + index + '.rate'"
           >
             <a-input-number
-              style="min-width:200px;margin-top: 12px"
+              style="min-width:160px;margin-top: 12px"
               v-model="item.rate"
               :min="0"
               :max="100"
-              :formatter="value => `${value}%`"
-              :parser="value => value.replace('%', '')"
-            ></a-input-number>
+            ></a-input-number><span style="position: absolute;top: -10px;right: -20px">%</span>
           </a-form-model-item>
         </span>
 
@@ -229,7 +228,8 @@
                     onChange: this.onSelectChange,
                     type: 'checkbox',
                     onSelect: function (record, selected, selectRows, nativeEvent) {
-
+                        const index = that.data.tableData.findIndex(d => d.costCenter === record.costCenter)
+                        that.data.tableData[index].selected = selected
                     }
                 }
             },
@@ -247,7 +247,8 @@
                         costCenterName: item.costCenterName,
                         secCostAllocateTypeID: item.secCostAllocateTypeID,
                         totalCFAExcludeParking: item.totalCFAExcludeParking,
-                        totalGFA: item.totalGFA
+                        totalGFA: item.totalGFA,
+                        rate: 100
                     }
                     this.data.tableData.push(param)
                 })
@@ -277,6 +278,11 @@
         methods: {
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
+                if (selectedRows.length === this.data.tableData.length) {
+                    this.data.tableData.forEach(item => {
+                        item.selected = true
+                    })
+                }
                 this.selectedRows = selectedRows
             },
             computeShareAmount () {
@@ -301,6 +307,11 @@
                             const index = this.data.tableData.findIndex(d => d.costCenter === item.costCenter)
                             this.data.tableData[index].allAmount = item.allAmount
                             this.$forceUpdate()
+                        })
+                        this.data.tableData.forEach(item => {
+                            if (!item.selected) {
+                                item.allAmount = 0
+                            }
                         })
                     }
                 })

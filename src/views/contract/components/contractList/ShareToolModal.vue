@@ -3,6 +3,7 @@
     :visible="visible"
     width="90%"
     :maskClosable="false"
+    :closable="false"
     title="分摊工具"
     :confirm-loading="confirmLoading"
     @ok="handleOk">
@@ -119,13 +120,11 @@
             :prop="'tableData.' + index + '.rate'"
           >
             <a-input-number
-              style="min-width:200px;margin-top: 12px"
+              style="min-width:160px;margin-top: 12px"
               v-model="item.rate"
               :min="0"
               :max="100"
-              :formatter="value => `${value}%`"
-              :parser="value => value.replace('%', '')"
-            ></a-input-number>
+            ></a-input-number><span style="position: absolute;top: -10px;right: -20px">%</span>
           </a-form-model-item>
         </span>
 
@@ -222,13 +221,18 @@
                 advanced: false,
                 selectedRowKeys: [],
                 selectedRows: [],
-                secCostAllocateTypes: null
+                secCostAllocateTypes: null,
+                selected: []
             }
         },
         props: {
             contract: {
                 type: Object,
                 default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
             }
         },
         computed: {
@@ -239,10 +243,34 @@
                     onChange: this.onSelectChange,
                     type: 'checkbox',
                     onSelect: function (record, selected, selectRows, nativeEvent) {
+                        const index = that.data.tableData.findIndex(d => d.costCenter === record.costCenter)
+                        that.data.tableData[index].selected = selected
+                    }
+                }
+            },
+        },
+        watch: {
+            'contract.contract.contractCategory' (value) {
+                if (value) {
+                    if (this.type === 'create') {
+                        const contractTypeKey = contractTypes[this.contract.contract.contractCategory + '']
+                        if (contractTypeKey) {
+                            BaseService.itemTypes(contractTypeKey).then(res => {
+                                this.selection.itemTypes = res.result.data
+                                this.$forceUpdate()
+                            })
+                        }
 
                     }
                 }
             },
+            'contract.contract.tenderPackageItemID' (value) {
+                if (value) {
+                    if (this.type === 'create') {
+                        this.getCenters()
+                    }
+                }
+            }
         },
         created () {
             if (this.contract.contract.contractCategory) {
@@ -254,20 +282,7 @@
                     })
                 }
             }
-            ContractService.centers(this.contract.contract.tenderPackageItemID).then(res => {
-                this.selection.centers = res.result.data
-                this.selection.centers.forEach(item => {
-                    const param = {
-                        costCenter: item.id + '',
-                        costCenterName: item.costCenterName,
-                        secCostAllocateTypeID: item.secCostAllocateTypeID,
-                        totalCFAExcludeParking: item.totalCFAExcludeParking,
-                        totalGFA: item.totalGFA
-                    }
-                    this.data.tableData.push(param)
-                })
-                this.$forceUpdate()
-            })
+            this.getCenters()
             BaseService.shareTypes().then(res => {
                 this.selection.shareTypes = res.result.data
                 this.$forceUpdate()
@@ -277,6 +292,23 @@
             })
         },
         methods: {
+            getCenters () {
+                ContractService.centers(this.contract.contract.tenderPackageItemID).then(res => {
+                    this.selection.centers = res.result.data
+                    this.selection.centers.forEach(item => {
+                        const param = {
+                            costCenter: item.id + '',
+                            costCenterName: item.costCenterName,
+                            secCostAllocateTypeID: item.secCostAllocateTypeID,
+                            totalCFAExcludeParking: item.totalCFAExcludeParking,
+                            totalGFA: item.totalGFA,
+                            rate: 100
+                        }
+                        this.data.tableData.push(param)
+                    })
+                    this.$forceUpdate()
+                })
+            },
             computeShareAmount () {
                 let list = []
                 this.selectedRows.forEach(item => {
@@ -298,13 +330,23 @@
                         res.result.data.forEach(item => {
                             const index = this.data.tableData.findIndex(d => d.costCenter === item.costCenter)
                             this.data.tableData[index].allAmount = item.allAmount
-                            this.$forceUpdate()
                         })
+                        this.data.tableData.forEach(item => {
+                            if (!item.selected) {
+                                item.allAmount = 0
+                            }
+                        })
+                        this.$forceUpdate()
                     }
                 })
             },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
+                if (selectedRows.length === this.data.tableData.length) {
+                    this.data.tableData.forEach(item => {
+                        item.selected = true
+                    })
+                }
                 this.selectedRows = selectedRows
             },
             showTable () {
