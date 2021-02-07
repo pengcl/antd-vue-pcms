@@ -59,11 +59,11 @@ SignedService.contractAmt = function (contractGid) {
   })
 }
 
-SignedService.paymentList = function (contractGid) {
+SignedService.paymentList = function (parameter) {
   return request({
     url: API.paymentList,
     method: 'get',
-    params: { contractGid }
+    params: parameter
   })
 }
 
