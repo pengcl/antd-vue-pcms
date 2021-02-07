@@ -124,6 +124,7 @@
               v-model="item.rate"
               :min="0"
               :max="100"
+              :precision="2"
             ></a-input-number><span style="position: absolute;top: -10px;right: -20px">%</span>
           </a-form-model-item>
         </span>
@@ -239,22 +240,6 @@
                 this.selection.itemTypes = res.result.data
                 this.$forceUpdate()
             })
-            ChangeService.getCostCenters(this.contract.contractGuid).then(res => {
-                this.selection.centers = res.result.data
-                this.selection.centers.forEach(item => {
-                    const param = {
-                        costCenter: item.id + '',
-                        costCenterName: item.costCenterName,
-                        secCostAllocateTypeID: item.secCostAllocateTypeID,
-                        totalCFAExcludeParking: item.totalCFAExcludeParking,
-                        totalGFA: item.totalGFA,
-                        rate: 100
-                    }
-                    this.data.tableData.push(param)
-                })
-                this.$forceUpdate()
-            })
-
             ChangeService.getBQShareTypes().then(res => {
                 this.selection.shareTypes = res.result.data
                 this.$forceUpdate()
@@ -316,8 +301,33 @@
                     }
                 })
             },
+            getData () {
+                ChangeService.getCostCenters(this.contract.contractGuid).then(res => {
+                    this.selection.centers = res.result.data
+                    let list = []
+                    this.selection.centers.forEach(item => {
+                        const param = {
+                            costCenter: item.id + '',
+                            costCenterName: item.costCenterName,
+                            secCostAllocateTypeID: item.secCostAllocateTypeID,
+                            totalCFAExcludeParking: item.totalCFAExcludeParking,
+                            totalGFA: item.totalGFA,
+                            rate: 100
+                        }
+                        list.push(param)
+                    })
+                    this.data.tableData = list
+                    this.$forceUpdate()
+                })
+            },
             showTable () {
                 this.visible = true
+                this.getData()
+                this.data.itemType = null
+                this.data.shareType = null
+                this.data.allAmount = null
+                this.selectedRows = []
+                this.selectedRowKeys = []
             },
             handleCancel () {
                 this.visible = false

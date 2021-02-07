@@ -124,6 +124,7 @@
               v-model="item.rate"
               :min="0"
               :max="100"
+              :precision="2"
             ></a-input-number><span style="position: absolute;top: -10px;right: -20px">%</span>
           </a-form-model-item>
         </span>
@@ -282,7 +283,6 @@
                     })
                 }
             }
-            this.getCenters()
             BaseService.shareTypes().then(res => {
                 this.selection.shareTypes = res.result.data
                 this.$forceUpdate()
@@ -295,6 +295,7 @@
             getCenters () {
                 ContractService.centers(this.contract.contract.tenderPackageItemID).then(res => {
                     this.selection.centers = res.result.data
+                    let list = []
                     this.selection.centers.forEach(item => {
                         const param = {
                             costCenter: item.id + '',
@@ -304,8 +305,9 @@
                             totalGFA: item.totalGFA,
                             rate: 100
                         }
-                        this.data.tableData.push(param)
+                        list.push(param)
                     })
+                    this.data.tableData = list
                     this.$forceUpdate()
                 })
             },
@@ -351,6 +353,12 @@
             },
             showTable () {
                 this.visible = true
+                this.getCenters()
+                this.data.itemType = null
+                this.data.shareType = null
+                this.data.allAmount = null
+                this.selectedRows = []
+                this.selectedRowKeys = []
             },
             handleCancel () {
                 this.visible = false

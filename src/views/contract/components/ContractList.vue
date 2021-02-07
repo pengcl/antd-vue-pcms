@@ -407,6 +407,9 @@
                 data.isTemp = true
                 data.contractID = this.id === '0' ? '' : this.id
                 this.data.contractBQNewlst.push(data)
+                if (addData) {
+                    this.getContractAmount()
+                }
             },
             del (index) {
                 const items = this.data.contractBQNewlst
