@@ -98,8 +98,9 @@
         index: null,
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-          this.queryParam.ProjectGUID = this.ProjectGUID
           this.queryParam.IsAudit = true
+          console.log('parameter', parameter)
+          console.log('this.queryParam', this.queryParam)
           const requestParameters = Object.assign({}, parameter, this.queryParam)
           return CostService.bidIndustryItems(requestParameters).then(res => {
             return fixedList(res, requestParameters)
@@ -136,7 +137,6 @@
         })
         this.cities = cities
         const value = getPosValue(this.cities)
-        this.queryParam.ProjectID = value.projectCode ? value.projectCode : getList(this.cities, 0).projectCode
         this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
         this.$forceUpdate()
         // this.$refs.industryTable.refresh(true)
@@ -176,7 +176,7 @@
       },
       onSelect (value, option) {
         storage.set('POS', option.pos)
-        this.queryParam.projectGUID = option.$options.propsData.dataRef.projectGUID
+        this.queryParam.ProjectGUID = option.$options.propsData.dataRef.projectGUID
         if (typeof value === 'number') {
           this.city = value
           this.queryParam.ProjectGUID = ''
