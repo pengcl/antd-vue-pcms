@@ -388,7 +388,15 @@
         },
         methods: {
             clear () {
-                clearItems(this.data.contractBQNewlst)
+                const list = []
+                this.data.contractBQNewlst.forEach((item) => {
+                    item.isDeleted = true
+                    if (!item.isTemp) {
+                        list.push(item)
+                    }
+                    this.data.contractBQNewlst = list
+                    this.$forceUpdate()
+                })
             },
             showShareTool () {
                 this.$refs.shareTool.showTable()
@@ -407,6 +415,9 @@
                 data.isTemp = true
                 data.contractID = this.id === '0' ? '' : this.id
                 this.data.contractBQNewlst.push(data)
+                if (addData) {
+                    this.getContractAmount()
+                }
             },
             del (index) {
                 const items = this.data.contractBQNewlst

@@ -32,7 +32,7 @@
             label="清单项类别"
             prop="itemType"
             :rules="[{ required: true, message: '请选择清单项类别'}]">
-            <a-select placeholder="请选择" v-model="data.itemType">
+            <a-select placeholder="请选择" v-model="data.itemType" @change="itemTypeChange">
               <a-select-option
                 v-for="(item, index) in selection.itemTypes"
                 :key="index"
@@ -48,7 +48,7 @@
             prop="shareType"
             :rules="[{ required: true, message: '请选择分摊方式'}]"
           >
-            <a-select placeholder="请选择" v-model="data.shareType">
+            <a-select placeholder="请选择" v-model="data.shareType" @change="shareTypeChange">
               <a-select-option
                 v-for="(item, index) in selection.shareTypes"
                 :key="index"
@@ -69,6 +69,7 @@
               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="value => value.replace(/\元\s?|(,*)/g, '')"
               :precision="2"
+              @change="allAmountChange"
             ></a-input-number>
           </a-form-model-item>
         </a-col>
@@ -124,6 +125,8 @@
               v-model="item.rate"
               :min="0"
               :max="100"
+              :precision="2"
+              @change="rateChange"
             ></a-input-number><span style="position: absolute;top: -10px;right: -20px">%</span>
           </a-form-model-item>
         </span>
@@ -239,22 +242,6 @@
                 this.selection.itemTypes = res.result.data
                 this.$forceUpdate()
             })
-            ChangeService.getCostCenters(this.contract.contractGuid).then(res => {
-                this.selection.centers = res.result.data
-                this.selection.centers.forEach(item => {
-                    const param = {
-                        costCenter: item.id + '',
-                        costCenterName: item.costCenterName,
-                        secCostAllocateTypeID: item.secCostAllocateTypeID,
-                        totalCFAExcludeParking: item.totalCFAExcludeParking,
-                        totalGFA: item.totalGFA,
-                        rate: 100
-                    }
-                    this.data.tableData.push(param)
-                })
-                this.$forceUpdate()
-            })
-
             ChangeService.getBQShareTypes().then(res => {
                 this.selection.shareTypes = res.result.data
                 this.$forceUpdate()
@@ -276,6 +263,26 @@
         },
         watch: {},
         methods: {
+            itemTypeChange () {
+                if (this.data.itemType && this.data.shareType && this.data.allAmount && this.selectedRows.length > 0) {
+                    this.computeShareAmount()
+                }
+            },
+            shareTypeChange () {
+                if (this.data.itemType && this.data.shareType && this.data.allAmount && this.selectedRows.length > 0) {
+                    this.computeShareAmount()
+                }
+            },
+            allAmountChange () {
+                if (this.data.itemType && this.data.shareType && this.data.allAmount && this.selectedRows.length > 0) {
+                    this.computeShareAmount()
+                }
+            },
+            rateChange () {
+                if (this.data.itemType && this.data.shareType && this.data.allAmount && this.selectedRows.length > 0) {
+                    this.computeShareAmount()
+                }
+            },
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
                 if (selectedRows.length === this.data.tableData.length) {
@@ -316,31 +323,86 @@
                     }
                 })
             },
+            getData () {
+                ChangeService.getCostCenters(this.contract.contractGuid).then(res => {
+                    this.selection.centers = res.result.data
+                    let list = []
+                    this.selection.centers.forEach(item => {
+                        const param = {
+                            costCenter: item.id + '',
+                            costCenterName: item.costCenterName,
+                            secCostAllocateTypeID: item.secCostAllocateTypeID,
+                            totalCFAExcludeParking: item.totalCFAExcludeParking,
+                            totalGFA: item.totalGFA,
+                            rate: 100
+                        }
+                        list.push(param)
+                    })
+                    this.data.tableData = list
+                    this.$forceUpdate()
+                })
+            },
             showTable () {
                 this.visible = true
+                this.getData()
+                this.data.itemType = null
+                this.data.shareType = null
+                this.data.allAmount = null
+                this.selectedRows = []
+                this.selectedRowKeys = []
             },
             handleCancel () {
                 this.visible = false
             },
             handleOk () {
-                this.confirmLoading = true
-                console.log('this.data', this.data)
-                let isValid = true
-                this.$refs.form.validate(valid => {
-                    if (!valid) {
-                        isValid = false
+                let list = []
+                this.selectedRows.forEach(item => {
+                    const params = {
+                        costCenter: item.costCenter,
+                        rate: item.rate / 100
                     }
+                    list.push(params)
                 })
-                if (isValid) {
-                    this.selectedRows.forEach(item => {
-                        item.itemType = this.data.itemType
-                        this.$parent.add(undefined, item)
-                    })
-                    this.confirmLoading = false
-                    this.visible = false
-                } else {
-                    this.confirmLoading = false
-                }
+                const body = [{
+                    contractGUID: this.contract.contractGuid,
+                    costCenterIdlst: list,
+                    shareType: this.data.shareType,
+                    allAmount: this.data.allAmount,
+                    itemType: this.data.itemType
+                }]
+                ChangeService.getVOBQByCCShare(body).then(res => {
+                    if (res.result.statusCode === 200) {
+                        res.result.data.forEach(item => {
+                            const index = this.data.tableData.findIndex(d => d.costCenter === item.costCenter)
+                            this.data.tableData[index].allAmount = item.allAmount
+                            this.$forceUpdate()
+                        })
+                        this.data.tableData.forEach(item => {
+                            if (!item.selected) {
+                                item.allAmount = 0
+                            }
+                        })
+                        this.confirmLoading = true
+                        let isValid = true
+                        this.$refs.form.validate(valid => {
+                            if (!valid) {
+                                isValid = false
+                            }
+                        })
+                        if (isValid) {
+                            this.selectedRows.forEach(item => {
+                                item.itemType = this.data.itemType
+                                this.$parent.add(undefined, item)
+                            })
+                            this.confirmLoading = false
+                            this.visible = false
+                        } else {
+                            this.confirmLoading = false
+                        }
+                    }
+
+                })
+
             },
         }
     }
