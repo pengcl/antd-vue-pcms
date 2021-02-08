@@ -88,6 +88,7 @@
                     <a-input-number
                       :disabled="form.costCenterItems[index].centers[aIndex].disabled"
                       v-model="form.costCenterItems[index].centers[aIndex].amount"
+                      :min="0"
                       :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                       @blur="e => checkChange(e, record, index,form.costCenterItems[index])"
                       :parser="value => value.replace(/\\s?|(,*)/g, '')"
