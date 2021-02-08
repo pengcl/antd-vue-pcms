@@ -66,7 +66,7 @@
         <a-form-item label="原合同金额">
           <a-input-number
             :disabled="true"
-            :value="data.master.contractAmount"
+            :value="data.contract.contractAmount"
             :min="0"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :parser="value => value.replace(/\\s?|(,*)/g, '')"
@@ -122,7 +122,7 @@
           <a-input
             :disabled="true"
             placeholder="请填写原合同金额(大写)"
-            :value="data.master.contractAmountText"/>
+            :value="data.contract.contractAmountText"/>
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -338,6 +338,7 @@
     import ContractInfoInsurance from '@/views/contract/components/contractInfo/insurance'
     import ContractInfoFluctuationClause from '@/views/contract/components/contractInfo/fluctuationClause'
     import ContractInfoPaymentTerms from '@/views/contract/components/contractInfo/paymentTerms'
+    import { digitUppercase } from '@/utils/util'
 
     export default {
         name: 'ContractInfo',
@@ -391,6 +392,9 @@
         watch: {
             'data.contract.contractAmount' (value) {
                 if (typeof value === 'number') {
+                    const equivalentAmount = value * this.data.contract.currencyExchangeRate
+                    this.data.contract.equivalentAmount = equivalentAmount || 0
+                    this.data.contract.contractAmountText = digitUppercase(value)
                     this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
                     this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
                 }
@@ -399,12 +403,6 @@
                 if (typeof value === 'number') {
                     this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
                     this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
-                }
-            },
-            'data.master.contractAmount' (value) {
-                if (typeof value === 'number') {
-                    const equivalentAmount = value * this.data.contract.currencyExchangeRate
-                    this.data.contract.equivalentAmount = equivalentAmount || 0
                 }
             },
             'data.contract.currencyExchangeRate' (value) {

@@ -245,7 +245,7 @@
     import { SwaggerService } from '@/api/swagger.service'
     import { ContractService } from '@/views/contract/contract.service'
     import ShareToolModal from './contractList/ShareToolModal'
-    import { digitUppercase } from '@/utils/util'
+
 
     const columns = [
         {
@@ -444,9 +444,6 @@
                             this.loading = false
                             const data = res.result.data
                             this.data.contract.contractAmount = data.contractAmount
-                            this.data.master.contractAmount = this.data.contract.contractAmount
-                            this.data.contract.equivalentAmount = this.data.master.contractAmount * this.data.contract.currencyExchangeRate
-                            this.data.master.contractAmountText = digitUppercase(this.data.master.contractAmount)
                             this.data.contract.contractEffectAmount = data.contractEffectAmount
                             this.data.contract.contractAmountText = data.contractAmountText
                             this.data.contract.contractDSAmount = data.contractDSAmount
