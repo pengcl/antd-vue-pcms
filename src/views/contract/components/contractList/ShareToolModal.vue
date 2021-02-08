@@ -225,7 +225,8 @@
                 selectedRowKeys: [],
                 selectedRows: [],
                 secCostAllocateTypes: null,
-                selected: []
+                selected: [],
+                isValid: false
             }
         },
         props: {
@@ -360,7 +361,10 @@
                                 item.allAmount = 0
                             }
                         })
+                        this.isValid = true
                         this.$forceUpdate()
+                    } else {
+                        this.isValid = false
                     }
                 })
             },
@@ -386,23 +390,52 @@
                 this.visible = false
             },
             handleOk () {
-                this.confirmLoading = true
-                let isValid = true
-                this.$refs.form.validate(valid => {
-                    if (!valid) {
-                        isValid = false
+                let list = []
+                this.selectedRows.forEach(item => {
+                    const params = {
+                        costCenter: item.costCenter,
+                        rate: item.rate / 100
+                    }
+                    list.push(params)
+                })
+                const body = [{
+                    projectTenderPackageGUID: this.contract.contract.tenderPackageItemID,
+                    costCenterIdlst: list,
+                    shareType: this.data.shareType,
+                    allAmount: this.data.allAmount,
+                    itemType: this.data.itemType
+                }]
+                ContractService.shareTool(body).then(res => {
+                    if (res.result.statusCode === 200) {
+                        res.result.data.forEach(item => {
+                            const index = this.data.tableData.findIndex(d => d.costCenter === item.costCenter)
+                            this.data.tableData[index].allAmount = item.allAmount
+                        })
+                        this.data.tableData.forEach(item => {
+                            if (!item.selected) {
+                                item.allAmount = 0
+                            }
+                        })
+                        this.isValid = true
+                        this.confirmLoading = true
+                        this.$refs.form.validate(valid => {
+                            if (!valid) {
+                                this.isValid = false
+                            }
+                        })
+                        if (this.isValid) {
+                            this.selectedRows.forEach(item => {
+                                item.itemType = this.data.itemType
+                                this.$parent.add(item)
+                            })
+                            this.confirmLoading = false
+                            this.visible = false
+                        } else {
+                            this.confirmLoading = false
+                        }
                     }
                 })
-                if (isValid) {
-                    this.selectedRows.forEach(item => {
-                        item.itemType = this.data.itemType
-                        this.$parent.add(item)
-                    })
-                    this.confirmLoading = false
-                    this.visible = false
-                } else {
-                    this.confirmLoading = false
-                }
+
             },
         }
     }

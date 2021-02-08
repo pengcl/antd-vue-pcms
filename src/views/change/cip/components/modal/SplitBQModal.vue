@@ -355,24 +355,54 @@
                 this.visible = false
             },
             handleOk () {
-                this.confirmLoading = true
-                console.log('this.data', this.data)
-                let isValid = true
-                this.$refs.form.validate(valid => {
-                    if (!valid) {
-                        isValid = false
+                let list = []
+                this.selectedRows.forEach(item => {
+                    const params = {
+                        costCenter: item.costCenter,
+                        rate: item.rate / 100
                     }
+                    list.push(params)
                 })
-                if (isValid) {
-                    this.selectedRows.forEach(item => {
-                        item.itemType = this.data.itemType
-                        this.$parent.add(undefined, item)
-                    })
-                    this.confirmLoading = false
-                    this.visible = false
-                } else {
-                    this.confirmLoading = false
-                }
+                const body = [{
+                    contractGUID: this.contract.contractGuid,
+                    costCenterIdlst: list,
+                    shareType: this.data.shareType,
+                    allAmount: this.data.allAmount,
+                    itemType: this.data.itemType
+                }]
+                ChangeService.getVOBQByCCShare(body).then(res => {
+                    if (res.result.statusCode === 200) {
+                        res.result.data.forEach(item => {
+                            const index = this.data.tableData.findIndex(d => d.costCenter === item.costCenter)
+                            this.data.tableData[index].allAmount = item.allAmount
+                            this.$forceUpdate()
+                        })
+                        this.data.tableData.forEach(item => {
+                            if (!item.selected) {
+                                item.allAmount = 0
+                            }
+                        })
+                        this.confirmLoading = true
+                        let isValid = true
+                        this.$refs.form.validate(valid => {
+                            if (!valid) {
+                                isValid = false
+                            }
+                        })
+                        if (isValid) {
+                            this.selectedRows.forEach(item => {
+                                item.itemType = this.data.itemType
+                                this.$parent.add(undefined, item)
+                            })
+                            this.confirmLoading = false
+                            this.visible = false
+                        } else {
+                            this.confirmLoading = false
+                        }
+                    }
+
+                })
+
             },
         }
     }
