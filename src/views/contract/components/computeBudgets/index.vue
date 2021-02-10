@@ -462,10 +462,10 @@
             getTotal (items) {
                 if (items) {
                     items.forEach(item => {
-                        if (this.total[item.costCenterCode]) {
-                            this.total[item.costCenterCode].value = this.total[item.costCenterCode].value + item.contractSplitAmount
+                        if (this.total[item.costCenterId]) {
+                            this.total[item.costCenterId].value = this.total[item.costCenterId].value + item.contractSplitAmount
                         } else {
-                            this.total[item.costCenterCode] = {
+                            this.total[item.costCenterId] = {
                                 name: item.costCenterName,
                                 value: item.contractSplitAmount
                             }
@@ -483,7 +483,7 @@
             getBalance (records) {
                 for (const key in this.total) {
                     let items = JSON.parse(JSON.stringify(records))
-                    items = items.filter((data) => data.costCenterCode === key)
+                    items = items.filter((data) => data.costCenterId === key)
                     this.balance[key] = this.getBalanceItem(key, items)
                 }
             },
