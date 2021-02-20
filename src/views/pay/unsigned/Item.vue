@@ -181,7 +181,6 @@
             </a-button>
           </a-button-group>
         </a-col>
-        </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="edit" type="success">
