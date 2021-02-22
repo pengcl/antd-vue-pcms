@@ -27,7 +27,8 @@
         </a-form>
       </div>
 
-      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form" @keyup.enter.native="formSearch">
+      <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" v-if="show" class="search-form"
+              @keyup.enter.native="formSearch">
         <a-row :gutter="48">
           <a-col :md="12" :sm="24">
             <a-form-item label="合同编号">
@@ -95,6 +96,10 @@
             <a @click="handleToSignedItem(record.gid)">{{text}}</a>
         </span>
 
+        <span slot="oaPayDate" slot-scope="text">
+            {{text | date}}
+        </span>
+
       </s-table>
 
     </a-card>
@@ -116,14 +121,14 @@
             dataIndex: 'contractNo',
             width: '230px',
             scopedSlots: { customRender: 'contractNo' },
-            sorter : true
+            sorter: true
         },
         {
             title: '付款单号',
             dataIndex: 'paymentCode',
             width: '200px',
             scopedSlots: { customRender: 'paymentCode' },
-            sorter : true
+            sorter: true
         },
         {
             title: '审批状态',
@@ -140,27 +145,27 @@
             dataIndex: 'creationTime',
             width: '120px',
             scopedSlots: { customRender: 'creationTime' },
-            sorter : true
+            sorter: true
         },
         {
             title: '付款期数',
             dataIndex: 'paymentPhase',
             width: '90px',
-            sorter : true
+            sorter: true
         },
         {
             title: '申请批准金额',
             dataIndex: 'requestAmount',
             width: '150px',
             scopedSlots: { customRender: 'requestAmount' },
-            sorter : true
+            sorter: true
         },
         {
             title: '本期支付金额',
             dataIndex: 'paymentAmount',
             width: '150px',
             scopedSlots: { customRender: 'paymentAmount' },
-            sorter : true
+            sorter: true
         },
         {
             title: '申请人',
@@ -181,6 +186,23 @@
             title: '付款类型',
             dataIndex: 'paymentType',
             width: '100px',
+        },
+        {
+            title: 'OA支付单号',
+            dataIndex: 'oaPayNo',
+            width: '120px',
+        },
+        {
+            title: '支付状态',
+            dataIndex: 'toOaDate',
+            width: '100px',
+        },
+        {
+            title: '支付日期',
+            dataIndex: 'oaPayDate',
+            width: '120px',
+            scopedSlots: { customRender: 'oaPayDate' },
+            sorter: true
         },
     ]
 
@@ -237,7 +259,7 @@
         },
         computed: {},
         methods: {
-            formSearch(){
+            formSearch () {
                 this.$refs.table.refresh()
             },
             CreationTime_FromChange (date, dateString) {
