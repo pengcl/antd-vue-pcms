@@ -299,7 +299,7 @@
                   <td>
                     <a-input v-model="file.remark" :disabled="type === 'view'"></a-input>
                   </td>
-                  <td>{{ file.date | moment }}</td>
+                  <td>{{ file.date | date }}</td>
                 </tr>
               </tbody>
             </table>

@@ -31,7 +31,7 @@ signDate: "2020-10-10T06:21:29.682"
               <td>{{ item.contractNo }}</td>
               <td>{{ item.contractName }}</td>
               <td>{{ item.auditStatus }}</td>
-              <td>{{ item.signDate | moment }}</td>
+              <td>{{ item.signDate | date }}</td>
               <td>{{ item.currencyID }}</td>
               <td>{{ item.contractAmount }}</td>
               <td></td>

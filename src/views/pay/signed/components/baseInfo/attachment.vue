@@ -53,7 +53,7 @@
               <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
             </td>
             <td><a-input-number v-model="item.filePage" :disabled="type === 'view'"></a-input-number></td>
-            <td>{{item.creationTime | moment}}</td>
+            <td>{{item.creationTime | date}}</td>
             <td>{{item.creatorUser}}</td>
           </tr>
           </tbody>
