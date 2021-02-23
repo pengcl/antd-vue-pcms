@@ -115,6 +115,10 @@
             {{text | date}}
         </span>
 
+        <span slot="toOaDate" slot-scope="text">
+            {{text | date}}
+        </span>
+
         <span slot="action" slot-scope="text, record">
           <template>
             <a-button
@@ -223,12 +227,14 @@
         {
             title: 'OA支付单号',
             dataIndex: 'oaPayNo',
-            width: '120px',
+            width: '200px',
         },
         {
-            title: '支付状态',
+            title: '转OA时间',
             dataIndex: 'toOaDate',
-            width: '100px',
+            width: '120px',
+            scopedSlots: { customRender: 'toOaDate' },
+            sorter: true
         },
         {
             title: '支付日期',
