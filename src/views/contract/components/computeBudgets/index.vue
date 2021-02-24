@@ -30,7 +30,7 @@
             <a-form-model-item
               required
               :prop="'balances.' + index + '.value'"
-              :rules="[{ type: 'number', required: true, message: '请输入项目名称(中文)' },{ type: 'number', max: 0.01, min:-0.01, message: item.key + '必须等于0' }]"
+              :rules="[{ type: 'number', required: true, message: '请输入项目名称(中文)' },{ type: 'number', max: 0.01, min:-0.01, message: item.name + '必须等于0' }]"
               :label="item.name">
               <a-input-number
                 :disabled="true"
@@ -463,11 +463,11 @@
                 if (items) {
                     items.forEach(item => {
                         if (this.total[item.costCenterId]) {
-                            this.total[item.costCenterId].value = this.total[item.costCenterId].value + item.contractSplitAmount
+                            this.total[item.costCenterId].value = this.total[item.costCenterId].value + item.useBalanceAmount
                         } else {
                             this.total[item.costCenterId] = {
                                 name: item.costCenterName,
-                                value: item.contractSplitAmount
+                                value: item.useBalanceAmount
                             }
                         }
                     })
@@ -476,7 +476,7 @@
             getBalanceItem (key, items) {
                 let max = this.total[key].value
                 items.forEach(item => {
-                    max = max - item.contractSplitAmount
+                    max = max - item.useBalanceAmount
                 })
                 return { name: this.total[key].name, value: max }
             },
