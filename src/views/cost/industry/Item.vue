@@ -47,7 +47,7 @@
             </a-form-model-item>
           </a-col>
           <a-col :md="6" :sm="6">
-            <a-button @click="selectAllCostCenter">全选</a-button>
+            <a-button @click="selectAllCostCenter" v-if="type === 'add'">全选</a-button>
           </a-col>
           <!-- <a-col :md="24" :sm="24">
             <a-form-model-item prop="itemTypeId" label="分判包类型">

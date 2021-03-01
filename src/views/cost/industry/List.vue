@@ -337,10 +337,10 @@
                         this.queryParam.sorting = parameter.sorting
                         this.queryParam.sortOrder = parameter.sortOrder
                     }
+                    this.$refs.table2.refresh()
                     if (typeof requestParameters.ProjectGUID !== 'undefined' && requestParameters.ProjectGUID != '') {
                         return CostService.industryItems(requestParameters).then(res => {
                             if (res.result.data != null) {
-                                this.$refs.table2.refresh()
                                 return fixedList(res, requestParameters)
                             }
                         })
@@ -553,7 +553,8 @@
                         CostService.removeBudgetItem({ packageId: that.pid, budgetItemId: record.id }).then(res => {
                             if (res.result.statusCode === 200) {
                                 that.$message.info('预算删除成功')
-                                that.$refs.table2.refresh()
+                                that.handleSelected = true
+                                that.$refs.table.refresh()
                             }
                         })
                     },
@@ -581,8 +582,8 @@
                         CostService.removeBatchBudgetItem(params).then(res => {
                             if (res.result.statusCode === 200) {
                                 that.$message.info('预算删除成功')
-                                that.selectedRowKeys = []
-                                that.$refs.table2.refresh()
+                                that.handleSelected = true
+                                that.$refs.table.refresh()
                             }
                         })
                     },
