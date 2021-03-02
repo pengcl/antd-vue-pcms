@@ -121,7 +121,8 @@
                     v-model="form.secCostAllocateTypeID">
                     <a-select-option v-for="(item,index) in secCostAllocateTypes"
                                      :key="index"
-                                     :value="item.id">{{item.nameCN}}</a-select-option>
+                                     :value="item.id">{{item.nameCN}}
+                    </a-select-option>
                   </a-select>
                 </a-form-model-item>
               </a-col>
@@ -898,6 +899,10 @@
                     this.filterShareRuleTypes = this.shareRuleTypes.slice(1)
                     this.rules.shareCostCenter = [{ required: true, message: '请选择分摊成本中心', trigger: 'change' }]
                 }
+            },
+            '$route' (path) {
+                this.getData()
+                this.disabled = false
             }
         },
         methods: {
@@ -950,6 +955,7 @@
 
                     })
                 } else {
+                    this.form.id = 0
                     this.form.projectGUID = this.ProjectGUID
                     this.form.shares = []
                     this.form.cfaUpperGround = 0
@@ -988,7 +994,11 @@
                             this.loading.save = false
                             if (res.result.statusCode === 200) {
                                 this.$message.success('保存成功')
-                                this.$router.push({ path: '/project/cost/list' })
+                                if (this.type === 'create') {
+                                    this.$router.push({ path: `/project/cost/item/${res.result.data.id}?type=update&ProjectGUID=` + this.ProjectGUID })
+                                } else {
+                                    this.$router.push({ path: '/project/cost/list' })
+                                }
                             }
                         }).catch(() => {
                             this.disabled = false

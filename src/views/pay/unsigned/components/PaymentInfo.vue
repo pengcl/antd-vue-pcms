@@ -51,6 +51,7 @@
                               v-if="item.paymentType === '一般付款' || item.paymentType === '扣款冲销'"
                               :disabled="type === 'view'"
                               v-model="item.paymentAmount"
+                              @change="paymentAmountChange"
                               :min="0"
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"
@@ -59,6 +60,7 @@
                               v-if="item.paymentType === '代付代扣' || item.paymentType === '其他扣款'"
                               :disabled="type === 'view'"
                               v-model="item.paymentAmount"
+                              @change="paymentAmountChange"
                               :min="0"
                               :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :parser="value => value.replace(/\-\s?|(,*)/g, '')"
@@ -93,10 +95,10 @@
                        v-model="item.vendorBankAccounts"></a-input>
             </td>
           </tr>
-          <!--<tr>
-            <td colspan="3">合计</td>
-            <td colspan="4">合计金额</td>
-          </tr>-->
+          <tr v-if="data.detailList.length > 0">
+            <td colspan="3" style="text-align: right">本期支付金额：</td>
+            <td colspan="4">{{paymentAmountTotal | NumberFormat}}</td>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -117,6 +119,7 @@
                 vendorTypes: [],
                 filterVendorTypes: [],
                 visibles: {},
+                paymentAmountTotal: 0
             }
         },
         props: {
@@ -134,7 +137,22 @@
             }
         },
         watch: {
-
+            'data.detailList' (value) {
+                if (value && value.length > 0) {
+                    let paymentAmountTotal = 0
+                    this.data.detailList.forEach(item => {
+                        if (item.paymentAmount) {
+                            item.paymentAmount = Math.abs(item.paymentAmount)
+                            if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                                paymentAmountTotal += item.paymentAmount
+                            } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                                paymentAmountTotal -= item.paymentAmount
+                            }
+                        }
+                    })
+                    this.paymentAmountTotal = paymentAmountTotal
+                }
+            }
         },
         created () {
             UnSignedService.moneyTypes().then(res => {
@@ -147,6 +165,21 @@
             })
         },
         methods: {
+            paymentAmountChange (value) {
+                let paymentAmountTotal = 0
+                this.data.detailList.forEach(item => {
+                    if (item.paymentAmount) {
+                        item.paymentAmount = Math.abs(item.paymentAmount)
+                        if (item.paymentAmount && (item.paymentType === '一般付款' || item.paymentType === '扣款冲销')) {
+                            paymentAmountTotal += item.paymentAmount
+                        } else if (item.paymentAmount && (item.paymentType === '代付代扣' || item.paymentType === '其他扣款')) {
+                            paymentAmountTotal -= item.paymentAmount
+                        }
+                    }
+                })
+                this.paymentAmountTotal = paymentAmountTotal
+                this.$forceUpdate()
+            },
             getBankList (vendorGID, vendorTypes) {
                 let bankList
                 vendorTypes.forEach(item => {
