@@ -865,6 +865,7 @@
                             SignedService.NSCContract(this.data.contractGID, item.contractGuid).then(res => {
                                 if (res.result.data) {
                                     this.$message.success('引入专业分包合同成功！')
+                                    res.result.data.detailList = []
                                     NSCInfoList.push(res.result.data)
                                 }
                             })

@@ -439,7 +439,7 @@
                 this.$router.push({ path: `/pay/signed/item/${record.gid}?type=update` })
             },
             handleToAdd () {
-                this.$router.push({ path: `/pay/signed/item/${this.id}?type=create` })
+                this.$router.push({ path: `/pay/signed/item/${this.queryParam.ContractGID}?type=create` })
             },
             search () {
                 this.show = !this.show

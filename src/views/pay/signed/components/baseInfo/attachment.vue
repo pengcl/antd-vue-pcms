@@ -26,7 +26,7 @@
             <td>
               <a-upload name="file"
                         :disabled="type === 'view'"
-                        v-if="item.subInfo1"
+                        v-if="item.subInfo1 && item.filePage"
                         :multiple="false"
                         :before-upload="beforeUpload">
                 <a-button @click="choose(index)">请选择</a-button>
@@ -52,8 +52,11 @@
             <td>
               <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
             </td>
-            <td><a-input-number v-model="item.filePage" :disabled="type === 'view'"></a-input-number></td>
-            <td>{{item.creationTime | moment}}</td>
+            <td>
+              <a-input-number v-model="item.filePage" :disabled="type === 'view'"></a-input-number>
+              <p v-if="!item.filePage" style="color: red;margin-bottom: 0">请填写页数</p>
+            </td>
+            <td>{{item.creationTime | date}}</td>
             <td>{{item.creatorUser}}</td>
           </tr>
           </tbody>

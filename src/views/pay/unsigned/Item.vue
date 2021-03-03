@@ -181,7 +181,6 @@
             </a-button>
           </a-button-group>
         </a-col>
-        </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
             <a-button @click="edit" type="success">
@@ -295,6 +294,7 @@
             },
             '$route' (path) {
                 this.getData()
+                this.disabled = false
             }
         },
         created () {
@@ -440,7 +440,7 @@
                                     result -= Math.abs(item.paymentAmount)
                                 }
                             })
-                            if (result !== this.form.paymentAmount) {
+                            if (result !== (Math.floor(this.form.paymentAmount * 100) / 100)) {
                                 notification.error({
                                     message: '提示',
                                     description: '本期支付金额应该等于申请付款金额！'

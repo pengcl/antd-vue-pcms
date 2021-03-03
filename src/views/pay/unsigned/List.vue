@@ -101,13 +101,21 @@
         :data="loadData"
         :alert="false"
         showPagination="auto"
+        :scroll="{ x: 'calc(700px + 50%)'}"
       >
         <span slot="paymentAmount" slot-scope="text">
             {{text | NumberFormat}}
         </span>
 
-
         <span slot="requestDate" slot-scope="text">
+            {{text | date}}
+        </span>
+
+        <span slot="oaPayDate" slot-scope="text">
+            {{text | date}}
+        </span>
+
+        <span slot="toOaDate" slot-scope="text">
             {{text | date}}
         </span>
 
@@ -187,29 +195,53 @@
         {
             title: '款项类型',
             dataIndex: 'paymentBusinessType',
+            width: '100px',
             scopedSlots: { customRender: 'paymentBusinessType' }
         },
         {
             title: '金额',
             dataIndex: 'paymentAmount',
+            width: '150px',
             scopedSlots: { customRender: 'paymentAmount' },
             sorter: true
         },
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
+            width: '100px',
             scopedSlots: { customRender: 'auditStatus' }
         },
         {
             title: '建立日期',
             dataIndex: 'requestDate',
             scopedSlots: { customRender: 'requestDate' },
+            width: '120px',
             sorter: true
         },
         {
             title: '建立人',
             dataIndex: 'requestUserName',
+            width: '100px',
             scopedSlots: { customRender: 'requestUserName' }
+        },
+        {
+            title: 'OA支付单号',
+            dataIndex: 'oaPayNo',
+            width: '200px',
+        },
+        {
+            title: '转OA时间',
+            dataIndex: 'toOaDate',
+            width: '120px',
+            scopedSlots: { customRender: 'toOaDate' },
+            sorter: true
+        },
+        {
+            title: '支付日期',
+            dataIndex: 'oaPayDate',
+            width: '120px',
+            scopedSlots: { customRender: 'oaPayDate' },
+            sorter: true
         },
     ]
 

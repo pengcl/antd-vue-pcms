@@ -227,7 +227,7 @@
               <td>
                 <a-input v-model="file.remark" :disabled="type === 'view'"></a-input>
               </td>
-              <td>{{ file.date | moment }}</td>
+              <td>{{ file.date | date }}</td>
             </tr>
             </tbody>
           </table>
@@ -245,6 +245,7 @@
     import { SwaggerService } from '@/api/swagger.service'
     import { ContractService } from '@/views/contract/contract.service'
     import ShareToolModal from './contractList/ShareToolModal'
+
 
     const columns = [
         {

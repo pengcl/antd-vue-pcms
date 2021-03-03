@@ -84,7 +84,7 @@
               ></a-input-number>
             </td>
             <td>
-              {{item.creationTime | moment}}
+              {{item.creationTime | date}}
             </td>
           </tr>
         </tbody>
@@ -165,7 +165,7 @@ export default {
           })
         }
       },700)
-     
+
     },
     choose (index) {
       this.index = index
