@@ -440,7 +440,13 @@
                                     result -= Math.abs(item.paymentAmount)
                                 }
                             })
-                            if (result !== (Math.floor(this.form.paymentAmount * 100) / 100)) {
+                            let result2 = 0
+                            this.form.tradeBudgetList.forEach(item => {
+                                if (item.useAmount) {
+                                    result2 += item.useAmount
+                                }
+                            })
+                            if (result !== result2) {
                                 notification.error({
                                     message: '提示',
                                     description: '本期支付金额应该等于申请付款金额！'

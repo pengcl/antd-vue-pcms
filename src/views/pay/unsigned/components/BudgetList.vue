@@ -41,6 +41,10 @@
                             :precision="2"></a-input-number>
           </td>
         </tr>
+        <tr v-if="data.tradeBudgetList.length > 0">
+          <td colspan="5" style="text-align: right">本次使用金额合计：</td>
+          <td>{{data.paymentAmount}}</td>
+        </tr>
         </tbody>
       </table>
 
