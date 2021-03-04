@@ -115,8 +115,8 @@
             oaPay () {
                 this.disabled = true
                 SignedService.oaPay(this.id).then(res => {
-                    if (res.result.data) {
-                        this.$message.success('导到OA支付成功！')
+                    if (res.result.statusCode === 200) {
+                        this.$message.success(res.result.msg)
                         this.disabled = false
                     } else {
                         this.disabled = false
