@@ -440,7 +440,7 @@
                                     result -= Math.abs(item.paymentAmount)
                                 }
                             })
-                            if (result !== (Math.floor(this.form.paymentAmount * 100) / 100)) {
+                            if (result !== Number(this.form.paymentAmount.toFixed(2))) {
                                 notification.error({
                                     message: '提示',
                                     description: '本期支付金额应该等于申请付款金额！'

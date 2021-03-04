@@ -30,6 +30,26 @@
               <a-input v-model="queryParam.VONo"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合同名称">
+              <a-input v-model="queryParam.ContractName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="合同编号">
+              <a-input v-model="queryParam.ContractNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="主送方">
+              <a-input v-model="queryParam.MainSend"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item label="变更名称">
+              <a-input v-model="queryParam.VOName"></a-input>
+            </a-form-item>
+          </a-col>
           <a-col :md="24" :sm="24">
             <a-form-item label="申报日期">
               <a-date-picker v-model="queryParam.startTime" valueFormat="YYYY-MM-DD"></a-date-picker
@@ -54,7 +74,7 @@
         :alter="false"
         :columns="columns"
         :data="loadData"
-        :scroll="{ x: 2600 }"
+        :scroll="{ x: 3600 }"
         showPagination="auto"
       >
         <span slot="no" slot-scope="text, record, index">
@@ -110,10 +130,42 @@ const columns = [
     sorter : true
   },
   {
-    title: '变更编号',
+    title: '本地合同编号',
+    dataIndex: 'localContractNo',
+    width : 275,
+    scopedSlots: { customRender: 'localContractNo' },
+    ellipsis : true,
+    sorter : true
+  },
+  {
+    title: '合同名称',
+    dataIndex: 'contractName',
+    width : 241,
+    scopedSlots: { customRender: 'contractName' },
+    ellipsis : true,
+    sorter : true
+  },
+  {
+    title: '指令编号',
     dataIndex: 'voNo',
     width : 275,
     scopedSlots: { customRender: 'voNo' },
+    ellipsis : true,
+    sorter : true
+  },
+  {
+    title: '本地指令编号',
+    dataIndex: 'localVONo',
+    width : 275,
+    scopedSlots: { customRender: 'localVONo' },
+    ellipsis : true,
+    sorter : true
+  },
+  {
+    title: '主送方',
+    dataIndex: 'mainSend',
+    width : 200,
+    scopedSlots: { customRender: 'mainSend' },
     ellipsis : true,
     sorter : true
   },
