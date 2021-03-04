@@ -405,6 +405,7 @@ export default {
       selectedRows: [],
       totalChangeAmt: 0,
       totalChangeRate: 0,
+      sumCIPAmount: 0,
       // 记录变更列表选中行信息
       tableSelected: {},
       // 记录合同选择行信息
@@ -462,6 +463,7 @@ export default {
           that.totalChangeAmt = record.sumVOAmount
           that.totalChangeRate = record.voRate
           that.contractSelected = record
+          that.sumCIPAmount = record.sumCIPAmount
           // 刷新变更列表
           that.$refs.table2.refresh()
           // 清空变更列表选中数据
