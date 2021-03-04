@@ -43,7 +43,7 @@
         </tr>
         <tr v-if="data.tradeBudgetList.length > 0">
           <td colspan="5" style="text-align: right">本次使用金额合计：</td>
-          <td>{{data.paymentAmount}}</td>
+          <td>{{data.paymentAmount | NumberFormat}}</td>
         </tr>
         </tbody>
       </table>
