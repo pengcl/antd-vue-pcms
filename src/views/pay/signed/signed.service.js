@@ -31,7 +31,8 @@ const API = {
   NSCInfoList: '/api/services/app/Payment/GetContractNSCInfoList',
   requestListForView: '/api/services/app/Payment/GetPaymentRequestListForView',
   audit: '/api/services/app/Payment/OneClickAudit',
-  cancelAudit: '/api/services/app/Payment/OneClickUnAudit'
+  cancelAudit: '/api/services/app/Payment/OneClickUnAudit',
+  oaPay: '/api/services/app/Payment/PaymentManualAyncToOA',
 }
 
 const SignedService = {}
@@ -227,6 +228,14 @@ SignedService.NSCInfoList = function (contractGID) {
   })
 }
 
+SignedService.oaPay = function (paymentGUID) {
+  return request({
+    url: API.oaPay,
+    method: 'POST',
+    params: { paymentGUID }
+  })
+}
+
 SignedService.create = function (parameter) {
   return request({
     url: API.create,
@@ -234,6 +243,7 @@ SignedService.create = function (parameter) {
     data: parameter
   })
 }
+
 
 SignedService.audit = function (gid) {
   return request({
