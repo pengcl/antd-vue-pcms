@@ -210,6 +210,7 @@
                                         // 计算列合计金额
                                         const columnObj = {}
                                         columnObj.amountCount = allAmountCount
+                                        columnObj.name = '合计'
                                         if (res2.result.data != null) {
                                           res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
                                             // 加载成本

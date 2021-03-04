@@ -271,6 +271,7 @@
                                         })
                                         // 计算列合计金额
                                         const columnObj = {}
+                                        columnObj.name = '合计'
                                         columnObj.amountCount = allAmountCount
                                         if (res2.result.data != null) {
                                           res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
