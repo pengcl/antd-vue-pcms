@@ -110,14 +110,14 @@
               @click="handleToItem(record)">
             </a-button>
             <a-button
-              v-if="ac('EDIT')"
+              v-if="ac('EDIT') && record.auditStatus != '审核中'"
               type="primary"
               icon="form"
               style="margin-left: 4px"
               title="编辑"
               @click="handleToEdit(record)"></a-button>
             <a-button
-              v-if="ac('DELETE')"
+              v-if="ac('DELETE') && record.auditStatus === '未审核'"
               :disabled="!record.isCanDelete"
               type="danger"
               icon="delete"
