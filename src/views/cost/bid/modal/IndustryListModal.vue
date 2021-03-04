@@ -136,7 +136,7 @@
           })
         })
         this.cities = cities
-        const value = getPosValue(this.cities)
+        const value = JSON.parse(JSON.stringify(this.cities))
         this.queryParam.ProjectGUID = value.projectGUID ? value.projectGUID : getList(this.cities, 0).projectGUID
         this.$forceUpdate()
         // this.$refs.industryTable.refresh(true)

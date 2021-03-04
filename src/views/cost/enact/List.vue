@@ -234,7 +234,7 @@
                                         })
                                         this.columns = _columns
                                         this.$forceUpdate()
-                                        let allAmountCount = 0 // 汇总树总金额
+                                        let allAmountCount = 0 // 汇总列总金额
                                         res.result.data.forEach(item => {
                                             const obj = {}
                                             obj['id'] = item.id
@@ -265,12 +265,13 @@
                                             }
                                             // 汇总行总金额
                                             obj.amountCount = itemsAmount
-                                            // 汇总树总金额
+                                            // 汇总列总金额
                                             allAmountCount += itemsAmount
                                             result.result.data.push(obj)
                                         })
                                         // 计算列合计金额
                                         const columnObj = {}
+                                        columnObj.name = '合计'
                                         columnObj.amountCount = allAmountCount
                                         if (res2.result.data != null) {
                                           res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {

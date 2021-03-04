@@ -42,7 +42,12 @@
         <span slot="cost" slot-scope="text">
           <p style="text-align: right">
             <span style="font-weight: bold;padding-right: 10px">{{ text.amount|NumberFormat }}</span>
-            <!--            <span style="color: #b3b3ca">{{text.percentage + '%'}}</span>-->
+          </p>
+        </span>
+
+        <span slot="amountCount" slot-scope="text">
+          <p style="text-align: right">
+            <span style="font-weight: bold;padding-right: 10px">{{ text|NumberFormat }}</span>
           </p>
         </span>
 
@@ -50,7 +55,7 @@
           <template>
             {{ record.code }}
             <a-button
-              v-if="ac('EDIT')"
+              v-if="ac('EDIT') && record.isRecord"
               @click="handleToResolve(record)"
               type="primary"
               icon="snippets"
@@ -90,6 +95,14 @@
             width: 300,
             fixed: 'left',
             dataIndex: 'name'
+        },
+        {
+          title: '合计',
+          className: 'title-center',
+          width: 200,
+          fixed: 'left',
+          dataIndex: 'amountCount',
+          scopedSlots: {customRender: 'amountCount'}
         }
     ]
 
@@ -111,7 +124,7 @@
                 visible: false,
                 confirmLoading: false,
                 mdl: null,
-                columnsWidth: 500,
+                columnsWidth: 700,
                 // 高级搜索 展开/关闭
                 advanced: false,
                 // 查询参数
@@ -133,7 +146,7 @@
                             return CostService.subjectItems(requestParameters2)
                                 .then(res2 => {
                                     if (res2.result.data != null) {
-                                        this.columnsWidth = 500 + res2.result.data.costCenterBudgetSubPlans.length * 200
+                                        this.columnsWidth = 700 + res2.result.data.costCenterBudgetSubPlans.length * 200
                                         if (this.columnsWidth < 1560) {
                                             this.columnsWidth = 1560
                                         }
@@ -146,7 +159,7 @@
                                             obj.dataIndex = 'cost' + subjectItem1.costCenterId
                                             obj.scopedSlots = { customRender: 'cost' }
                                             if (index !== res2.result.data.costCenterBudgetSubPlans.length) {
-                                                obj.width = (this.columnsWidth - 500) / res2.result.data.costCenterBudgetSubPlans.length
+                                                obj.width = (this.columnsWidth - 700) / res2.result.data.costCenterBudgetSubPlans.length
                                             }
 
                                             _columns.push(obj)
@@ -155,13 +168,14 @@
                                         this.columns = _columns
                                         this.$forceUpdate()
                                         const tempCodes = ['B', 'C', 'D', 'E', 'F', 'G']
+                                        let allAmountCount = 0 // 汇总列总金额
                                         res.result.data.forEach(item => {
                                             if (tempCodes.includes(item.code)) {
                                                 const obj = {}
                                                 obj['id'] = item.id
                                                 obj['code'] = item.code
                                                 obj['name'] = item.nameCN
-
+                                                let itemsAmount = 0
                                                 if (res2.result.data != null) {
                                                     res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
                                                         // 加载成本
@@ -172,6 +186,7 @@
                                                                     amount: itemA.amount,
                                                                     percentage: itemA.percentage
                                                                 }
+                                                                itemsAmount += itemA.amount
                                                             }
                                                         })
                                                         if (!obj[costName]) {
@@ -182,9 +197,42 @@
                                                         }
                                                     })
                                                 }
+                                                // 汇总行总金额
+                                                obj['amountCount'] = itemsAmount
+                                                // 汇总列总金额
+                                                allAmountCount += itemsAmount
+                                                // 用来判断是记录还是合计显示
+                                                obj['isRecord'] = true
                                                 result.result.data.push(obj)
                                             }
                                         })
+
+                                        // 计算列合计金额
+                                        const columnObj = {}
+                                        columnObj.amountCount = allAmountCount
+                                        columnObj.name = '合计'
+                                        if (res2.result.data != null) {
+                                          res2.result.data.costCenterBudgetSubPlans.forEach(subjectItem2 => {
+                                            // 加载成本
+                                            let columnAmount = 0
+                                            const costName = 'cost' + subjectItem2.costCenterId
+                                            subjectItem2.mainElements.forEach(itemA => {
+                                              columnAmount += itemA.amount
+                                            })
+                                            if (columnAmount > 0 ) {
+                                              columnObj[costName] = {
+                                                amount: columnAmount,
+                                                percentage: 0
+                                              }
+                                            } else {
+                                              columnObj[costName] = {
+                                                amount: 0,
+                                                percentage: 0
+                                              }
+                                            }
+                                          })
+                                        }
+                                        result.result.data.push(columnObj)
                                     }
                                     return fixedList(result, parameter)
                                 })
