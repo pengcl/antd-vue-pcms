@@ -14,13 +14,13 @@
           <tr>
             <th>操作</th>
             <th>文件名称</th>
-            <th>文件数量</th>
+            <th>文件页数</th>
             <th>上传时间</th>
             <th>上传人</th>
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(item,index) in fileList" :key="index">
+          <tr v-for="(item,index) in fileList" :key="index" v-if="!item.isDeleted">
             <td>
               <a-upload name="file"
                         :disabled="type === 'view'"
@@ -35,12 +35,15 @@
             <td>
               <a :href="item.fileUrl" target="_blank" v-if="item.fileName">{{item.fileName}}</a>
             </td>
-            <td><span v-if="item.fileName">1</span></td>
             <td>
-              <a-input v-model="item.creationTime" :disabled="true"></a-input>
+              <a-input-number v-model="item.filePage" :disabled="type === 'view'"></a-input-number>
+              <p v-if="!item.filePage" style="color: red;margin-bottom: 0">请填写页数</p>
             </td>
             <td>
-              <a-input v-model="item.creatorUser" :disabled="true"></a-input>
+              {{item.creationTime | date}}
+            </td>
+            <td>
+              {{item.creatorUser}}
             </td>
           </tr>
           </tbody>
@@ -94,7 +97,23 @@
         methods: {
             getFileList (id) {
                 BaseService.fileList(id, this.id, '', '').then(res => {
-                    this.fileList = res.result.data
+                    const fileList = []
+                    if (res.result.data.length > 0) {
+                        res.result.data.forEach(item => {
+                            fileList.push({
+                                isDeleted: false,
+                                isTemp: false,
+                                fileName: item.fileName,
+                                fileUrl: item.fileUrl,
+                                fileId: item.id,
+                                filePage: item.filePage,
+                                creationTime: item.creationTime,
+                                creatorUser: item.creatorUser
+                            })
+                        })
+                        this.fileList = fileList
+                        this.$forceUpdate()
+                    }
                 })
             },
             add () {
@@ -104,6 +123,7 @@
                     fileName: '',
                     fileUrl: '',
                     fileId: '',
+                    filePage:'',
                     creationTime: '',
                     creatorUser: ''
                 }
@@ -147,6 +167,7 @@
                 formData.append('masterId', this.masterID)
                 formData.append('businessID', this.type === 'create' ? '' : this.id)
                 formData.append('businessType', 'paymentOther')
+                formData.append('filePage', this.fileList[this.index].filePage)
                 formData.append('subInfo1', '') // 文件名
                 formData.append('subInfo2', '')
                 this.uploading = true
@@ -160,6 +181,7 @@
                         this.$emit('on-change-masterId', response.result.data.masterID)
                         this.fileList[this.index].fileName = response.result.data.fileName
                         this.fileList[this.index].fileId = response.result.data.id
+                        this.fileList[this.index].filePage = response.result.data.filePage
                         this.fileList[this.index].creationTime = response.result.data.creationTime
                         this.fileList[this.index].creatorUser = response.result.data.creatorUser
                         this.fileList[this.index].fileUrl = response.result.data.fileUrl
