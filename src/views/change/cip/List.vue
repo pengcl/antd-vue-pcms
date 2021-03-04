@@ -100,10 +100,13 @@
         <template slot="footer">
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
-              <a-col :md="12" :sm="24">
+              <a-col :md="8" :sm="24">
                 <a-form-item label="累计变更金额">{{ totalChangeAmt | NumberFormat }}</a-form-item>
               </a-col>
-              <a-col :md="12" :sm="24">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="累计已批准cip金额">{{ sumCIPAmount | NumberFormat }}</a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
                 <a-form-item label="变更比例">{{ totalChangeRate }}</a-form-item>
               </a-col>
             </a-row>
