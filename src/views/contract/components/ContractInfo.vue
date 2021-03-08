@@ -93,7 +93,7 @@
           prop="contractNoTaxAmount"
         >
           <a-input-number
-            :disabled="true"
+            :disabled="type === 'view'"
             v-model="data.contract.contractNoTaxAmount"
             :min="0"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -231,7 +231,8 @@
         <a-form-model-item
           label="合同签署日期"
           prop="signDate">
-          <a-date-picker style="width: 100%" :disabled="type === 'view'" v-model="data.contract.signDate"></a-date-picker>
+          <a-date-picker style="width: 100%" :disabled="type === 'view'"
+                         v-model="data.contract.signDate"></a-date-picker>
         </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
@@ -395,14 +396,19 @@
                     const equivalentAmount = value * this.data.contract.currencyExchangeRate
                     this.data.contract.equivalentAmount = equivalentAmount || 0
                     this.data.contract.contractAmountText = digitUppercase(value)
-                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
-                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount / (1 + this.data.contract.taxRate * 0.01)
+                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount
                 }
             },
             'data.contract.taxRate' (value) {
                 if (typeof value === 'number') {
-                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount * this.data.contract.taxRate * 0.01
-                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount - this.data.contract.contractTaxAmount
+                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount / (1 + this.data.contract.taxRate * 0.01)
+                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount
+                }
+            },
+            'data.contract.contractNoTaxAmount' (value) {
+                if (typeof value === 'number') {
+                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount
                 }
             },
             'data.contract.currencyExchangeRate' (value) {

@@ -22,7 +22,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(item,index) in fileList" :key="index">
+          <tr v-for="(item,index) in fileList" :key="index" v-if="!item.isDeleted">
             <td>
               <a-upload name="file"
                         :disabled="type === 'view'"

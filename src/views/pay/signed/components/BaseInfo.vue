@@ -450,8 +450,17 @@
                             :parser="value => value.replace('%', '')"></a-input-number>
           </span>
 
-          <span slot="noTaxAmount" slot-scope="text,record">
+          <span slot="taxAmount" slot-scope="text,record">
             <a-input-number :disabled="type === 'view'"
+                            v-model="record.taxAmount"
+                            @change="taxAmountChange(e,record,'taxAmount')"
+                            :min="0"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </span>
+
+          <span slot="noTaxAmount" slot-scope="text,record">
+            <a-input-number :disabled="true"
                             v-model="record.noTaxAmount"
                             @change="noTaxAmountChange"
                             :min="0"
@@ -517,6 +526,12 @@
             dataIndex: 'taxRate',
             scopedSlots: { customRender: 'taxRate' },
             width: 150
+        },
+        {
+            title: '税额',
+            dataIndex: 'taxAmount',
+            scopedSlots: { customRender: 'taxAmount' },
+            width: 180,
         },
         {
             title: '不含税金额',
@@ -738,15 +753,22 @@
             billAmountChange (value, record, key) {
                 record[key] = value
                 if (record['taxRate']) {
-                    record['noTaxAmount'] = record[key] * record['taxRate'] / 100
+                    record['taxAmount'] = record[key] * (record['taxRate'] / 100) / (record['taxRate'] / 100 + 1)
+                    record['noTaxAmount'] = record[key] - record['taxAmount']
                 }
                 this.$forceUpdate()
             },
             taxRateChange (value, record, key) {
                 record[key] = value
                 if (record['billAmount']) {
-                    record['noTaxAmount'] = record[key] * record['billAmount'] / 100
+                    record['taxAmount'] = (record[key] / 100) * record['billAmount'] / (record[key] / 100 + 1)
+                    record['noTaxAmount'] = record['billAmount'] - record['taxAmount']
                 }
+                this.$forceUpdate()
+            },
+            taxAmountChange (value, record, key) {
+                record[key] = value
+                record['noTaxAmount'] = record['billAmount'] - record[key]
                 this.$forceUpdate()
             },
             noTaxAmountChange (value) {

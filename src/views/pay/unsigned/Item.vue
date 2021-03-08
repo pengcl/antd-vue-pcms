@@ -180,6 +180,12 @@
               取消审核
             </a-button>
           </a-button-group>
+          <a-button-group
+            v-if="type === 'view' && form.auditStatus === '已审核' && !form.oaPayNo && ac('ManualAync')">
+            <a-button @click="oaPay" type="success" @disabled="disabled">
+              导到OA支付
+            </a-button>
+          </a-button-group>
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group v-if="type === 'view' && form.auditStatus === '未审核' && ac('EDIT')">
@@ -334,6 +340,17 @@
             }
         },
         methods: {
+            oaPay () {
+                this.disabled = true
+                UnSignedService.oaPay(this.id).then(res => {
+                    if (res.result.statusCode === 200) {
+                        this.$message.success(res.result.msg)
+                        this.disabled = false
+                    } else {
+                        this.disabled = false
+                    }
+                })
+            },
             audit () {
                 UnSignedService.audit(this.id).then(res => {
                     if (res.result.data) {

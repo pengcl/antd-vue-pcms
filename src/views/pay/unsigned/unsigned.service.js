@@ -18,7 +18,8 @@ const API = {
   addTradeBudgets: '/api/services/app/TradeBudget/PaymentOtherBatchAddTradeBudgets',
   useTradeBudgets: '/api/services/app/TradeBudget/PaymentOtherBatchUseTradeBudgets',
   audit: '/api/services/app/PaymentOther/OneClickAudit',
-  cancelAudit: '/api/services/app/PaymentOther/OneClickUnAudit'
+  cancelAudit: '/api/services/app/PaymentOther/OneClickUnAudit',
+  oaPay: '/api/services/app/PaymentOther/PaymentOtherManualAyncToOA',
 }
 
 const UnSignedService = {}
@@ -59,6 +60,14 @@ UnSignedService.audit = function (gid) {
     url: API.audit,
     method: 'POST',
     params: { gid }
+  })
+}
+
+UnSignedService.oaPay = function (paymentOtherGUID) {
+  return request({
+    url: API.oaPay,
+    method: 'POST',
+    params: { paymentOtherGUID }
   })
 }
 
