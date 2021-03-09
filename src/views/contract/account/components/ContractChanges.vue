@@ -17,6 +17,10 @@
             {{text | NumberFormat}}
           </span>
 
+          <span slot="voNo" slot-scope="text,record">
+            <a @click="handToCip(record.cipGuid)">{{text}}</a>
+          </span>
+
           <span slot="creationTime" slot-scope="text">
             {{text | date}}
           </span>
@@ -36,6 +40,7 @@
         {
             title: '变更编号',
             dataIndex: 'voNo',
+            scopedSlots: { customRender: 'voNo' }
         },
         {
             title: '申请金额',
@@ -81,6 +86,11 @@
                 default: '0'
             }
         },
+        methods: {
+            handToCip (id) {
+                this.$router.push({ path: `/change/cip/item/${id}?contractGuid=${this.id}&type=view&stage=CIP` })
+            }
+        }
     }
 </script>
 
