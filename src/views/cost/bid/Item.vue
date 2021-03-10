@@ -166,7 +166,7 @@
                     ></a-input>
                     <a-input
                       :disabled="type === 'view' || getIndustryItem(index).isEditItem"
-                      :value="getIndustryItem(index).packageTitle"
+                      :value="getIndustryItem(index).tradePackageCode"
                       @click="showSelect(index)"></a-input>
                   </a-form-model-item>
                 </td>
