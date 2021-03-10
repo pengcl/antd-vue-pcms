@@ -30,13 +30,20 @@
             bordered
           >
           <span slot="action" slot-scope="text,record,index">
-            <a-button @click="save(record)" :disabled="disabled" icon="save"
+            <a-button @click="edit(record)"
+                      icon="edit"
+                      v-if="record.show"
+                      style="margin-right: 5px;margin-bottom: 5px">编辑</a-button>
+            <a-button @click="save(record)"
+                      :disabled="disabled"
+                      icon="save"
+                      v-if="!record.show"
                       style="margin-right: 5px;margin-bottom: 5px">
                   保存
                 </a-button>
             <a-upload name="file"
                       :multiple="false"
-                      v-if="record.invoiceType"
+                      v-if="record.invoiceType && !record.show"
                       :before-upload="beforeUpload">
                   <a-button @click="choose(index)">请选择</a-button>
                 </a-upload>
@@ -45,10 +52,6 @@
                 </a-button>
           </span>
 
-
-            <span slot="paymentAmount" slot-scope="text,record,index">
-              {{text | NumberFormat}}
-            </span>
 
             <span slot="invoiceType" slot-scope="text,record">
             <a-select
@@ -158,12 +161,6 @@
             width: 200
         },
         {
-            title: '付款单金额',
-            dataIndex: 'paymentAmount',
-            scopedSlots: { customRender: 'paymentAmount' },
-            width: 150
-        },
-        {
             title: '票据类型',
             dataIndex: 'invoiceType',
             scopedSlots: { customRender: 'invoiceType' },
@@ -254,22 +251,26 @@
             }
         },
         methods: {
+            edit (record) {
+                record.show = false
+            },
             getData () {
                 SignedService.getBillList(this.id, '').then(res => {
                     if (res.result.data.length > 0) {
                         res.result.data.forEach(item => {
                             item.isTemp = false
                             item.isDeleted = false
+                            item.show = true
                         })
                     }
                     this.billList = res.result.data
+                    this.$forceUpdate()
                 })
             },
             handleOk (index) {
                 const data = this.$refs['payment' + index].selected
                 this.billList[index].paymentGID = data.gid
                 this.billList[index].paymentCode = data.paymentCode
-                this.billList[index].paymentAmount = data.paymentAmount
                 this.$forceUpdate()
                 this.visibles['' + index] = false
             },
