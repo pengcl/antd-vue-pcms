@@ -74,6 +74,13 @@
           </a-button-group>
         </a-col>
       </a-row>
+      <a-row style="margin-top: 10px">
+        <a-col :md="12" :sm="24">
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <span style="color:#fd0000;float: right">说明：系统中预算数据默认只保留两位小数，超出部分四舍五入，请确保导入数据按此规格，以免出现汇总误差。</span>
+        </a-col>
+      </a-row>
     </a-card>
     <!-- 科目审批记录 -->
     <audit-sub-list-modal ref="auditSubListModal"></audit-sub-list-modal>
