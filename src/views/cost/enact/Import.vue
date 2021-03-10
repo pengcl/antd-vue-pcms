@@ -22,6 +22,10 @@
               </a-upload>
             </a-form-model-item>
           </a-col>
+          <a-col :md="3" :sm="24"></a-col>
+          <a-col :md="21" :sm="24">
+              <span style="color:#fd0000;margin-left: 50px;">说明：系统中预算数据默认只保留两位小数，超出部分四舍五入，请确保导入数据按此规格，以免出现汇总误差。</span>
+          </a-col>
         </a-row>
       </a-form-model>
       <a-row>

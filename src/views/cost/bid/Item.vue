@@ -56,13 +56,14 @@
           <!--          </a-col>-->
           <a-col :md="24" :sm="24">
             <a-form-item label="金额" prop="budgetAmount">
-              <a-input
+              <a-input-number
                 :disabled="true"
                 v-model="form.budgetAmount"
                 placeholder="汇总明细项金额"
                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\\s?|(,*)/g, '')"
-              ></a-input>
+                :precision="2"
+              ></a-input-number>
             </a-form-item>
           </a-col>
           <a-col :md="24" :sm="24">
