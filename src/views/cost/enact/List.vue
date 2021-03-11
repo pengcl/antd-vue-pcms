@@ -92,7 +92,7 @@
               title="查看">
             </a-button>
             <a-button
-              :disabled="auditStatus === '审核中'"
+              :disabled="auditStatus === '审核中' || record.auditStatus === '审核中'"
               v-if="ac('EDIT') && auditStatus !== '审核中' && !!record.auditStatus"
               @click="handleToEdit(record)"
               type="primary"
