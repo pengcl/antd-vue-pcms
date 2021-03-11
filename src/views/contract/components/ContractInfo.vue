@@ -396,19 +396,19 @@
                     const equivalentAmount = value * this.data.contract.currencyExchangeRate
                     this.data.contract.equivalentAmount = equivalentAmount || 0
                     this.data.contract.contractAmountText = digitUppercase(value)
-                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount / (1 + this.data.contract.taxRate * 0.01)
-                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount
+                    this.data.contract.contractNoTaxAmount = Number(this.data.contract.contractAmount / (1 + this.data.contract.taxRate * 0.01)).toFixed(2)
+                    this.data.contract.contractTaxAmount = Number(this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount).toFixed(2)
                 }
             },
             'data.contract.taxRate' (value) {
                 if (typeof value === 'number') {
-                    this.data.contract.contractNoTaxAmount = this.data.contract.contractAmount / (1 + this.data.contract.taxRate * 0.01)
-                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount
+                    this.data.contract.contractNoTaxAmount = Number(this.data.contract.contractAmount / (1 + this.data.contract.taxRate * 0.01)).toFixed(2)
+                    this.data.contract.contractTaxAmount = Number(this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount).toFixed(2)
                 }
             },
             'data.contract.contractNoTaxAmount' (value) {
                 if (typeof value === 'number') {
-                    this.data.contract.contractTaxAmount = this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount
+                    this.data.contract.contractTaxAmount = Number(this.data.contract.contractAmount - this.data.contract.contractNoTaxAmount).toFixed(2)
                 }
             },
             'data.contract.currencyExchangeRate' (value) {

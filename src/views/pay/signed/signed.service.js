@@ -33,6 +33,11 @@ const API = {
   audit: '/api/services/app/Payment/OneClickAudit',
   cancelAudit: '/api/services/app/Payment/OneClickUnAudit',
   oaPay: '/api/services/app/Payment/PaymentManualAyncToOA',
+  briefList: '/api/services/app/Payment/GetPaymentBriefList',
+  getBillList: '/api/services/app/Payment/GetPaymentBillList',
+  createBill: '/api/services/app/Payment/CreatePaymentBill',
+  updateBill: '/api/services/app/Payment/UpdatePaymentBill',
+  deleteBill: '/api/services/app/Payment/DeletePaymentBill'
 }
 
 const SignedService = {}
@@ -59,6 +64,23 @@ SignedService.contractAmt = function (contractGid) {
     params: { contractGid }
   })
 }
+
+SignedService.briefList = function (contractGID) {
+  return request({
+    url: API.briefList,
+    method: 'get',
+    params: { contractGID }
+  })
+}
+
+SignedService.getBillList = function (contractGID, paymentGID) {
+  return request({
+    url: API.getBillList,
+    method: 'get',
+    params: { contractGID, paymentGID }
+  })
+}
+
 
 SignedService.paymentList = function (parameter) {
   return request({
@@ -244,6 +266,13 @@ SignedService.create = function (parameter) {
   })
 }
 
+SignedService.createBill = function (parameter) {
+  return request({
+    url: API.createBill,
+    method: 'POST',
+    data: parameter
+  })
+}
 
 SignedService.audit = function (gid) {
   return request({
@@ -269,9 +298,25 @@ SignedService.update = function (parameter) {
   })
 }
 
+SignedService.updateBill = function (parameter) {
+  return request({
+    url: API.updateBill,
+    method: 'PUT',
+    data: parameter
+  })
+}
+
 SignedService.delete = function (gid) {
   return request({
     url: API.delete,
+    method: 'DELETE',
+    params: { gid }
+  })
+}
+
+SignedService.deleteBill = function (gid) {
+  return request({
+    url: API.deleteBill,
     method: 'DELETE',
     params: { gid }
   })

@@ -99,15 +99,15 @@
           <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-row :gutter="48">
               <a-col :md="8" :sm="24">
-                <span>预计结算金额：{{contractAmt.contractEstimateAmount}}</span>
+                <span>预计结算金额：{{contractAmt.contractEstimateAmount | NumberFormat}}</span>
               </a-col>
               <a-col :md="8" :sm="24">
-                <span>累计批准金额：{{contractAmt.paymentRequestAmountTotal}} 占
+                <span>累计批准金额：{{contractAmt.paymentRequestAmountTotal | NumberFormat}} 占
                   {{contractAmt.paymentRequestAmountTotalRatio || contractAmt.paymentRequestAmountTotalRatio === 0 ?
                   contractAmt.paymentRequestAmountTotalRatio + '%' : ''}}</span>
               </a-col>
               <a-col :md="8" :sm="24">
-                <span>累计付款金额：{{contractAmt.paymentAmountTotal}} 占 {{contractAmt.paymentAmountTotalRatio
+                <span>累计付款金额：{{contractAmt.paymentAmountTotal | NumberFormat}} 占 {{contractAmt.paymentAmountTotalRatio
                   || contractAmt.paymentAmountTotalRatio === 0 ?
                   contractAmt.paymentAmountTotalRatio + '%' : ''}}</span>
               </a-col>
@@ -121,7 +121,7 @@
       <a-row :gutter="48" style="margin-top: 10px">
         <a-col :md="12" :sm="24">
           <a-button type="success" @click="handleToAdd" v-if="queryParam.ContractGID && canAdd && ac('ADD')">新增付款</a-button>
-          <a-button type="success" style="margin-left: 10px" @click="handToInvoice" :disabled="true">发票管理</a-button>
+          <a-button type="success" style="margin-left: 10px" @click="handToInvoice" :disabled="!queryParam.ContractGID">发票管理</a-button>
         </a-col>
       </a-row>
       <s-table
@@ -419,7 +419,7 @@
             },
             handToInvoice () {
                 this.$router.push({
-                    path: '/pay/signed/invoice/list'
+                    path: `/pay/signed/invoice/list/${this.queryParam.ContractGID}`
                 })
             },
             remove (record) {

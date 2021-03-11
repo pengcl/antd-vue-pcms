@@ -357,7 +357,7 @@ export const asyncRouterMap = [
             meta: { title: 'menu.pay.signed.item', keepAlive: false, permission: ['PaymentContract'] }
           },
           {
-            path: '/pay/signed/invoice/list',
+            path: '/pay/signed/invoice/list/:id',
             name: 'PaySignedInvoiceList',
             hidden: true,
             component: () => import('@/views/pay/signed/invoice/List'),

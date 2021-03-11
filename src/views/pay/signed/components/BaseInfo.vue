@@ -148,7 +148,7 @@
         <table>
           <tbody>
           <tr>
-            <td rowspan="4" style="text-align: center">原合同</td>
+            <td rowspan="6" style="text-align: center">原合同</td>
             <td>合同金额</td>
             <td>
               <a-input-number :disabled="true"
@@ -230,8 +230,101 @@
             </td>
           </tr>
           <tr>
+            <td>累计完成合同工作之评估价值<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.requestAmount_All_Contract"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"></a-input-number>
+              <p v-if="!data.contractMasterInfo.requestAmount_All_Contract" style="color: red">请输入</p>
+            </td>
+            <td>累计完成已批准变更工作之评估价值<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.requestAmount_All_VO"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"
+                              required></a-input-number>
+              <p v-if="!data.contractMasterInfo.requestAmount_All_VO" style="color: red">请输入</p>
+            </td>
+            <td>累计完成已批准CIP工作之评估价值<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.requestAmount_All_CIP"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"
+                              required></a-input-number>
+              <p v-if="!data.contractMasterInfo.requestAmount_All_CIP" style="color: red">请输入</p>
+            </td>
+          </tr>
+          <tr>
+            <td>减：保留金/保修金(%)<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.retentionAmount"
+                              :min="0"
+                              :max="100"
+                              :precision="2"
+                              :formatter="value => `${value}%`"
+                              :parser="value => value.replace('%', '')"></a-input-number>
+              <p v-if="!data.contractMasterInfo.retentionAmount" style="color: red">请输入</p>
+            </td>
+            <td>减：履约保证金(%)<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.bondAmount"
+                              :min="0"
+                              :max="100"
+                              :precision="2"
+                              :formatter="value => `${value}%`"
+                              :parser="value => value.replace('%', '')"></a-input-number>
+              <p v-if="!data.contractMasterInfo.bondAmount" style="color: red">请输入</p>
+            </td>
+            <td>减：其他扣除款项<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.otherDeductionsAmount"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"
+                              required></a-input-number>
+              <p v-if="!data.contractMasterInfo.otherDeductionsAmount" style="color: red">请输入</p>
+            </td>
+          </tr>
+          <tr>
+            <td>加：预付款<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.prePayment_Plus"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"
+                              required></a-input-number>
+              <p v-if="!data.contractMasterInfo.prePayment_Plus" style="color: red">请输入</p>
+            </td>
+            <td>减：预付款<span style="color: red">*</span></td>
+            <td>
+              <a-input-number :disabled="type === 'view'"
+                              placeholder="请输入"
+                              v-model="data.contractMasterInfo.prePayment_Sub"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"
+                              required></a-input-number>
+              <p v-if="!data.contractMasterInfo.prePayment_Sub" style="color: red">请输入</p>
+            </td>
             <td>付款类型</td>
-            <td colspan="5">
+            <td>
               <a-select
                 :disabled="type === 'view'"
                 placeholder="请选择"
@@ -275,7 +368,7 @@
           <table>
             <tbody>
             <tr>
-              <td rowspan="5" style="text-align: center">专业分包合同</td>
+              <td rowspan="7" style="text-align: center">专业分包合同</td>
               <td>合同编号</td>
               <td>
                 <a-input :disabled="true" v-model="item.contractNo"></a-input>
@@ -357,13 +450,106 @@
               </td>
             </tr>
             <tr>
+              <td>累计完成合同工作之评估价值<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.requestAmount_All_Contract"
+                                :min="0"
+                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :precision="2"></a-input-number>
+                <p v-if="!item.requestAmount_All_Contract" style="color: red">请输入</p>
+              </td>
+              <td>累计完成已批准变更工作之评估价值<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.requestAmount_All_VO"
+                                :min="0"
+                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :precision="2"
+                                required></a-input-number>
+                <p v-if="!item.requestAmount_All_VO" style="color: red">请输入</p>
+              </td>
+              <td>累计完成已批准CIP工作之评估价值<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.requestAmount_All_CIP"
+                                :min="0"
+                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :precision="2"
+                                required></a-input-number>
+                <p v-if="!item.requestAmount_All_CIP" style="color: red">请输入</p>
+              </td>
+            </tr>
+            <tr>
+              <td>减：保留金/保修金(%)<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.retentionAmount"
+                                :min="0"
+                                :max="100"
+                                :precision="2"
+                                :formatter="value => `${value}%`"
+                                :parser="value => value.replace('%', '')"></a-input-number>
+                <p v-if="!item.retentionAmount" style="color: red">请输入</p>
+              </td>
+              <td>减：履约保证金(%)<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.bondAmount"
+                                :min="0"
+                                :max="100"
+                                :precision="2"
+                                :formatter="value => `${value}%`"
+                                :parser="value => value.replace('%', '')"></a-input-number>
+                <p v-if="!item.bondAmount" style="color: red">请输入</p>
+              </td>
+              <td>减：其他扣除款项<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.otherDeductionsAmount"
+                                :min="0"
+                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :precision="2"
+                                required></a-input-number>
+                <p v-if="!item.otherDeductionsAmount" style="color: red">请输入</p>
+              </td>
+            </tr>
+            <tr>
+              <td>加：预付款<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.prePayment_Plus"
+                                :min="0"
+                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :precision="2"
+                                required></a-input-number>
+                <p v-if="!item.prePayment_Plus" style="color: red">请输入</p>
+              </td>
+              <td>减：预付款<span style="color: red">*</span></td>
+              <td>
+                <a-input-number :disabled="type === 'view'"
+                                placeholder="请输入"
+                                v-model="item.prePayment_Sub"
+                                :min="0"
+                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :precision="2"
+                                required></a-input-number>
+                <p v-if="!item.prePayment_Sub" style="color: red">请输入</p>
+              </td>
               <td>付款类型</td>
-              <td colspan="5">
+              <td>
                 <a-select
                   :disabled="type === 'view'"
                   placeholder="请选择"
                   v-model="item.paymentBusinessType"
-                  v-decorator="['paymentTypes', { rules: [{required: true, message: '付款账户必须填写'}] }]">
+                  v-decorator="['paymentBusinessType', { rules: [{required: true, message: '请选择付款类型'}] }]">
                   <a-select-option
                     v-for="type in paymentTypes"
                     :value="type"
@@ -510,7 +696,7 @@
             width: 180
         },
         {
-            title: '编号',
+            title: '发票编号',
             dataIndex: 'billNum',
             scopedSlots: { customRender: 'billNum' },
             width: 150
@@ -592,7 +778,8 @@
                     expenseAccountType: [{ required: true, message: '请选择付款凭证', trigger: 'change' }],
                     paymentContent: [{ required: true, message: '请输入付款说明', trigger: 'change' }],
                     paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
-                    paymentDeadlineDay: [{ required: true, message: '请输入合同付款期限', trigger: 'change' }]
+                    paymentDeadlineDay: [{ required: true, message: '请输入合同付款期限', trigger: 'change' }],
+                    requestAmount_All_Contract: [{ required: true, message: '请输入累计完成合同工作之评估价值', trigger: 'change' }]
                 }
             }
         },

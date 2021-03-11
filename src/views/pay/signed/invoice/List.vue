@@ -1,105 +1,139 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
-      <a-row :gutter="48">
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="12" :sm="24">
+              <a-form-item label="中央合同编号"> {{ form.contract.contractNo }}</a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="合同名称">{{ form.contract.contractName }}</a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+      <a-row>
         <a-col :md="24" :sm="24">
-          <div class="table-wrapper">
-            <table>
-              <thead>
-              <tr>
-                <th colspan="9">
-                  <a-button icon="plus" @click="add">
-                    新增发票
-                  </a-button>
-                </th>
-              </tr>
-              <tr>
-                <th>操作</th>
-                <th>票据类型</th>
-                <th>编号</th>
-                <th>发票金额</th>
-                <th>税率</th>
-                <th>不含税金额</th>
-                <th>发票日期</th>
-                <th>发票附件</th>
-                <th>备注</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-if="!item.isDeleted" v-for="(item,index) in billList" :key="index">
-                <td>
-                  <a-upload name="file"
-                            :multiple="false"
-                            v-if="item.billType"
-                            :before-upload="beforeUpload">
-                    <a-button @click="choose(index)">请选择</a-button>
-                  </a-upload>
-                  <a-button @click="del(index)" icon="close">
-                    删除
-                  </a-button>
-                </td>
-                <td>
-                  <a-select
-                    placeholder="请选择"
-                    @change="onchange"
-                    v-model="item.billType"
-                    v-decorator="['item.billType', { rules: [{required: true, message: '请选择票据类型'}] }]">
-                    <a-select-option
-                      v-for="type in billTypeList"
-                      :value="type"
-                      :key="type">{{ type }}
-                    </a-select-option>
-                  </a-select>
-                </td>
-                <td>
-                  <a-input v-model="item.billNum"></a-input>
-                </td>
-                <td>
-                  <a-input-number v-model="item.billAmount"
-                                  :min="0"
-                                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                                  :precision="2"></a-input-number>
-                </td>
-                <td>
-                  <a-input-number v-model="item.taxRate"
-                                  :min="0"
-                                  :max="100"
-                                  :formatter="value => `${value}%`"
-                                  :parser="value => value.replace('%', '')"></a-input-number>
-                </td>
-                <td>
-                  <a-input-number v-model="item.noTaxAmount"
-                                  :min="0"
-                                  :formatter="value => `${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                  :parser="value => value.replace(/\元\s?|(,*)/g, '')"
-                                  :precision="2"></a-input-number>
-                </td>
-                <td>
-                  <a-date-picker v-model="item.billDate"></a-date-picker>
-                </td>
-                <td>
-                  <a :href="item.billFileUrl" target="_blank" v-if="item.billFileName">{{item.billFileName}}</a>
-                </td>
-                <td>
-                  <a-input v-model="item.remark"></a-input>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">发票合计</td>
-                <td colspan="7"></td>
-              </tr>
-              <tr>
-                <td colspan="2">累计发票金额</td>
-                <td colspan="7"></td>
-              </tr>
-              <tr>
-                <td colspan="2">累计票款差额</td>
-                <td colspan="7"></td>
-              </tr>
-              </tbody>
-            </table>
+          <div
+            style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;">
+            <a-button icon="plus" @click="add()">
+              新增发票
+            </a-button>
           </div>
+          <a-table
+            ref="table"
+            :row-key="record => record._id"
+            :columns="columns"
+            :data-source="billList | filterDeleted"
+            :scroll="{  x: 'calc(700px + 50%)' }"
+            bordered
+          >
+          <span slot="action" slot-scope="text,record,index">
+            <a-button @click="edit(record)"
+                      icon="edit"
+                      v-if="record.show"
+                      style="margin-right: 5px;margin-bottom: 5px">编辑</a-button>
+            <a-button @click="save(record)"
+                      :disabled="disabled"
+                      icon="save"
+                      v-if="!record.show"
+                      style="margin-right: 5px;margin-bottom: 5px">
+                  保存
+                </a-button>
+            <a-upload name="file"
+                      :multiple="false"
+                      v-if="record.invoiceType && !record.show"
+                      :before-upload="beforeUpload">
+                  <a-button @click="choose(index)">请选择</a-button>
+                </a-upload>
+                <a-button @click="del(index)" icon="close">
+                  删除
+                </a-button>
+          </span>
+
+
+            <span slot="invoiceType" slot-scope="text,record">
+            <a-select
+              placeholder="请选择"
+              @change="onchange"
+              v-model="record.invoiceType"
+              v-decorator="['item.invoiceType', { rules: [{required: true, message: '请选择票据类型'}] }]">
+                  <a-select-option
+                    v-for="type in billTypeList"
+                    :value="type"
+                    :key="type">{{ type }}
+                  </a-select-option>
+                </a-select>
+          </span>
+
+            <span slot="paymentCode" slot-scope="text,record,index">
+              <a-input
+                :value="record.paymentCode"
+                @click="showSelect(''+index)"
+                :read-only="true"></a-input>
+              <select-payment-modal :ref="'payment'+index"
+                                    :contractGID="id"
+                                    :visible="visibles[''+index] ? visibles[''+index] : false"
+                                    @cancel="handleCancel(''+index)"
+                                    @ok="handleOk(index)"></select-payment-modal>
+            </span>
+
+            <span slot="billNum" slot-scope="text,record">
+            <a-input v-model="record.billNum"></a-input>
+          </span>
+
+            <span slot="billAmount" slot-scope="text,record,index">
+            <a-input-number v-model="record.billAmount"
+                            @change="e => billAmountChange(e,record,'billAmount')"
+                            :min="0"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </span>
+
+            <span slot="taxRate" slot-scope="text,record">
+            <a-input-number v-model="record.taxRate"
+                            @change="e => taxRateChange(e,record,'taxRate')"
+                            :min="0"
+                            :max="100"
+                            :formatter="value => `${value}%`"
+                            :parser="value => value.replace('%', '')"></a-input-number>
+          </span>
+
+            <span slot="taxAmount" slot-scope="text,record">
+            <a-input-number v-model="record.taxAmount"
+                            @change="taxAmountChange(e,record,'taxAmount')"
+                            :min="0"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </span>
+
+            <span slot="noTaxAmount" slot-scope="text,record">
+            <a-input-number :disabled="true"
+                            v-model="record.noTaxAmount"
+                            @change="noTaxAmountChange"
+                            :min="0"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </span>
+
+            <span slot="billDate" slot-scope="text,record">
+            <a-date-picker v-model="record.billDate"></a-date-picker>
+          </span>
+
+            <span slot="billFileName" slot-scope="text,record">
+            <a :href="record.billFileUrl" target="_blank" v-if="record.billFileName">{{record.billFileName}}</a>
+          </span>
+
+            <span slot="remark" slot-scope="text,record">
+            <a-input v-model="record.remark"></a-input>
+          </span>
+          </a-table>
+        </a-col>
+        <a-col sm="24" :md="24" style="margin-top: 10px">
+          <a-button-group>
+            <a-button type="danger" @click="back">关闭</a-button>
+          </a-button-group>
         </a-col>
       </a-row>
     </a-card>
@@ -108,26 +142,175 @@
 
 <script>
     import { SignedService } from '@/views/pay/signed/signed.service'
+    import SelectPaymentModal from '../modules/SelectPaymentModal'
+    import { ContractService } from '@/views/contract/contract.service'
+    import { SwaggerService } from '@/api/swagger.service'
+    import { Base as BaseService } from '@/api/base'
+
+    const columns = [
+        {
+            title: '操作',
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            width: 210
+        },
+        {
+            title: '付款单号',
+            dataIndex: 'paymentCode',
+            scopedSlots: { customRender: 'paymentCode' },
+            width: 200
+        },
+        {
+            title: '票据类型',
+            dataIndex: 'invoiceType',
+            scopedSlots: { customRender: 'invoiceType' },
+            width: 180
+        },
+        {
+            title: '发票编号',
+            dataIndex: 'billNum',
+            scopedSlots: { customRender: 'billNum' },
+            width: 150
+        },
+        {
+            title: '发票金额',
+            dataIndex: 'billAmount',
+            scopedSlots: { customRender: 'billAmount' },
+            width: 180,
+        },
+        {
+            title: '税率',
+            dataIndex: 'taxRate',
+            scopedSlots: { customRender: 'taxRate' },
+            width: 150
+        },
+        {
+            title: '税额',
+            dataIndex: 'taxAmount',
+            scopedSlots: { customRender: 'taxAmount' },
+            width: 180,
+        },
+        {
+            title: '不含税金额',
+            dataIndex: 'noTaxAmount',
+            scopedSlots: { customRender: 'noTaxAmount' },
+            width: 180,
+        },
+        {
+            title: '发票日期',
+            dataIndex: 'billDate',
+            scopedSlots: { customRender: 'billDate' },
+            width: 180
+        },
+        {
+            title: '发票附件',
+            dataIndex: 'billFileName',
+            scopedSlots: { customRender: 'billFileName' },
+            width: 180
+        },
+        {
+            title: '备注',
+            dataIndex: 'remark',
+            scopedSlots: { customRender: 'remark' },
+            width: 150
+        }
+    ]
 
     export default {
         name: 'List',
+        components: { SelectPaymentModal },
         data () {
             return {
+                columns: columns,
                 billList: [],
                 billType: '',
-                billTypeList: []
+                billTypeList: [],
+                visibles: {},
+                form: SwaggerService.getForm('ContractAllInfoDto'),
+                masterID: 0,
+                disabled: false
             }
+        },
+        computed: {
+            id () {
+                return this.$route.params.id
+            },
         },
         created () {
             SignedService.billList().then(res => {
                 this.billTypeList = res.result.data
             })
+            ContractService.item(this.id).then(res => {
+                this.form = res.result.data
+            })
+            this.getData()
+        },
+        filters: {
+            filterDeleted (items) {
+                return items.filter(item => !item.isDeleted)
+            }
         },
         methods: {
+            edit (record) {
+                record.show = false
+            },
+            getData () {
+                SignedService.getBillList(this.id, '').then(res => {
+                    if (res.result.data.length > 0) {
+                        res.result.data.forEach(item => {
+                            item.isTemp = false
+                            item.isDeleted = false
+                            item.show = true
+                        })
+                    }
+                    this.billList = res.result.data
+                    this.$forceUpdate()
+                })
+            },
+            handleOk (index) {
+                const data = this.$refs['payment' + index].selected
+                this.billList[index].paymentGID = data.gid
+                this.billList[index].paymentCode = data.paymentCode
+                this.$forceUpdate()
+                this.visibles['' + index] = false
+            },
+            handleCancel (key) {
+                this.visibles[key] = false
+            },
+            showSelect (key) {
+                this.$set(this.visibles, key, true)
+            },
+            billAmountChange (value, record, key) {
+                record[key] = value
+                if (record['taxRate']) {
+                    record['taxAmount'] = record[key] * (record['taxRate'] / 100) / (record['taxRate'] / 100 + 1)
+                    record['noTaxAmount'] = record[key] - record['taxAmount']
+                }
+                this.$forceUpdate()
+            },
+            taxRateChange (value, record, key) {
+                record[key] = value
+                if (record['billAmount']) {
+                    record['taxAmount'] = (record[key] / 100) * record['billAmount'] / (record[key] / 100 + 1)
+                    record['noTaxAmount'] = record['billAmount'] - record['taxAmount']
+                }
+                this.$forceUpdate()
+            },
+            taxAmountChange (value, record, key) {
+                record[key] = value
+                record['noTaxAmount'] = record['billAmount'] - record[key]
+                this.$forceUpdate()
+            },
+            noTaxAmountChange (value) {
+                this.$forceUpdate()
+            },
             add () {
                 const item = {
                     isDeleted: false,
                     isTemp: true,
+                    id: 0,
+                    gid: '00000000-0000-0000-0000-000000000000',
+                    contractGID: this.id,
                     billType: '',
                     billNum: '',
                     billAmount: '',
@@ -149,6 +332,7 @@
                     this.billList.splice(index, 1)
                 } else {
                     this.removeFile(this.billList[index].billFileID)
+                    this.deleteBill(this.billList[index].gid)
                     this.billList[index].isDeleted = true
                 }
                 this.$forceUpdate()
@@ -160,12 +344,13 @@
             handleUpload (file) {
                 const formData = new FormData()
                 formData.append('file', file)
-                formData.append('masterId', this.data['masterID'])
+                formData.append('masterId', this.masterID)
                 formData.append('businessID', this.id)
                 formData.append('businessType', 'bill')
+                formData.append('remark', '发票')
                 formData.append('subInfo1', this.billType) //文件类型
-                formData.append('subInfo2', file.name) // 文件名
-                formData.append('subInfo3', this.data['contractGID']) // 合同id
+                formData.append('subInfo2', '') // 文件名
+                formData.append('subInfo3', '') // 合同id
                 this.uploading = true
                 const _this = this
                 this.$http.post('/api/services/app/UploadAppservice/CommonUpload', formData, {
@@ -174,9 +359,9 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 })
                     .then((response) => {
-                        this.data.billList[this.index].billFileID = response.result.data.id
-                        this.data.billList[this.index].billFileName = response.result.data.fileName
-                        this.data.billList[this.index].billFileUrl = response.result.data.fileUrl
+                        this.billList[this.index].billFileID = response.result.data.id
+                        this.billList[this.index].billFileName = response.result.data.fileName
+                        this.billList[this.index].billFileUrl = response.result.data.fileUrl
                         this.masterID = response.result.data.masterID
                         this.$forceUpdate()
                         _this.$message.success('上传成功')
@@ -189,61 +374,43 @@
                     console.log(res)
                 })
             },
+            deleteBill (gid) {
+                SignedService.delete(gid).then(res => {
+                    if (res.result.statusCode === 200) {
+                        this.$message.success('删除成功！')
+                    }
+                })
+            },
             choose (index) {
                 this.index = index
             },
             onchange (value) {
                 this.billType = value
             },
+            back () {
+                this.$router.push({
+                    path: '/pay/signed/list'
+                })
+            },
+            save (record) {
+                this.disabled = true
+                SignedService[record.isTemp ? 'createBill' : 'updateBill'](record).then(res => {
+                    if (res.result.statusCode === 200) {
+                        this.$message.success('保存成功！')
+                        this.disabled = false
+                        this.getData()
+                    } else {
+                        this.disabled = false
+                    }
+                })
+
+            }
         }
     }
 </script>
 
 <style lang="less" scoped>
-  table {
-    margin: 15px 0;
-    width: 100%;
-    border-width: 1px 1px 0 0;
-    border-radius: 3px 3px 0 0;
-    border-style: solid;
-    border-color: #ccc;
-
-    thead {
-      tr {
-        &:first-child {
-          th {
-            background-color: #f5f5f5;
-          }
-        }
-
-        th {
-          background-color: #06c;
-          color: #fff;
-          font-weight: normal;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        td {
-          padding: 0.5em 0.6em 0.4em 0.6em !important;
-          border-width: 0 0 1px 1px;
-          border-style: solid;
-          border-color: #ccc;
-
-          button {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
+  .ant-btn-group {
+    margin-right: 8px;
   }
 </style>
