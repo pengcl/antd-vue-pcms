@@ -27,6 +27,10 @@
         <a-button :disabled="!queryParam.ProjectGUID || auditStatus !== '已审核' || projectType === 'project'"
                   v-if="ac('ADD')" type="success" @click="handleToAdd">新增业态成本中心
         </a-button>
+        <a-button v-if="ac('ADD')" type="success" @click="bpm">新增审核
+        </a-button>
+        <a-button type="success" @click="showAuditModal">审核记录
+        </a-button>
         <a-button type="primary" style="float: right">汇出</a-button>
       </div>
 
@@ -94,6 +98,8 @@
         </span>
       </s-table>
     </a-card>
+    <!-- 主列表审批记录 -->
+    <audit-list-modal ref="auditListModal"></audit-list-modal>
   </page-header-wrapper>
 </template>
 
@@ -106,6 +112,7 @@
     import storage from 'store'
     import { formatList } from '@/mock/util'
     import { Base as BaseService } from '@/api/base'
+    import AuditListModal from '@/views/project/cost/modal/AuditListModal'
 
     const columns = [
         {
@@ -228,11 +235,13 @@
         name: 'ProjectCostList',
         components: {
             STable,
-            Ellipsis
+            Ellipsis,
+            AuditListModal
         },
         data () {
             this.columns = columns
             return {
+                loading: { bpm: false, view: false },
                 show: false,
                 cities: null,
                 projectType: null,
@@ -304,7 +313,26 @@
             },
             search () {
                 this.$refs.table.refresh()
-            }
+            },
+            view () {
+              this.loading.view = true
+              BaseService.viewBpm(this.form.ccBusinessGuid).then(res => {
+                this.loading.view = false
+                const _window = window.open('_blank')
+                _window.location = res.result.data
+              })
+            },
+            bpm () {
+              this.loading.bpm = true
+              CostService.bpm(this.queryParam.ProjectGUID).then(res => {
+                this.loading.bpm = false
+                const _window = window.open('_blank')
+                _window.location = res.result.data
+              })
+            },
+            showAuditModal() {
+              this.$refs.auditListModal.show(this.queryParam.ProjectGUID)
+            },
         }
     }
 </script>

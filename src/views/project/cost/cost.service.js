@@ -1,13 +1,15 @@
 import request from '@/utils/request'
 
 const API = {
-  list: '/api/services/app/ProjectCostCenter/GetPaged',
-  item: '/api/services/app/ProjectCostCenter/GetById',
-  create: '/api/services/app/ProjectCostCenter/Create',
-  update: '/api/services/app/ProjectCostCenter/Update',
+  list: '/api/services/app/ProjectCostCenter/GetPaged_NEW',
+  item: '/api/services/app/ProjectCostCenter/GetById_NEW',
+  create: '/api/services/app/ProjectCostCenter/Create_NEW',
+  update: '/api/services/app/ProjectCostCenter/Update_NEW',
   delete: '/api/services/app/ProjectCostCenter/Delete',
   bpm: '/api/services/app/ProjectCostCenter/StartBPM',
   secCostAllocateTypes: '/api/services/app/GeneralType/GetSecCostAllocateTypes',
+  bpmVersion: '/api/services/app/ProjectCostCenter/GetAuditVersion', // 审批记录
+  bpmProjectHistory: '/api/services/app/ProjectCostCenter/GetProjectCostCenterVersionList' // 查看历史版本
 }
 
 const CostService = {}
@@ -91,6 +93,22 @@ CostService.paged = function (parameter) {
     url: API.paged,
     method: 'get',
     data: parameter
+  })
+}
+
+CostService.bpmVersion = function (parameter) {
+  return request({
+    url: API.bpmVersion,
+    method: 'get',
+    params: parameter
+  })
+}
+
+CostService.bpmProjectHistory = function (parameter) {
+  return request({
+    url: API.bpmProjectHistory,
+    method: 'get',
+    params: parameter
   })
 }
 
