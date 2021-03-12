@@ -208,6 +208,7 @@
                              v-model="data.contractMasterInfo.progressApproveDate"
                              style="width: 100%"
                              v-decorator="['progressApproveDate', { rules: [{required: true, message: '请选择申请批准日期'}] }]"></a-date-picker>
+              <p v-if="data.contractMasterInfo.paymentRequestAmount && !data.contractMasterInfo.progressApproveDate" style="color: red">请选择日期</p>
             </td>
             <td>申请批准金额</td>
             <td>
@@ -428,6 +429,7 @@
               <td>
                 <a-date-picker :disabled="type === 'view'" v-model="item.progressApproveDate"
                                style="width: 100%"></a-date-picker>
+                <p v-if="item.paymentRequestAmount && !item.progressApproveDate" style="color: red">请选择日期</p>
               </td>
               <td>申请批准金额</td>
               <td>

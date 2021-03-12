@@ -150,14 +150,15 @@
                 <a-select
                   :disabled="type === 'view'"
                   :default-value="record | getValue(index)"
-                  style="width: 200px;margin-top: 15px"
+                  style="width: 300px;margin-top: 15px"
                   @change="centerChange">
                   <a-select-option
-                    :value="index + ';' + center.id + ';' + center.costCenterName"
+                    :value="index + ';' + center.id + ';' +center.projectShortName + ';' + center.costCenterName"
                     :itemIndex="index"
+                    :title="center.projectShortName + '-' + center.costCenterName"
                     v-for="center in selection.centers"
                     :key="JSON.stringify(center)">
-                    {{ center.costCenterName }}
+                    {{ center.projectShortName + '-' + center.costCenterName }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
@@ -246,7 +247,6 @@
     import { ContractService } from '@/views/contract/contract.service'
     import ShareToolModal from './contractList/ShareToolModal'
 
-
     const columns = [
         {
             title: '操作',
@@ -258,7 +258,7 @@
             title: '业态成本中心',
             dataIndex: 'costCenter',
             scopedSlots: { customRender: 'costCenter' },
-            width: 200
+            width: 300
         },
         {
             title: '清单项类别',
@@ -357,9 +357,10 @@
             getValue (item, index) {
                 const values = []
                 const ids = item.costCenter ? item.costCenter.split(';') : []
+                const projectShortNames = item.projectShortName ? item.projectShortName.split(';') : []
                 const names = item.costCenterName ? item.costCenterName.split(';') : []
                 ids.forEach((id, idsIndex) => {
-                    const value = index + ';' + id + ';' + names[idsIndex]
+                    const value = index + ';' + id + ';' + projectShortNames[idsIndex] + ';' + names[idsIndex]
                     values.push(value)
                 })
                 return values
@@ -463,7 +464,8 @@
                 const arr = value.split(';')
                 const item = this.data.contractBQNewlst[arr[0]]
                 item.costCenter = arr[1]
-                item.costCenterName = arr[2]
+                item.projectShortName = arr[2]
+                item.costCenterName = arr[3]
                 this.getContractAmount()
             },
             valueChange (item, index) {

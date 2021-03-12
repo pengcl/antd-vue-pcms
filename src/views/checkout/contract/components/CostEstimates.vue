@@ -31,13 +31,13 @@
               >
                 <a-select
                   v-model="item.costCenter"
-                  style="width: 200px;margin-top: 12px"
+                  style="width: 300px;margin-top: 12px"
                   :disabled="type === 'view'"
                   @change="costCenterChange"
                 >
                   <a-select-option :value="center.id+''" v-for="center in selection.centers"
                                    :text="center.costCenterName" :key="index">
-                    {{ center.costCenterName }}
+                    {{ center.projectShortName + '-'+ center.costCenterName }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
@@ -61,7 +61,7 @@
                 :rules="[{ required: !item.isDeleted, message: '请输入金额' }]"
               >
                 <a-input-number
-                  style="margin-top: 12px"
+                  style="margin-top: 12px;width:180px"
                   :disabled="type === 'view'"
                   v-model="item.allAmount"
                   :formatter="(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -134,7 +134,7 @@
             title: '业态成本中心',
             dataIndex: 'costCenter',
             scopedSlots: { customRender: 'costCenter' },
-            width: 220,
+            width: 300,
         },
         {
             title: '清单项类别',
@@ -146,7 +146,7 @@
             title: '金额',
             dataIndex: 'allAmount',
             scopedSlots: { customRender: 'allAmount' },
-            width: 160,
+            width: 200,
         }
     ]
 
@@ -221,6 +221,7 @@
                 const index = option.data.key
                 const _index = this.selection.centers.findIndex(item => item.id + '' === value)
                 this.data.bqList[index].costCenterName = this.selection.centers[_index].costCenterName
+                this.data.bqList[index].projectShortName = this.selection.centers[_index].projectShortName
             },
             add (item, addData) {
                 let data = SwaggerService.getForm('BalanceContractDto_BQ')

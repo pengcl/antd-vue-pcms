@@ -5,8 +5,7 @@
     :maskClosable="false"
     :closable="false"
     title="分摊工具"
-    :confirm-loading="confirmLoading"
-    @ok="handleOk">
+    :confirm-loading="confirmLoading">
     <template slot="footer">
       <a-button
         key="compute"
@@ -87,14 +86,14 @@
         :rowSelection="rowSelection"
       >
             <span slot="costCenter" slot-scope="text, item, index">
-                <a-select v-model="item.costCenter" style="width:270px;" :disabled="true">
+                <a-select v-model="item.costCenter" style="width:300px;" :disabled="true">
                     <a-select-option
                       :value="center.id + ''"
                       v-for="center in selection.centers"
                       :text="center.costCenterName"
                       :key="JSON.stringify(center)"
                     >
-                    {{ center.costCenterName }}
+                    {{ center.projectShortName + '-' +center.costCenterName }}
                     </a-select-option>
                 </a-select>
             </span>

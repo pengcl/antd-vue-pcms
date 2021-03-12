@@ -151,6 +151,7 @@
                 } else {
                     SignedService.getCreateData(this.id).then(res => {
                         this.form = res.result.data
+                        this.form.paymentDeadlineDay = 28
                         this.form.attachmentID = 0
                         this.form.id = 0
                         this.form.gid = '00000000-0000-0000-0000-000000000000'
