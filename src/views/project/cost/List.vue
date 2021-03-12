@@ -96,6 +96,11 @@
             </a-button>
           </template>
         </span>
+        <span slot="auditStatus" slot-scope="text,record">
+          <p >
+            <span v-if="!!record.auditStatus" style="font-weight: bold;padding-right: 10px">{{text}} （V.{{record.version }}）</span>
+          </p>
+        </span>
       </s-table>
     </a-card>
     <!-- 主列表审批记录 -->
@@ -136,7 +141,7 @@
         {
             title: '审批状态',
             dataIndex: 'auditStatus',
-            width: 90,
+            width: 140,
             scopedSlots: { customRender: 'auditStatus' }
         },
         {

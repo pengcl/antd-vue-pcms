@@ -1000,11 +1000,7 @@
                             this.loading.save = false
                             if (res.result.statusCode === 200) {
                                 this.$message.success('保存成功')
-                                if (this.type === 'create') {
-                                    this.$router.push({ path: `/project/cost/item/${res.result.data.id}?type=update&ProjectGUID=` + this.ProjectGUID })
-                                } else {
-                                    this.$router.push({ path: '/project/cost/list' })
-                                }
+                                this.$router.push({ path: '/project/cost/list' })
                             }
                         }).catch(() => {
                             this.disabled = false
