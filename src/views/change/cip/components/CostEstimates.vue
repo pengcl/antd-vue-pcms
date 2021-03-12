@@ -32,11 +32,12 @@
               >
                 <a-select
                   v-model="item.costCenter"
-                  style="width: 200px"
+                  style="width: 320px"
                   :disabled="type === 'view'"
+                  @change="(value,target) => centerChange(value,target,item)"
                 >
-                  <a-select-option :value="center.id+''" v-for="center in selection.centers" :text="center.costCenterName" :key="JSON.stringify(center)">
-                    {{ center.costCenterName }}
+                  <a-select-option :value="center.id+''" v-for="center in selection.centers" :text="center.projectShortName+'-'+center.costCenterName" :key="JSON.stringify(center)">
+                    {{center.projectShortName}}-{{ center.costCenterName }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
@@ -96,25 +97,25 @@ const columns = [
     title: '操作',
     dataIndex: 'action',
     scopedSlots: { customRender: 'action' },
-    width: 150,
+    width: '100px',
   },
   {
     title: '业态成本中心',
     dataIndex: 'costCenter',
     scopedSlots: { customRender: 'costCenter' },
-    width: 220,
+    width: '320px',
   },
   {
     title: '清单项类别',
     dataIndex: 'itemType',
     scopedSlots: { customRender: 'itemType' },
-    width: 220,
+    width: '220px',
   },
   {
     title: '金额',
     dataIndex: 'allAmount',
     scopedSlots: { customRender: 'allAmount' },
-    width: 160,
+    width: '160px',
   }
 ]
 
@@ -190,6 +191,7 @@ export default {
         data.contractID = ''
       } else {
         data.allAmount = 0
+        data.costCenterName = ''
       }
       data.isTemp = true
       data.id = 0
@@ -274,13 +276,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ant-form .ant-form-item .ant-form-item-label.ant-col-8 {
-  width: 15em;
-}
+// .ant-form .ant-form-item .ant-form-item-label.ant-col-8 {
+//   width: 15em;
+// }
 
-.ant-form .ant-form-item .ant-form-item-control-wrapper.ant-col-16 {
-  width: calc(100% - 15em);
-}
+// .ant-form .ant-form-item .ant-form-item-control-wrapper.ant-col-16 {
+//   width: calc(100% - 15em);
+// }
 
 /deep/ .has-error .ant-form-explain {
   white-space: nowrap;
@@ -336,8 +338,8 @@ table {
         border-color: #ccc;
         text-align: center;
 
-        .ant-input {
-          min-width: 120px;
+        /deep/ .ant-input {
+          min-width: 150px;
         }
 
         /deep/ .has-error .ant-form-explain {
