@@ -979,13 +979,18 @@
               this.$refs.auditHistoryListModal.show(this.id, this.ProjectGUID)
             },
             bpm () {
+                const _this = this
                 this.loading.bpm = true
                 CostService.bpm(this.form.ccBusinessGuid).then(res => {
                     this.loading.bpm = false
-                    const _window = window.open('_blank')
-                    this.getData()
-                    _window.location = res.result.data
-                    this.$router.push({ path: `/project/cost/list` })
+                    if (res.result.statusCode === '200') {
+                      const _window = window.open('_blank')
+                      this.getData()
+                      _window.location = res.result.data
+                      this.$router.push({ path: `/project/cost/list` })
+                    } else {
+                      _this.$message.error(res.result.msg)
+                    }
                 })
             },
             approve () {

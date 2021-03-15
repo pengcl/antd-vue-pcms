@@ -328,11 +328,16 @@
               })
             },
             bpm () {
+              const _this = this
               this.loading.bpm = true
               CostService.bpm(this.queryParam.ProjectGUID).then(res => {
                 this.loading.bpm = false
-                const _window = window.open('_blank')
-                _window.location = res.result.data
+                if (res.result.statusCode === '200') {
+                  const _window = window.open('_blank')
+                  _window.location = res.result.data
+                } else {
+                  _this.$message.error(res.result.msg)
+                }
               })
             },
             showAuditModal() {
