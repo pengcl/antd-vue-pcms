@@ -363,6 +363,7 @@
                     const value = index + ';' + id + ';' + projectShortNames[idsIndex] + ';' + names[idsIndex]
                     values.push(value)
                 })
+                console.log(values)
                 return values
             }
         },
