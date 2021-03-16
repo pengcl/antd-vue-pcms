@@ -242,16 +242,18 @@
         </a-form-item>
       </a-col>
       <a-col :md="12" :sm="24">
-        <a-form-item
-          label="合同竣工日期">
+        <a-form-model-item
+          label="合同竣工日期"
+          prop="contractCompletionDate">
           <a-date-picker :disabled="type === 'view'" v-model="data.contract.contractCompletionDate"></a-date-picker>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
-        <a-form-item
-          label="合同工期">
+        <a-form-model-item
+          label="合同工期"
+          prop="contractDuration">
           <a-input-number :disabled="type === 'view'" v-model="data.contract.contractDuration"></a-input-number>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="12" :sm="24">
         <a-form-item
@@ -362,7 +364,9 @@
                     currencyID: [{ required: true, message: '请选择币种', trigger: 'change' }],
                     isNeedTrip: [{ required: true, message: '请选择是否需要出差', trigger: 'change' }],
                     taxRate: [{ required: true, message: '请填写适用增值税率', trigger: 'blur' }],
-                    signDate: [{ required: true, message: '请选择合同签署日期', trigger: 'change' }]
+                    signDate: [{ required: true, message: '请选择合同签署日期', trigger: 'change' }],
+                    contractCompletionDate: [{ required: true, message: '请选择合同竣工日期', trigger: 'change' }],
+                    contractDuration: [{ required: true, message: '请选择合同日期', trigger: 'change' }]
                 }
             }
         },
