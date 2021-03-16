@@ -1,5 +1,5 @@
 <template>
-  <page-header-wrapper :title="type === 'view' ? '业态成本详情' : id === '0' ? '新增业态成本中心' : '编辑业态成本中心'">
+  <page-header-wrapper :title="type === 'view' ? '业态成本中心详情' : id === '0' ? '新增业态成本中心' : '编辑业态成本中心'">
     <a-card :bordered="false">
       <div v-if="id !== '0'" class="table-page-search-wrapper">
         <a-form
@@ -29,6 +29,11 @@
             <a-col :md="12" :sm="24">
               <a-form-item label="成本中心描述">
                 {{ form.description }}
+              </a-form-item>
+            </a-col>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="版本">
+                {{ form.version }}
               </a-form-item>
             </a-col>
           </a-row>
@@ -672,14 +677,14 @@
         <a-col :md="24" :sm="24" style="margin-bottom: 10px">
           <a-button-group v-if="type === 'view' && info.auditStatus !== '未审核' && ac('VIEW')">
             <a-button @click="view()" type="success">
-              查看审批
+              查看历史版本
             </a-button>
           </a-button-group>
-          <a-button-group v-if="type === 'update' && info.auditStatus === '未审核' && ac('EDIT')">
-            <a-button @click="bpm()" type="success">
-              启动审批流程
-            </a-button>
-          </a-button-group>
+<!--          <a-button-group v-if="type === 'update' && info.auditStatus === '未审核' && ac('EDIT')">-->
+<!--            <a-button @click="bpm()" type="success">-->
+<!--              启动审批流程-->
+<!--            </a-button>-->
+<!--          </a-button-group>-->
         </a-col>
         <a-col :md="24" :sm="24">
           <a-button-group v-if="type !== 'view' && ac(type === 'create' ? 'ADD' : 'EDIT')">
@@ -707,6 +712,8 @@
     >
       <p>{{ dialog.content }}</p>
     </a-modal>
+    <!-- 主列表审批记录 -->
+    <audit-history-list-modal ref="auditHistoryListModal"></audit-history-list-modal>
   </page-header-wrapper>
 </template>
 <script>
@@ -715,6 +722,7 @@
     import { Base as BaseService, DIALOGCONFIG } from '@/api/base'
     import { ac } from '@/views/user/user.service'
     import SelectCostCenter from '../components/selectCostCenter/index'
+    import AuditHistoryListModal from '@/views/project/cost/modal/AuditHistoryListModal'
 
     function getName (items, id) {
         let name = ''
@@ -758,7 +766,10 @@
     }
     export default {
         name: 'ProjectItem',
-        components: { SelectCostCenter },
+        components: {
+          SelectCostCenter,
+          AuditHistoryListModal
+        },
         data () {
             return {
                 loading: { bpm: false, save: false, view: false },
@@ -965,12 +976,7 @@
                 }
             },
             view () {
-                this.loading.view = true
-                BaseService.viewBpm(this.form.ccBusinessGuid).then(res => {
-                    this.loading.view = false
-                    const _window = window.open('_blank')
-                    _window.location = res.result.data
-                })
+              this.$refs.auditHistoryListModal.show(this.id, this.ProjectGUID)
             },
             bpm () {
                 this.loading.bpm = true
@@ -994,11 +1000,7 @@
                             this.loading.save = false
                             if (res.result.statusCode === 200) {
                                 this.$message.success('保存成功')
-                                if (this.type === 'create') {
-                                    this.$router.push({ path: `/project/cost/item/${res.result.data.id}?type=update&ProjectGUID=` + this.ProjectGUID })
-                                } else {
-                                    this.$router.push({ path: '/project/cost/list' })
-                                }
+                                this.$router.push({ path: '/project/cost/list' })
                             }
                         }).catch(() => {
                             this.disabled = false
