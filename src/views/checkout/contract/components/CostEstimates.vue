@@ -73,7 +73,9 @@
             </div>
           </a-table>
         </a-col>
-        <a-col :md="24" :sm="24" style="margin-top:10px;font-size: 18px;font-weight: bold;text-decoration: underline">量清单附件</a-col>
+        <a-col :md="24" :sm="24" style="margin-top:10px;font-size: 18px;font-weight: bold;text-decoration: underline">
+          量清单附件
+        </a-col>
         <a-col :md="24" :sm="24">
           <table>
             <thead>
@@ -99,7 +101,8 @@
                 >
                   <a-button @click="choose(index)">请选择</a-button>
                 </a-upload>
-                <a-button :disabled="type === 'view'" v-if="file.id" :loadding="loading" @click="delFile(index)" type="danger"
+                <a-button :disabled="type === 'view'" v-if="file.id" :loadding="loading" @click="delFile(index)"
+                          type="danger"
                           icon="delete"></a-button>
               </td>
               <td><a :href="file.url" target="_blank">{{file.name}}</a></td>
@@ -220,8 +223,7 @@
             costCenterChange (value, option) {
                 const index = option.data.key
                 const _index = this.selection.centers.findIndex(item => item.id + '' === value)
-                this.data.bqList[index].costCenterName = this.selection.centers[_index].costCenterName
-                this.data.bqList[index].projectShortName = this.selection.centers[_index].projectShortName
+                this.data.bqList[index].costCenterName = this.selection.centers[_index].costCenterName + '-' + this.selection.centers[_index].projectShortName
             },
             add (item, addData) {
                 let data = SwaggerService.getForm('BalanceContractDto_BQ')

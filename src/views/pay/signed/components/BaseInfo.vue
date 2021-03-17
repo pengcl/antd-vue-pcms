@@ -239,7 +239,7 @@
                               :min="0"
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"></a-input-number>
-              <p v-if="!data.contractMasterInfo.requestAmount_All_Contract" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.requestAmount_All_Contract && data.contractMasterInfo.requestAmount_All_Contract !== 0" style="color: red">请输入</p>
             </td>
             <td>累计完成已批准变更工作之评估价值<span style="color: red">*</span></td>
             <td>
@@ -250,7 +250,7 @@
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"
                               required></a-input-number>
-              <p v-if="!data.contractMasterInfo.requestAmount_All_VO" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.requestAmount_All_VO && data.contractMasterInfo.requestAmount_All_VO !== 0" style="color: red">请输入</p>
             </td>
             <td>累计完成已批准CIP工作之评估价值<span style="color: red">*</span></td>
             <td>
@@ -261,7 +261,7 @@
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"
                               required></a-input-number>
-              <p v-if="!data.contractMasterInfo.requestAmount_All_CIP" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.requestAmount_All_CIP && data.contractMasterInfo.requestAmount_All_CIP !== 0" style="color: red">请输入</p>
             </td>
           </tr>
           <tr>
@@ -275,7 +275,7 @@
                               :precision="2"
                               :formatter="value => `${value}%`"
                               :parser="value => value.replace('%', '')"></a-input-number>
-              <p v-if="!data.contractMasterInfo.retentionAmount" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.retentionAmount && data.contractMasterInfo.retentionAmount !== 0" style="color: red">请输入</p>
             </td>
             <td>减：履约保证金(%)<span style="color: red">*</span></td>
             <td>
@@ -287,7 +287,7 @@
                               :precision="2"
                               :formatter="value => `${value}%`"
                               :parser="value => value.replace('%', '')"></a-input-number>
-              <p v-if="!data.contractMasterInfo.bondAmount" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.bondAmount && data.contractMasterInfo.bondAmount !== 0" style="color: red">请输入</p>
             </td>
             <td>减：其他扣除款项<span style="color: red">*</span></td>
             <td>
@@ -298,7 +298,7 @@
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"
                               required></a-input-number>
-              <p v-if="!data.contractMasterInfo.otherDeductionsAmount" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.otherDeductionsAmount && data.contractMasterInfo.otherDeductionsAmount !== 0" style="color: red">请输入</p>
             </td>
           </tr>
           <tr>
@@ -311,7 +311,7 @@
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"
                               required></a-input-number>
-              <p v-if="!data.contractMasterInfo.prePayment_Plus" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.prePayment_Plus && data.contractMasterInfo.prePayment_Plus !== 0" style="color: red">请输入</p>
             </td>
             <td>减：预付款<span style="color: red">*</span></td>
             <td>
@@ -322,7 +322,7 @@
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"
                               required></a-input-number>
-              <p v-if="!data.contractMasterInfo.prePayment_Sub" style="color: red">请输入</p>
+              <p v-if="!data.contractMasterInfo.prePayment_Sub && data.contractMasterInfo.prePayment_Sub !== 0" style="color: red">请输入</p>
             </td>
             <td>付款类型</td>
             <td>
@@ -460,7 +460,7 @@
                                 :min="0"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"></a-input-number>
-                <p v-if="!item.requestAmount_All_Contract" style="color: red">请输入</p>
+                <p v-if="!item.requestAmount_All_Contract && item.requestAmount_All_Contract !== 0" style="color: red">请输入</p>
               </td>
               <td>累计完成已批准变更工作之评估价值<span style="color: red">*</span></td>
               <td>
@@ -471,7 +471,7 @@
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.requestAmount_All_VO" style="color: red">请输入</p>
+                <p v-if="!item.requestAmount_All_VO && item.requestAmount_All_VO !== 0" style="color: red">请输入</p>
               </td>
               <td>累计完成已批准CIP工作之评估价值<span style="color: red">*</span></td>
               <td>
@@ -482,7 +482,7 @@
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.requestAmount_All_CIP" style="color: red">请输入</p>
+                <p v-if="!item.requestAmount_All_CIP && item.requestAmount_All_CIP !== 0" style="color: red">请输入</p>
               </td>
             </tr>
             <tr>
@@ -496,7 +496,7 @@
                                 :precision="2"
                                 :formatter="value => `${value}%`"
                                 :parser="value => value.replace('%', '')"></a-input-number>
-                <p v-if="!item.retentionAmount" style="color: red">请输入</p>
+                <p v-if="!item.retentionAmount && item.retentionAmount !== 0" style="color: red">请输入</p>
               </td>
               <td>减：履约保证金(%)<span style="color: red">*</span></td>
               <td>
@@ -508,7 +508,7 @@
                                 :precision="2"
                                 :formatter="value => `${value}%`"
                                 :parser="value => value.replace('%', '')"></a-input-number>
-                <p v-if="!item.bondAmount" style="color: red">请输入</p>
+                <p v-if="!item.bondAmount && item.bondAmount !== 0" style="color: red">请输入</p>
               </td>
               <td>减：其他扣除款项<span style="color: red">*</span></td>
               <td>
@@ -519,7 +519,7 @@
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.otherDeductionsAmount" style="color: red">请输入</p>
+                <p v-if="!item.otherDeductionsAmount && item.otherDeductionsAmount !== 0" style="color: red">请输入</p>
               </td>
             </tr>
             <tr>
@@ -532,7 +532,7 @@
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.prePayment_Plus" style="color: red">请输入</p>
+                <p v-if="!item.prePayment_Plus && item.prePayment_Plus !== 0" style="color: red">请输入</p>
               </td>
               <td>减：预付款<span style="color: red">*</span></td>
               <td>
@@ -543,7 +543,7 @@
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.prePayment_Sub" style="color: red">请输入</p>
+                <p v-if="!item.prePayment_Sub && item.prePayment_Sub !== 0" style="color: red">请输入</p>
               </td>
               <td>付款类型</td>
               <td>

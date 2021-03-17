@@ -2,6 +2,7 @@
   <page-header-wrapper>
     <a-card id="reportCard" :bordered="false">
       <iframe :style="{height: height}" id="iframe" :src="url"></iframe>
+      <a-icon @click="setFullscreen()" type="fullscreen"/>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -25,6 +26,12 @@
         console.log(this.height)
         this.$forceUpdate()
       })
+    },
+    methods: {
+      setFullscreen () {
+        console.log('setFullscreen')
+        window.eventBus.$emit('report', { show: true, url: this.url })
+      }
     }
   }
 </script>
@@ -35,6 +42,18 @@
     iframe {
       width: 100%;
       border: none;
+    }
+
+    .anticon {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 18px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 5px;
+      cursor: pointer;
     }
   }
 </style>

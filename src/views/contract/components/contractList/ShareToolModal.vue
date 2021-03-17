@@ -88,9 +88,9 @@
             <span slot="costCenter" slot-scope="text, item, index">
                 <a-select v-model="item.costCenter" style="width:300px;" :disabled="true">
                     <a-select-option
-                      :value="center.id + ''"
+                      :value="center.id + '' "
                       v-for="center in selection.centers"
-                      :text="center.costCenterName"
+                      :title="center.projectShortName + '-' + center.costCenterName"
                       :key="JSON.stringify(center)"
                     >
                     {{ center.projectShortName + '-' +center.costCenterName }}
@@ -321,7 +321,7 @@
                     this.selection.centers.forEach(item => {
                         const param = {
                             costCenter: item.id + '',
-                            costCenterName: item.costCenterName,
+                            costCenterName: item.projectShortName + '-' + item.costCenterName,
                             secCostAllocateTypeID: item.secCostAllocateTypeID,
                             totalCFAExcludeParking: item.totalCFAExcludeParking,
                             totalGFA: item.totalGFA,
