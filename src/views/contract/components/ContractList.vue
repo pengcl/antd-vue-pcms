@@ -153,7 +153,7 @@
                   style="width: 300px;margin-top: 15px"
                   @change="centerChange">
                   <a-select-option
-                    :value="index + ';' + center.id + ';' + center.costCenterName"
+                    :value="index + ';' + center.id"
                     :itemIndex="index"
                     :title="center.costCenterName"
                     v-for="center in selection.centers"
@@ -363,9 +363,8 @@
             getValue (item, index) {
                 const values = []
                 const ids = item.costCenter ? item.costCenter.split(';') : []
-                const names = item.costCenterName ? item.costCenterName.split(';') : []
                 ids.forEach((id, idsIndex) => {
-                    const value = index + ';' + id + ';' + names[idsIndex]
+                    const value = index + ';' + id
                     values.push(value)
                 })
                 return values
@@ -469,7 +468,8 @@
                 const arr = value.split(';')
                 const item = this.data.contractBQNewlst[arr[0]]
                 item.costCenter = arr[1]
-                item.costCenterName = arr[2]
+                const index = this.selection.centers.findIndex(v => v.id + '' === item.costCenter)
+                item.costCenterName = this.selection.centers[index].costCenterName
                 this.getContractAmount()
             },
             valueChange (item, index) {
