@@ -153,12 +153,12 @@
                   style="width: 300px;margin-top: 15px"
                   @change="centerChange">
                   <a-select-option
-                    :value="index + ';' + center.id + ';' +center.projectShortName + ';' + center.costCenterName"
+                    :value="index + ';' + center.id + ';' + center.costCenterName"
                     :itemIndex="index"
-                    :title="center.projectShortName + '-' + center.costCenterName"
+                    :title="center.costCenterName"
                     v-for="center in selection.centers"
                     :key="JSON.stringify(center)">
-                    {{ center.projectShortName + '-' + center.costCenterName }}
+                    {{ center.costCenterName }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
@@ -324,6 +324,9 @@
             }
             this.data.contract.contractYear = new Date().getFullYear()
             ContractService.centers(this.data.contract.tenderPackageItemID).then(res => {
+                res.result.data.forEach(item => {
+                    item.costCenterName = item.projectShortName + '-' + item.costCenterName
+                })
                 this.selection.centers = res.result.data
                 this.$forceUpdate()
             })
@@ -345,6 +348,9 @@
             },
             'data.contract.tenderPackageItemID' (value) {
                 ContractService.centers(value).then(res => {
+                    res.result.data.forEach(item => {
+                        item.costCenterName = item.projectShortName + '-' + item.costCenterName
+                    })
                     this.selection.centers = res.result.data
                     this.$forceUpdate()
                 })
@@ -357,13 +363,11 @@
             getValue (item, index) {
                 const values = []
                 const ids = item.costCenter ? item.costCenter.split(';') : []
-                const projectShortNames = item.projectShortName ? item.projectShortName.split(';') : []
                 const names = item.costCenterName ? item.costCenterName.split(';') : []
                 ids.forEach((id, idsIndex) => {
-                    const value = index + ';' + id + ';' + projectShortNames[idsIndex] + ';' + names[idsIndex]
+                    const value = index + ';' + id + ';' + names[idsIndex]
                     values.push(value)
                 })
-                console.log(values)
                 return values
             }
         },
@@ -465,8 +469,7 @@
                 const arr = value.split(';')
                 const item = this.data.contractBQNewlst[arr[0]]
                 item.costCenter = arr[1]
-                item.projectShortName = arr[2]
-                item.costCenterName = arr[3]
+                item.costCenterName = arr[2]
                 this.getContractAmount()
             },
             valueChange (item, index) {

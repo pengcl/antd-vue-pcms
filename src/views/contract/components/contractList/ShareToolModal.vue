@@ -321,8 +321,7 @@
                     this.selection.centers.forEach(item => {
                         const param = {
                             costCenter: item.id + '',
-                            costCenterName: item.costCenterName,
-                            projectShortName: item.projectShortName,
+                            costCenterName: item.projectShortName + '-' + item.costCenterName,
                             secCostAllocateTypeID: item.secCostAllocateTypeID,
                             totalCFAExcludeParking: item.totalCFAExcludeParking,
                             totalGFA: item.totalGFA,
