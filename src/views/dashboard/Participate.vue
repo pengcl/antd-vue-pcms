@@ -101,19 +101,17 @@
             return {
                 // 查询参数
                 queryParam: {},
-                selectedRowKeys: [],
-                selectedRows: [],
                 intervalId: null,
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
-                  this.pageNo = parameter.pageNo
                     const requestParameters = Object.assign({}, parameter, this.queryParam)
                     return TaskService.participates(requestParameters)
                         .then(res => {
                             return fixedList(res, parameter)
                         })
                 },
-              pageNo: 1
+              selectedRowKeys: [],
+              selectedRows: []
             }
         },
         created () {
