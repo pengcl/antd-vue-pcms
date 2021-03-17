@@ -1,35 +1,41 @@
 <template>
-  <pro-layout
-    :menus="menus"
-    :collapsed="collapsed"
-    :mediaQuery="query"
-    :isMobile="isMobile"
-    :handleMediaQuery="handleMediaQuery"
-    :handleCollapse="handleCollapse"
-    :i18nRender="i18nRender"
-    v-bind="settings"
-  >
-    <!-- 1.0.0+ 版本 pro-layout 提供 API，
-          我们推荐使用这种方式进行 LOGO 和 title 自定义
-    -->
-    <template v-slot:menuHeaderRender>
-      <div>
-        <logo-svg/>
-        <h1>{{ title }}</h1>
-      </div>
-    </template>
+  <div>
+    <pro-layout
+      :menus="menus"
+      :collapsed="collapsed"
+      :mediaQuery="query"
+      :isMobile="isMobile"
+      :handleMediaQuery="handleMediaQuery"
+      :handleCollapse="handleCollapse"
+      :i18nRender="i18nRender"
+      v-bind="settings"
+    >
+      <!-- 1.0.0+ 版本 pro-layout 提供 API，
+            我们推荐使用这种方式进行 LOGO 和 title 自定义
+      -->
+      <template v-slot:menuHeaderRender>
+        <div>
+          <logo-svg/>
+          <h1>{{ title }}</h1>
+        </div>
+      </template>
 
-    <!--<setting-drawer :settings="settings" @change="handleSettingChange" />-->
-    <template v-slot:rightContentRender>
-      <span class="uat" v-if="appType === 'development'">DEV</span>
-      <span class="uat" v-if="appType === 'uat'">UAT</span>
-      <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme"/>
-    </template>
-    <template v-slot:footerRender>
-      <global-footer/>
-    </template>
-    <router-view/>
-  </pro-layout>
+      <!--<setting-drawer :settings="settings" @change="handleSettingChange" />-->
+      <template v-slot:rightContentRender>
+        <span class="uat" v-if="appType === 'development'">DEV</span>
+        <span class="uat" v-if="appType === 'uat'">UAT</span>
+        <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme"/>
+      </template>
+      <template v-slot:footerRender>
+        <global-footer/>
+      </template>
+      <router-view/>
+    </pro-layout>
+    <div v-show="show" :class="'report-frame' + ' ss'">
+      <iframe :style="{height: height}" id="iframe" :src="url"></iframe>
+      <a-icon @click="setFullscreen()" type="fullscreen-exit"/>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -59,6 +65,8 @@
         appType: process.env.NODE_ENV,
         // base
         menus: [],
+        show: false,
+        url: '',
         // 侧栏收起状态
         collapsed: false,
         title: defaultSettings.title,
@@ -100,6 +108,10 @@
       })
       this.$watch('isMobile', () => {
         this.$store.commit(TOGGLE_MOBILE_TYPE, this.isMobile)
+      })
+      window.eventBus.$on('report', (data) => {
+        this.show = data.show
+        this.url = data.url
       })
     },
     mounted () {
@@ -153,6 +165,9 @@
             }
             break
         }
+      },
+      setFullscreen () {
+        window.eventBus.$emit('report', { show: false, url: '' })
       }
     }
   }
@@ -164,5 +179,25 @@
   .uat {
     font-size: 20px;
     color: red;
+  }
+
+  .report-frame {
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .anticon {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      font-size: 18px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 5px;
+      cursor: pointer;
+    }
   }
 </style>

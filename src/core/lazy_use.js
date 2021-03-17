@@ -61,6 +61,7 @@ import PageLoading from '@/components/PageLoading'
 import PermissionHelper from '@/core/permission/permission'
 import './directives/action'
 
+window.eventBus = new Vue()
 Vue.use(ConfigProvider)
 Vue.use(Layout)
 Vue.use(Input)

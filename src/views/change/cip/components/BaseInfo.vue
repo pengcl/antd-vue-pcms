@@ -373,6 +373,7 @@
                 placeholder="请选择"
                 v-model="data.voMasterInfo.sourceValue"
                 :disabled="type === 'view'"
+                @change="sourceValueChange"
               >
                 <a-select-option
                   v-for="option in selection.sourceTypes"
@@ -420,7 +421,7 @@
       <a-col :md="24" :sm="24">
         <a-row>
           <a-col :span="10">
-            <a-form-model-item label="项目PQS估算金额" >
+            <a-form-model-item label="项目PQS估算金额" prop="estimatedAmount">
               <a-input-number
                 :disabled="type === 'view'"
                 placeholder="项目PQS估算金额"
@@ -450,7 +451,7 @@
       <a-col :md="24" :sm="24">
         <a-row>
           <a-col :span="10">
-            <a-form-model-item label="顾问评估日期">
+            <a-form-model-item label="顾问评估日期" prop="qsAssessmentDate">
               <a-date-picker
                 :disabled="type === 'view'"
                 placeholder="请选择顾问评估日期"
@@ -526,8 +527,10 @@
           cipType : [{ required : true,message : '请选择类型',trigger : 'change'}],
           reasonType: [{ validator: this.checkReasonType, trigger: 'change' ,type : 'array',required : true}],
           voName : [{ required : true, message : '请输入变更名称'}],
-          // packageContractorQuotation: [{ required: true, message: '请输入承包商报价', trigger: 'change' }],
-          // consultantEstimatedAmount: [{ required: true, message: '请输入顾问估算金额', trigger: 'change' }],
+          packageContractorQuotation: [{ required: false, message: '请输入承包商报价'}],
+          consultantEstimatedAmount: [{ required: false, message: '请输入顾问估算金额' }],
+          qsAssessmentDate:[{  required: false, message: '请输入顾问评估时间' }],
+          estimatedAmount: [{ required:  false, message: '请输入项目PQS估算金额' }],
           sourceValue : [{required : true,message:'请选择估值来源',trigger : 'change'}],
           currencyExchangeRate: [{ required: true, message: '请输入汇率', trigger: 'change' }]
         }
@@ -804,6 +807,32 @@
             this.$forceUpdate()
           }
         })
+      },
+      checkTrends(rule,value,callback,key){
+        console.log('rules',rule)
+        if(this.data.voMasterInfo.sourceValue === key && value+'' == ''){
+          callback(new Error('请输入'))
+        }else{
+          callback()
+        }
+      },
+      sourceValueChange(value){
+        if(value === 127){
+          this.rules.consultantEstimatedAmount[0].required = true
+          this.rules.qsAssessmentDate[0].required = true
+          this.rules.estimatedAmount[0].required = false
+          this.rules.packageContractorQuotation[0].required = false
+        }else if(value === 128){
+          this.rules.consultantEstimatedAmount[0].required = false
+          this.rules.qsAssessmentDate[0].required = false
+          this.rules.estimatedAmount[0].required = false
+          this.rules.packageContractorQuotation[0].required = true
+        }else if(value === 132){
+          this.rules.consultantEstimatedAmount[0].required = false
+          this.rules.qsAssessmentDate[0].required = false
+          this.rules.estimatedAmount[0].required = true
+          this.rules.packageContractorQuotation[0].required = false
+        }
       }
     }
   }
@@ -849,6 +878,10 @@
         }
       }
     }
+  }
+
+  /deep/ .ant-col-sm-24,.ant-col-md-24{
+    padding-bottom: 10px;
   }
 
 </style>
