@@ -184,7 +184,6 @@
             <template slot="allAmount" slot-scope="text, record,index">
               <a-input-number
                 v-model="record.allAmount"
-                :min="0"
                 @change="valueChange(record,index)"
                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                 :parser="value => value.replace(/\\s?|(,*)/g, '')"
