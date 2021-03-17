@@ -27,6 +27,7 @@
             :columns="columns"
             :data-source="billList | filterDeleted"
             :scroll="{  x: 'calc(700px + 50%)' }"
+            :pagination="pagination"
             bordered
           >
           <span slot="action" slot-scope="text,record,index">
@@ -70,13 +71,13 @@
             <span slot="paymentCode" slot-scope="text,record,index">
               <a-input
                 :value="record.paymentCode"
-                @click="showSelect(''+index)"
+                @click="showSelect(''+((pageNumber-1)*10 + index))"
                 :read-only="true"></a-input>
-              <select-payment-modal :ref="'payment'+index"
+              <select-payment-modal :ref="'payment'+((pageNumber-1)*10 + index)"
                                     :contractGID="id"
-                                    :visible="visibles[''+index] ? visibles[''+index] : false"
-                                    @cancel="handleCancel(''+index)"
-                                    @ok="handleOk(index)"></select-payment-modal>
+                                    :visible="visibles[''+((pageNumber-1)*10 + index)] ? visibles[''+((pageNumber-1)*10 + index)] : false"
+                                    @cancel="handleCancel(''+((pageNumber-1)*10 + index))"
+                                    @ok="handleOk((pageNumber-1)*10 + index)"></select-payment-modal>
             </span>
 
             <span slot="billNum" slot-scope="text,record">
@@ -228,13 +229,23 @@
                 visibles: {},
                 form: SwaggerService.getForm('ContractAllInfoDto'),
                 masterID: 0,
-                disabled: false
+                disabled: false,
+                pageNumber: 1
             }
         },
         computed: {
             id () {
                 return this.$route.params.id
             },
+            pagination () {
+                const that = this
+                return {
+                    onChange: function (pageNumber) {
+                        that.pageNumber = pageNumber
+                        that.$forceUpdate()
+                    }
+                }
+            }
         },
         created () {
             SignedService.billList().then(res => {
