@@ -32,7 +32,7 @@
       <router-view/>
     </pro-layout>
     <div v-show="show" :class="'report-frame' + ' ss'">
-      <iframe :style="{height: height}" id="iframe" :src="url"></iframe>
+      <iframe id="iframe" :src="url"></iframe>
       <a-icon @click="setFullscreen()" type="fullscreen-exit"/>
     </div>
   </div>

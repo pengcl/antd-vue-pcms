@@ -265,28 +265,24 @@
             </td>
           </tr>
           <tr>
-            <td>减：保留金/保修金(%)<span style="color: red">*</span></td>
+            <td>减：保留金/保修金<span style="color: red">*</span></td>
             <td>
               <a-input-number :disabled="type === 'view'"
                               placeholder="请输入"
                               v-model="data.contractMasterInfo.retentionAmount"
-                              :min="0"
-                              :max="100"
-                              :precision="2"
-                              :formatter="value => `${value}%`"
-                              :parser="value => value.replace('%', '')"></a-input-number>
+                              :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                              :precision="2"></a-input-number>
               <p v-if="!data.contractMasterInfo.retentionAmount && data.contractMasterInfo.retentionAmount !== 0" style="color: red">请输入</p>
             </td>
-            <td>减：履约保证金(%)<span style="color: red">*</span></td>
+            <td>减：履约保证金<span style="color: red">*</span></td>
             <td>
               <a-input-number :disabled="type === 'view'"
                               placeholder="请输入"
                               v-model="data.contractMasterInfo.bondAmount"
-                              :min="0"
-                              :max="100"
-                              :precision="2"
-                              :formatter="value => `${value}%`"
-                              :parser="value => value.replace('%', '')"></a-input-number>
+                              :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                              :precision="2"></a-input-number>
               <p v-if="!data.contractMasterInfo.bondAmount && data.contractMasterInfo.bondAmount !== 0" style="color: red">请输入</p>
             </td>
             <td>减：其他扣除款项<span style="color: red">*</span></td>
@@ -294,8 +290,8 @@
               <a-input-number :disabled="type === 'view'"
                               placeholder="请输入"
                               v-model="data.contractMasterInfo.otherDeductionsAmount"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\-\s?|(,*)/g, '')"
                               :precision="2"
                               required></a-input-number>
               <p v-if="!data.contractMasterInfo.otherDeductionsAmount && data.contractMasterInfo.otherDeductionsAmount !== 0" style="color: red">请输入</p>
@@ -318,8 +314,8 @@
               <a-input-number :disabled="type === 'view'"
                               placeholder="请输入"
                               v-model="data.contractMasterInfo.prePayment_Sub"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :parser="value => value.replace(/\-\s?|(,*)/g, '')"
                               :precision="2"
                               required></a-input-number>
               <p v-if="!data.contractMasterInfo.prePayment_Sub && data.contractMasterInfo.prePayment_Sub !== 0" style="color: red">请输入</p>
@@ -486,28 +482,24 @@
               </td>
             </tr>
             <tr>
-              <td>减：保留金/保修金(%)<span style="color: red">*</span></td>
+              <td>减：保留金/保修金<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
                                 v-model="item.retentionAmount"
-                                :min="0"
-                                :max="100"
-                                :precision="2"
-                                :formatter="value => `${value}%`"
-                                :parser="value => value.replace('%', '')"></a-input-number>
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
                 <p v-if="!item.retentionAmount && item.retentionAmount !== 0" style="color: red">请输入</p>
               </td>
-              <td>减：履约保证金(%)<span style="color: red">*</span></td>
+              <td>减：履约保证金<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
                                 v-model="item.bondAmount"
-                                :min="0"
-                                :max="100"
-                                :precision="2"
-                                :formatter="value => `${value}%`"
-                                :parser="value => value.replace('%', '')"></a-input-number>
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
                 <p v-if="!item.bondAmount && item.bondAmount !== 0" style="color: red">请输入</p>
               </td>
               <td>减：其他扣除款项<span style="color: red">*</span></td>
@@ -515,8 +507,8 @@
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
                                 v-model="item.otherDeductionsAmount"
-                                :min="0"
-                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
                                 :precision="2"
                                 required></a-input-number>
                 <p v-if="!item.otherDeductionsAmount && item.otherDeductionsAmount !== 0" style="color: red">请输入</p>
@@ -539,8 +531,8 @@
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
                                 v-model="item.prePayment_Sub"
-                                :min="0"
-                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
                                 :precision="2"
                                 required></a-input-number>
                 <p v-if="!item.prePayment_Sub && item.prePayment_Sub !== 0" style="color: red">请输入</p>
