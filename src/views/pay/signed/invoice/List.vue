@@ -44,7 +44,7 @@
                 </a-button>
             <a-upload name="file"
                       :multiple="false"
-                      v-if="record.invoiceType && !record.show"
+                      v-if="record.invoiceType && !record.show && !record.billFileName"
                       :before-upload="beforeUpload">
                   <a-button @click="choose(index)">请选择</a-button>
                 </a-upload>

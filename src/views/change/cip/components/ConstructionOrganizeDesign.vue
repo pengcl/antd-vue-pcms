@@ -20,7 +20,7 @@
           </a-col>
           <a-col :md="24" :sm="24">
             <a-form-model-item label="施工单位名称" prop="partylst">
-              <a-select 
+              <a-select
               :disabled="type === 'view'"
               v-model="partylst"
               mode="multiple"
@@ -75,7 +75,7 @@
                   <td>
                     <a-upload
                       name="file"
-                      v-if="item.filePage && item.id === 0"
+                      v-if="item.filePage && item.id === 0 && !item.fileName"
                       :multiple="false"
                       :before-upload="beforeUpload"
                     >
@@ -196,7 +196,7 @@ export default {
         if(repeatParties.length < 1){
           this.selection.parties.push(item)
         }
-        
+
       })
       this.$forceUpdate()
     })
