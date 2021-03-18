@@ -200,7 +200,7 @@ export function digitUppercase (n) {
     ['元', '万', '亿'],
     ['', '拾', '佰', '仟']
   ]
-  let head = n < 0 ? '欠' : ''
+  let head = n < 0 ? '负' : ''
   n = Math.abs(n)
   let s = ''
   for (let i = 0; i < fraction.length; i++) {
