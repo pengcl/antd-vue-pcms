@@ -275,6 +275,7 @@
                         })
                     }
                     this.billList = res.result.data
+                    this.billList = this.billList.sort((a, b) => b.billNum - a.billNum)
                     this.$forceUpdate()
                 })
             },
@@ -333,7 +334,12 @@
                     billFileUrl: '',
                     remark: ''
                 }
-                this.billList.push(item)
+                if (this.billList.length < 1) {
+                    this.billList.push(item)
+                } else {
+                    this.billList.unshift(item)
+                }
+
             },
             del (index) {
                 if (this.billList[index].isTemp) {

@@ -404,7 +404,7 @@
                     allAmount: this.data.allAmount,
                     itemType: this.data.itemType
                 }]
-                ContractService.shareTool(body).then(res => {
+                ContractService.shareTool(this.contract.contract.contractCategory, this.contract.contract.contractCategory === 16 ? this.contract.contract.masterContractID : '00000000-0000-0000-0000-000000000000', body).then(res => {
                     if (res.result.statusCode === 200) {
                         res.result.data.forEach(item => {
                             const index = this.data.tableData.findIndex(d => d.costCenter === item.costCenter)
