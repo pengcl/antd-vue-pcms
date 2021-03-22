@@ -10,10 +10,11 @@
             </th>
           </tr>
           <tr>
-            <th style="width: 25%">操作</th>
-            <th style="width: 25%">附件</th>
-            <th style="width: 25%">备注</th>
-            <th style="width: 25%">最后修改日期</th>
+            <th style="width: 20%">操作</th>
+            <th style="width: 20%">附件</th>
+            <th style="width: 20%">页数</th>
+            <th style="width: 20%">备注</th>
+            <th style="width: 20%">最后修改日期</th>
           </tr>
           </thead>
           <tbody>
@@ -22,7 +23,7 @@
               <a-upload
                 :multiple="false"
                 :disabled="type === 'view'"
-                v-if="!file.name"
+                v-if="!file.name && file.filePage"
                 :before-upload="beforeUpload"
               >
                 <a-button @click="choose(index)">请选择</a-button>
@@ -31,6 +32,10 @@
                         icon="delete"></a-button>
             </td>
             <td><a :href="file.url" target="_blank">{{file.name}}</a></td>
+            <td>
+              <a-input-number v-model="file.filePage" :disabled="type === 'view'"></a-input-number>
+              <p v-if="!file.filePage" style="color: red;margin-bottom: 0">请填写页数</p>
+            </td>
             <td>
               <a-input v-model="file.remark" :disabled="type === 'view'"></a-input>
             </td>
@@ -90,6 +95,7 @@
                     name: '',
                     url: '',
                     remark: '',
+                    filePage: '',
                     id: 0,
                     masterID: this.data.fileMasterId
                 }
@@ -108,7 +114,8 @@
                                 url: item.fileUrl,
                                 remark: item.remark,
                                 id: item.id,
-                                masterID: item.masterID
+                                masterID: item.masterID,
+                                filePage: item.filePage
                             })
                         }
                     })
@@ -174,6 +181,7 @@
                             _this.fileList[this.index].name = data.fileName
                             _this.fileList[this.index].url = data.fileUrl
                             _this.fileList[this.index].id = data.id
+                            _this.fileList[this.index].filePage = data.filePage
                             _this.fileList[this.index].masterID = data.masterID
                             _this.data.fileMasterId = data.masterID
                             _this.$message.success('上传成功')
