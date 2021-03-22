@@ -90,11 +90,10 @@ ContractService.create = function (parameter) {
   })
 }
 
-ContractService.shareTool = function (contractCategory, mainContractGUID, parameter) {
+ContractService.shareTool = function (parameter) {
   return request({
     url: API.shareTool,
     method: 'POST',
-    params: { contractCategory, mainContractGUID },
     data: parameter
   })
 }

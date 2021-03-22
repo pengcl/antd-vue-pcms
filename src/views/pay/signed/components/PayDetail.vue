@@ -61,7 +61,7 @@
           </thead>
           <tbody>
           <tr v-for="(item,index) in payDetail.itemList" :key="index">
-            <td>{{item.paymentPhase}}</td>
+            <td><a @click="handToSignItem(item.gid)">{{item.paymentPhase}}</a></td>
             <td>{{item.paymentRequestAmountTotal_Before | NumberFormat}}</td>
             <td>{{item.progressRequestAmount | NumberFormat}}</td>
             <td>{{item.paymentRequestAmount | NumberFormat}}</td>
@@ -106,7 +106,7 @@
                 SignedService.progressByContract(this.data['contractGID'], this.data['paymentPhase']).then(res => {
                     this.payDetail = res.result.data
                 })
-            }else {
+            } else {
                 SignedService.progressById(this.data['id']).then(res => {
                     this.payDetail = res.result.data
                 })
@@ -124,7 +124,12 @@
                 }
             }
         },
-        methods: {}
+        methods: {
+            handToSignItem (gid) {
+                const tempwindow = window.open('_blank')
+                tempwindow.location = `/pay/signed/item/${gid}?type=view`
+            }
+        }
     }
 </script>
 
