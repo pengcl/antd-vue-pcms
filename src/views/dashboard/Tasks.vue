@@ -5,11 +5,11 @@
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
-              <a-form-item label="流程类别">
-                <a-select v-model="queryParam.processState" placeholder="请选择流程类别">
+              <a-form-item label="类型">
+                <a-select v-model="queryParam.taskType" placeholder="请选择类型">
                   <a-select-option :value="0">全部</a-select-option>
-                  <a-select-option :value="1">关闭</a-select-option>
-                  <a-select-option :value="2">运行中</a-select-option>
+                  <a-select-option :value="1">待办</a-select-option>
+                  <a-select-option :value="2">抄送</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
