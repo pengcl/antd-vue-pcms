@@ -5,7 +5,7 @@
         <table>
           <thead>
           <tr>
-            <th colspan="4">
+            <th colspan="5">
               <a-button :disabled="type === 'view'" icon="plus" @click="add">新增</a-button>
             </th>
           </tr>
@@ -159,6 +159,7 @@
                 formData.append('businessID', this.id === '0' ? '' : this.id)
                 formData.append('businessType', 'Contract')
                 formData.append('remark', this.fileList[this.index].remark) // 文件类型
+                formData.append('filePage', this.fileList[this.index].filePage)
                 formData.append('subInfo1', '')
                 formData.append('subInfo2', '') // 文件名
                 formData.append('subInfo3', '') // 合同id
