@@ -4,18 +4,18 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <!--<a-col :md="12" :sm="24">
-              <a-form-item label="使用状态">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
+            <a-col :md="12" :sm="24">
+              <a-form-item label="流程类别">
+                <a-select v-model="queryParam.processState" placeholder="请选择流程类别">
+                  <a-select-option :value="0">全部</a-select-option>
+                  <a-select-option :value="1">关闭</a-select-option>
+                  <a-select-option :value="2">运行中</a-select-option>
                 </a-select>
               </a-form-item>
-            </a-col>-->
+            </a-col>
             <a-col :md="24" :sm="24">
               <a-form-item label="关键词">
-                <a-input v-model="queryParam.id" placeholder=""/>
+                <a-input v-model="queryParam.keyWord" placeholder="请输入关键词"/>
               </a-form-item>
             </a-col>
           </a-row>
@@ -59,6 +59,11 @@
     import { TaskService } from '@/views/dashboard/task.service'
     import { fixedList } from '@/utils/util'
     const columns = [
+        {
+            title: '类型',
+            dataIndex: 'taskType',
+            scopedSlots: { customRender: 'taskType' }
+        },
         {
             title: '项目',
             dataIndex: 'project',

@@ -6,16 +6,16 @@
           <a-row :gutter="48">
             <a-col :md="12" :sm="24">
               <a-form-item label="流程类别">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
+                <a-select v-model="queryParam.processState" placeholder="请选择流程类别">
+                  <a-select-option :value="0">全部</a-select-option>
+                  <a-select-option :value="1">关闭</a-select-option>
+                  <a-select-option :value="2">运行中</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <a-col :md="24" :sm="24">
               <a-form-item label="关键词">
-                <a-input v-model="queryParam.id" placeholder=""/>
+                <a-input v-model="queryParam.keyWord" placeholder="请输入关键词"/>
               </a-form-item>
             </a-col>
           </a-row>
@@ -23,7 +23,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="success">搜索</a-button>
+        <a-button type="success" @click="search">搜索</a-button>
       </div>
 
       <s-table
@@ -54,7 +54,6 @@
 </template>
 
 <script>
-    import moment from 'moment'
     import { fixedList } from '@/utils/util'
     import { STable, Ellipsis } from '@/components'
     import { TaskService } from '@/views/dashboard/task.service'
@@ -110,8 +109,8 @@
                             return fixedList(res, parameter)
                         })
                 },
-              selectedRowKeys: [],
-              selectedRows: []
+                selectedRowKeys: [],
+                selectedRows: []
             }
         },
         created () {
@@ -121,9 +120,9 @@
             '$route' (path) {
                 this.$refs.table.refresh()
             },
-          'pageNo' () {
-            this.clear()
-          }
+            'pageNo' () {
+                this.clear()
+            }
         },
         computed: {
             rowSelection () {
@@ -137,6 +136,9 @@
             this.clear()
         },
         methods: {
+            search () {
+                this.$refs.table.refresh()
+            },
             dataRefresh () {
                 // 计时器正在进行中，退出函数
                 if (this.intervalId != null) {
@@ -179,7 +181,8 @@
     /deep/ .ant-spin-blur {
       user-select: unset !important;
       pointer-events: unset !important;
-      opacity:1 !important;
+      opacity: 1 !important;
+
       &::after {
         display: none !important;
       }

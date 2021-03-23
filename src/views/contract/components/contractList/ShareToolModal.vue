@@ -342,13 +342,17 @@
                     }
                     list.push(params)
                 })
-                const body = [{
-                    projectTenderPackageGUID: this.contract.contract.tenderPackageItemID,
-                    costCenterIdlst: list,
-                    shareType: this.data.shareType,
-                    allAmount: this.data.allAmount,
-                    itemType: this.data.itemType
-                }]
+                const body = {
+                    ccSharelst: [{
+                        projectTenderPackageGUID: this.contract.contract.tenderPackageItemID,
+                        costCenterIdlst: list,
+                        shareType: this.data.shareType,
+                        allAmount: this.data.allAmount,
+                        itemType: this.data.itemType
+                    }],
+                    contractCategory: this.contract.contract.contractCategory,
+                    mainContractGUID: this.contract.contract.contractCategory === 16 ? this.contract.contract.masterContractID : '00000000-0000-0000-0000-000000000000',
+                }
                 ContractService.shareTool(body).then(res => {
                     if (res.result.statusCode === 200) {
                         res.result.data.forEach(item => {
