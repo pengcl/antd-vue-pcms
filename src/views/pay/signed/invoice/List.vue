@@ -90,6 +90,7 @@
                             :min="0"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!record.billAmount">请填写发票金额</div>
           </span>
 
             <span slot="taxRate" slot-scope="text,record">
@@ -99,6 +100,7 @@
                             :max="100"
                             :formatter="value => `${value}%`"
                             :parser="value => value.replace('%', '')"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!record.taxRate">请填写税率</div>
           </span>
 
             <span slot="taxAmount" slot-scope="text,record">
@@ -107,6 +109,7 @@
                             :min="0"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!record.taxAmount">请填写税额</div>
           </span>
 
             <span slot="noTaxAmount" slot-scope="text,record">

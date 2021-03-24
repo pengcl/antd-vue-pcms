@@ -5,7 +5,7 @@
         <table>
           <thead>
           <tr>
-            <th colspan="9">
+            <th colspan="10">
               <a-button icon="plus" @click="add('billList')">
                 新增
               </a-button>
@@ -17,6 +17,7 @@
             <th>编号</th>
             <th>发票金额</th>
             <th>税率</th>
+            <th>税额</th>
             <th>不含税金额</th>
             <th>发票日期</th>
             <th>发票附件</th>
@@ -57,20 +58,33 @@
             <td>
               <a-input-number :disabled="type === 'view'"
                               v-model="item.billAmount"
+                              @change="e => billAmountChange(e,item,'billAmount')"
                               :min="0"
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                               :precision="2"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!item.billAmount">请填写发票金额</div>
             </td>
             <td>
               <a-input-number :disabled="type === 'view'"
                               v-model="item.taxRate"
+                              @change="e => taxRateChange(e,item,'taxRate')"
                               :min="0"
                               :max="100"
                               :formatter="value => `${value}%`"
                               :parser="value => value.replace('%', '')"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!item.taxRate">请填写税率</div>
             </td>
             <td>
               <a-input-number :disabled="type === 'view'"
+                              v-model="item.taxAmount"
+                              @change="e => taxAmountChange(e,record,'taxAmount')"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!item.taxAmount">请填写税额</div>
+            </td>
+            <td>
+              <a-input-number :disabled="true"
                               v-model="item.noTaxAmount"
                               :min="0"
                               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
@@ -129,6 +143,27 @@
             })
         },
         methods: {
+            taxAmountChange (value, record, key) {
+                record[key] = value
+                record['noTaxAmount'] = record['billAmount'] - record[key]
+                this.$forceUpdate()
+            },
+            billAmountChange (value, record, key) {
+                record[key] = value
+                if (record['taxRate']) {
+                    record['taxAmount'] = record[key] * (record['taxRate'] / 100) / (record['taxRate'] / 100 + 1)
+                    record['noTaxAmount'] = record[key] - record['taxAmount']
+                }
+                this.$forceUpdate()
+            },
+            taxRateChange (value, record, key) {
+                record[key] = value
+                if (record['billAmount']) {
+                    record['taxAmount'] = (record[key] / 100) * record['billAmount'] / (record[key] / 100 + 1)
+                    record['noTaxAmount'] = record['billAmount'] - record['taxAmount']
+                }
+                this.$forceUpdate()
+            },
             add (target) {
                 const item = {
                     id: 0,
