@@ -25,7 +25,7 @@
             <td>
               <a-upload
                 name="file"
-                v-if="item.fileInfo && item.filePage && item.id === 0 && item.arcType === 150"
+                v-if="item.fileInfo && item.filePage && item.id === 0 && item.arcType === 150 && !item.fileName"
                 :multiple="false"
                 :before-upload="beforeUpload"
               >

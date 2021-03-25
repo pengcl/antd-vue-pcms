@@ -1,454 +1,235 @@
 <template>
-  <a-form-model
-    ref="form"
-    :model="data"
-    :rules="rules"
-    :label-col="{ span: 8 }"
-    :wrapper-col="{ span: 16 }">
-    <a-row :gutter="48">
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="项目编号及名称"
-        >
-          <a-input :disabled="true"
-                   v-model="data.projectCode + ' ' + data.projectName"></a-input>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="本地付款编号"
-        >
-          <a-input :disabled="type === 'view'"
-                   v-model="data.localPaymentCode"
-                   placeholder="请输入本地付款编号"></a-input>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="24" :sm="24">
-        <a-form-model-item
-          label="合同编号及名称">
-          <a-input :disabled="true"
-                   v-model="data.contractNo + ' ' + data.contractName"></a-input>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="合同承包单位">
-          <a-input :disabled="true"
-                   v-model="data.venderName"></a-input>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="收到请款单日期"
-          prop="paymentReceiveDate">
-          <a-date-picker :disabled="type === 'view'"
-                         v-model="data.paymentReceiveDate"
-                         style="width: 100%"
-                         @change="receiveDateChange"></a-date-picker>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="付款每月截止日期">
-          <a-input :disabled="true"
-                   v-model="data.paymentCutOffDate"></a-input>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="合同付款期限"
-          prop="paymentDeadlineDay">
-          <a-input-number :disabled="type === 'view'"
-                          v-model="data.paymentDeadlineDay"
-                          style="width: 100%"
-                          @change="paymentDeadlineDayChange"></a-input-number>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="合同到期付款日期"
-        >
-          <a-date-picker :disabled="true" v-model="data.paymentDeadline" style="width: 100%"></a-date-picker>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="付款期数"
-        >
-          <a-input-number :disabled="true"
-                          v-model="data.paymentPhase" style="width: 100%"></a-input-number>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="申请批准金额"
-          prop="paymentRequestAmount"
-        >
-          <a-input-number :disabled="true"
-                          v-model="data.paymentRequestAmount"
-                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :precision="2"></a-input-number>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="本期支付金额"
-          prop="paymentAmount"
-        >
-          <a-input-number :disabled="true"
-                          v-model="data.paymentAmount"
-                          :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                          :precision="2"></a-input-number>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="付款凭证"
-          prop="expenseAccountType"
-        >
-          <a-select
-            :disabled="type === 'view'"
-            placeholder="请选择"
-            v-model="data.expenseAccountType">
-            <a-select-option
-              v-for="type in certificateTypes"
-              :value="type"
-              :key="type">{{ type }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="12" :sm="24">
-        <a-form-model-item
-          label="支付方式"
-          prop="paymentMethod"
-        >
-          <a-select
-            :disabled="type === 'view'"
-            placeholder="请选择"
-            v-model="data.paymentMethod">
-            <a-select-option
-              v-for="(type,index) in paymentMethodTypes"
-              :value="type.code"
-              :key="index">{{ type.code }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="24" :sm="24">
-        <a-form-model-item
-          label="付款说明"
-          prop="paymentContent"
-        >
-          <a-textarea :disabled="type === 'view'" v-model="data.paymentContent"></a-textarea>
-        </a-form-model-item>
-      </a-col>
-      <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
-      <a-col :md="24" :sm="24">
-        <table>
-          <tbody>
-          <tr>
-            <td rowspan="6" style="text-align: center">原合同</td>
-            <td>合同金额</td>
-            <td>
-              <a-input-number :disabled="true"
-                              v-model="data.contractMasterInfo.contractAmount"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"></a-input-number>
-            </td>
-            <td>预计结算金额</td>
-            <td>
-              <a-input-number :disabled="true"
-                              v-model="data.contractMasterInfo.contractEstimateAmount"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"></a-input-number>
-            </td>
-            <td>累计支付金额</td>
-            <td>
-              {{data.contractMasterInfo.paymentAmountTotal | NumberFormat}} /
-              {{data.contractMasterInfo.paymentAmountTotalRatio + '%'}}
-            </td>
-          </tr>
-          <tr>
-            <td>承包单位送单时间</td>
-            <td>
-              <a-date-picker :disabled="type === 'view'"
-                             v-model="data.contractMasterInfo.progressSendDate"
-                             style="width: 100%"
-                             v-decorator="['progressSendDate', { rules: [{required: true, message: '请选择承包单位送单时间'}] }]"></a-date-picker>
-            </td>
-            <td>承包单位上报金额</td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              v-model="data.contractMasterInfo.progressRequestAmount"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"
-                              v-decorator="['progressRequestAmount', { rules: [{required: true, message: '请输入承包单位上报金额'}] }]"></a-input-number>
-            </td>
-            <td>现场确认时间</td>
-            <td>
-              <a-date-picker :disabled="type === 'view'"
-                             v-model="data.contractMasterInfo.progressConfirmDate"
-                             style="width: 100%"
-                             v-decorator="['progressConfirmDate', { rules: [{required: true, message: '请选择现场确认时间'}] }]"></a-date-picker>
-            </td>
-          </tr>
-          <tr>
-            <td>顾问公司出估值时间</td>
-            <td>
-              <a-date-picker :disabled="type === 'view'"
-                             v-model="data.contractMasterInfo.progressValuationDate"
-                             style="width: 100%"
-                             v-decorator="['progressValuationDate', { rules: [{required: true, message: '请选择顾问公司出估值时间'}] }]"></a-date-picker>
-            </td>
-            <td>申请批准日期</td>
-            <td>
-              <a-date-picker :disabled="type === 'view'"
-                             v-model="data.contractMasterInfo.progressApproveDate"
-                             style="width: 100%"
-                             v-decorator="['progressApproveDate', { rules: [{required: true, message: '请选择申请批准日期'}] }]"></a-date-picker>
-              <p v-if="data.contractMasterInfo.paymentRequestAmount && !data.contractMasterInfo.progressApproveDate" style="color: red">请选择日期</p>
-            </td>
-            <td>申请批准金额</td>
-            <td>
-              <span v-if="data.contractMasterInfo.paymentRequestAmount" style="margin-right: 10px">{{data.contractMasterInfo.paymentRequestAmount | NumberFormat}}</span>
-              <a-button
-                @click="handleShowPaymentRequestAmount('0',type === 'create' ?  data.contractMasterInfo.contractGID : data.contractMasterInfo.secondaryContractGID)">
-                {{type === 'view' ? '查看金额' : data.contractMasterInfo.paymentRequestAmount ? '修改金额' : '填写明细'}}
-              </a-button>
-              <payment-request-amount-form ref="paymentRequestAmountModal0"
-                                           :visible="visibles['0'] ? visibles['0'] : false"
-                                           :loading="confirmLoadings['0'] ? confirmLoadings['0'] : false"
-                                           :model="mdls['0'] ? mdls['0'] : null"
-                                           :contractGID="contractGIDs['0']"
-                                           :paymentGID="type === 'create' ? null : id"
-                                           :type="'contractMasterInfo'"
-                                           :permission="type"
-                                           :paymentRequestAmount="data.contractMasterInfo.paymentRequestAmount ? data.contractMasterInfo.paymentRequestAmount : 0"
-                                           @cancel="handleCancel2('0')"
-                                           @ok="handleOk2('0')"></payment-request-amount-form>
-            </td>
-          </tr>
-          <tr>
-            <td>累计完成合同工作之评估价值<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.requestAmount_All_Contract"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"></a-input-number>
-              <p v-if="!data.contractMasterInfo.requestAmount_All_Contract && data.contractMasterInfo.requestAmount_All_Contract !== 0" style="color: red">请输入</p>
-            </td>
-            <td>累计完成已批准变更工作之评估价值<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.requestAmount_All_VO"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"
-                              required></a-input-number>
-              <p v-if="!data.contractMasterInfo.requestAmount_All_VO && data.contractMasterInfo.requestAmount_All_VO !== 0" style="color: red">请输入</p>
-            </td>
-            <td>累计完成已批准CIP工作之评估价值<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.requestAmount_All_CIP"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"
-                              required></a-input-number>
-              <p v-if="!data.contractMasterInfo.requestAmount_All_CIP && data.contractMasterInfo.requestAmount_All_CIP !== 0" style="color: red">请输入</p>
-            </td>
-          </tr>
-          <tr>
-            <td>减：保留金/保修金(%)<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.retentionAmount"
-                              :min="0"
-                              :max="100"
-                              :precision="2"
-                              :formatter="value => `${value}%`"
-                              :parser="value => value.replace('%', '')"></a-input-number>
-              <p v-if="!data.contractMasterInfo.retentionAmount && data.contractMasterInfo.retentionAmount !== 0" style="color: red">请输入</p>
-            </td>
-            <td>减：履约保证金(%)<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.bondAmount"
-                              :min="0"
-                              :max="100"
-                              :precision="2"
-                              :formatter="value => `${value}%`"
-                              :parser="value => value.replace('%', '')"></a-input-number>
-              <p v-if="!data.contractMasterInfo.bondAmount && data.contractMasterInfo.bondAmount !== 0" style="color: red">请输入</p>
-            </td>
-            <td>减：其他扣除款项<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.otherDeductionsAmount"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"
-                              required></a-input-number>
-              <p v-if="!data.contractMasterInfo.otherDeductionsAmount && data.contractMasterInfo.otherDeductionsAmount !== 0" style="color: red">请输入</p>
-            </td>
-          </tr>
-          <tr>
-            <td>加：预付款<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.prePayment_Plus"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"
-                              required></a-input-number>
-              <p v-if="!data.contractMasterInfo.prePayment_Plus && data.contractMasterInfo.prePayment_Plus !== 0" style="color: red">请输入</p>
-            </td>
-            <td>减：预付款<span style="color: red">*</span></td>
-            <td>
-              <a-input-number :disabled="type === 'view'"
-                              placeholder="请输入"
-                              v-model="data.contractMasterInfo.prePayment_Sub"
-                              :min="0"
-                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                              :precision="2"
-                              required></a-input-number>
-              <p v-if="!data.contractMasterInfo.prePayment_Sub && data.contractMasterInfo.prePayment_Sub !== 0" style="color: red">请输入</p>
-            </td>
-            <td>付款类型</td>
-            <td>
-              <a-select
-                :disabled="type === 'view'"
-                placeholder="请选择"
-                v-model="data.contractMasterInfo.paymentBusinessType"
-                v-decorator="['paymentBusinessType', { rules: [{required: true, message: '请选择付款类型'}] }]">
-                <a-select-option
-                  v-for="type in paymentTypes"
-                  :value="type"
-                  :key="type">{{ type }}
-                </a-select-option>
-              </a-select>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </a-col>
-      <base-info-payment :data="data.contractMasterInfo"
-                         :type="type"
-                         :id="id"
-                         :index="0"
-                         @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
-      <base-info-attachment :master-id="data.attachmentID ? data.attachmentID : 0"
-                            :data="data.contractMasterInfo"
-                            :type="type"
-                            :id="id"
-                            @on-change-masterId="changeMasterId"></base-info-attachment>
-      <a-col :md="24" :sm="24">
-        <a-button type="success" @click="handToShowcontractNSC"
-                  v-if="type === 'create' && NSCInfoList.length > 0">引入专业分包合同
-        </a-button>
-        <view-contract-nsc ref="createModal"
-                           :visible="visible"
-                           :loading="confirmLoading"
-                           :model="mdl"
-                           :contractGID="data.contractGID"
-                           @cancel="handleCancel"
-                           @ok="handleOk"></view-contract-nsc>
-      </a-col>
-      <div v-for="(item,index) in data.contractNSCInfoList" :key="index">
+  <div>
+    <a-form-model
+      ref="form"
+      :model="data"
+      :rules="rules"
+      :label-col="{ span: 8 }"
+      :wrapper-col="{ span: 16 }">
+      <a-row :gutter="48">
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="项目编号及名称"
+          >
+            <a-input :disabled="true"
+                     v-model="data.projectCode + ' ' + data.projectName"></a-input>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="本地付款编号"
+          >
+            <a-input :disabled="type === 'view'"
+                     v-model="data.localPaymentCode"
+                     placeholder="请输入本地付款编号"></a-input>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-form-model-item
+            label="合同编号及名称">
+            <a-input :disabled="true"
+                     v-model="data.contractNo + ' ' + data.contractName"></a-input>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="合同承包单位">
+            <a-input :disabled="true"
+                     v-model="data.venderName"></a-input>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="收到请款单日期"
+            prop="paymentReceiveDate">
+            <a-date-picker :disabled="type === 'view'"
+                           v-model="data.paymentReceiveDate"
+                           style="width: 100%"
+                           @change="receiveDateChange"></a-date-picker>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="付款每月截止日期">
+            <a-input :disabled="true"
+                     v-model="data.paymentCutOffDate"></a-input>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="合同付款期限"
+            prop="paymentDeadlineDay">
+            <a-input-number :disabled="type === 'view'"
+                            v-model="data.paymentDeadlineDay"
+                            style="width: 100%"
+                            @change="paymentDeadlineDayChange"></a-input-number>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="合同到期付款日期"
+          >
+            <a-date-picker :disabled="true" v-model="data.paymentDeadline" style="width: 100%"></a-date-picker>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="付款期数"
+          >
+            <a-input-number :disabled="true"
+                            v-model="data.paymentPhase" style="width: 100%"></a-input-number>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="申请批准金额"
+            prop="paymentRequestAmount"
+          >
+            <a-input-number :disabled="true"
+                            v-model="data.paymentRequestAmount"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="本期支付金额"
+            prop="paymentAmount"
+          >
+            <a-input-number :disabled="true"
+                            v-model="data.paymentAmount"
+                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                            :precision="2"></a-input-number>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="付款凭证"
+            prop="expenseAccountType"
+          >
+            <a-select
+              :disabled="type === 'view'"
+              placeholder="请选择"
+              v-model="data.expenseAccountType">
+              <a-select-option
+                v-for="type in certificateTypes"
+                :value="type"
+                :key="type">{{ type }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="支付方式"
+            prop="paymentMethod"
+          >
+            <a-select
+              :disabled="type === 'view'"
+              placeholder="请选择"
+              v-model="data.paymentMethod">
+              <a-select-option
+                v-for="(type,index) in paymentMethodTypes"
+                :value="type.code"
+                :key="index">{{ type.code }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="24" :sm="24">
+          <a-form-model-item
+            label="付款说明"
+            prop="paymentContent"
+          >
+            <a-textarea :disabled="type === 'view'" v-model="data.paymentContent"></a-textarea>
+          </a-form-model-item>
+        </a-col>
+        <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">支付明细</a-col>
         <a-col :md="24" :sm="24">
           <table>
             <tbody>
             <tr>
-              <td rowspan="7" style="text-align: center">专业分包合同</td>
-              <td>合同编号</td>
-              <td>
-                <a-input :disabled="true" v-model="item.contractNo"></a-input>
-              </td>
-              <td>合同名称</td>
-              <td colspan="3">
-                <a-input :disabled="true" v-model="item.contractName"></a-input>
-              </td>
-            </tr>
-            <tr>
+              <td rowspan="6" style="text-align: center">原合同</td>
               <td>合同金额</td>
               <td>
                 <a-input-number :disabled="true"
-                                v-model="item.contractAmount"
-                                :min="0"
+                                v-model="data.contractMasterInfo.contractAmount"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"></a-input-number>
               </td>
               <td>预计结算金额</td>
               <td>
                 <a-input-number :disabled="true"
-                                v-model="item.contractEstimateAmount"
-                                :min="0"
+                                v-model="data.contractMasterInfo.contractEstimateAmount"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"></a-input-number>
               </td>
               <td>累计支付金额</td>
-              <td>{{item.paymentAmountTotal | NumberFormat}} / {{item.paymentAmountTotalRatio + '%'}}</td>
+              <td>
+                {{data.contractMasterInfo.paymentAmountTotal | NumberFormat}} /
+                {{data.contractMasterInfo.paymentAmountTotalRatio + '%'}}
+              </td>
             </tr>
             <tr>
               <td>承包单位送单时间</td>
               <td>
-                <a-date-picker :disabled="type === 'view'" v-model="item.progressSendDate"
-                               style="width: 100%"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'"
+                               v-model="data.contractMasterInfo.progressSendDate"
+                               style="width: 100%"
+                               v-decorator="['progressSendDate', { rules: [{required: true, message: '请选择承包单位送单时间'}] }]"></a-date-picker>
               </td>
               <td>承包单位上报金额</td>
               <td>
                 <a-input-number :disabled="type === 'view'"
-                                v-model="item.progressRequestAmount"
+                                v-model="data.contractMasterInfo.progressRequestAmount"
                                 :min="0"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                                :precision="2"></a-input-number>
+                                :precision="2"
+                                v-decorator="['progressRequestAmount', { rules: [{required: true, message: '请输入承包单位上报金额'}] }]"></a-input-number>
               </td>
               <td>现场确认时间</td>
               <td>
-                <a-date-picker :disabled="type === 'view'" v-model="item.progressConfirmDate"
-                               style="width: 100%"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'"
+                               v-model="data.contractMasterInfo.progressConfirmDate"
+                               style="width: 100%"
+                               v-decorator="['progressConfirmDate', { rules: [{required: true, message: '请选择现场确认时间'}] }]"></a-date-picker>
               </td>
             </tr>
             <tr>
               <td>顾问公司出估值时间</td>
               <td>
-                <a-date-picker :disabled="type === 'view'" v-model="item.progressValuationDate"
-                               style="width: 100%"></a-date-picker>
+                <a-date-picker :disabled="type === 'view'"
+                               v-model="data.contractMasterInfo.progressValuationDate"
+                               style="width: 100%"
+                               v-decorator="['progressValuationDate', { rules: [{required: true, message: '请选择顾问公司出估值时间'}] }]"></a-date-picker>
               </td>
               <td>申请批准日期</td>
               <td>
-                <a-date-picker :disabled="type === 'view'" v-model="item.progressApproveDate"
-                               style="width: 100%"></a-date-picker>
-                <p v-if="item.paymentRequestAmount && !item.progressApproveDate" style="color: red">请选择日期</p>
+                <a-date-picker :disabled="type === 'view'"
+                               v-model="data.contractMasterInfo.progressApproveDate"
+                               style="width: 100%"
+                               v-decorator="['progressApproveDate', { rules: [{required: true, message: '请选择申请批准日期'}] }]"></a-date-picker>
+                <p v-if="data.contractMasterInfo.paymentRequestAmount && !data.contractMasterInfo.progressApproveDate"
+                   style="color: red">请选择日期</p>
               </td>
               <td>申请批准金额</td>
               <td>
-                <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
+                <span v-if="data.contractMasterInfo.paymentRequestAmount" style="margin-right: 10px">{{data.contractMasterInfo.paymentRequestAmount | NumberFormat}}</span>
                 <a-button
-                  @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID)">
-                  {{type === 'view' ? '查看金额' : item.paymentRequestAmount ? '修改金额' : '填写明细'}}
+                  @click="handleShowPaymentRequestAmount('0',type === 'create' ?  data.contractMasterInfo.contractGID : data.contractMasterInfo.secondaryContractGID)">
+                  {{type === 'view' ? '查看金额' : data.contractMasterInfo.paymentRequestAmount ? '修改金额' : '填写明细'}}
                 </a-button>
-                <payment-request-amount-form :ref="'paymentRequestAmountModal'+(index+1)"
-                                             :visible="visibles[''+(index+1)] ? visibles[''+(index+1)] : false"
-                                             :loading="confirmLoadings[''+(index+1)] ? confirmLoadings[''+(index+1)] : false"
-                                             :model="mdls[''+(index+1)] ? mdls[''+(index+1)] : null"
-                                             :contractGID="contractGIDs[''+(index+1)]"
+                <payment-request-amount-form ref="paymentRequestAmountModal0"
+                                             :visible="visibles['0'] ? visibles['0'] : false"
+                                             :loading="confirmLoadings['0'] ? confirmLoadings['0'] : false"
+                                             :model="mdls['0'] ? mdls['0'] : null"
+                                             :contractGID="contractGIDs['0']"
                                              :paymentGID="type === 'create' ? null : id"
-                                             :type="'contractNSCInfo'"
+                                             :type="'contractMasterInfo'"
                                              :permission="type"
-                                             :paymentRequestAmount="item.paymentRequestAmount ? item.paymentRequestAmount : 0"
-                                             @cancel="handleCancel2(''+(index+1))"
-                                             @ok="handleOk2(''+(index+1))"></payment-request-amount-form>
+                                             :paymentRequestAmount="data.contractMasterInfo.paymentRequestAmount ? data.contractMasterInfo.paymentRequestAmount : 0"
+                                             @cancel="handleCancel2('0')"
+                                             @ok="handleOk2('0')"></payment-request-amount-form>
               </td>
             </tr>
             <tr>
@@ -456,70 +237,76 @@
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.requestAmount_All_Contract"
+                                v-model="data.contractMasterInfo.requestAmount_All_Contract"
                                 :min="0"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"></a-input-number>
-                <p v-if="!item.requestAmount_All_Contract && item.requestAmount_All_Contract !== 0" style="color: red">请输入</p>
+                <p
+                  v-if="!data.contractMasterInfo.requestAmount_All_Contract && data.contractMasterInfo.requestAmount_All_Contract !== 0"
+                  style="color: red">请输入</p>
               </td>
               <td>累计完成已批准变更工作之评估价值<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.requestAmount_All_VO"
+                                v-model="data.contractMasterInfo.requestAmount_All_VO"
                                 :min="0"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.requestAmount_All_VO && item.requestAmount_All_VO !== 0" style="color: red">请输入</p>
+                <p
+                  v-if="!data.contractMasterInfo.requestAmount_All_VO && data.contractMasterInfo.requestAmount_All_VO !== 0"
+                  style="color: red">请输入</p>
               </td>
               <td>累计完成已批准CIP工作之评估价值<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.requestAmount_All_CIP"
+                                v-model="data.contractMasterInfo.requestAmount_All_CIP"
                                 :min="0"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.requestAmount_All_CIP && item.requestAmount_All_CIP !== 0" style="color: red">请输入</p>
+                <p
+                  v-if="!data.contractMasterInfo.requestAmount_All_CIP && data.contractMasterInfo.requestAmount_All_CIP !== 0"
+                  style="color: red">请输入</p>
               </td>
             </tr>
             <tr>
-              <td>减：保留金/保修金(%)<span style="color: red">*</span></td>
+              <td>减：保留金/保修金<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.retentionAmount"
-                                :min="0"
-                                :max="100"
-                                :precision="2"
-                                :formatter="value => `${value}%`"
-                                :parser="value => value.replace('%', '')"></a-input-number>
-                <p v-if="!item.retentionAmount && item.retentionAmount !== 0" style="color: red">请输入</p>
+                                v-model="data.contractMasterInfo.retentionAmount"
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
+                <p v-if="!data.contractMasterInfo.retentionAmount && data.contractMasterInfo.retentionAmount !== 0"
+                   style="color: red">请输入</p>
               </td>
-              <td>减：履约保证金(%)<span style="color: red">*</span></td>
+              <td>减：履约保证金<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.bondAmount"
-                                :min="0"
-                                :max="100"
-                                :precision="2"
-                                :formatter="value => `${value}%`"
-                                :parser="value => value.replace('%', '')"></a-input-number>
-                <p v-if="!item.bondAmount && item.bondAmount !== 0" style="color: red">请输入</p>
+                                v-model="data.contractMasterInfo.bondAmount"
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                :precision="2"></a-input-number>
+                <p v-if="!data.contractMasterInfo.bondAmount && data.contractMasterInfo.bondAmount !== 0"
+                   style="color: red">请输入</p>
               </td>
               <td>减：其他扣除款项<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.otherDeductionsAmount"
-                                :min="0"
-                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                v-model="data.contractMasterInfo.otherDeductionsAmount"
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.otherDeductionsAmount && item.otherDeductionsAmount !== 0" style="color: red">请输入</p>
+                <p
+                  v-if="!data.contractMasterInfo.otherDeductionsAmount && data.contractMasterInfo.otherDeductionsAmount !== 0"
+                  style="color: red">请输入</p>
               </td>
             </tr>
             <tr>
@@ -527,30 +314,32 @@
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.prePayment_Plus"
+                                v-model="data.contractMasterInfo.prePayment_Plus"
                                 :min="0"
                                 :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.prePayment_Plus && item.prePayment_Plus !== 0" style="color: red">请输入</p>
+                <p v-if="!data.contractMasterInfo.prePayment_Plus && data.contractMasterInfo.prePayment_Plus !== 0"
+                   style="color: red">请输入</p>
               </td>
               <td>减：预付款<span style="color: red">*</span></td>
               <td>
                 <a-input-number :disabled="type === 'view'"
                                 placeholder="请输入"
-                                v-model="item.prePayment_Sub"
-                                :min="0"
-                                :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                v-model="data.contractMasterInfo.prePayment_Sub"
+                                :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                :parser="value => value.replace(/\-\s?|(,*)/g, '')"
                                 :precision="2"
                                 required></a-input-number>
-                <p v-if="!item.prePayment_Sub && item.prePayment_Sub !== 0" style="color: red">请输入</p>
+                <p v-if="!data.contractMasterInfo.prePayment_Sub && data.contractMasterInfo.prePayment_Sub !== 0"
+                   style="color: red">请输入</p>
               </td>
               <td>付款类型</td>
               <td>
                 <a-select
                   :disabled="type === 'view'"
                   placeholder="请选择"
-                  v-model="item.paymentBusinessType"
+                  v-model="data.contractMasterInfo.paymentBusinessType"
                   v-decorator="['paymentBusinessType', { rules: [{required: true, message: '请选择付款类型'}] }]">
                   <a-select-option
                     v-for="type in paymentTypes"
@@ -563,35 +352,255 @@
             </tbody>
           </table>
         </a-col>
-        <base-info-payment :data="item" :type="type" :id="id" :index="index+1"
+        <base-info-payment :data="data.contractMasterInfo"
+                           :type="type"
+                           :id="id"
+                           :index="0"
                            @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
         <base-info-attachment :master-id="data.attachmentID ? data.attachmentID : 0"
-                              :data="item"
+                              :data="data.contractMasterInfo"
                               :type="type"
                               :id="id"
                               @on-change-masterId="changeMasterId"></base-info-attachment>
-      </div>
-      <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票信息</a-col>
-      <a-col :md="24" :sm="24">
-        <div
-          style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
-          <a-button icon="plus" @click="add('billList')" :disabled="type === 'view'">
-            新增发票
+        <a-col :md="24" :sm="24">
+          <a-button type="success" @click="handToShowcontractNSC"
+                    v-if="type !== 'view' && NSCInfoList.length > 0">引入专业分包合同
           </a-button>
+          <view-contract-nsc ref="createModal"
+                             :visible="visible"
+                             :loading="confirmLoading"
+                             :model="mdl"
+                             :contractGID="data.contractGID"
+                             @cancel="handleCancel"
+                             @ok="handleOk"></view-contract-nsc>
+        </a-col>
+        <div v-for="(item,index) in data.contractNSCInfoList" :key="index">
+          <a-col :md="24" :sm="24">
+            <table>
+              <tbody>
+              <tr>
+                <td rowspan="7" style="text-align: center">专业分包合同</td>
+                <td>合同编号</td>
+                <td>
+                  <a-input :disabled="true" v-model="item.contractNo"></a-input>
+                </td>
+                <td>合同名称</td>
+                <td colspan="3">
+                  <a-input :disabled="true" v-model="item.contractName"></a-input>
+                </td>
+              </tr>
+              <tr>
+                <td>合同金额</td>
+                <td>
+                  <a-input-number :disabled="true"
+                                  v-model="item.contractAmount"
+                                  :min="0"
+                                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :precision="2"></a-input-number>
+                </td>
+                <td>预计结算金额</td>
+                <td>
+                  <a-input-number :disabled="true"
+                                  v-model="item.contractEstimateAmount"
+                                  :min="0"
+                                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :precision="2"></a-input-number>
+                </td>
+                <td>累计支付金额</td>
+                <td>{{item.paymentAmountTotal | NumberFormat}} / {{item.paymentAmountTotalRatio + '%'}}</td>
+              </tr>
+              <tr>
+                <td>承包单位送单时间</td>
+                <td>
+                  <a-date-picker :disabled="type === 'view'" v-model="item.progressSendDate"
+                                 style="width: 100%"></a-date-picker>
+                </td>
+                <td>承包单位上报金额</td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  v-model="item.progressRequestAmount"
+                                  :min="0"
+                                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :precision="2"></a-input-number>
+                </td>
+                <td>现场确认时间</td>
+                <td>
+                  <a-date-picker :disabled="type === 'view'" v-model="item.progressConfirmDate"
+                                 style="width: 100%"></a-date-picker>
+                </td>
+              </tr>
+              <tr>
+                <td>顾问公司出估值时间</td>
+                <td>
+                  <a-date-picker :disabled="type === 'view'" v-model="item.progressValuationDate"
+                                 style="width: 100%"></a-date-picker>
+                </td>
+                <td>申请批准日期</td>
+                <td>
+                  <a-date-picker :disabled="type === 'view'" v-model="item.progressApproveDate"
+                                 style="width: 100%"></a-date-picker>
+                  <p v-if="item.paymentRequestAmount && !item.progressApproveDate" style="color: red">请选择日期</p>
+                </td>
+                <td>申请批准金额</td>
+                <td>
+                  <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
+                  <a-button
+                    @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID)">
+                    {{type === 'view' ? '查看金额' : item.paymentRequestAmount ? '修改金额' : '填写明细'}}
+                  </a-button>
+                  <payment-request-amount-form :ref="'paymentRequestAmountModal'+(index+1)"
+                                               :visible="visibles[''+(index+1)] ? visibles[''+(index+1)] : false"
+                                               :loading="confirmLoadings[''+(index+1)] ? confirmLoadings[''+(index+1)] : false"
+                                               :model="mdls[''+(index+1)] ? mdls[''+(index+1)] : null"
+                                               :contractGID="contractGIDs[''+(index+1)]"
+                                               :paymentGID="type === 'create' ? null : id"
+                                               :type="'contractNSCInfo'"
+                                               :permission="type"
+                                               :paymentRequestAmount="item.paymentRequestAmount ? item.paymentRequestAmount : 0"
+                                               @cancel="handleCancel2(''+(index+1))"
+                                               @ok="handleOk2(''+(index+1))"></payment-request-amount-form>
+                </td>
+              </tr>
+              <tr>
+                <td>累计完成合同工作之评估价值<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.requestAmount_All_Contract"
+                                  :min="0"
+                                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :precision="2"></a-input-number>
+                  <p v-if="!item.requestAmount_All_Contract && item.requestAmount_All_Contract !== 0"
+                     style="color: red">
+                    请输入</p>
+                </td>
+                <td>累计完成已批准变更工作之评估价值<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.requestAmount_All_VO"
+                                  :min="0"
+                                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :precision="2"
+                                  required></a-input-number>
+                  <p v-if="!item.requestAmount_All_VO && item.requestAmount_All_VO !== 0" style="color: red">请输入</p>
+                </td>
+                <td>累计完成已批准CIP工作之评估价值<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.requestAmount_All_CIP"
+                                  :min="0"
+                                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :precision="2"
+                                  required></a-input-number>
+                  <p v-if="!item.requestAmount_All_CIP && item.requestAmount_All_CIP !== 0" style="color: red">请输入</p>
+                </td>
+              </tr>
+              <tr>
+                <td>减：保留金/保修金<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.retentionAmount"
+                                  :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                  :precision="2"></a-input-number>
+                  <p v-if="!item.retentionAmount && item.retentionAmount !== 0" style="color: red">请输入</p>
+                </td>
+                <td>减：履约保证金<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.bondAmount"
+                                  :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                  :precision="2"></a-input-number>
+                  <p v-if="!item.bondAmount && item.bondAmount !== 0" style="color: red">请输入</p>
+                </td>
+                <td>减：其他扣除款项<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.otherDeductionsAmount"
+                                  :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                  :precision="2"
+                                  required></a-input-number>
+                  <p v-if="!item.otherDeductionsAmount && item.otherDeductionsAmount !== 0" style="color: red">请输入</p>
+                </td>
+              </tr>
+              <tr>
+                <td>加：预付款<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.prePayment_Plus"
+                                  :min="0"
+                                  :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :precision="2"
+                                  required></a-input-number>
+                  <p v-if="!item.prePayment_Plus && item.prePayment_Plus !== 0" style="color: red">请输入</p>
+                </td>
+                <td>减：预付款<span style="color: red">*</span></td>
+                <td>
+                  <a-input-number :disabled="type === 'view'"
+                                  placeholder="请输入"
+                                  v-model="item.prePayment_Sub"
+                                  :formatter="value => `-${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                                  :parser="value => value.replace(/\-\s?|(,*)/g, '')"
+                                  :precision="2"
+                                  required></a-input-number>
+                  <p v-if="!item.prePayment_Sub && item.prePayment_Sub !== 0" style="color: red">请输入</p>
+                </td>
+                <td>付款类型</td>
+                <td>
+                  <a-select
+                    :disabled="type === 'view'"
+                    placeholder="请选择"
+                    v-model="item.paymentBusinessType"
+                    v-decorator="['paymentBusinessType', { rules: [{required: true, message: '请选择付款类型'}] }]">
+                    <a-select-option
+                      v-for="type in paymentTypes"
+                      :value="type"
+                      :key="type">{{ type }}
+                    </a-select-option>
+                  </a-select>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </a-col>
+          <base-info-payment :data="item" :type="type" :id="id" :index="index+1"
+                             @on-change-paymentAmount="changePaymentAmount"></base-info-payment>
+          <base-info-attachment :master-id="data.attachmentID ? data.attachmentID : 0"
+                                :data="item"
+                                :type="type"
+                                :id="id"
+                                @on-change-masterId="changeMasterId"></base-info-attachment>
         </div>
-        <a-table
-          ref="table"
-          :row-key="record => record._id"
-          :columns="columns"
-          :data-source="data.billList | filterDeleted"
-          :scroll="{  x: 'calc(700px + 50%)' }"
-          bordered
-        >
+
+
+        <a-col :md="24" :sm="24" style="font-size: 18px;font-weight: bold;text-decoration: underline">发票信息</a-col>
+        <a-col :md="24" :sm="24">
+          <div
+            style="padding-top:5px; padding-bottom:5px;padding-left:30px;background-color:#f5f5f5;border-bottom:0;border:1px solid #ccc;margin-top: 20px">
+            <a-button icon="plus" @click="add('billList')" :disabled="type === 'view'">
+              新增发票
+            </a-button>
+          </div>
+          <a-table
+            :row-key="record => record._id"
+            :columns="columns"
+            :data-source="data.billList | filterDeleted"
+            :scroll="{  x: 'calc(700px + 50%)' }"
+            bordered
+          >
           <span slot="action" slot-scope="text,record,index">
             <a-upload name="file"
                       :disabled="type === 'view'"
                       :multiple="false"
-                      v-if="record.invoiceType"
+                      v-if="record.invoiceType && !record.billFileName"
                       :before-upload="beforeUpload">
                   <a-button @click="choose(index)">请选择</a-button>
                 </a-upload>
@@ -600,13 +609,12 @@
                 </a-button>
           </span>
 
-          <span slot="invoiceType" slot-scope="text,record">
+            <span slot="invoiceType" slot-scope="text,record">
             <a-select
               :disabled="type === 'view'"
               placeholder="请选择"
               @change="onchange"
-              v-model="record.invoiceType"
-              v-decorator="['item.invoiceType', { rules: [{required: true, message: '请选择票据类型'}] }]">
+              v-model="record.invoiceType">
                   <a-select-option
                     v-for="type in billTypeList"
                     :value="type"
@@ -615,20 +623,21 @@
                 </a-select>
           </span>
 
-          <span slot="billNum" slot-scope="text,record">
+            <span slot="billNum" slot-scope="text,record">
             <a-input :disabled="type === 'view'" v-model="record.billNum"></a-input>
           </span>
 
-          <span slot="billAmount" slot-scope="text,record,index">
+            <template slot="billAmount" slot-scope="text,record,index">
             <a-input-number :disabled="type === 'view'"
                             v-model="record.billAmount"
                             @change="e => billAmountChange(e,record,'billAmount')"
                             :min="0"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
-          </span>
+              <div style="font-size: 12px;color: red" v-if="!record.billAmount">请填写发票金额</div>
+          </template>
 
-          <span slot="taxRate" slot-scope="text,record">
+            <template slot="taxRate" slot-scope="text,record,index">
             <a-input-number :disabled="type === 'view'"
                             v-model="record.taxRate"
                             @change="e => taxRateChange(e,record,'taxRate')"
@@ -636,18 +645,20 @@
                             :max="100"
                             :formatter="value => `${value}%`"
                             :parser="value => value.replace('%', '')"></a-input-number>
-          </span>
+              <div style="font-size: 12px;color: red" v-if="!record.taxRate">请填写税率</div>
+          </template>
 
-          <span slot="taxAmount" slot-scope="text,record">
+            <template slot="taxAmount" slot-scope="text,record,index">
             <a-input-number :disabled="type === 'view'"
                             v-model="record.taxAmount"
-                            @change="taxAmountChange(e,record,'taxAmount')"
+                            @change="e => taxAmountChange(e,record,'taxAmount')"
                             :min="0"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
-          </span>
+              <div style="font-size: 12px;color: red" v-if="!record.taxAmount">请填写税额</div>
+          </template>
 
-          <span slot="noTaxAmount" slot-scope="text,record">
+            <span slot="noTaxAmount" slot-scope="text,record">
             <a-input-number :disabled="true"
                             v-model="record.noTaxAmount"
                             @change="noTaxAmountChange"
@@ -656,21 +667,22 @@
                             :precision="2"></a-input-number>
           </span>
 
-          <span slot="billDate" slot-scope="text,record">
+            <span slot="billDate" slot-scope="text,record">
             <a-date-picker :disabled="type === 'view'" v-model="record.billDate" @change="dateChange"></a-date-picker>
           </span>
 
-          <span slot="billFileName" slot-scope="text,record">
+            <span slot="billFileName" slot-scope="text,record">
             <a :href="record.billFileUrl" target="_blank" v-if="record.billFileName">{{record.billFileName}}</a>
           </span>
 
-          <span slot="remark" slot-scope="text,record">
+            <span slot="remark" slot-scope="text,record">
             <a-input :disabled="type === 'view'" v-model="record.remark"></a-input>
           </span>
-        </a-table>
-      </a-col>
-    </a-row>
-  </a-form-model>
+          </a-table>
+        </a-col>
+      </a-row>
+    </a-form-model>
+  </div>
 </template>
 
 <script>
@@ -782,7 +794,7 @@
                     paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
                     paymentDeadlineDay: [{ required: true, message: '请输入合同付款期限', trigger: 'change' }],
                     requestAmount_All_Contract: [{ required: true, message: '请输入累计完成合同工作之评估价值', trigger: 'change' }]
-                }
+                },
             }
         },
         watch: {
@@ -1168,4 +1180,6 @@
       }
     }
   }
+
+
 </style>

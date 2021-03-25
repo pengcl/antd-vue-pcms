@@ -67,7 +67,6 @@
           <a-input-number
             :disabled="true"
             :value="data.contract.contractAmount"
-            :min="0"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
@@ -95,7 +94,6 @@
           <a-input-number
             :disabled="type === 'view'"
             v-model="data.contract.contractNoTaxAmount"
-            :min="0"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>
@@ -109,7 +107,6 @@
           <a-input-number
             :disabled="true"
             v-model="data.contract.contractTaxAmount"
-            :min="0"
             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
             :parser="value => value.replace(/\\s?|(,*)/g, '')"
             :precision="2"></a-input-number>

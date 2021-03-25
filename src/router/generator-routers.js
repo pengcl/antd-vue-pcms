@@ -26,7 +26,6 @@ const constantRouterComponents = {
   // contract
   'ContractList': () => import('@/views/contract/List'),
   'ContractItem': () => import('@/views/contract/Item'),
-  'ContractEdit': () => import('@/views/contract/Edit'),
 
   // change
   'ChangePmi': () => import('@/views/change/Pmi'),

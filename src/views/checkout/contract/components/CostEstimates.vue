@@ -8,6 +8,7 @@
             <a-button :disabled="type === 'view'" icon="plus" @click="add">新增</a-button>
             <a-button @click="clear" :disabled="type === 'view'" icon="stop">重置</a-button>
             <a-button :disabled="type === 'view'" @click="replaceByContract">按原合同条款</a-button>
+            <a-button :disabled="type === 'view'" icon="plus" @click="splitBq">分摊工具</a-button>
           </div>
           <a-table
             ref="table"
@@ -97,6 +98,7 @@
                 <a-upload
                   :multiple="false"
                   :disabled="type === 'view'"
+                  v-if="!file.name"
                   :before-upload="beforeUpload"
                 >
                   <a-button @click="choose(index)">请选择</a-button>
@@ -117,6 +119,7 @@
       </a-row>
     </a-form-model>
     <contract-bq-modal ref="bqModal" :contract="data" :data="data"></contract-bq-modal>
+    <split-bq-modal ref="splitBQModal" :contract="contract"></split-bq-modal>
   </div>
 </template>
 
@@ -125,6 +128,7 @@
     import { Base as BaseService } from '@/api/base'
     import { SwaggerService } from '@/api/swagger.service'
     import { ChangeService } from '@/views/change/change.service'
+    import SplitBqModal from '@/views/change/cip/components/modal/SplitBQModal'
 
     const columns = [
         {
@@ -155,7 +159,7 @@
 
     export default {
         name: 'CostEstimates',
-        components: { ContractBqModal },
+        components: { ContractBqModal, SplitBqModal },
         data () {
             return {
                 columns: columns,
@@ -168,6 +172,9 @@
                 tableRules: {
                     bqList: [],
                 },
+                contract: {
+                    contractGuid: null
+                }
             }
         },
         created () {
@@ -184,6 +191,7 @@
                         this.selection.centers = res.result.data
                         this.$forceUpdate()
                     })
+                    this.contract.contractGuid = value
                 }
             },
             'data.attachmentID' (value) {
@@ -220,6 +228,9 @@
             },
         },
         methods: {
+            splitBq () {
+                this.$refs.splitBQModal.showTable()
+            },
             costCenterChange (value, option) {
                 const index = option.data.key
                 const _index = this.selection.centers.findIndex(item => item.id + '' === value)

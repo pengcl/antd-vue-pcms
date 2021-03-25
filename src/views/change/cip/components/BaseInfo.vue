@@ -373,7 +373,6 @@
                 placeholder="请选择"
                 v-model="data.voMasterInfo.sourceValue"
                 :disabled="type === 'view'"
-                @change="sourceValueChange"
               >
                 <a-select-option
                   v-for="option in selection.sourceTypes"
@@ -619,6 +618,9 @@
           }
         }
         this.$forceUpdate()
+      },
+      'data.voMasterInfo.sourceValue'(value){
+        this.sourceValueChange(value)
       }
     },
     methods: {

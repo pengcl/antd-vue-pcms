@@ -27,6 +27,7 @@
             :columns="columns"
             :data-source="billList | filterDeleted"
             :scroll="{  x: 'calc(700px + 50%)' }"
+            :pagination="pagination"
             bordered
           >
           <span slot="action" slot-scope="text,record,index">
@@ -43,7 +44,7 @@
                 </a-button>
             <a-upload name="file"
                       :multiple="false"
-                      v-if="record.invoiceType && !record.show"
+                      v-if="record.invoiceType && !record.show && !record.billFileName"
                       :before-upload="beforeUpload">
                   <a-button @click="choose(index)">请选择</a-button>
                 </a-upload>
@@ -70,13 +71,13 @@
             <span slot="paymentCode" slot-scope="text,record,index">
               <a-input
                 :value="record.paymentCode"
-                @click="showSelect(''+index)"
+                @click="showSelect(''+((pageNumber-1)*10 + index))"
                 :read-only="true"></a-input>
-              <select-payment-modal :ref="'payment'+index"
+              <select-payment-modal :ref="'payment'+((pageNumber-1)*10 + index)"
                                     :contractGID="id"
-                                    :visible="visibles[''+index] ? visibles[''+index] : false"
-                                    @cancel="handleCancel(''+index)"
-                                    @ok="handleOk(index)"></select-payment-modal>
+                                    :visible="visibles[''+((pageNumber-1)*10 + index)] ? visibles[''+((pageNumber-1)*10 + index)] : false"
+                                    @cancel="handleCancel(''+((pageNumber-1)*10 + index))"
+                                    @ok="handleOk((pageNumber-1)*10 + index)"></select-payment-modal>
             </span>
 
             <span slot="billNum" slot-scope="text,record">
@@ -89,6 +90,7 @@
                             :min="0"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!record.billAmount">请填写发票金额</div>
           </span>
 
             <span slot="taxRate" slot-scope="text,record">
@@ -98,6 +100,7 @@
                             :max="100"
                             :formatter="value => `${value}%`"
                             :parser="value => value.replace('%', '')"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!record.taxRate">请填写税率</div>
           </span>
 
             <span slot="taxAmount" slot-scope="text,record">
@@ -106,6 +109,7 @@
                             :min="0"
                             :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                             :precision="2"></a-input-number>
+              <div style="font-size: 12px;color: red" v-if="!record.taxAmount">请填写税额</div>
           </span>
 
             <span slot="noTaxAmount" slot-scope="text,record">
@@ -228,13 +232,23 @@
                 visibles: {},
                 form: SwaggerService.getForm('ContractAllInfoDto'),
                 masterID: 0,
-                disabled: false
+                disabled: false,
+                pageNumber: 1
             }
         },
         computed: {
             id () {
                 return this.$route.params.id
             },
+            pagination () {
+                const that = this
+                return {
+                    onChange: function (pageNumber) {
+                        that.pageNumber = pageNumber
+                        that.$forceUpdate()
+                    }
+                }
+            }
         },
         created () {
             SignedService.billList().then(res => {
@@ -264,6 +278,7 @@
                         })
                     }
                     this.billList = res.result.data
+                    this.billList = this.billList.sort((a, b) => b.billNum - a.billNum)
                     this.$forceUpdate()
                 })
             },
@@ -322,7 +337,12 @@
                     billFileUrl: '',
                     remark: ''
                 }
-                this.billList.push(item)
+                if (this.billList.length < 1) {
+                    this.billList.push(item)
+                } else {
+                    this.billList.unshift(item)
+                }
+
             },
             del (index) {
                 if (this.billList[index].isTemp) {

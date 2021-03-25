@@ -8,6 +8,7 @@
               <th colspan="4">
                 <a-upload
                   :disabled="type === 'view'"
+                  v-if="!file.name"
                   :before-upload="beforeUpload"
                 >
                   <a-button>请选择</a-button>

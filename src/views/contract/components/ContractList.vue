@@ -16,7 +16,6 @@
               :disabled="true"
               placeholder="请生成合同金额"
               v-model="data.contract.contractAmount"
-              :min="0"
               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
@@ -31,7 +30,6 @@
               :disabled="true"
               placeholder="请生成有效合同金额"
               v-model="data.contract.contractEffectAmount"
-              :min="0"
               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
@@ -46,7 +44,6 @@
               :disabled="true"
               placeholder="请生成合同内暂定款金额"
               v-model="data.contract.contractPSAmount"
-              :min="0"
               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
@@ -61,7 +58,6 @@
               :disabled="true"
               placeholder="合同内可选择项目金额"
               v-model="data.contract.contractOPTAmount"
-              :min="0"
               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
@@ -76,7 +72,6 @@
               :disabled="true"
               placeholder="专业分包合同金额"
               v-model="data.contract.contractPCPreAmount"
-              :min="0"
               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
@@ -91,7 +86,6 @@
               :disabled="true"
               placeholder="甲供材金额"
               v-model="data.contract.contractDSAmount"
-              :min="0"
               :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               :parser="value => value.replace(/\\s?|(,*)/g, '')"
               :precision="2"/>
@@ -215,6 +209,7 @@
                 <a-upload
                   :multiple="false"
                   :disabled="type === 'view'"
+                  v-if="!file.name"
                   :before-upload="beforeUpload"
                 >
                   <a-button @click="choose(index)">请选择</a-button>

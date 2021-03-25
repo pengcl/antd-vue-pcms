@@ -22,7 +22,7 @@
             <td>
               <a-upload
                 name="file"
-                v-if="item.filePage && item.id === 0"
+                v-if="item.filePage && item.id === 0 && !item.fileName"
                 :multiple="false"
                 :before-upload="beforeUpload"
               >
