@@ -145,7 +145,7 @@
         },
         watch: {
             'data' (value) {
-                this.getVendor(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID'])
+                this.getVendor(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID'] ? this.data['secondaryContractGID'] : this.data['contractGID'])
             },
             'data.detailList' (value) {
                 if (value && value.length > 0) {
@@ -170,7 +170,7 @@
                 this.$forceUpdate()
             })
             if (this.data['contractGID'] || this.data['secondaryContractGID']) {
-                SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID']).then(res => {
+                SignedService.vendorTypes(this.type === 'create' ? this.data['contractGID'] : this.data['secondaryContractGID'] ? this.data['secondaryContractGID'] : this.data['contractGID']).then(res => {
                     this.vendorTypes = res.result.data
                     this.$forceUpdate()
                 })

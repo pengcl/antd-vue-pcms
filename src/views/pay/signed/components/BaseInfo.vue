@@ -445,7 +445,7 @@
                 <td>
                   <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
                   <a-button
-                    @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID)">
+                    @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID ? item.secondaryContractGID : item.contractGID)">
                     {{type === 'view' ? '查看金额' : item.paymentRequestAmount ? '修改金额' : '填写明细'}}
                   </a-button>
                   <payment-request-amount-form :ref="'paymentRequestAmountModal'+(index+1)"
@@ -628,35 +628,35 @@
           </span>
 
             <template slot="billAmount" slot-scope="text,record,index">
-            <a-input-number :disabled="type === 'view'"
-                            v-model="record.billAmount"
-                            @change="e => billAmountChange(e,record,'billAmount')"
-                            :min="0"
-                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                            :precision="2"></a-input-number>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="record.billAmount"
+                              @change="e => billAmountChange(e,record,'billAmount')"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"></a-input-number>
               <div style="font-size: 12px;color: red" v-if="!record.billAmount">请填写发票金额</div>
-          </template>
+            </template>
 
             <template slot="taxRate" slot-scope="text,record,index">
-            <a-input-number :disabled="type === 'view'"
-                            v-model="record.taxRate"
-                            @change="e => taxRateChange(e,record,'taxRate')"
-                            :min="0"
-                            :max="100"
-                            :formatter="value => `${value}%`"
-                            :parser="value => value.replace('%', '')"></a-input-number>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="record.taxRate"
+                              @change="e => taxRateChange(e,record,'taxRate')"
+                              :min="0"
+                              :max="100"
+                              :formatter="value => `${value}%`"
+                              :parser="value => value.replace('%', '')"></a-input-number>
               <div style="font-size: 12px;color: red" v-if="!record.taxRate">请填写税率</div>
-          </template>
+            </template>
 
             <template slot="taxAmount" slot-scope="text,record,index">
-            <a-input-number :disabled="type === 'view'"
-                            v-model="record.taxAmount"
-                            @change="e => taxAmountChange(e,record,'taxAmount')"
-                            :min="0"
-                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                            :precision="2"></a-input-number>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="record.taxAmount"
+                              @change="e => taxAmountChange(e,record,'taxAmount')"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"></a-input-number>
               <div style="font-size: 12px;color: red" v-if="!record.taxAmount">请填写税额</div>
-          </template>
+            </template>
 
             <span slot="noTaxAmount" slot-scope="text,record">
             <a-input-number :disabled="true"

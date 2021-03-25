@@ -265,6 +265,7 @@
                     if (this.contractGID) {
                         if (this.permission !== 'view') {
                             if (!this.originData) {
+                                console.log(1)
                                 return SignedService.requestList(this.contractGID, this.paymentGID, false).then(res => {
                                     res.result.data.forEach(item => {
                                         item.disabled = true
