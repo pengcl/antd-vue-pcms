@@ -1,8 +1,18 @@
 <template>
-  <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
+  <a-form-model ref="form" :model="data.contract" :rules="rules" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
     <a-row :gutter="48">
       <a-col :md="12" :sm="24">
-        <a-form-item
+        <a-form-model-item
+          label="合同付款期限"
+          prop="paymentGracePeriod"
+        >
+          <a-input-number :disabled="type === 'view'"
+                          placeholder="请填写合同付款期限"
+                          v-model="data.contract.paymentGracePeriod"></a-input-number>
+        </a-form-model-item>
+      </a-col>
+      <a-col :md="12" :sm="24">
+        <a-form-model-item
           label="保修金/保固金/保留金条款类型"
         >
           <a-select
@@ -14,105 +24,108 @@
               {{ option.nameCN }}
             </a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-model-item>
       </a-col>
       <a-col :md="24" :sm="24">
         <table>
           <thead>
-            <tr>
-              <th colspan="3">
-                <a-button @click="add()" :disabled="type === 'view'" icon="plus">
-                  新增
-                </a-button>
-                <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
-                  重置
-                </a-button>
-              </th>
-            </tr>
-            <tr>
-              <th style="width: 30%">操作</th>
-              <th style="width: 40%">描述</th>
-              <th style="width: 40%">累计百分比</th>
-            </tr>
+          <tr>
+            <th colspan="3">
+              <a-button @click="add()" :disabled="type === 'view'" icon="plus">
+                新增
+              </a-button>
+              <a-button @click="clear()" :disabled="type === 'view'" icon="stop">
+                重置
+              </a-button>
+            </th>
+          </tr>
+          <tr>
+            <th style="width: 30%">操作</th>
+            <th style="width: 40%">描述</th>
+            <th style="width: 40%">累计百分比</th>
+          </tr>
           </thead>
           <tbody>
-            <tr v-if="!item.isDeleted" v-for="(item,index) in data.contractPaymentTermslst" :key="index">
-              <td>
-                <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
-                  删除
-                </a-button>
-              </td>
-              <td>
-                <a-input v-model="item.description"></a-input>
-              </td>
-              <td>
-                <a-input-number v-model="item.percentage" :min="0" :max="getMax(index)"></a-input-number>
-              </td>
-            </tr>
+          <tr v-if="!item.isDeleted" v-for="(item,index) in data.contractPaymentTermslst" :key="index">
+            <td>
+              <a-button @click="del(index)" :disabled="type === 'view'" icon="close">
+                删除
+              </a-button>
+            </td>
+            <td>
+              <a-input v-model="item.description"></a-input>
+            </td>
+            <td>
+              <a-input-number v-model="item.percentage" :min="0" :max="getMax(index)"></a-input-number>
+            </td>
+          </tr>
           </tbody>
         </table>
       </a-col>
     </a-row>
-  </a-form>
+  </a-form-model>
 </template>
 
 <script>
-  import { addItem, Base as BaseService, clearItems, removeItem } from '@/api/base'
-  import { SwaggerService } from '@/api/swagger.service'
+    import { addItem, Base as BaseService, clearItems, removeItem } from '@/api/base'
+    import { SwaggerService } from '@/api/swagger.service'
 
-  export default {
-    name: 'PayInfo',
-    data () {
-      return {
-        selection: {},
-        loading: false
-      }
-    },
-    created () {
-      BaseService.retentionTypes().then(res => {
-        this.selection.retentionTypes = res.result.data
-        this.$forceUpdate()
-      })
-    },
-    methods: {
-      getMax (index) {
-        let max = 100
-        this.data.contractPaymentTermslst.forEach((item, i) => {
-          if (index !== i) {
-            max = max - item.percentage
-          }
-        })
-        return max
-      },
-      add () {
-        const item = SwaggerService.getForm('ContractPaymentTermsDto')
-        item.id = 0
-        item.contractID = this.id === '0' ? '' : this.id
-        addItem(item, this.data.contractPaymentTermslst)
-      },
-      del (index) {
-        const items = this.data.contractPaymentTermslst
-        removeItem(index, items)
-      },
-      clear () {
-        clearItems(this.data.contractPaymentTermslst)
-      }
-    },
-    props: {
-      data: {
-        type: Object,
-        default: null
-      },
-      type: {
-        type: String,
-        default: 'view'
-      },
-      id: {
-        type: String,
-        default: '0'
-      }
+    export default {
+        name: 'PayInfo',
+        data () {
+            return {
+                selection: {},
+                loading: false,
+                rules: {
+                    paymentGracePeriod: [{ required: true, message: '请填写合同付款期限', trigger: 'change' }]
+                }
+            }
+        },
+        created () {
+            BaseService.retentionTypes().then(res => {
+                this.selection.retentionTypes = res.result.data
+                this.$forceUpdate()
+            })
+        },
+        methods: {
+            getMax (index) {
+                let max = 100
+                this.data.contractPaymentTermslst.forEach((item, i) => {
+                    if (index !== i) {
+                        max = max - item.percentage
+                    }
+                })
+                return max
+            },
+            add () {
+                const item = SwaggerService.getForm('ContractPaymentTermsDto')
+                item.id = 0
+                item.contractID = this.id === '0' ? '' : this.id
+                addItem(item, this.data.contractPaymentTermslst)
+            },
+            del (index) {
+                const items = this.data.contractPaymentTermslst
+                removeItem(index, items)
+            },
+            clear () {
+                clearItems(this.data.contractPaymentTermslst)
+            }
+        },
+        props: {
+            data: {
+                type: Object,
+                default: null
+            },
+            type: {
+                type: String,
+                default: 'view'
+            },
+            id: {
+                type: String,
+                default: '0'
+            }
+        }
     }
-  }
 </script>
 
 <style lang="less" scoped>
