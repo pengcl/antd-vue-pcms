@@ -136,6 +136,22 @@
             </a-select>
           </a-form-model-item>
         </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="币种"
+            prop="paymentCurrency">
+            <a-select
+              :disabled="type === 'view'"
+              placeholder="请选择"
+              v-model="data.paymentCurrency">
+              <a-select-option
+                v-for="(type,index) in currencyList"
+                :value="type.nameCN"
+                :key="index">{{ type.nameCN }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+        </a-col>
         <a-col :md="24" :sm="24">
           <a-form-model-item
             label="付款说明"
@@ -695,6 +711,7 @@
     import { Base as BaseService } from '@/api/base'
     import ViewContractNsc from '../modules/ViewContractNSC'
     import PaymentRequestAmountForm from '../modules/PaymentRequestAmountForm'
+    import { Currency } from '@/api/currency'
 
     const columns = [
         {
@@ -784,6 +801,7 @@
                 paymentRequestAmount: {},
                 paymentMethodTypes: [],
                 NSCInfoList: [],
+                currencyList: [],
                 billType: '',
                 isFirst: true,
                 rules: {
@@ -794,6 +812,7 @@
                     paymentContent: [{ required: true, message: '请输入付款说明', trigger: 'change' }],
                     paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
                     paymentDeadlineDay: [{ required: true, message: '请输入合同付款期限', trigger: 'change' }],
+                    paymentCurrency: [{ required: true, message: '请选择币种', trigger: 'change' }],
                     requestAmount_All_Contract: [{ required: true, message: '请输入累计完成合同工作之评估价值', trigger: 'change' }]
                 },
             }
@@ -859,6 +878,9 @@
             })
             SignedService.paymentMethodTypes().then(res => {
                 this.paymentMethodTypes = res.result.data
+            })
+            Currency.list().then(res => {
+                this.currencyList = res.result.data.items
             })
         },
         filters: {
