@@ -132,6 +132,13 @@
             <span slot="remark" slot-scope="text,record">
             <a-input v-model="record.remark"></a-input>
           </span>
+
+            <span slot="footer" slot-scope="text,record">
+                <a-row :gutter="48">
+                  <a-col :sm="24" :md="16" style="text-align: right">发票总金额：</a-col>
+                  <a-col :sm="24" :md="8">{{billAmountTotal | NumberFormat}}</a-col>
+                </a-row>
+            </span>
           </a-table>
         </a-col>
         <a-col sm="24" :md="24" style="margin-top: 10px">
@@ -233,7 +240,8 @@
                 form: SwaggerService.getForm('ContractAllInfoDto'),
                 masterID: 0,
                 disabled: false,
-                pageNumber: 1
+                pageNumber: 1,
+                billAmountTotal: 0
             }
         },
         computed: {
@@ -279,6 +287,13 @@
                     }
                     this.billList = res.result.data
                     this.billList = this.billList.sort((a, b) => b.billNum - a.billNum)
+                    let billAmountTotal = 0
+                    this.billList.forEach(item => {
+                        if (item.billAmount) {
+                            billAmountTotal += item.billAmount
+                        }
+                    })
+                    this.billAmountTotal = billAmountTotal
                     this.$forceUpdate()
                 })
             },
@@ -301,6 +316,13 @@
                     record['taxAmount'] = record[key] * (record['taxRate'] / 100) / (record['taxRate'] / 100 + 1)
                     record['noTaxAmount'] = record[key] - record['taxAmount']
                 }
+                let billAmountTotal = 0
+                this.billList.forEach(item => {
+                    if (item.billAmount) {
+                        billAmountTotal += item.billAmount
+                    }
+                })
+                this.billAmountTotal = billAmountTotal
                 this.$forceUpdate()
             },
             taxRateChange (value, record, key) {

@@ -785,6 +785,7 @@
                 paymentMethodTypes: [],
                 NSCInfoList: [],
                 billType: '',
+                isFirst: true,
                 rules: {
                     paymentReceiveDate: [{ required: true, message: '请选择收到请款单日期', trigger: 'change' }],
                     paymentRequestAmount: [{ required: true, message: '请输入申请批准金额', trigger: 'change' }],
@@ -898,6 +899,13 @@
                 this.$set(this.contractGIDs, e, contractGID)
             },
             handToShowcontractNSC () {
+                if (this.type === 'update' && this.data.contractNSCInfoList.length > 0 && this.isFirst) {
+                    this.data.contractNSCInfoList.forEach(item => {
+                        this.$refs.createModal.selectedRowKeys.push(item.secondaryContractGID)
+                        this.$refs.createModal.selected.push(item.secondaryContractGID)
+                    })
+                    this.isFirst = false
+                }
                 this.mdl = null
                 this.visible = true
             },
@@ -1081,24 +1089,33 @@
             handleOk () {
                 this.confirmLoading = true
                 const selected = this.$refs.createModal.selected
-                let NSCInfoList = []
+                let list = []
                 if (selected.length > 0) {
                     selected.forEach(item => {
-                        if (item.contractGuid) {
+                        list.push(item.contractGuid)
+                        const index = this.data.contractNSCInfoList.findIndex(v => v.contractGID === item.contractGuid)
+                        if (index < 0) {
                             SignedService.NSCContract(this.data.contractGID, item.contractGuid).then(res => {
                                 if (res.result.data) {
                                     this.$message.success('引入专业分包合同成功！')
                                     res.result.data.detailList = []
-                                    NSCInfoList.push(res.result.data)
+                                    this.data.contractNSCInfoList.push(res.result.data)
                                 }
                             })
                         }
                     })
+                    this.data.contractNSCInfoList.forEach((item, i) => {
+                        const index = list.findIndex(v => v === item.contractGID)
+                        if (index < 0) {
+                            this.data.contractNSCInfoList.splice(i, 1)
+                        }
+                    })
+                } else {
+                    this.data.contractNSCInfoList = []
                 }
                 this.$refs.createModal.form.resetFields()
                 this.confirmLoading = false
                 this.visible = false
-                this.data.contractNSCInfoList = NSCInfoList
                 if (this.data.contractMasterInfo.paymentRequestAmount) {
                     this.paymentRequestAmount = { '0': this.data.contractMasterInfo.paymentRequestAmount }
                     this.data.paymentRequestAmount = this.data.contractMasterInfo.paymentRequestAmount
