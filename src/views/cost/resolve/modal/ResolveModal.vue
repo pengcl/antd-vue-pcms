@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :visible="visible"
-    :width="1100"
+    :width="1200"
     title="新增预算分解"
     :maskClosable="false"
     @cancel="handleCancel"
@@ -33,8 +33,8 @@
               </tr>
               <tr>
                 <th style="width: 100px">操作</th>
-                <th style="width: 200px">科目</th>
-                <th style="width: 200px">专业名称</th>
+                <th style="width: 100px">科目</th>
+                <th style="width: 150px">专业名称</th>
                 <th style="width: 200px" v-for="(costCenterItem,index) in costCenters" :key="index">
                   {{costCenterItem.costCenterName}}
                 </th>
@@ -43,8 +43,8 @@
               <tbody>
               <tr>
                 <td style="width: 100px"></td>
-                <td style="width: 200px">{{this.elementInfoNameCN}}</td>
-                <td style="width: 200px"></td>
+                <td style="width: 100px">{{this.elementInfoNameCN}}</td>
+                <td style="width: 150px"></td>
                 <td style="width: 200px" v-for="(costCenterItem,index) in costCenters" :key="index">
                   {{costCenterItem.amount|NumberFormat}}
                 </td>
@@ -54,10 +54,10 @@
                   <a-button @click="del(index)" icon="delete" type="danger"></a-button>
                 </td>
                 <td><div style="width: 100px"></div>{{item.amountCount|NumberFormat}}</td>
-                <td style="width: 200px">
+                <td style="width: 150px">
                   <a-form-model-item
                     class="simple"
-                    style="margin-top: 20px"
+                    style="margin-top: 20px;width: 150px"
                     :prop="'costCenterItems.' + index + '.tradeTypeId'"
                     :rules="[{required: true, message: '请选择行业', trigger: 'change' }]"
                   >
