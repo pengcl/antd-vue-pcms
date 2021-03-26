@@ -99,7 +99,7 @@
             contractGID: {
                 type: String,
                 default: null
-            }
+            },
         },
         data () {
             this.columns = columns
@@ -107,7 +107,6 @@
                 form: this.$form.createForm(this),
                 queryParam: {},
                 selectedRowKeys: [],
-                selectedRows: [],
                 selected: [],
                 // 加载数据方法 必须为 Promise 对象
                 loadData: parameter => {
@@ -150,7 +149,6 @@
         methods: {
             onSelectChange (selectedRowKeys, selectedRows) {
                 this.selectedRowKeys = selectedRowKeys
-                this.selectedRows = selectedRows
             },
         }
     }

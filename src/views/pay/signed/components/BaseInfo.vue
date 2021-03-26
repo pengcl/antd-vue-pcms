@@ -136,6 +136,22 @@
             </a-select>
           </a-form-model-item>
         </a-col>
+        <a-col :md="12" :sm="24">
+          <a-form-model-item
+            label="币种"
+            prop="paymentCurrency">
+            <a-select
+              :disabled="type === 'view'"
+              placeholder="请选择"
+              v-model="data.paymentCurrency">
+              <a-select-option
+                v-for="(type,index) in currencyList"
+                :value="type.nameCN"
+                :key="index">{{ type.nameCN }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+        </a-col>
         <a-col :md="24" :sm="24">
           <a-form-model-item
             label="付款说明"
@@ -445,7 +461,7 @@
                 <td>
                   <span v-if="item.paymentRequestAmount" style="margin-right: 10px">{{item.paymentRequestAmount | NumberFormat}}</span>
                   <a-button
-                    @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID)">
+                    @click="handleShowPaymentRequestAmount(''+(index+1),type === 'create' ?  item.contractGID : item.secondaryContractGID ? item.secondaryContractGID : item.contractGID)">
                     {{type === 'view' ? '查看金额' : item.paymentRequestAmount ? '修改金额' : '填写明细'}}
                   </a-button>
                   <payment-request-amount-form :ref="'paymentRequestAmountModal'+(index+1)"
@@ -628,35 +644,35 @@
           </span>
 
             <template slot="billAmount" slot-scope="text,record,index">
-            <a-input-number :disabled="type === 'view'"
-                            v-model="record.billAmount"
-                            @change="e => billAmountChange(e,record,'billAmount')"
-                            :min="0"
-                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                            :precision="2"></a-input-number>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="record.billAmount"
+                              @change="e => billAmountChange(e,record,'billAmount')"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"></a-input-number>
               <div style="font-size: 12px;color: red" v-if="!record.billAmount">请填写发票金额</div>
-          </template>
+            </template>
 
             <template slot="taxRate" slot-scope="text,record,index">
-            <a-input-number :disabled="type === 'view'"
-                            v-model="record.taxRate"
-                            @change="e => taxRateChange(e,record,'taxRate')"
-                            :min="0"
-                            :max="100"
-                            :formatter="value => `${value}%`"
-                            :parser="value => value.replace('%', '')"></a-input-number>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="record.taxRate"
+                              @change="e => taxRateChange(e,record,'taxRate')"
+                              :min="0"
+                              :max="100"
+                              :formatter="value => `${value}%`"
+                              :parser="value => value.replace('%', '')"></a-input-number>
               <div style="font-size: 12px;color: red" v-if="!record.taxRate">请填写税率</div>
-          </template>
+            </template>
 
             <template slot="taxAmount" slot-scope="text,record,index">
-            <a-input-number :disabled="type === 'view'"
-                            v-model="record.taxAmount"
-                            @change="e => taxAmountChange(e,record,'taxAmount')"
-                            :min="0"
-                            :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
-                            :precision="2"></a-input-number>
+              <a-input-number :disabled="type === 'view'"
+                              v-model="record.taxAmount"
+                              @change="e => taxAmountChange(e,record,'taxAmount')"
+                              :min="0"
+                              :formatter="value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                              :precision="2"></a-input-number>
               <div style="font-size: 12px;color: red" v-if="!record.taxAmount">请填写税额</div>
-          </template>
+            </template>
 
             <span slot="noTaxAmount" slot-scope="text,record">
             <a-input-number :disabled="true"
@@ -695,6 +711,7 @@
     import { Base as BaseService } from '@/api/base'
     import ViewContractNsc from '../modules/ViewContractNSC'
     import PaymentRequestAmountForm from '../modules/PaymentRequestAmountForm'
+    import { Currency } from '@/api/currency'
 
     const columns = [
         {
@@ -784,7 +801,9 @@
                 paymentRequestAmount: {},
                 paymentMethodTypes: [],
                 NSCInfoList: [],
+                currencyList: [],
                 billType: '',
+                isFirst: true,
                 rules: {
                     paymentReceiveDate: [{ required: true, message: '请选择收到请款单日期', trigger: 'change' }],
                     paymentRequestAmount: [{ required: true, message: '请输入申请批准金额', trigger: 'change' }],
@@ -793,6 +812,7 @@
                     paymentContent: [{ required: true, message: '请输入付款说明', trigger: 'change' }],
                     paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }],
                     paymentDeadlineDay: [{ required: true, message: '请输入合同付款期限', trigger: 'change' }],
+                    paymentCurrency: [{ required: true, message: '请选择币种', trigger: 'change' }],
                     requestAmount_All_Contract: [{ required: true, message: '请输入累计完成合同工作之评估价值', trigger: 'change' }]
                 },
             }
@@ -859,6 +879,9 @@
             SignedService.paymentMethodTypes().then(res => {
                 this.paymentMethodTypes = res.result.data
             })
+            Currency.list().then(res => {
+                this.currencyList = res.result.data.items
+            })
         },
         filters: {
             filterDeleted (items) {
@@ -898,6 +921,13 @@
                 this.$set(this.contractGIDs, e, contractGID)
             },
             handToShowcontractNSC () {
+                if (this.type === 'update' && this.data.contractNSCInfoList.length > 0 && this.isFirst) {
+                    this.data.contractNSCInfoList.forEach(item => {
+                        this.$refs.createModal.selectedRowKeys.push(item.secondaryContractGID)
+                        this.$refs.createModal.selected.push(item.secondaryContractGID)
+                    })
+                    this.isFirst = false
+                }
                 this.mdl = null
                 this.visible = true
             },
@@ -1081,24 +1111,33 @@
             handleOk () {
                 this.confirmLoading = true
                 const selected = this.$refs.createModal.selected
-                let NSCInfoList = []
+                let list = []
                 if (selected.length > 0) {
                     selected.forEach(item => {
-                        if (item.contractGuid) {
+                        list.push(item.contractGuid)
+                        const index = this.data.contractNSCInfoList.findIndex(v => v.contractGID === item.contractGuid)
+                        if (index < 0) {
                             SignedService.NSCContract(this.data.contractGID, item.contractGuid).then(res => {
                                 if (res.result.data) {
                                     this.$message.success('引入专业分包合同成功！')
                                     res.result.data.detailList = []
-                                    NSCInfoList.push(res.result.data)
+                                    this.data.contractNSCInfoList.push(res.result.data)
                                 }
                             })
                         }
                     })
+                    this.data.contractNSCInfoList.forEach((item, i) => {
+                        const index = list.findIndex(v => v === item.contractGID)
+                        if (index < 0) {
+                            this.data.contractNSCInfoList.splice(i, 1)
+                        }
+                    })
+                } else {
+                    this.data.contractNSCInfoList = []
                 }
                 this.$refs.createModal.form.resetFields()
                 this.confirmLoading = false
                 this.visible = false
-                this.data.contractNSCInfoList = NSCInfoList
                 if (this.data.contractMasterInfo.paymentRequestAmount) {
                     this.paymentRequestAmount = { '0': this.data.contractMasterInfo.paymentRequestAmount }
                     this.data.paymentRequestAmount = this.data.contractMasterInfo.paymentRequestAmount

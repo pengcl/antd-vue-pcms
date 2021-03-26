@@ -67,7 +67,7 @@
             :id="id"/>
         </a-tab-pane>
         <a-tab-pane forceRender :key="5" tab="付款条款">
-          <pay-info :data="form" :type="type" :id="id"/>
+          <pay-info ref="payInfo" :data="form" :type="type" :id="id"/>
         </a-tab-pane>
         <a-tab-pane forceRender :key="6" tab="附件">
           <attachment-list :data="form" :type="type" :id="id"/>
@@ -301,6 +301,7 @@
                     })
                     this.form.fileMasterId = 0
                     this.form.contract.id = 0
+                    this.form.contract.paymentGracePeriod = 28
                     this.form.contract.isDeleted = false
                     this.form.contract.currencyID = 3
                     this.form.contract.baseCurrencyID = 3
@@ -357,7 +358,11 @@
                     }, {
                         activeKey: 4,
                         key: 'contractList'
-                    }
+                    }, {
+                        activeKey: 5,
+                        key: 'payInfo'
+                    },
+
                 ]
                 validateForms.forEach((item, index) => {
                     this.$refs[item.key].$refs.form.validate(valid => {
