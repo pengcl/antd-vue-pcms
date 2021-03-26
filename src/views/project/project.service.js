@@ -19,7 +19,9 @@ const API = {
   updateStage: '/api/services/app/Project/UpdateProjectStage', // 添加项目阶段
   bpm: '/api/services/app/Project/StartBPM',
   edit: '/api/services/app/Project/GetProjectEditById',
-  projectTree: '/api/services/app/Project/GetProjectFullTree' // 根据projectGUID获取当前项目数
+  projectTree: '/api/services/app/Project/GetProjectFullTree', // 根据projectGUID获取当前项目数
+  projectUserItems: '/api/services/app/NwUser/GetUserPage', // 项目成员选择列表
+  GetAreaTenantTypes: '/api/services/app/GeneralType/GetAreaTenantTypes' // 获取项目成员区域列表
 }
 
 const ProjectService = {}
@@ -175,5 +177,23 @@ ProjectService.projectTree = function list (parameter) {
     params: parameter
   })
 }
+
+ProjectService.projectUserItems = function list (parameter) {
+  return request({
+    url: API.projectUserItems,
+    method: 'GET',
+    params: parameter
+  })
+}
+
+ProjectService.GetAreaTenantTypes = function list (parameter) {
+  return request({
+    url: API.GetAreaTenantTypes,
+    method: 'GET',
+    params: parameter
+  })
+}
+
+
 
 export { ProjectService }
